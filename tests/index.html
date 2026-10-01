@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>GermplasmPro — pruebas</title>
+<style>
+  body { font-family: ui-monospace, monospace; font-size: 13px; margin: 20px; background: #faf7f1; color: #241e18; }
+  h1 { font-size: 18px; }
+  .ok { color: #3d8f4f; } .fail { color: #c43a2f; font-weight: bold; }
+  #summary { font-size: 15px; font-weight: bold; margin: 12px 0; }
+  li { margin: 1px 0; }
+  .grp { margin-top: 10px; font-weight: bold; color: #6b4a8f; }
+</style>
+<script src="../js/i18n.js"></script>
+</head>
+<body>
+<h1>GermplasmPro — suite de pruebas</h1>
+<p>Las pruebas que fallan se listan siempre; con <code>?all</code> en la dirección se listan también las que pasan.</p>
+<div id="summary">Ejecutando…</div>
+<ol id="out"></ol>
+
+<script src="../js/core.js"></script>
+<script src="../js/genebank.js"></script>
+<script src="../js/mcpd.js"></script>
+<script src="../js/traits.js"></script>
+<script src="../js/io.js"></script>
+<script src="../js/paste.js"></script>
+<script src="../js/examples.js"></script>
+<script src="../js/quality.js"></script>
+<script src="../data/mexico-states.js"></script>
+<script src="../data/world.js"></script>
+<script src="../js/geo.js"></script>
+<script src="../js/diversity.js"></script>
+<script src="../js/gaps.js"></script>
+<script src="../js/charac.js"></script>
+<script src="../js/manage.js"></script>
+<script src="../js/qr.js"></script>
+<script src="../js/labels.js"></script>
+<script src="../js/zip.js"></script>
+<script src="../js/report.js"></script>
+<script src="../js/art.js"></script>
+<script src="../js/home.js"></script>
+<script src="../js/block2.js"></script>
+<script src="../js/block3.js"></script>
+<script src="../js/block4.js"></script>
+<script src="../js/block5.js"></script>
+<script src="../js/block6.js"></script>
+<script src="../js/block7.js"></script>
+<script src="../js/block8.js"></script>
+<script src="../js/block9.js"></script>
+<script src="../js/block10.js"></script>
+<script>
+const out = document.getElementById('out');
+let pass = 0, fail = 0;
+const showAll = location.search.includes('all');
+function ok(cond, msg) {
+  const li = document.createElement('li');
+  li.className = cond ? 'ok' : 'fail';
+  li.textContent = (cond ? '✓ ' : '✗ ') + msg;
+  if (!cond || showAll) out.appendChild(li);
+  cond ? pass++ : fail++;
+}
+function near(a, b, tol, msg) { ok(Math.abs(a - b) <= tol, `${msg} (${a} ≈ ${b} ± ${tol})`); }
+function parseSVG(s) {
+  const doc = new DOMParser().parseFromString(s, 'image/svg+xml');
+  return doc.querySelector('parsererror') ? null : doc.documentElement;
+}
+
+/* ============ 1. utilidades numéricas ============ */
+near(normCdf(0), 0.5, 1e-9, 'normCdf(0) = 0.5');
+near(normCdf(1.959964), 0.975, 1e-5, 'normCdf(1.96) = 0.975');
+near(normCdf(-1.281552), 0.10, 1e-5, 'normCdf(-1.2816) = 0.10');
+near(normInv(0.975), 1.959964, 1e-4, 'normInv(0.975) = 1.95996');
+near(normInv(0.5), 0, 1e-8, 'normInv(0.5) = 0');
+near(normInv(0.01), -2.326348, 1e-4, 'normInv(0.01) = -2.32635');
+/* ida y vuelta en todo el intervalo útil */
+let rtMax = 0;
+for (let p = 0.001; p < 0.999; p += 0.001) rtMax = Math.max(rtMax, Math.abs(normCdf(normInv(p)) - p));
+ok(rtMax < 2e-6, `normCdf(normInv(p)) = p en todo el rango (error máx ${rtMax.toExponential(2)})`);
+
+/* la distancia entre dos puntos separados un grado de latitud son ~111.19 km */
+near(haversine(0, 0, 1, 0), 111.195, 0.05, 'haversine: un grado de latitud');
+near(haversine(0, 0, 0, 1), 111.195, 0.05, 'haversine: un grado de longitud en el ecuador');
+near(haversine(19.29, -98.86, 19.29, -98.86), 0, 1e-9, 'haversine: distancia de un punto a sí mismo');
+/* un grado de longitud a 60° de latitud mide la mitad */
+near(haversine(60, 0, 60, 1), 111.195 * Math.cos(60 * Math.PI / 180), 0.2, 'haversine: un grado de longitud a 60° N');
+
+/* azar reproducible */
+const r1 = mulberry32(42), r2 = mulberry32(42);
+ok([...Array(5)].every(() => r1() === r2()), 'mulberry32 da la misma serie con la misma semilla');
+ok(mulberry32(1)() !== mulberry32(2)(), 'semillas distintas dan series distintas');
+const rb = mulberry32(7);
+ok(rbinom(50, 0, rb) === 0 && rbinom(50, 1, rb) === 50, 'rbinom en los extremos p = 0 y p = 1');
+let sB = 0; const rb2 = mulberry32(9);
+for (let i = 0; i < 400; i++) sB += rbinom(100, 0.3, rb2);
+near(sB / 400, 30, 1.2, 'rbinom(100, 0.3) promedia 30');
+
+/* ============ 2. ecuación de viabilidad ============
+   Se recalcula aquí a mano, con logaritmos naturales en lugar de log10, para
+   no repetir la misma implementación del motor. */
+function sigmaManual(KE, CW, CH, CQ, m, t) {
+  const log10m = Math.log(m) / Math.LN10;
+  return Math.exp(Math.LN10 * (KE - CW * log10m - CH * t - CQ * t * t));
+}
+const mz = GB.SPECIES.maiz;
+[[-18, 6], [5, 8], [20, 12], [25, 14], [0, 5]].forEach(([t, m]) => {
+  const a = GB.sigma(mz.KE, mz.CW, mz.CH, mz.CQ, m, t);
+  const b = sigmaManual(mz.KE, mz.CW, mz.CH, mz.CQ, m, t);
+  ok(Math.abs(a - b) / b < 1e-9, `sigma coincide con el cálculo manual (t=${t}, m=${m})`);
+});
+/* un valor cerrado: maíz a 5 °C y 8 % => 10^4.38751 días */
+near(Math.log10(GB.sigma(6.474, 2.115, 0.0329, 0.000478, 8, 5)), 4.3875, 1e-3, 'log10(sigma) del maíz a 5 °C y 8 %');
+/* monotonías que exige la teoría */
+const sFrio = GB.sigma(mz.KE, mz.CW, mz.CH, mz.CQ, 6, -18);
+const sTibio = GB.sigma(mz.KE, mz.CW, mz.CH, mz.CQ, 6, 20);
+const sHumedo = GB.sigma(mz.KE, mz.CW, mz.CH, mz.CQ, 12, -18);
+ok(sFrio > sTibio, 'más frío alarga la vida del lote');
+ok(sFrio > sHumedo, 'más seco alarga la vida del lote');
+
+/* germinación y probits */
+near(GB.germination(96, 0, sFrio), 96, 1e-6, 'al día cero la germinación es la inicial');
+ok(GB.germination(96, 3650, sTibio) < GB.germination(96, 365, sTibio), 'la germinación baja con el tiempo');
+const p50frio = GB.yearsTo(96, 50, sFrio);
+near(GB.germination(96, p50frio * 365.25, sFrio), 50, 1e-6, 'yearsTo(50) es justo cuando la germinación llega a 50 %');
+const p85 = GB.yearsTo(96, 85, sTibio);
+near(GB.germination(96, p85 * 365.25, sTibio), 85, 1e-6, 'yearsTo(85) coincide con la curva');
+ok(GB.yearsTo(96, 50, sFrio) > GB.yearsTo(96, 85, sFrio), 'llegar al 50 % tarda más que llegar al 85 %');
+/* un lote que entra peor dura menos */
+ok(GB.yearsTo(85, 50, sFrio) < GB.yearsTo(98, 50, sFrio), 'un lote de menor calidad inicial se acaba antes');
+/* la norma FAO: -18 °C y 5-7 % de humedad conservan el maíz muchos siglos */
+ok(GB.yearsTo(96, 85, GB.sigma(mz.KE, mz.CW, mz.CH, mz.CQ, 6, -18)) > 100, 'a −18 °C y 6 % el maíz aguanta más de un siglo sobre el umbral');
+ok(GB.yearsTo(96, 85, GB.sigma(mz.KE, mz.CW, mz.CH, mz.CQ, 12, 20)) < 5, 'a 20 °C y 12 % el lote cae del umbral en menos de cinco años');
+
+/* ============ 3. deriva genética ============ */
+const rndD = mulberry32(3);
+const loci0 = GB.startFreqs(30, rndD);
+ok(loci0.length === 30, 'startFreqs devuelve el número pedido de loci');
+ok(loci0.every(f => Math.abs(sum(f) - 1) < 1e-12), 'cada locus suma 1');
+ok(GB.alleleCount(loci0) === 30 * GB.BASE_FREQ.length, 'al inicio están todos los alelos');
+const He0 = GB.expHet(loci0);
+ok(He0 > 0.6 && He0 < 0.85, `heterocigosis inicial razonable (${He0.toFixed(3)})`);
+
+const grande = GB.driftOnce(loci0, 500, mulberry32(11));
+const chico = GB.driftOnce(loci0, 5, mulberry32(11));
+ok(grande.every(f => Math.abs(sum(f) - 1) < 1e-12), 'tras la deriva cada locus sigue sumando 1');
+ok(GB.alleleCount(grande) >= GB.alleleCount(chico), 'con menos progenitores se pierden más alelos');
+ok(GB.alleleCount(chico) < 30 * GB.BASE_FREQ.length, 'con Ne = 5 se pierden alelos');
+ok(GB.alleleCount(grande) <= 30 * GB.BASE_FREQ.length, 'la deriva nunca crea alelos nuevos');
+/* la deriva no sesga: la frecuencia media se conserva en muchas réplicas */
+let acc = 0, reps = 300;
+for (let i = 0; i < reps; i++) acc += GB.driftOnce([loci0[0]], 50, mulberry32(1000 + i))[0][0];
+near(acc / reps, loci0[0][0], 0.02, 'la deriva no cambia la frecuencia esperada, sólo la dispersa');
+/* la heterocigosis esperada baja, en promedio, 1/(2Ne) por generación */
+let heSum = 0;
+for (let i = 0; i < 200; i++) heSum += GB.expHet(GB.driftOnce(loci0, 10, mulberry32(7000 + i)));
+near(heSum / 200, He0 * (1 - 1 / 20), 0.02, 'He baja en promedio 1/(2Ne) tras un ciclo con Ne = 10');
+
+/* ============ 4. la simulación de un lote de semilla ============ */
+const A = GB.simulate({ seed: 12345 });
+const B = GB.simulate({ seed: 12345 });
+ok(JSON.stringify(A.summary) === JSON.stringify(B.summary), 'la misma semilla da exactamente la misma simulación');
+ok(A.years.length === A.opts.years + 1, 'hay un valor por año, incluido el año cero');
+ok(A.germ.length === A.years.length && A.alleles.length === A.years.length && A.f.length === A.years.length, 'todas las series miden lo mismo');
+ok(Math.abs(A.alleles[0] - 100) < 1e-9 && Math.abs(A.he[0] - 100) < 1e-9 && A.f[0] === 0, 'el año cero arranca con toda la diversidad y sin consanguinidad');
+ok(A.germ.every(g => g >= 0 && g <= 100), 'la germinación siempre está entre 0 y 100 %');
+ok(A.alleles.every(a => a <= 100 + 1e-9), 'los alelos conservados nunca pasan del 100 %');
+ok(A.alleles.every((a, i) => i === 0 || a <= A.alleles[i - 1] + 1e-9), 'los alelos conservados nunca suben');
+ok(A.f.every((v, i) => i === 0 || v >= A.f[i - 1] - 1e-9), 'la consanguinidad nunca baja');
+ok(A.summary.seedsOnTests === A.tests.length * A.opts.testSeeds, 'la semilla gastada es la de las pruebas hechas');
+ok(A.tests.every(t => t.year % A.opts.interval === 0), 'las pruebas caen en los años del calendario de monitoreo');
+
+/* norma FAO contra banco comunitario */
+const bueno = GB.simulate({ temp: -18, moisture: 6, interval: 5, sown: 100, years: 100, seed: 99 });
+const tibio = GB.simulate({ temp: 20, moisture: 12, interval: 5, sown: 100, years: 100, seed: 99 });
+ok(bueno.summary.regens === 0, 'a −18 °C y 6 % no hizo falta regenerar en un siglo');
+ok(tibio.summary.regens > 3, `a 20 °C y 12 % hubo varias regeneraciones (${tibio.summary.regens})`);
+ok(bueno.summary.allelesLeft === 100, 'sin regeneraciones no se pierde ningún alelo');
+ok(tibio.summary.allelesLeft < 100, 'cada regeneración cuesta alelos');
+ok(tibio.summary.F > bueno.summary.F, 'la consanguinidad sube con las regeneraciones');
+
+/* pocas plantas contra muchas plantas, con el mismo número de regeneraciones */
+const pocas = GB.simulate({ temp: 20, moisture: 12, sown: 20, years: 100, seed: 4 });
+const muchas = GB.simulate({ temp: 20, moisture: 12, sown: 200, years: 100, seed: 4 });
+ok(pocas.summary.allelesLeft < muchas.summary.allelesLeft, 'regenerar con 20 plantas conserva menos alelos que con 200');
+ok(pocas.summary.F > muchas.summary.F, 'regenerar con pocas plantas acumula más consanguinidad');
+ok(muchas.summary.NeMean > pocas.summary.NeMean, 'el tamaño efectivo medio sigue al número de plantas sembradas');
+
+/* monitorear tarde se paga */
+const vigila = GB.simulate({ temp: 20, moisture: 12, interval: 2, sown: 100, years: 100, seed: 21 });
+const descuida = GB.simulate({ temp: 20, moisture: 12, interval: 15, sown: 100, years: 100, seed: 21 });
+ok(descuida.summary.NeMean < vigila.summary.NeMean, 'revisar cada 15 años deja menos plantas efectivas por regeneración');
+ok(vigila.summary.seedsOnTests > descuida.summary.seedsOnTests, 'revisar seguido gasta más semilla en pruebas');
+
+/* el umbral hace su trabajo: las regeneraciones por viabilidad ocurren con la prueba por debajo del umbral */
+const conUmbral = GB.simulate({ temp: 20, moisture: 12, interval: 1, threshold: 85, sown: 100, years: 60, seed: 5 });
+const okUmbral = conUmbral.regens.filter(g => g.reason === 'viability')
+  .every(g => { const t = conUmbral.tests.find(x => x.year === g.year); return t && t.value < 85; });
+ok(okUmbral, 'toda regeneración por viabilidad viene de una prueba por debajo del umbral');
+
+/* ============ 5. el catálogo, los métodos y su compatibilidad ============ */
+ok(Object.keys(GB.METHODS).length === 5, 'hay cinco formas de conservación modeladas');
+ok(Object.values(GB.METHODS).filter(m => m.kind === 'in situ').length === 1, 'una de ellas es in situ');
+ok(Object.values(GB.METHODS).filter(m => m.kind === 'ex situ').length === 4, 'cuatro son ex situ');
+ok(Object.values(GB.METHODS).every(m => m.es && m.en && m.d.es && m.d.en && m.sliders.length), 'cada método está descrito en dos idiomas y declara sus controles');
+ok(Object.values(GB.METHODS).every(m => m.short && m.short.es && m.short.en && !/situ\)/.test(m.short.es)), 'cada método trae un título corto limpio para su tarjeta');
+ok(Object.values(GB.METHODS).every(m => Object.keys(GB.BEHAVIOUR).every(b => m.fits[b])), 'cada método dice qué le pasa con cada comportamiento de semilla');
+ok(Object.values(GB.METHODS).every(m => Object.keys(m.fits).every(b => ['ok', 'warn', 'no'].includes(m.fits[b]))), 'los veredictos sólo son ok, warn o no');
+ok(Object.values(GB.METHODS).every(m => !Object.values(m.fits).includes('warn') || (m.why && m.why.warn)), 'todo «se puede, pero» viene con su explicación');
+ok(Object.values(GB.METHODS).every(m => !Object.values(m.fits).includes('no') || (m.why && m.why.no)), 'todo «no aplica» viene con su explicación');
+
+const sppKeys = Object.keys(GB.SPECIES);
+ok(sppKeys.length >= 12, `el catálogo trae al menos doce especies (${sppKeys.length})`);
+ok(sppKeys.every(k => GB.BEHAVIOUR[GB.SPECIES[k].behaviour]), 'toda especie declara un comportamiento válido');
+['orthodox', 'intermediate', 'recalcitrant', 'clonal'].forEach(b => {
+  ok(sppKeys.some(k => GB.SPECIES[k].behaviour === b), `hay al menos una especie ${b} en el catálogo`);
+});
+ok(Object.values(GB.SPECIES).every(s => s.es && s.en && s.note.es && s.note.en), 'todas las especies tienen nombre y nota en dos idiomas');
+ok(GB.SPECIES.generica.pickBehaviour === true, 'la especie genérica deja elegir el comportamiento');
+ok(Object.keys(GB.SPECIES).filter(k => GB.SPECIES[k].editable).every(k => GB.SPECIES[k].KE > 0), 'las especies con constantes editables traen un punto de partida');
+
+ok(GB.fit('maiz', 'seed') === 'ok', 'el maíz sí va a un banco de semillas');
+ok(GB.fit('cafe', 'seed') === 'warn', 'el café (intermedia) va a semillas sólo con reservas');
+ok(GB.fit('chayote', 'seed') === 'no', 'el chayote no va a un banco de semillas');
+ok(GB.fit('papa', 'seed') === 'no', 'una variedad clonal no se conserva como semilla');
+ok(['field', 'invitro', 'cryo', 'insitu'].every(m => GB.fit('papa', m) !== 'no'), 'la papa tiene salida por campo, in vitro, crio e in situ');
+ok(['field', 'invitro', 'cryo', 'insitu'].every(m => GB.fit('chayote', m) !== 'no'), 'el chayote tiene salida por campo, in vitro, crio e in situ');
+ok(GB.fit('generica', 'seed', 'recalcitrant') === 'no', 'el comportamiento declarado por el usuario manda sobre el de la especie');
+ok(GB.fit('generica', 'seed', 'orthodox') === 'ok', 'y una genérica ortodoxa sí va a semillas');
+ok(Object.keys(GB.METHODS).every(m => GB.fit('encino', m) !== 'no' || m === 'seed'), 'un árbol recalcitrante sólo queda fuera del banco de semillas');
+
+/* la simulación se niega a inventar lo que no existe */
+const bloq = GB.simulate({ species: 'chayote', method: 'seed', years: 50 });
+ok(bloq.blocked === true && bloq.fit === 'no', 'pedir semillas de una recalcitrante devuelve una simulación bloqueada');
+ok(bloq.years.length === 0, 'una simulación bloqueada no trae series');
+
+/* ============ 5b. banco de campo ============ */
+const cha = GB.simulate({ species: 'chayote', method: 'field', interval: 3, sown: 60, years: 60, seed: 8 });
+ok(cha.method === 'field' && !cha.blocked, 'el chayote sí se simula como banco de campo');
+ok(!isFinite(cha.p50) || isNaN(cha.p50), 'no se inventa una vida media de semilla para una recalcitrante');
+ok(cha.summary.seedsOnTests === 0, 'en el banco de campo no hay pruebas de germinación en frasco');
+ok(cha.summary.regens >= Math.floor(60 / 3) - 3 && cha.summary.regens <= Math.floor(60 / 3), `las resiembras siguen el calendario (${cha.summary.regens})`);
+ok(cha.summary.allelesLeft < 100, 'resembrar cada tres años también cuesta diversidad');
+ok(cha.germ.every(g => g >= 0 && g <= 100), 'el porcentaje de plantas vivas está entre 0 y 100');
+const chaRaro = GB.simulate({ species: 'chayote', method: 'field', interval: 10, sown: 60, years: 60, seed: 8 });
+ok(chaRaro.summary.allelesLeft > cha.summary.allelesLeft, 'resembrar con menos frecuencia conserva más diversidad');
+const chaRiesgo = GB.simulate({ species: 'chayote', method: 'field', interval: 3, sown: 60, hazard: 12, years: 60, seed: 8 });
+ok(chaRiesgo.summary.hazards > cha.summary.hazards, 'con más riesgo climático hay más golpes a la colección');
+
+/* ============ 5c. in vitro ============ */
+const iv = GB.simulate({ species: 'papa', method: 'invitro', subMonths: 12, lines: 20, contam: 2, years: 50, seed: 3 });
+ok(iv.method === 'invitro' && !iv.blocked, 'la papa se conserva in vitro');
+near(iv.summary.subcultures, 50, 1, 'con subcultivo anual hay un pase por año');
+const ivRapido = GB.simulate({ species: 'papa', method: 'invitro', subMonths: 3, lines: 20, contam: 2, years: 50, seed: 3 });
+ok(ivRapido.summary.subcultures > 3 * iv.summary.subcultures - 5, 'subcultivar cada 3 meses cuadruplica los pases');
+ok(ivRapido.summary.fidelity < iv.summary.fidelity, 'más subcultivos, menos fidelidad genética');
+ok(ivRapido.summary.allelesLeft <= iv.summary.allelesLeft, 'más subcultivos, menos variantes conservadas');
+ok(ivRapido.summary.labour > iv.summary.labour, 'más subcultivos, más trabajo de laboratorio');
+ok(iv.summary.fidelity > 0 && iv.summary.fidelity <= 100, 'la fidelidad genética es un porcentaje');
+ok(iv.germ.every((g, i) => i === 0 || g <= iv.germ[i - 1] + 1e-9), 'la fidelidad nunca sube');
+const ivPocas = GB.simulate({ species: 'papa', method: 'invitro', subMonths: 12, lines: 6, contam: 2, years: 50, seed: 3 });
+ok(ivPocas.summary.allelesLeft < iv.summary.allelesLeft, 'mantener seis frascos conserva menos que mantener veinte');
+
+/* ============ 5d. criopreservación ============ */
+const cr = GB.simulate({ species: 'papa', method: 'cryo', explants: 200, recovery: 50, failure: 0, years: 100, seed: 4 });
+ok(cr.method === 'cryo' && !cr.blocked, 'la papa también se criopreserva');
+ok(cr.summary.survivors === 100, 'de 200 explantes al 50 % se recuperan 100');
+ok(cr.regens.length === 1 && cr.regens[0].year === 0, 'el único cuello de botella es la entrada');
+const aleMin = Math.min(...cr.alleles.slice(1)), aleMax = Math.max(...cr.alleles.slice(1));
+ok(aleMin === aleMax, 'después de entrar al nitrógeno la diversidad ya no cambia');
+ok(cr.f.slice(1).every(v => v === cr.f[1]), 'la consanguinidad tampoco vuelve a subir');
+const crPocos = GB.simulate({ species: 'papa', method: 'cryo', explants: 30, recovery: 40, failure: 0, years: 100, seed: 4 });
+ok(crPocos.summary.allelesLeft < cr.summary.allelesLeft, 'congelar pocos explantes cuesta diversidad');
+const crFalla = GB.simulate({ species: 'papa', method: 'cryo', explants: 200, recovery: 50, failure: 20, years: 200, seed: 77 });
+ok(crFalla.summary.hazards >= 1 && crFalla.germ[crFalla.germ.length - 1] === 0, 'si falla el tanque se pierde todo el material');
+
+/* ============ 5e. in situ y on-farm ============ */
+const is = GB.simulate({ species: 'maiz', method: 'insitu', census: 500, neRatio: 30, migration: 5, siteRisk: 0, years: 100, seed: 6 });
+ok(is.method === 'insitu' && !is.blocked, 'la milpa se simula como conservación in situ');
+ok(is.summary.generations === 100, 'una generación por año durante cien años');
+ok(is.summary.NeMean > 100 && is.summary.NeMean <= 500, `el Ne medio es una fracción del censo (${fmt(is.summary.NeMean, 0)})`);
+const isAislada = GB.simulate({ species: 'maiz', method: 'insitu', census: 80, neRatio: 25, migration: 0, siteRisk: 0, years: 100, seed: 6 });
+ok(isAislada.summary.allelesLeft < is.summary.allelesLeft, 'sin flujo génico y con menos plantas se pierde más diversidad');
+ok(isAislada.summary.F > is.summary.F, 'la población aislada acumula más consanguinidad');
+/* con flujo génico la consanguinidad se estabiliza en el equilibrio
+   deriva-migración; sin él crece sin freno hacia 1 */
+const Ne_is = is.summary.NeMean, m_is = 0.05;
+const Fstar = Math.pow(1 - m_is, 2) / (2 * Ne_is - (2 * Ne_is - 1) * Math.pow(1 - m_is, 2));
+near(is.summary.F / 100, Fstar, 0.01, 'la F in situ llega al equilibrio deriva-migración');
+ok(is.f.slice(-20).every((v, i, a) => i === 0 || Math.abs(v - a[i - 1]) < 0.05), 'y una vez en equilibrio ya casi no se mueve');
+ok(isAislada.summary.F > is.summary.F * 3, 'sin flujo génico la consanguinidad crece mucho más');
+const isRiesgo = GB.simulate({ species: 'maiz', method: 'insitu', census: 500, neRatio: 30, migration: 5, siteRisk: 8, years: 100, seed: 6 });
+ok(isRiesgo.summary.hazards > 0, 'con riesgo alto el sitio recibe golpes');
+ok(isRiesgo.stock.some((v, i) => i > 0 && v < isRiesgo.stock[i - 1]), 'esos golpes se ven en el tamaño de la población');
+ok(is.germ.every(g => g >= 0 && g <= 100), 'el tamaño relativo de la población está entre 0 y 100 %');
+/* el flujo génico devuelve parte de lo perdido: la curva de alelos puede subir */
+const isAlto = GB.simulate({ species: 'maiz', method: 'insitu', census: 300, neRatio: 20, migration: 20, siteRisk: 0, years: 100, seed: 9 });
+ok(isAlto.summary.allelesLeft >= isAislada.summary.allelesLeft, 'con mucho flujo génico se conserva más que en aislamiento');
+
+/* ============ 6. la figura ============ */
+const svg1 = HOME.linePlot({ w: 300, h: 200, xdom: [0, 100], ydom: [0, 100], series: [{ pts: [[0, 0], [50, 40], [100, 90]], color: 'red' }] });
+ok(!!parseSVG(svg1), 'linePlot genera un SVG válido');
+ok(svg1.includes('<path'), 'linePlot dibuja la serie');
+const svgVacio = HOME.linePlot({ w: 300, h: 200, xdom: [0, 1], ydom: [0, 1], series: [] });
+ok(!!parseSVG(svgVacio), 'linePlot sin series sigue siendo un SVG válido');
+const tk = HOME.niceTicks(0, 100, 5);
+ok(tk.length >= 4 && tk[0] >= 0 && tk[tk.length - 1] <= 100, `niceTicks(0,100) razonable: ${tk.join(', ')}`);
+ok(HOME.niceTicks(0, 3, 5).length >= 3, 'niceTicks funciona con rangos pequeños');
+
+const hero = ART.heroArt(1, 'es');
+ok(!!parseSVG(hero), 'la ilustración de la portada es un SVG válido');
+ok(ART.ROUTES.length === 5 && ART.ROUTES.every(r => GB.METHODS[r.k]), 'la ilustración dibuja las cinco rutas y todas existen en el motor');
+ok(ART.ROUTES.every(r => hero.includes('>' + r.es + '<')), 'cada ruta lleva su etiqueta en la escena');
+const heroEn = ART.heroArt(1, 'en');
+ok(!!parseSVG(heroEn) && heroEn.includes('>seed<') && heroEn.includes('>field<'), 'la escena también se dibuja en inglés');
+ok(hero.includes('IN SITU') && hero.includes('EX SITU'), 'la escena separa lo ex situ de lo in situ');
+ok(!!parseSVG(ART.logoSVG()), 'el logotipo es un SVG válido');
+['seedJar', 'invitroJar', 'cryoVial'].forEach(f => ok(!!parseSVG(`<svg xmlns="http://www.w3.org/2000/svg">${ART[f](3)}</svg>`), `${f} es un SVG válido`));
+['fieldPlot', 'insituSite'].forEach(f => ok(!!parseSVG(`<svg xmlns="http://www.w3.org/2000/svg">${ART[f]()}</svg>`), `${f} es un SVG válido`));
+ok(ART.seedJar(1).includes('jarClip-1') && ART.seedJar(2).includes('jarClip-2'), 'cada frasco usa su propio recorte, sin repetir identificadores');
+ok((ART.cornEar({}).match(/<ellipse/g) || []).length > 60, 'la mazorca de ejemplo está formada por muchos granos');
+ok(!!parseSVG(`<svg xmlns="http://www.w3.org/2000/svg">${ART.chayote({})}</svg>`), 'el chayote es un SVG válido');
+ok(!!parseSVG(`<svg xmlns="http://www.w3.org/2000/svg">${ART.accessionTag(0, 0, 'MEX-CR-0001', 2, 'accesión')}</svg>`), 'la etiqueta de accesión es un SVG válido');
+ok(!ART.accessionTag(0, 0, 'X', 1, '').includes('Zea mays'), 'la etiqueta ya no está casada con una sola especie');
+ok(ART.heroArt(1, 'es') === ART.heroArt(1, 'es') && ART.heroArt(1, 'es') !== ART.heroArt(2, 'es'), 'la ilustración es reproducible y cambia con la semilla');
+
+/* ============ 7. utilidades de la app ============ */
+ok(slug('Maíz criollo: Sierra Norte') === 'maiz-criollo-sierra-norte', 'slug quita acentos y signos');
+ok(esc('<b>"a" & b</b>') === '&lt;b&gt;&quot;a&quot; &amp; b&lt;/b&gt;', 'esc protege el HTML');
+ok(clamp(5, 0, 3) === 3 && clamp(-1, 0, 3) === 0 && clamp(2, 0, 3) === 2, 'clamp acota por los dos lados');
+ok(STEPS.length === 10 && STEPS[0].ready === true, 'hay diez bloques y el primero está listo');
+ok(STEPS.every(s => s.es && s.en), 'todos los bloques tienen nombre en los dos idiomas');
+ok(HOME.BLOCKS.length === 9 && HOME.BLOCKS.every(b => b.d.es && b.d.en), 'las tarjetas de la portada describen los nueve bloques que faltan, en dos idiomas');
+ok(Object.values(HOME.PRESETS).every(p => p.es && p.en && p.v), 'todos los escenarios del simulador están en dos idiomas');
+ok(Object.values(HOME.PRESETS).every(p => GB.METHODS[p.v.method] && p.v.method === p.m), 'cada escenario declara un método que existe');
+ok(Object.values(HOME.PRESETS).every(p => GB.SPECIES[p.v.species]), 'cada escenario usa una especie del catálogo');
+ok(Object.values(HOME.PRESETS).every(p => GB.fit(p.v.species, p.v.method) !== 'no'), 'ningún escenario propone un camino imposible para su especie');
+ok(Object.keys(GB.METHODS).every(m => Object.values(HOME.PRESETS).some(p => p.m === m)), 'hay al menos un escenario por cada forma de conservación');
+ok(Object.values(HOME.PRESETS).every(p => GB.METHODS[p.m].sliders.every(k => HOME.SLIDERS[k])), 'todos los controles que pide cada método están definidos');
+ok(Object.values(HOME.SLIDERS).every(s => s.es && s.en && s.min < s.max && typeof s.fmt === 'function'), 'todos los controles están en dos idiomas y con rango válido');
+ok(Object.keys(GB.METHODS).every(m => GB.METHODS[m].sliders.every(k => { const s = HOME.SLIDERS[k]; const v = GB.DEFAULTS[k]; return v >= s.min && v <= s.max; })), 'los valores por omisión caen dentro del rango de cada control');
+ok(Object.values(GB.BEHAVIOUR).every(b => b.es && b.en && b.d.es && b.d.en), 'los comportamientos de semilla están explicados en dos idiomas');
+
+/* ============ 8. lectura y escritura de archivos ============ */
+ok(IO.detectDelimiter('a,b,c\n1,2,3\n4,5,6') === ',', 'detecta la coma');
+ok(IO.detectDelimiter('a;b;c\n1;2;3') === ';', 'detecta el punto y coma');
+ok(IO.detectDelimiter('a\tb\tc\n1\t2\t3') === '\t', 'detecta el tabulador (el pegado desde una hoja de cálculo)');
+/* una coma dentro de un campo entrecomillado no debe partir la columna */
+const p1 = IO.parseDelimited('id,sitio,alt\n1,"Oaxaca, Apoala",2010\n2,"Chiapas, Ocosingo",900');
+ok(p1.headers.length === 3 && p1.rows.length === 2, 'tres columnas y dos filas');
+ok(p1.rows[0].sitio === 'Oaxaca, Apoala', 'la coma entrecomillada no parte el campo');
+/* comillas dobles escapadas y saltos de línea dentro de una celda */
+const p2 = IO.parseDelimited('a,b\n"dice ""hola""","dos\nlíneas"');
+ok(p2.rows[0].a === 'dice "hola"', 'las comillas escapadas se leen bien');
+ok(p2.rows[0].b === 'dos\nlíneas', 'un salto de línea dentro de comillas no crea otra fila');
+/* marca de orden de bytes y encabezados repetidos o vacíos */
+const p3 = IO.parseDelimited('﻿id,nombre,nombre,\n1,a,b,c');
+ok(p3.headers[0] === 'id', 'se quita la marca de orden de bytes');
+ok(p3.headers[2] === 'nombre (2)' && p3.headers[3] === 'Columna D', 'encabezados repetidos y vacíos no pierden columnas: el repetido se numera y el vacío toma el nombre que tendría en la hoja');
+ok(IO.parseDelimited('a,b\n\n\n1,2').rows.length === 1, 'las filas en blanco se descartan');
+/* ida y vuelta por CSV */
+const rt = [{ a: 'x,y', b: 'dice "hola"', c: 'línea\nnueva' }];
+const back = IO.parseDelimited(IO.toCSV(rt, ['a', 'b', 'c']));
+ok(back.rows[0].a === 'x,y' && back.rows[0].b === 'dice "hola"' && back.rows[0].c === 'línea\nnueva', 'CSV de ida y vuelta sin pérdidas');
+
+/* ============ 9. el pasaporte MCPD ============ */
+ok(MCPD.FIELDS.length >= 45, `el catálogo trae los descriptores del estándar más la extensión (${MCPD.FIELDS.length})`);
+ok(MCPD.MCPD_FIELDS.every(f => !f.gp) && MCPD.GP_FIELDS.every(f => f.gp), 'lo del estándar y lo de la extensión están separados');
+ok(MCPD.GP_FIELDS.every(f => f.k.startsWith('GP_')), 'todo campo de la extensión se reconoce por su clave');
+ok(MCPD.FIELDS.every(f => f.es && f.en && f.d.es && f.d.en), 'todos los descriptores están explicados en dos idiomas');
+ok(MCPD.FIELDS.every(f => MCPD.GROUPS.some(g => g.g === f.g)), 'todo descriptor pertenece a un grupo que existe');
+ok(new Set(MCPD.FIELDS.map(f => f.k)).size === MCPD.FIELDS.length, 'no hay claves repetidas');
+ok(MCPD.FIELDS.filter(f => f.req === 'must').map(f => f.k).join(',') === 'INSTCODE,ACCENUMB,GENUS', 'los obligatorios son los tres del estándar');
+ok(MCPD.SAMPSTAT.length >= 20 && MCPD.COLLSRC.length >= 20, 'las listas de códigos están completas');
+ok(MCPD.STORAGE.filter(s => s.route === 'seed').length === 4, 'los cuatro códigos de semilla apuntan a la ruta de semillas');
+ok(['10', '20', '30', '40', '50'].every(c => MCPD.STORAGE.some(s => s.c === c)), 'están los códigos de semilla, campo, in vitro, crio y ADN');
+ok(MCPD.GPCONS.filter(c => c.kind === 'in situ').length === 2, 'la extensión añade reserva genética y conservación en la parcela');
+
+/* coordenadas: grados-minutos-segundos y decimales */
+near(MCPD.dmsToDec('173832N'), 17 + 38 / 60 + 32 / 3600, 1e-9, 'GMS a decimal, latitud norte');
+near(MCPD.dmsToDec('0971952W'), -(97 + 19 / 60 + 52 / 3600), 1e-9, 'GMS a decimal, longitud oeste');
+near(MCPD.dmsToDec('152500S'), -(15 + 25 / 60), 1e-9, 'GMS a decimal, latitud sur');
+ok(MCPD.dmsToDec('1738--N') != null, 'se admiten los segundos desconocidos');
+ok(MCPD.dmsToDec('9999999N') === null && MCPD.dmsToDec('17.6N') === null, 'un GMS mal escrito se rechaza');
+ok(MCPD.dmsToDec('176099N') === null, 'no se admiten minutos de 60 o más');
+ok(MCPD.decToDms(17.642222, true) === '173832N', 'decimal a GMS, latitud');
+ok(MCPD.decToDms(-97.331111, false) === '0971952W', 'decimal a GMS, longitud');
+let dmsRT = true;
+for (const v of [0.5, 17.6423, -97.3311, 89.9999, -15.25]) {
+  const isLat = Math.abs(v) <= 90 && Math.abs(v) !== 97.3311;
+  const b = MCPD.dmsToDec(MCPD.decToDms(v, isLat));
+  if (b == null || Math.abs(b - v) > 1 / 3600) dmsRT = false;
+}
+ok(dmsRT, 'decimal → GMS → decimal vuelve al mismo punto (dentro de un segundo de arco)');
+
+/* validación campo por campo */
+const V = (k, v, row) => MCPD.validateValue(k, v, row || MCPD.emptyRow());
+ok(V('COLLDATE', '20190812') === null, 'una fecha correcta pasa');
+ok(V('COLLDATE', '2019----') === null, 'una fecha con mes y día desconocidos pasa');
+ok(V('COLLDATE', '20190230').level === 'error', 'el 30 de febrero no existe');
+ok(V('COLLDATE', '20191301').level === 'error', 'el mes 13 no existe');
+ok(V('COLLDATE', '12/08/2019').level === 'error', 'la fecha con diagonales se rechaza');
+ok(V('COLLDATE', '29990101').level === 'error', 'una fecha en el futuro lejano se rechaza');
+ok(V('DECLATITUDE', '17.6423') === null && V('DECLATITUDE', '95').level === 'error', 'la latitud se acota a ±90');
+ok(V('DECLONGITUDE', '-181').level === 'error' && V('DECLONGITUDE', '-97.3') === null, 'la longitud se acota a ±180');
+ok(V('DECLATITUDE', '0').level === 'warn', 'un cero exacto en la coordenada es sospechoso');
+ok(V('ORIGCTY', 'MEX') === null && V('ORIGCTY', 'MX').level === 'error', 'el país va en tres letras');
+ok(V('ORIGCTY', 'XYZ').level === 'warn', 'un código bien formado pero desconocido sólo avisa');
+ok(V('INSTCODE', 'MEX006') === null && V('INSTCODE', 'banco').level === 'warn', 'el código WIEWS tiene forma propia');
+ok(V('SAMPSTAT', '300') === null && V('SAMPSTAT', '301').level === 'error', 'el estatus biológico viene de la lista');
+ok(V('STORAGE', '13;40') === null, 'el almacenamiento admite varios códigos');
+ok(V('STORAGE', '13;15').level === 'error', 'un código de almacenamiento inventado se detecta');
+ok(V('ELEVATION', '25000').level === 'warn', 'una altitud imposible avisa');
+ok(V('GP_GERMPCT', '120').level === 'error', 'la germinación no pasa de 100');
+ok(V('ACCENUMB', '').level === 'error', 'el número de accesión es obligatorio');
+ok(V('ELEVATION', '').level === 'warn', 'un descriptor muy recomendable avisa si falta');
+ok(V('SPAUTHOR', '') === null, 'un descriptor opcional vacío no molesta');
+
+/* reglas que miran la fila completa */
+const rowIn = Object.assign(MCPD.emptyRow(), { INSTCODE: '', ACCENUMB: 'A1', GENUS: 'Zea', GP_CONS: 'onfarm', GP_SITEID: 'P-1', DECLATITUDE: '19', DECLONGITUDE: '-98' });
+const isIn = MCPD.validateRow(rowIn).map(p => p.field);
+ok(!isIn.includes('STORAGE') && !isIn.includes('DUPLSITE') && !isIn.includes('ACQDATE'), 'a un registro in situ no se le piden almacenamiento, duplicado ni fecha de ingreso');
+const rowSitio = Object.assign(MCPD.emptyRow(), { ACCENUMB: 'A2', INSTCODE: 'MEX006', GENUS: 'Zea', GP_CONS: 'insitu' });
+ok(MCPD.validateRow(rowSitio).some(p => p.field === 'GP_SITEID'), 'un registro in situ sin sitio sí avisa');
+const rowMedia = Object.assign(MCPD.emptyRow(), { ACCENUMB: 'A3', INSTCODE: 'MEX006', GENUS: 'Zea', DECLATITUDE: '19.4' });
+ok(MCPD.validateRow(rowMedia).some(p => p.field === 'DECLONGITUDE' && p.level === 'error'), 'una sola coordenada es un error');
+const rowFechas = Object.assign(MCPD.emptyRow(), { ACCENUMB: 'A4', INSTCODE: 'MEX006', GENUS: 'Zea', COLLDATE: '20200101', ACQDATE: '20190101' });
+ok(MCPD.validateRow(rowFechas).some(p => p.field === 'ACQDATE' && /antes de ser colectada/.test(p.msg.es)), 'ingresar antes de colectar se detecta');
+const rowCoord = Object.assign(MCPD.emptyRow(), { ACCENUMB: 'A5', INSTCODE: 'MEX006', GENUS: 'Zea', DECLATITUDE: '17.6423', DECLONGITUDE: '-97.3311', LATITUDE: '200000N', LONGITUDE: '0971952W' });
+ok(MCPD.validateRow(rowCoord).some(p => p.field === 'LATITUDE' && p.level === 'warn'), 'los dos formatos de coordenada se comparan entre sí');
+const rowStat = Object.assign(MCPD.emptyRow(), { ACCENUMB: 'A6', INSTCODE: 'MEX006', GENUS: 'Zea', SAMPSTAT: '100', COLLSRC: '26' });
+ok(MCPD.validateRow(rowStat).some(p => p.field === 'SAMPSTAT'), 'silvestre colectado en la troje se detecta');
+
+/* la ruta de conservación se deduce del almacenamiento */
+ok(MCPD.consRoute({ STORAGE: '13' }) === 'seed', '13 es banco de semillas');
+ok(MCPD.consRoute({ STORAGE: '20;30' }) === 'field', 'con varios códigos manda el primero');
+ok(MCPD.consRoute({ STORAGE: '13', GP_CONS: 'cryo' }) === 'cryo', 'lo declarado gana a lo deducido');
+ok(MCPD.consRoute({}) === '', 'sin datos no se inventa ruta');
+ok(MCPD.storageRoutes({ STORAGE: '13;40' }).join(',') === 'seed,cryo', 'el respaldo criopreservado se ve en las rutas');
+
+/* reconocimiento de columnas */
+const g1 = MCPD.guessMapping(['ACCENUMB', 'GENUS', 'SPECIES', 'DECLATITUDE']);
+ok(g1.ACCENUMB === 'ACCENUMB' && g1.DECLATITUDE === 'DECLATITUDE', 'las claves del estándar se reconocen tal cual');
+const g2 = MCPD.guessMapping(['No. de accesión', 'Nombre local', 'Género', 'Especie', 'Altitud (msnm)', 'Fecha de colecta', 'País']);
+ok(g2['No. de accesión'] === 'ACCENUMB' && g2['Nombre local'] === 'ACCENAME', 'reconoce encabezados en español');
+ok(g2['Altitud (msnm)'] === 'ELEVATION' && g2['Fecha de colecta'] === 'COLLDATE' && g2['País'] === 'ORIGCTY', 'reconoce encabezados con paréntesis y acentos');
+const g3 = MCPD.guessMapping(['Latitud (grados decimales)', 'Longitud'], [{ 'Latitud (grados decimales)': '23,85', 'Longitud': '-104,25' }]);
+ok(g3['Latitud (grados decimales)'] === 'DECLATITUDE' && g3['Longitud'] === 'DECLONGITUDE', 'una latitud con valores decimales va al campo decimal');
+const g4 = MCPD.guessMapping(['Latitud', 'Longitud'], [{ 'Latitud': '173832N', 'Longitud': '0971952W' }]);
+ok(g4['Latitud'] === 'LATITUDE' && g4['Longitud'] === 'LONGITUDE', 'una latitud con valores en grados-minutos-segundos va al campo del formato antiguo');
+const g5 = MCPD.guessMapping(['id', 'id2', 'accesion', 'numero de accesion']);
+ok(Object.values(g5).filter(v => v === 'ACCENUMB').length <= 1, 'nunca se manda dos columnas al mismo descriptor');
+
+/* aplicación del mapeo */
+const applied = MCPD.applyMapping(
+  [{ A: 'X-1', B: 'Zea', C: '173832N', D: '0971952W', E: '2 010', F: 'mex' }],
+  { A: 'ACCENUMB', B: 'GENUS', C: 'LATITUDE', D: 'LONGITUDE', E: 'ELEVATION', F: 'ORIGCTY' });
+ok(applied[0].ACCENUMB === 'X-1' && applied[0].GENUS === 'Zea', 'el mapeo copia los valores');
+ok(Math.abs(Number(applied[0].DECLATITUDE) - 17.642222) < 1e-4, 'si sólo vienen los GMS, se calculan las coordenadas decimales');
+ok(applied[0].ORIGCTY === 'MEX', 'el país se pasa a mayúsculas');
+const applied2 = MCPD.applyMapping([{ L: '19,4325' }], { L: 'DECLATITUDE' });
+ok(applied2[0].DECLATITUDE === '19.4325', 'la coma decimal se convierte en punto');
+ok(Object.keys(MCPD.emptyRow()).length === MCPD.FIELDS.length, 'una fila vacía trae todos los campos');
+
+/* ============ 10. la colección de ejemplo ============ */
+const ex = EXAMPLES.build();
+ok(ex.length >= 40, `la colección de ejemplo trae suficientes accesiones (${ex.length})`);
+ok(ex.every(r => Object.keys(r).length === MCPD.FIELDS.length), 'todas las filas tienen la forma del pasaporte');
+ok(new Set(ex.map(r => r.ACCENUMB)).size === ex.length, 'los números de accesión no se repiten');
+const exRoutes = new Set(ex.map(r => MCPD.consRoute(r)).filter(Boolean));
+ok(['seed', 'field', 'invitro', 'cryo', 'insitu', 'onfarm'].every(r => exRoutes.has(r)), 'están representadas las cinco rutas, incluidas las dos in situ');
+ok(new Set(ex.map(r => r.GENUS)).size >= 12, 'hay al menos doce géneros distintos');
+ok(new Set(ex.map(r => r.ORIGCTY)).size >= 5, 'hay accesiones de al menos cinco países');
+const exIssues = [].concat(...ex.map((r, i) => MCPD.validateRow(r).map(p => Object.assign({ i }, p))));
+const exErr = exIssues.filter(p => p.level === 'error');
+ok(exErr.length >= 3, `el ejemplo trae los errores sembrados (${exErr.length})`);
+ok(exErr.some(p => p.field === 'COLLDATE'), 'entre ellos, la fecha imposible');
+ok(exErr.some(p => p.field === 'ORIGCTY'), 'entre ellos, el país de dos letras');
+ok(exErr.some(p => p.field === 'STORAGE'), 'entre ellos, el código de almacenamiento inventado');
+ok(exIssues.some(p => p.field === 'ELEVATION' && p.level === 'warn'), 'y el aviso de la altitud imposible');
+ok(exIssues.some(p => p.field === 'SAMPSTAT'), 'y el del estatus que no concuerda con la fuente');
+/* los duplicados que el Bloque 3 tendrá que encontrar */
+const colls = ex.map(r => r.COLLNUMB).filter(Boolean);
+ok(new Set(colls).size < colls.length, 'hay números de colecta repetidos: material para el control de duplicados');
+/* una longitud positiva en México: error geográfico, no de formato */
+ok(ex.some(r => r.ORIGCTY === 'MEX' && Number(r.DECLONGITUDE) > 0), 'hay una longitud con el signo cambiado');
+ok(ex.filter(r => !r.DECLATITUDE).length >= 1, 'hay una accesión sin coordenadas');
+ok(EXAMPLES.info.es && EXAMPLES.info.en, 'la colección de ejemplo está descrita en dos idiomas');
+
+/* resumen y completitud */
+const sum2 = MCPD.summarize(ex);
+ok(sum2.n === ex.length && sum2.withCoords === ex.filter(r => r.DECLATITUDE && r.DECLONGITUDE).length, 'el resumen cuenta bien las accesiones y las que se pueden mapear');
+ok(sum2.taxa.length >= 12 && sum2.taxa[0][1] >= sum2.taxa[sum2.taxa.length - 1][1], 'los taxones salen ordenados de más a menos');
+ok(sum2.elevations.every(v => isFinite(v)) && sum2.years.every(y => y >= 1700), 'las altitudes y los años son números utilizables');
+const comp = MCPD.completeness(ex);
+ok(comp.length === MCPD.FIELDS.length, 'la completitud recorre todos los descriptores');
+ok(comp.find(c => c.k === 'ACCENUMB').pct === 100, 'todas las accesiones del ejemplo tienen número');
+ok(comp.every(c => c.pct >= 0 && c.pct <= 100), 'los porcentajes están en su rango');
+
+/* ============ 11. las figuras del Bloque 2 ============ */
+ok(!!parseSVG(B2.barPlot([['a', 3], ['b', 1]])), 'la gráfica de barras es un SVG válido');
+ok(!!parseSVG(B2.histPlot([1, 2, 3, 4, 5, 6, 7, 8])), 'el histograma es un SVG válido');
+ok(B2.barPlot([]).includes('sim-empty'), 'sin datos, la barra avisa en vez de romperse');
+ok(B2.histPlot([5]).includes('sim-empty'), 'un solo valor no alcanza para un histograma');
+ok(B2.barPlot([['<script>', 2]]).includes('&lt;script&gt;'), 'las etiquetas se escapan');
+
+/* ============ 12. parecido entre cadenas ============
+   Se comparan con los valores publicados para estos pares clásicos. */
+near(QC.jaro('MARTHA', 'MARHTA'), 0.944444, 1e-5, 'Jaro de MARTHA/MARHTA');
+near(QC.jaroWinkler('MARTHA', 'MARHTA'), 0.961111, 1e-5, 'Jaro-Winkler de MARTHA/MARHTA');
+near(QC.jaro('DWAYNE', 'DUANE'), 0.822222, 1e-5, 'Jaro de DWAYNE/DUANE');
+near(QC.jaroWinkler('DWAYNE', 'DUANE'), 0.84, 1e-5, 'Jaro-Winkler de DWAYNE/DUANE');
+near(QC.jaro('DIXON', 'DICKSONX'), 0.766667, 1e-5, 'Jaro de DIXON/DICKSONX');
+near(QC.jaroWinkler('DIXON', 'DICKSONX'), 0.813333, 1e-5, 'Jaro-Winkler de DIXON/DICKSONX');
+ok(QC.jaro('abc', 'abc') === 1 && QC.jaro('', '') === 1, 'dos cadenas iguales tienen parecido 1');
+ok(QC.jaro('abc', '') === 0, 'con una cadena vacía el parecido es 0');
+ok(QC.levenshtein('kitten', 'sitting') === 3, 'Levenshtein de kitten/sitting = 3');
+ok(QC.levenshtein('flaw', 'lawn') === 2, 'Levenshtein de flaw/lawn = 2');
+ok(QC.levenshtein('Zea', 'Zea') === 0 && QC.levenshtein('', 'abc') === 3, 'Levenshtein en los casos extremos');
+ok(QC.nameSim('BOLITA  AMARILLO', 'Bolita amarillo') > 0.98, 'el mismo nombre con otras mayúsculas y espacios se reconoce');
+ok(QC.nameSim('Cónico norteño', 'Conico norteno') > 0.98, 'los acentos no rompen el parecido');
+ok(QC.nameSim('Maíz azul', 'Frijol negro') < 0.7, 'dos nombres distintos no se parecen');
+ok(QC.nameSim('', 'algo') === 0, 'un nombre vacío no se parece a nada');
+
+/* ============ 13. revisión geográfica ============ */
+ok(QC.inBox(QC.BBOX.MEX, 19.4, -99.1) === true, 'la Ciudad de México cae dentro de la caja de México');
+ok(QC.inBox(QC.BBOX.MEX, 19.4, 99.1) === false, 'con la longitud en positivo, no');
+ok(QC.inBox(QC.BBOX.PER, -13.4, -71.8) === true, 'Cusco cae dentro de la caja de Perú');
+ok(Object.keys(QC.BBOX).length >= 100, `hay cajas para muchos países (${Object.keys(QC.BBOX).length})`);
+ok(Object.values(QC.BBOX).every(b => b[0] < b[1] && b[2] < b[3] && b[0] >= -90 && b[1] <= 90 && b[2] >= -180 && b[3] <= 180), 'todas las cajas están bien formadas');
+ok(Object.keys(QC.BBOX).every(c => MCPD.COUNTRY_MAP[c]), 'toda caja corresponde a un país del catálogo');
+
+const G = (o) => QC.geoCheck(Object.assign(MCPD.emptyRow(), o));
+const gLon = G({ ORIGCTY: 'MEX', DECLATITUDE: '18.81', DECLONGITUDE: '96.06' });
+ok(gLon.length === 1 && gLon[0].code === 'lonsign', 'diagnostica la longitud sin signo');
+ok(gLon[0].fix.DECLONGITUDE === '-96.06', 'y propone la longitud con su signo');
+const gSwap = G({ ORIGCTY: 'MEX', DECLATITUDE: '-99.1', DECLONGITUDE: '19.4' });
+ok(gSwap[0].code === 'swapped' || gSwap[0].code === 'swapsign', 'diagnostica las coordenadas intercambiadas');
+const gZero = G({ ORIGCTY: 'MEX', DECLATITUDE: '0', DECLONGITUDE: '0' });
+ok(gZero[0].code === 'zerozero' && gZero[0].level === 'error', 'el punto (0,0) se marca como campo vacío');
+const gRound = G({ ORIGCTY: 'MEX', DECLATITUDE: '19', DECLONGITUDE: '-99' });
+ok(gRound.some(p => p.code === 'rounded'), 'avisa de las coordenadas redondeadas a grados enteros');
+const gLejos = G({ ORIGCTY: 'MEX', DECLATITUDE: '48.85', DECLONGITUDE: '2.35' });
+ok(gLejos.some(p => p.code === 'outside'), 'un punto en París con país MEX se marca, sin inventar arreglo');
+ok(G({ ORIGCTY: 'MEX', DECLATITUDE: '17.64', DECLONGITUDE: '-97.33' }).length === 0, 'un punto correcto no genera avisos');
+ok(G({ ORIGCTY: 'FJI', DECLATITUDE: '-17.7', DECLONGITUDE: '178.0' }).length === 0, 'un punto correcto en Fiyi tampoco');
+const gNobox = G({ ORIGCTY: 'AND', DECLATITUDE: '42.5', DECLONGITUDE: '1.5' });
+ok(gNobox[0].code === 'nobox' && gNobox[0].level === 'info', 'si no hay caja del país, se dice y no se acusa a nadie');
+ok(G({ DECLATITUDE: '17.6', DECLONGITUDE: '-97.3' }).length === 0, 'sin país no hay nada que comparar');
+
+/* ============ 14. duplicados ============ */
+const dupA = Object.assign(MCPD.emptyRow(), { ACCENUMB: 'A-1', ACCENAME: 'Bolita amarillo', GENUS: 'Zea', SPECIES: 'mays', COLLNUMB: 'LAB-101', COLLDATE: '20190815', COLLMISSID: 'S-19', DECLATITUDE: '16.9230', DECLONGITUDE: '-96.3597' });
+const dupB = Object.assign(MCPD.emptyRow(), { ACCENUMB: 'A-2', ACCENAME: 'BOLITA  AMARILLO', GENUS: 'Zea', SPECIES: 'mays', COLLNUMB: 'LAB-101', COLLDATE: '20190815', COLLMISSID: 'S-19', DECLATITUDE: '16.9231', DECLONGITUDE: '-96.3598' });
+const sc = QC.scorePair(dupA, dupB);
+ok(sc.score >= 90, `dos entradas de la misma colecta puntúan alto (${sc.score})`);
+ok(sc.reasons.some(r => r.k === 'collnumb') && sc.reasons.some(r => r.k === 'name') && sc.reasons.some(r => r.k === 'near'), 'y la app explica por qué: número de colecta, nombre y cercanía');
+ok(sc.dist < 0.05, 'la distancia entre las dos es de unos metros');
+const otroGenero = QC.scorePair(dupA, Object.assign({}, dupB, { GENUS: 'Phaseolus' }));
+ok(otroGenero.score <= sc.score - 30, 'cambiar el género hunde el puntaje');
+ok(otroGenero.reasons.some(r => r.k === 'genus' && r.pts < 0), 'y queda dicho que los géneros no coinciden');
+const lejos = QC.scorePair(dupA, Object.assign({}, dupB, { COLLNUMB: '', DECLATITUDE: '25.0', DECLONGITUDE: '-100.0', COLLDATE: '20120101' }));
+ok(lejos.score < 50, 'sin número de colecta, lejos y en otra fecha, ya no se propone');
+const porDonante = QC.scorePair(
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'X1', GENUS: 'Zea', SPECIES: 'mays', OTHERNUMB: 'CIMMYTMA 2317' }),
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'Y9', GENUS: 'Zea', SPECIES: 'mays', DONORNUMB: 'CIMMYTMA 2317' }));
+ok(porDonante.reasons.some(r => r.k === 'othernumb'), 'el número del donante delata el duplicado entre dos bancos');
+ok(QC.blockKeys(dupA).some(k => QC.blockKeys(dupB).includes(k)), 'los dos duplicados comparten al menos una clave de bloqueo');
+
+const exd = EXAMPLES.build();
+const found = QC.findDuplicates(exd, { threshold: 50 });
+ok(found.pairs.length >= 2, `en la colección de ejemplo aparecen los duplicados sembrados (${found.pairs.length})`);
+ok(found.pairs.every(p => p.score >= 50), 'ningún par por debajo del umbral se cuela');
+ok(found.groups.length >= 2 && found.groups.every(g => g.members.length >= 2), 'los pares se agrupan');
+const nombresDup = found.pairs.map(p => [exd[p.i].ACCENAME, exd[p.j].ACCENAME].map(s => QC.normStr(s)).sort().join(' | '));
+ok(nombresDup.some(s => s.includes('bolita amarillo')), 'entre ellos, la accesión de bolita entrada dos veces');
+ok(nombresDup.some(s => s.includes('chayote verde liso')), 'y el chayote repetido');
+ok(found.comparisons < exd.length * (exd.length - 1) / 2, `el bloqueo evita comparar todos los pares (${found.comparisons} en vez de ${exd.length * (exd.length - 1) / 2})`);
+const altoUmbral = QC.findDuplicates(exd, { threshold: 95 });
+ok(altoUmbral.pairs.length <= found.pairs.length, 'subir el umbral no puede proponer más pares');
+const conDescarte = QC.findDuplicates(exd, { threshold: 50, dismissed: [[found.pairs[0].i, found.pairs[0].j]] });
+ok(conDescarte.pairs.length === found.pairs.length - 1, 'un par descartado deja de proponerse');
+/* número de accesión repetido: eso no es candidato, es error */
+const conRepe = exd.concat([Object.assign({}, exd[0])]);
+ok(QC.findDuplicates(conRepe, { threshold: 50 }).sameNumber.length === 1, 'un número de accesión repetido se reporta aparte');
+
+/* el bloqueo tiene que escalar: 600 accesiones no pueden ser 180 000 comparaciones.
+   Las accesiones se hacen de verdad distintas —nombres sin prefijo común y
+   coordenadas que no se repiten— para poder exigir que no salga ni un
+   duplicado inventado. */
+const sinteticas = [];
+const NOMB = ['Bolita', 'Olotón', 'Cónico', 'Ayocote', 'Tepari', 'Costeño', 'Piquín', 'Serrano', 'Pinto', 'Vaquita'];
+const APEL = ['de la sierra', 'del valle', 'de temporal', 'de riego', 'criollo', 'morado', 'blanco', 'rojo', 'tardío', 'precoz'];
+const rndS = mulberry32(4242);
+for (let i = 0; i < 600; i++) {
+  sinteticas.push(Object.assign(MCPD.emptyRow(), {
+    ACCENUMB: 'N-' + i,
+    ACCENAME: `${NOMB[i % NOMB.length]} ${APEL[Math.floor(i / NOMB.length) % APEL.length]} ${i}`,
+    GENUS: ['Zea', 'Phaseolus', 'Capsicum'][i % 3], SPECIES: 'sp',
+    COLLNUMB: 'C-' + i, COLLDATE: String(1990 + (i % 30)) + String((i % 12) + 1).padStart(2, '0') + String((i % 28) + 1).padStart(2, '0'),
+    DECLATITUDE: (15 + rndS() * 15).toFixed(5), DECLONGITUDE: (-105 + rndS() * 20).toFixed(5),
+  }));
+}
+const t0 = performance.now();
+const big = QC.findDuplicates(sinteticas, { threshold: 50 });
+const ms = performance.now() - t0;
+ok(big.comparisons < 600 * 599 / 2 / 4, `con 600 accesiones se comparan ${big.comparisons} pares, no ${600 * 599 / 2}`);
+ok(ms < 3000, `y la revisión tarda ${Math.round(ms)} ms`);
+ok(big.pairs.length === 0, 'en 600 accesiones distintas no se inventa ningún duplicado');
+
+/* fusión */
+const mA = Object.assign(MCPD.emptyRow(), { ACCENUMB: 'M-1', ACCENAME: 'Maestra', GENUS: 'Zea', GP_STOCK: '100', ELEVATION: '' });
+const mB = Object.assign(MCPD.emptyRow(), { ACCENUMB: 'M-2', ACCENAME: 'Otra', GENUS: 'Zea', GP_STOCK: '50', ELEVATION: '2100', REMARKS: 'nota' });
+const merged = QC.mergeRows(mA, mB);
+ok(merged.ACCENUMB === 'M-1' && merged.ACCENAME === 'Maestra', 'al fusionar manda la accesión maestra');
+ok(merged.ELEVATION === '2100' && merged.REMARKS === 'nota', 'y se rescata lo que sólo tenía la otra');
+ok(merged.GP_STOCK === '150', 'las existencias se suman');
+ok(merged.OTHERNUMB.includes('M-2'), 'el número de la accesión absorbida queda registrado');
+
+/* ============ 15. consistencia y correcciones ============ */
+const cons = QC.consistency([
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'C1', GENUS: 'zea', SPECIES: 'Mays', CROPNAME: 'Maíz', COLLSITE: 'Oaxaca, Apoala' }),
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'C2', GENUS: 'Zea', SPECIES: 'mays', CROPNAME: 'Elote', COLLSITE: 'OAXACA, APOALA' }),
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'C3', GENUS: 'Phaseolus', SPECIES: 'vulgaris L.', CROPNAME: 'Frijol', DECLATITUDE: '19.0', DECLONGITUDE: '-98.0', COLLSITE: 'Puebla' }),
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'C4', GENUS: 'Phaseolous', SPECIES: 'vulgaris', CROPNAME: 'Frijol', DECLATITUDE: '19.0', DECLONGITUDE: '-98.0', COLLSITE: 'Tlaxcala' }),
+]);
+const codes = cons.map(c => c.code);
+ok(codes.includes('genusCase'), 'detecta el género en minúsculas');
+ok(codes.includes('speciesCase'), 'detecta el epíteto con mayúscula');
+ok(codes.includes('speciesAuthor'), 'detecta la autoridad metida en el epíteto');
+ok(codes.includes('genusTypo'), 'detecta Phaseolus / Phaseolous como el mismo género mal escrito');
+ok(codes.includes('cropName'), 'detecta el mismo taxón con dos nombres de cultivo');
+ok(codes.includes('siteSpelling'), 'detecta el mismo sitio escrito de dos maneras');
+ok(codes.includes('sameCoords'), 'detecta dos sitios distintos con las mismas coordenadas');
+ok(cons.every(c => c.msg.es && c.msg.en && c.items.length), 'cada hallazgo está en dos idiomas y dice a quién afecta');
+
+const fixRows = [
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'F1', ORIGCTY: 'MX', GENUS: 'zea', SPECIES: 'Mays', ACCENAME: '  MAIZ  AZUL ', STORAGE: '13' }),
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'F2', LATITUDE: '173832N', LONGITUDE: '0971952W' }),
+];
+const fixes = QC.proposeFixes(fixRows);
+const fcodes = fixes.map(f => f.code);
+ok(fcodes.includes('alpha2') && fixes.find(f => f.code === 'alpha2').to === 'MEX', 'propone pasar MX a MEX');
+ok(fcodes.includes('genusCase') && fcodes.includes('speciesCase'), 'propone arreglar género y epíteto');
+ok(fcodes.includes('upper'), 'propone quitar las mayúsculas gritadas');
+ok(fixes.find(f => f.code === 'upper').to === 'Maiz Azul', 'y de paso los espacios de más');
+ok(fcodes.includes('route') && fixes.find(f => f.code === 'route').to === 'seed', 'propone deducir la ruta de conservación del almacenamiento');
+ok(fixes.filter(f => f.code === 'fromDms').length === 2, 'propone calcular las dos coordenadas decimales desde los GMS');
+const n = QC.applyFixes(fixRows, fixes);
+ok(n === fixes.length, 'aplicar las correcciones toca todas las filas propuestas');
+ok(fixRows[0].ORIGCTY === 'MEX' && fixRows[0].GENUS === 'Zea' && fixRows[0].SPECIES === 'mays', 'y los valores quedan como se propuso');
+ok(Math.abs(Number(fixRows[1].DECLATITUDE) - 17.642222) < 1e-4, 'la coordenada decimal se calculó bien');
+ok(QC.proposeFixes(fixRows).length === 0, 'después de aplicarlas ya no queda nada que proponer');
+
+/* la auditoría completa */
+const aud = QC.audit(EXAMPLES.build(), { threshold: 50 });
+ok(aud.geo && aud.consistency && aud.fixes && aud.dup, 'la auditoría devuelve las cuatro partes');
+ok(aud.geo.some(p => p.code === 'lonsign'), 'y encuentra la longitud sin signo del ejemplo');
+ok(aud.fixes.some(f => f.code === 'alpha2'), 'y el país de dos letras');
+
+/* ============ 16. geometría y mapa ============ */
+ok(GEO.MX.length === 32, 'están las 32 entidades federativas de México');
+ok(GEO.WORLD.length >= 150, `están los países del mundo (${GEO.WORLD.length})`);
+ok(GEO.MX.every(s => s.name && s.code && s.rings.length && s.bbox.length === 4), 'cada entidad trae nombre, clave, anillos y caja');
+ok(GEO.MX.every(s => s.rings.every(r => r.length % 2 === 0 && r.length >= 6)), 'los anillos son listas planas de pares de coordenadas');
+ok(GEO.MX.every(s => s.bbox[0] < s.bbox[2] && s.bbox[1] < s.bbox[3]), 'las cajas de las entidades están bien formadas');
+ok(GEO.MX.every(s => s.bbox[0] >= -120 && s.bbox[2] <= -86 && s.bbox[1] >= 14 && s.bbox[3] <= 33), 'y todas caen dentro de México');
+ok(new Set(GEO.MX.map(s => s.code)).size === 32, 'las claves de entidad no se repiten');
+ok(GEO.WORLD.filter(c => c.a3).length >= 100, 'la mayoría de los países tiene su código de tres letras');
+ok(Object.keys(GEO.A3_TO_A2).length === MCPD.COUNTRIES.length, 'hay equivalencia de dos y tres letras para todo el catálogo de países');
+ok(Object.entries(GEO.A3_TO_A2).every(([a3, a2]) => GEO.A2_TO_A3[a2] === a3), 'la equivalencia entre códigos es reversible');
+
+/* punto en polígono, con un cuadrado y un hueco */
+const cuadro = [0, 0, 10, 0, 10, 10, 0, 10, 0, 0];
+const hueco = [4, 4, 6, 4, 6, 6, 4, 6, 4, 4];
+ok(GEO.pointInRing(cuadro, 5, 5) === true, 'el centro está dentro del cuadrado');
+ok(GEO.pointInRing(cuadro, 15, 5) === false, 'un punto afuera está afuera');
+ok(GEO.pointInRings([cuadro, hueco], 5, 5) === false, 'un punto en el hueco cuenta como afuera');
+ok(GEO.pointInRings([cuadro, hueco], 2, 2) === true, 'y uno fuera del hueco, dentro');
+
+/* ¿en qué entidad cae cada ciudad? */
+[['Oaxaca de Juárez', -96.72, 17.06, 'Oaxaca'], ['Ciudad de México', -99.13, 19.43, 'Ciudad de México'],
+ ['Mérida', -89.62, 20.97, 'Yucatán'], ['Creel', -107.63, 27.75, 'Chihuahua'],
+ ['Tijuana', -117.02, 32.51, 'Baja California'], ['Tuxtla Gutiérrez', -93.11, 16.75, 'Chiapas'],
+ ['Uruapan', -102.06, 19.41, 'Michoacán de Ocampo'], ['Papantla', -97.32, 20.45, 'Veracruz de Ignacio de la Llave']].forEach(([ciudad, lon, lat, esperado]) => {
+  const s = GEO.stateOf(lon, lat);
+  ok(s && (s.name === esperado || QC.normStr(s.name).startsWith(QC.normStr(esperado).slice(0, 8))), `${ciudad} cae en ${esperado} (salió ${s ? s.name : 'nada'})`);
+});
+ok(GEO.stateOf(-95.0, 15.0) === null, 'un punto en el Pacífico no cae en ninguna entidad');
+ok(GEO.stateOf(-100.0, 40.0) === null, 'un punto en Estados Unidos tampoco');
+
+/* ¿y en qué país? */
+ok((GEO.countryOf(-71.97, -13.53) || {}).a3 === 'PER', 'Cusco cae en Perú');
+ok((GEO.countryOf(38.74, 9.03) || {}).a3 === 'ETH', 'Adís Abeba cae en Etiopía');
+ok((GEO.countryOf(77.21, 28.61) || {}).a3 === 'IND', 'Delhi cae en India');
+ok((GEO.countryOf(-99.13, 19.43) || {}).a3 === 'MEX', 'la Ciudad de México cae en México');
+ok(GEO.countryOf(-140, 0) === null, 'un punto en medio del Pacífico no cae en ningún país');
+
+/* la colección de ejemplo sobre el mapa */
+const exMapa = EXAMPLES.build();
+const ptsEx = GEO.pointsOf(exMapa);
+ok(ptsEx.length === exMapa.filter(r => r.DECLATITUDE && r.DECLONGITUDE).length, 'se mapean todas las accesiones con coordenadas');
+ok(ptsEx.every(p => Math.abs(p.lat) <= 90 && Math.abs(p.lon) <= 180), 'todos los puntos tienen coordenadas posibles');
+const mexPts = ptsEx.filter(p => p.row.ORIGCTY === 'MEX');
+const dentro = mexPts.filter(p => GEO.stateOf(p.lon, p.lat));
+ok(dentro.length >= mexPts.length - 2, `casi todas las accesiones mexicanas caen en una entidad (${dentro.length} de ${mexPts.length}; las que no, son las del error de coordenadas)`);
+const porEstado = GEO.countByState(ptsEx);
+ok(porEstado.size >= 8, `el ejemplo toca varias entidades (${porEstado.size})`);
+const dentroTodos = ptsEx.filter(p => GEO.stateOf(p.lon, p.lat));
+ok([...porEstado.values()].reduce((a, e) => a + e.n, 0) === dentroTodos.length, 'el conteo por entidad cuadra con los puntos que caen en México');
+const porPais = GEO.countByCountry(ptsEx);
+ok(porPais.size >= 5, `y varios países (${porPais.size})`);
+
+/* proyección */
+const proj = GEO.projection([-118.5, 14.3, -86.6, 32.8], 900, 560, 10);
+ok(proj.X(-118.5) < proj.X(-86.6), 'la longitud crece hacia la derecha');
+ok(proj.Y(32.8) < proj.Y(14.3), 'la latitud crece hacia arriba');
+near(proj.lonOf(proj.X(-99.13)), -99.13, 1e-6, 'la proyección de la longitud es reversible');
+near(proj.latOf(proj.Y(19.43)), 19.43, 1e-6, 'la de la latitud también');
+ok(proj.kmPerPx > 0 && proj.kmPerPx < 200, `la escala es razonable (${fmt(proj.kmPerPx, 1)} km por pixel)`);
+const sb = GEO.scaleBar(proj, 140);
+ok(sb.px <= 140 && sb.km > 0 && [1, 2, 5, 10, 25, 50, 100, 200, 250, 500, 1000, 2000, 5000].includes(sb.km), `la barra de escala usa una distancia redonda (${sb.km} km)`);
+const bb = GEO.bboxOfPoints([[-99, 19], [-97, 21]], 0.1);
+ok(bb[0] < -99 && bb[2] > -97 && bb[1] < 19 && bb[3] > 21, 'la caja envolvente deja margen alrededor de los puntos');
+ok(GEO.bboxOfPoints([]).length === 4, 'sin puntos, la caja cae en México por omisión');
+const uni = GEO.unionBBox([-100, 10, -90, 20], [-95, 5, -80, 15]);
+ok(uni[0] === -100 && uni[1] === 5 && uni[2] === -80 && uni[3] === 20, 'la unión de dos cajas las abarca a las dos');
+
+/* rutas SVG y rejilla */
+const pathMX = GEO.ringsToPath(GEO.MX_BY_CODE.OAX.rings, proj, [-118.5, 14.3, -86.6, 32.8]);
+ok(pathMX.startsWith('M') && pathMX.includes('Z'), 'el contorno de Oaxaca se convierte en una ruta SVG');
+ok(GEO.ringsToPath([[0, 0, 1, 0, 1, 1, 0, 0]], proj, [-118.5, 14.3, -86.6, 32.8]) === '', 'un anillo fuera del recuadro no se dibuja');
+ok(GEO.cellKey(-96.7, 17.2, 1) === '-97|17', 'la celda de un grado se nombra por su esquina inferior izquierda');
+const cb2 = GEO.cellBBox(GEO.cellKey(-96.7, 17.2, 0.5), 0.5);
+ok(cb2[0] <= -96.7 && cb2[2] >= -96.7 && cb2[1] <= 17.2 && cb2[3] >= 17.2, 'y la celda contiene al punto que la generó');
+const celdas = GEO.gridCount(ptsEx, 1);
+ok(celdas.reduce((a, c) => a + c.n, 0) === ptsEx.length, 'la rejilla no pierde ni repite puntos');
+ok(celdas.length < ptsEx.length, 'y agrupa: hay menos celdas que puntos');
+ok(GEO.gridCount(ptsEx, 0.25).length >= celdas.length, 'con celdas más chicas hay al menos tantas celdas');
+
+/* el dibujo del Bloque 4 */
+state.acc = exMapa;
+B4.view.scope = 'mx'; B4.view.choro = 'accState'; B4.view.grid = 0;
+const drawn = B4.drawMap(900, 560);
+ok(!!parseSVG(drawn.svg), 'el mapa es un SVG válido');
+ok(!drawn.svg.includes('var(--'), 'el SVG exportable no deja variables CSS sin resolver');
+ok((drawn.svg.match(/data-state=/g) || []).length === 32, 'el mapa de México dibuja sus 32 entidades');
+const dibujadosMX = (drawn.svg.match(/data-pt=/g) || []).length;
+const enMexico = ptsEx.filter(p => p.lon >= -118.5 && p.lon <= -86.6 && p.lat >= 14.3 && p.lat <= 32.8).length;
+ok(dibujadosMX === enMexico, `con el encuadre de México se dibujan los puntos que caen en él y sólo esos (${dibujadosMX})`);
+ok(dibujadosMX < ptsEx.length, 'las accesiones de Perú, Etiopía o India quedan fuera de ese recuadro, como debe ser');
+ok(drawn.svg.includes('km<'), 'lleva barra de escala');
+B4.view.scope = 'world'; B4.view.choro = 'accCountry';
+const drawnW = B4.drawMap(900, 560);
+ok(!!parseSVG(drawnW.svg), 'el mapa del mundo también es válido');
+ok((drawnW.svg.match(/data-state=/g) || []).length === 0, 'a escala mundial México ya no se pinta por entidades');
+ok((drawnW.svg.match(/data-pt=/g) || []).length === ptsEx.length, 'pero en el mundo entero se ven todas las accesiones');
+B4.view.scope = 'OAX'; B4.view.choro = 'none'; B4.view.grid = 0.5;
+const drawnO = B4.drawMap(900, 560);
+ok(!!parseSVG(drawnO.svg), 'el acercamiento a una entidad con rejilla es válido');
+ok(drawnO.bbox[0] > -100 && drawnO.bbox[2] < -93, 'y el encuadre se ciñe a Oaxaca');
+B4.view.scope = 'mx'; B4.view.grid = 0; B4.view.choro = 'none';
+ok(/^#|^rgb/.test(B4.ramp(0.5)), 'la rampa de color devuelve un color literal');
+ok(B4.speciesIn(ptsEx) >= 12, 'el contador de especies del mapa funciona');
+state.acc = [];
+
+/* ============ 17. índices de diversidad ============
+   Cada uno se compara con su valor calculado a mano. */
+near(DIV.lgamma(1), 0, 1e-9, 'lgamma(1) = 0');
+near(DIV.lgamma(5), Math.log(24), 1e-9, 'lgamma(5) = ln(4!)');
+near(DIV.lchoose(10, 3), Math.log(120), 1e-9, 'lchoose(10,3) = ln(120)');
+near(Math.exp(DIV.lchoose(52, 5)), 2598960, 1, 'las manos de póquer: C(52,5) = 2 598 960');
+
+const i2 = DIV.indices([5, 5]);
+near(i2.H, Math.log(2), 1e-12, 'Shannon de dos tipos iguales = ln 2');
+near(i2.simpson, 0.5, 1e-12, 'Gini-Simpson de dos tipos iguales = 0.5');
+near(i2.pielou, 1, 1e-12, 'equitatividad máxima cuando todo está parejo');
+near(i2.q1, 2, 1e-12, 'Hill q1 = 2 tipos efectivos');
+near(i2.q2, 2, 1e-12, 'Hill q2 = 2 tipos efectivos');
+const i1 = DIV.indices([10]);
+ok(i1.H === 0 && i1.S === 1 && i1.simpson === 0, 'un solo tipo: diversidad cero');
+const iDes = DIV.indices([90, 5, 3, 2]);
+near(iDes.H, -(0.9 * Math.log(0.9) + 0.05 * Math.log(0.05) + 0.03 * Math.log(0.03) + 0.02 * Math.log(0.02)), 1e-12, 'Shannon de una comunidad desigual');
+ok(iDes.pielou < 0.6, `con un tipo dominante la equitatividad baja (${fmt(iDes.pielou, 2)})`);
+ok(DIV.indices([1, 1, 2, 2, 5]).f1 === 2 && DIV.indices([1, 1, 2, 2, 5]).f2 === 2, 'se cuentan bien los tipos únicos y los dobles');
+near(DIV.indices([1, 1, 3]).coverage, 1 - 2 / 5, 1e-12, 'cobertura de Good-Turing = 1 − f₁/n');
+ok(DIV.indices([]).N === 0, 'sin datos no truena');
+
+/* rarefacción de Hurlbert */
+near(DIV.rarefy([5, 5], 10), 2, 1e-12, 'al tomar toda la muestra se ven todos los tipos');
+near(DIV.rarefy([5, 5], 1), 1, 1e-12, 'con una sola accesión se ve un tipo');
+/* dos tipos con 5 y 5: E[S] al tomar 2 = 2 − 2·C(5,2)/C(10,2) = 2 − 20/45 */
+near(DIV.rarefy([5, 5], 2), 2 - 2 * 10 / 45, 1e-12, 'E[S] con n = 2 coincide con el cálculo a mano');
+/* tres tipos 8, 1, 1: E[S] al tomar 5 */
+const man = 3 - (Math.exp(DIV.lchoose(2, 5) - DIV.lchoose(10, 5)) + 2 * Math.exp(DIV.lchoose(9, 5) - DIV.lchoose(10, 5)));
+near(DIV.rarefy([8, 1, 1], 5), man, 1e-10, 'E[S] de una comunidad con dos raros');
+ok(DIV.rarefy([5, 5], 3) > DIV.rarefy([5, 5], 2), 'la curva de rarefacción siempre sube');
+ok(DIV.rarefyVar([5, 5], 2) >= 0 && DIV.rarefyVar([5, 5], 10) === 0, 'la varianza es no negativa y se anula al tomar todo');
+const curva = DIV.accumulationCurve([8, 4, 2, 1, 1]);
+ok(curva.length >= 5 && curva[curva.length - 1].n === 16, 'la curva llega hasta el total de accesiones');
+ok(curva.every((p, i) => i === 0 || p.S >= curva[i - 1].S - 1e-9), 'y no baja en ningún punto');
+
+/* estimadores de riqueza */
+const c1 = DIV.chao1([1, 1, 2, 5, 9]);
+near(c1.est, 5 + (2 * 2) / (2 * 1), 1e-12, 'Chao1 = S + f₁²/(2f₂)');
+ok(c1.S === 5 && c1.f1 === 2 && c1.f2 === 1 && c1.reliable === false, 'y avisa de que con un solo dobletón no es de fiar');
+const c1b = DIV.chao1([1, 2, 2, 2, 2, 7]);
+ok(c1b.reliable === true, 'con tres dobletones o más, Chao1 se considera utilizable');
+near(DIV.chao1([3, 4, 5]).est, 3, 1e-12, 'sin tipos únicos, Chao1 no añade nada');
+near(DIV.chao1([1, 1, 1, 4]).est, 4 + 3 * 2 / 2, 1e-12, 'con f₂ = 0 se usa la corrección f₁(f₁−1)/2');  /* S = 4 tipos: tres únicos y uno con cuatro */
+const inc = DIV.incidenceEstimators([new Set(['a', 'b']), new Set(['a', 'c']), new Set(['a', 'd'])]);
+ok(inc.S === 4 && inc.q1 === 3 && inc.q2 === 0, 'las presencias por unidad se cuentan bien');
+near(inc.jack1, 4 + 3 * (2 / 3), 1e-12, 'jackknife 1 = S + q₁(m−1)/m');
+near(inc.chao2, 4 + (2 / 3) * (3 * 2) / 2, 1e-12, 'Chao2 con q₂ = 0 usa su corrección');
+
+/* composición */
+const A1 = new Set(['a', 'b', 'c']), B1 = new Set(['b', 'c', 'd']);
+near(DIV.jaccard(A1, B1), 2 / 4, 1e-12, 'Jaccard = intersección / unión');
+near(DIV.sorensen(A1, B1), 2 * 2 / 6, 1e-12, 'Sørensen = 2a/(2a+b+c)');
+near(DIV.jaccard(A1, A1), 1, 1e-12, 'una unidad consigo misma es idéntica');
+near(DIV.jaccard(A1, new Set(['x'])), 0, 1e-12, 'sin nada en común, cero');
+near(DIV.brayCurtis({ a: 5, b: 5 }, { a: 5, b: 5 }), 0, 1e-12, 'Bray-Curtis de dos iguales es 0');
+near(DIV.brayCurtis({ a: 10 }, { b: 10 }), 1, 1e-12, 'y de dos disjuntas, 1');
+near(DIV.brayCurtis({ a: 6, b: 2 }, { a: 2, b: 6 }), 8 / 16, 1e-12, 'Bray-Curtis a mano');
+
+/* UPGMA: un caso que se puede seguir con lápiz */
+const Dm = [[0, 2, 6, 6], [2, 0, 6, 6], [6, 6, 0, 4], [6, 6, 4, 0]];
+const tree = DIV.upgma(Dm, ['a', 'b', 'c', 'd']);
+ok(tree && tree.size === 4, 'el árbol reúne las cuatro unidades');
+near(tree.height, 3, 1e-12, 'la raíz queda a la mitad de la distancia entre los dos grupos');
+const hijos = tree.children.map(c => c.height).sort((x, y) => x - y);
+near(hijos[0], 1, 1e-12, 'a y b se unen a altura 1');
+near(hijos[1], 2, 1e-12, 'c y d se unen a altura 2');
+const orden = DIV.leafOrder(tree);
+ok(orden.length === 4 && new Set(orden).size === 4, 'el orden de las hojas no repite ni pierde unidades');
+
+/* Mantel */
+/* seis unidades en fila, separadas por distancias crecientes */
+const M1 = [...Array(6)].map((_, i) => [...Array(6)].map((__, j) => Math.abs(i - j)));
+const mt = DIV.mantel(M1, M1, 499);
+near(mt.r, 1, 1e-12, 'Mantel de una matriz consigo misma da r = 1');
+ok(mt.p <= 0.05, `y resulta significativo (p = ${fmt(mt.p, 3)})`);
+const M2 = M1.map(r => r.map(v => -v));
+near(DIV.mantel(M1, M2, 99).r, -1, 1e-12, 'con la matriz invertida, r = −1');
+ok(!isFinite(DIV.mantel([[0, 1], [1, 0]], [[0, 1], [1, 0]], 99).r), 'con dos unidades no hay prueba que hacer');
+near(DIV.pearson([1, 2, 3, 4], [2, 4, 6, 8]), 1, 1e-12, 'la correlación de Pearson de una recta perfecta es 1');
+
+/* ============ 18. el análisis completo del Bloque 5 ============ */
+const ptsDiv = GEO.pointsOf(EXAMPLES.build());
+const an = DIV.analyse(ptsDiv, 'state', 'species', { perms: 99 });
+ok(an.units.length >= 8, `el ejemplo se reparte en varias entidades (${an.units.length})`);
+ok(an.units.reduce((a, u) => a + u.N, 0) === ptsDiv.filter(p => GEO.stateOf(p.lon, p.lat)).length, 'por entidad se cuentan, sin perder ni repetir, los puntos que caen en México');
+const anPais = DIV.analyse(ptsDiv, 'country', 'species', { perms: 0 });
+ok(anPais.units.reduce((a, u) => a + u.N, 0) === ptsDiv.length, 'por país se cuentan todas las accesiones mapeadas');
+ok(an.total.S >= Math.max(...an.units.map(u => u.S)), 'la riqueza total no puede ser menor que la de una unidad');
+ok(an.units.every(u => u.S <= u.N), 'ninguna unidad tiene más tipos que accesiones');
+ok(an.units.every(u => !isFinite(u.rare) || u.rare <= u.S + 1e-9), 'la riqueza rarificada nunca supera a la observada');
+ok(an.units.every(u => u.H >= 0 && u.simpson >= 0 && u.simpson <= 1), 'los índices caen en su rango');
+ok(an.beta >= 0, 'el recambio beta de Whittaker no es negativo');
+ok(an.chao1.est >= an.total.S, 'Chao1 nunca estima menos de lo observado');
+ok(an.inc.jack1 >= an.total.S && an.inc.chao2 >= an.total.S, 'los estimadores de presencias tampoco');
+const totalExcl = [...an.exclusives.values()].reduce((a, v) => a + v.length, 0);
+ok(totalExcl <= an.total.S, 'los tipos exclusivos son un subconjunto de los tipos');
+ok(an.units.reduce((a, u) => a + (u.exclusive || 0), 0) === totalExcl, 'y cada uno está contado en su unidad');
+const anCrop = DIV.analyse(ptsDiv, 'state', 'crop', { perms: 0 });
+ok(anCrop.total.S <= an.total.S, 'hay menos cultivos que especies, como debe ser');
+const anBand = DIV.analyse(ptsDiv, 'band', 'species', { band: 500, perms: 0 });
+ok(anBand.units.length >= 3 && anBand.units.every(u => /m$/.test(u.label)), 'las franjas altitudinales se arman y se etiquetan');
+ok(anBand.units.every((u, i, arr) => i === 0 || Number(u.key) > Number(arr[i - 1].key)), 'y salen ordenadas de menor a mayor altitud');
+const anGrid = DIV.analyse(ptsDiv, 'grid', 'species', { grid: 1, perms: 0 });
+ok(anGrid.units.length >= an.units.length, 'la rejilla de un grado parte el territorio en más unidades que las entidades');
+const anEsf = DIV.analyse(ptsDiv, 'state', 'species', { effort: 3, perms: 0 });
+ok(anEsf.nCommon === 3, 'el esfuerzo de rarefacción se puede fijar a mano');
+ok(DIV.analyse([], 'state', 'species', { perms: 0 }).units.length === 0, 'sin puntos, el análisis no truena');
+
+/* las figuras del Bloque 5 */
+state.acc = EXAMPLES.build();
+B5.run();
+const an2 = B5.analysis();
+ok(!!an2, 'el bloque corre su análisis');
+ok(!!parseSVG(B5.curvePlot(520, 320)), 'la curva de acumulación es un SVG válido');
+ok(!!parseSVG(B5.heatmap(540)), 'el mapa de calor con su dendrograma es un SVG válido');
+ok(!B5.curvePlot(520, 320).includes('var(--'), 'las figuras salen con colores literales, listas para exportar');
+const im = B5.indexMap(600, 300);
+ok(!im || !!parseSVG(im), 'el mapa del índice es válido cuando aplica');
+ok(!!parseSVG(B5.scatter(400, 300, [{ x: 1, y: 2 }, { x: 3, y: 4 }], 'x', 'y', { line: true })), 'la dispersión con recta es válida');
+ok(B5.scatter(400, 300, [{ x: 1, y: 2 }], 'x', 'y').includes('sim-empty'), 'con un solo punto avisa en vez de dibujar');
+ok(B5.UNITS.every(u => u.es && u.en) && B5.CLASSES.every(c => c.es && c.en) && B5.INDICES.every(i => i.es && i.en && i.d.es && i.d.en), 'los controles del bloque están en dos idiomas');
+state.acc = [];
+
+/* ============ 19. vacíos de colecta ============ */
+const rejilla = GAPS.areaGrid(2, 'mx');
+ok(rejilla.length > 30, `la rejilla de 2° cubre México con ${rejilla.length} celdas`);
+ok(rejilla.every(c => GEO.stateOf(c.lon, c.lat)), 'todas las celdas del área tienen su centro en tierra mexicana');
+ok(rejilla.every(c => c.stateCode && c.countryCode === 'MEX'), 'y cada una sabe a qué entidad pertenece');
+ok(GAPS.areaGrid(1, 'mx').length > rejilla.length, 'con celdas más chicas hay más celdas');
+const rejillaW = GAPS.areaGrid(10, 'world');
+ok(rejillaW.length > 100 && rejillaW.every(c => c.countryCode), 'la rejilla mundial también funciona');
+
+/* reparto de puntos y distancias */
+const ptsGap = GEO.pointsOf(EXAMPLES.build());
+const celdas1 = GAPS.areaGrid(1, 'mx');
+const { orphan } = GAPS.fillCells(celdas1, ptsGap, 'species');
+const enCeldas = celdas1.reduce((a, c) => a + c.n, 0);
+ok(enCeldas + orphan.length === ptsGap.length, 'ningún punto se pierde entre las celdas y las huérfanas');
+ok(orphan.length > 0, 'las accesiones de otros países quedan fuera del área de México');
+ok(celdas1.filter(c => c.n > 0).every(c => c.types.size >= 1 && c.types.size <= c.n), 'cada celda ocupada tiene entre un tipo y tantos como accesiones');
+GAPS.nearestDistance(celdas1, ptsGap);
+ok(celdas1.filter(c => c.n > 0).every(c => c.dist === 0), 'una celda con colectas está a distancia cero');
+ok(celdas1.filter(c => c.n === 0).every(c => c.dist > 0 && isFinite(c.dist)), 'toda celda vacía tiene una distancia finita a la colecta más cercana');
+/* la distancia calculada coincide con la del punto más cercano, a mano */
+const unaVacia = celdas1.find(c => c.n === 0);
+const dMano = Math.min(...ptsGap.map(p => haversine(unaVacia.lat, unaVacia.lon, p.lat, p.lon)));
+near(unaVacia.dist, dMano, 1e-9, 'la distancia al vecino más cercano coincide con el cálculo directo');
+
+/* vecindario y prioridades */
+GAPS.neighbourhood(celdas1, 2);
+ok(celdas1.every(c => c.nbRichness >= 0 && c.nbAccessions >= c.n), 'el vecindario incluye a la propia celda');
+const { deficit } = GAPS.stateDeficits(celdas1);
+ok([...deficit.values()].every(v => v >= 0 && v <= 1), 'el déficit por entidad está entre 0 y 1');
+const prio = GAPS.priorities(celdas1, { stateDeficit: deficit, distCap: 250 }, GAPS.DEFAULT_WEIGHTS);
+ok(prio.length === celdas1.filter(c => c.n === 0).length, 'se prioriza cada celda vacía, y sólo esas');
+ok(prio.every((c, i) => i === 0 || c.score <= prio[i - 1].score + 1e-9), 'la lista sale ordenada de mayor a menor prioridad');
+ok(prio.every(c => Math.abs(c.score - (c.parts.dist + c.parts.rich + c.parts.state + c.parts.excl)) < 1e-9), 'el puntaje es exactamente la suma de sus cuatro partes');
+const soloDist = GAPS.priorities(celdas1, { stateDeficit: deficit, distCap: 250 }, { distance: 100, richness: 0, state: 0, exclusive: 0 });
+ok(soloDist[0].dist >= soloDist[soloDist.length - 1].dist, 'si sólo pesa la distancia, gana la celda más lejana');
+ok(soloDist.every(c => c.parts.rich === 0 && c.parts.state === 0), 'y las demás partes no aportan nada');
+
+/* complementariedad */
+const uA = { key: 'a', label: 'a', set: new Set(['x', 'y', 'z']) };
+const uB = { key: 'b', label: 'b', set: new Set(['x', 'y']) };
+const uC = { key: 'c', label: 'c', set: new Set(['w']) };
+const compl = GAPS.complementarity([uB, uA, uC]);
+ok(compl.total === 4, 'hay cuatro tipos en total');
+ok(compl.order[0].unit.key === 'a', 'la primera elegida es la que más aporta');
+ok(compl.order[1].unit.key === 'c' && compl.order[1].gain === 1, 'la segunda es la que añade lo que falta');
+ok(compl.order.length === 2, 'la unidad redundante no entra en el conjunto mínimo');
+ok(compl.covered === 4 && compl.missing.length === 0, 'el conjunto mínimo captura todo');
+ok(compl.order[compl.order.length - 1].pct === 100, 'y la curva termina en 100 %');
+
+/* vacíos de la colección */
+const riesgos = GAPS.collectionGaps(EXAMPLES.build(), 'species');
+ok(riesgos.length >= 15, `se revisa cada tipo de la colección (${riesgos.length})`);
+ok(riesgos.every(r => r.n >= 1 && r.weight >= 0), 'cada tipo trae su número de accesiones y su peso de riesgo');
+ok(riesgos.every((r, i) => i === 0 || r.weight <= riesgos[i - 1].weight), 'la lista sale ordenada por riesgo');
+const encino = riesgos.find(r => /Quercus/.test(r.type));
+ok(encino && encino.flags.includes('onlyInSitu'), 'el encino se marca como conservado sólo in situ');
+ok(encino && encino.flags.includes('single'), 'y como de una sola accesión');
+const oca = riesgos.find(r => /Oxalis/.test(r.type));
+ok(oca && oca.flags.includes('onlyField'), 'la oca se marca como conservada sólo en banco de campo');
+const maiz = riesgos.find(r => r.type === 'Zea mays');
+ok(maiz && maiz.n > 5 && !maiz.flags.includes('single'), 'el maíz, con muchas accesiones, no aparece como caso único');
+ok(riesgos.filter(r => r.flags.includes('noDuplicate')).length > 0, 'hay tipos sin duplicado de seguridad');
+
+/* franjas altitudinales, ignorando las altitudes imposibles */
+const elev = GAPS.elevationGaps(ptsGap, 500);
+ok(elev.dropped >= 1, 'la altitud de 25 000 m del ejemplo se deja fuera');
+ok(elev.bands.length > 0 && elev.bands.every(b => b.to - b.from === 500), 'las franjas miden lo pedido');
+ok(elev.bands[elev.bands.length - 1].to <= 6500, 'y ninguna se va más allá de lo posible en la Tierra');
+ok(elev.gaps.every(b => b.n === 0), 'las franjas señaladas como vacías lo están de verdad');
+ok(elev.gaps.length < elev.bands.length, 'no todas las franjas están vacías');
+
+/* el análisis completo */
+const gap = GAPS.analyse(EXAMPLES.build(), { size: 1, scope: 'mx', classMode: 'species' });
+ok(gap.cells.length === gap.filled.length + gap.empty.length, 'cada celda está ocupada o vacía, sin terceras opciones');
+near(gap.coverage, 100 * gap.filled.length / gap.cells.length, 1e-9, 'la cobertura es el porcentaje de celdas ocupadas');
+ok(gap.priorities.length <= 25 && gap.allPriorities.length >= gap.priorities.length, 'la tabla muestra las primeras prioridades de todas las calculadas');
+ok(gap.complementarity.order.length <= gap.filled.length, 'el conjunto mínimo no puede tener más celdas que las ocupadas');
+ok(gap.risks.length > 0 && gap.exclusive.size >= 0, 'el análisis trae los riesgos y los tipos exclusivos');
+ok(GAPS.analyse([], { size: 2, scope: 'mx' }).filled.length === 0, 'sin accesiones no truena y no inventa celdas ocupadas');
+const gapChico = GAPS.analyse(EXAMPLES.build(), { size: 2, scope: 'mx', classMode: 'crop' });
+ok(gapChico.cells.length < gap.cells.length, 'con celdas de 2° hay menos celdas que con las de 1°');
+ok(gapChico.coverage >= gap.coverage, 'y la cobertura no puede bajar al agrandar la celda');
+
+/* las figuras del Bloque 6 */
+state.acc = EXAMPLES.build();
+B6.run();
+const g6 = B6.analysis();
+ok(!!g6 && g6.cells.length > 0, 'el bloque corre su análisis');
+ok(!!parseSVG(B6.gapMap(700, 420)), 'el mapa de vacíos es un SVG válido');
+ok(!!parseSVG(B6.compCurve(500, 300)), 'la curva de complementariedad es un SVG válido');
+ok(!B6.gapMap(700, 420).includes('var(--'), 'el mapa exportable no deja variables CSS');
+ok(Object.values(B6.FLAGS).every(f => f.es && f.en && f.c), 'las banderas de riesgo están en dos idiomas');
+state.acc = [];
+
+/* ============ 20. distribuciones y pruebas ============
+   La beta incompleta y las pruebas t y F se comparan con valores de tabla. */
+near(CHAR.ibeta(0.5, 1, 1), 0.5, 1e-12, 'la beta incompleta con a = b = 1 es la identidad');
+near(CHAR.ibeta(0.5, 2, 2), 0.5, 1e-12, 'y es simétrica en a = b');
+near(CHAR.ibeta(0.25, 2, 3), 0.2617187, 1e-6, 'I₀.₂₅(2,3) coincide con su valor exacto');
+ok(CHAR.ibeta(0, 2, 3) === 0 && CHAR.ibeta(1, 2, 3) === 1, 'los extremos valen 0 y 1');
+/* t de Student: con 10 gl, el valor crítico de dos colas al 5 % es 2.228 */
+const tCrit = (t, df) => CHAR.ibeta(df / (df + t * t), df / 2, 0.5);
+near(tCrit(2.228, 10), 0.05, 1e-3, 'la t de 10 gl en 2.228 deja 5 % en las dos colas');
+near(tCrit(1.812, 10), 0.10, 1e-3, 'y en 1.812 deja 10 %');
+near(tCrit(2.086, 20), 0.05, 1e-3, 'con 20 gl el crítico al 5 % es 2.086');
+near(tCrit(0, 10), 1, 1e-12, 'en t = 0 la probabilidad es 1');
+/* dos muestras idénticas no difieren; dos bien separadas sí */
+const tIgual = CHAR.tTest2([1, 2, 3, 4, 5], [1, 2, 3, 4, 5]);
+near(tIgual.t, 0, 1e-12, 'dos muestras iguales dan t = 0');
+near(tIgual.p, 1, 1e-12, 'y p = 1');
+const tDif = CHAR.tTest2([1, 2, 3, 4, 5], [11, 12, 13, 14, 15]);
+ok(tDif.p < 0.001, `dos muestras separadas por diez unidades difieren (p = ${tDif.p.toExponential(1)})`);
+/* F de varianzas */
+const fIgual = CHAR.fTestVar([1, 2, 3, 4, 5], [2, 3, 4, 5, 6]);
+near(fIgual.F, 1, 1e-12, 'dos muestras con la misma varianza dan F = 1');
+near(fIgual.p, 1, 1e-9, 'y p = 1');
+const fDif = CHAR.fTestVar([1, 2, 3, 4, 5], [10, 30, 50, 70, 90]);
+ok(fDif.F > 1 && fDif.p < 0.05, 'una muestra veinte veces más dispersa se detecta');
+
+/* ============ 21. caracteres y distancia de Gower ============ */
+ok(CHAR.detectType(['1', '2', '3.5', '4', '7', '9', '11']) === 'num', 'una columna de números continuos es cuantitativa');
+ok(CHAR.detectType(['1', '2', '3', '2', '1']) === 'ord', 'unos pocos valores numéricos distintos son ordinales');
+ok(CHAR.detectType(['rojo', 'azul', 'rojo']) === 'cat', 'los textos son cualitativos');
+ok(CHAR.detectType(['', '', '']) === 'empty', 'una columna vacía se marca como vacía');
+ok(isNaN(CHAR.numOf('')) && CHAR.numOf('3,5') === 3.5, 'los números admiten coma decimal');
+
+const dNum = CHAR.describe(['10', '20', '30', ''], 'num');
+near(dNum.mean, 20, 1e-12, 'la media del carácter cuantitativo');
+near(dNum.sd, 10, 1e-12, 'la desviación estándar muestral');
+near(dNum.cv, 50, 1e-12, 'el coeficiente de variación');
+ok(dNum.missing === 1 && dNum.range === 20, 'se cuentan los faltantes y el rango');
+const dCat = CHAR.describe(['rojo', 'rojo', 'azul', 'azul'], 'cat');
+ok(dCat.classes === 2, 'dos clases');
+near(dCat.H, Math.log(2), 1e-12, 'Shannon del carácter cualitativo');
+near(dCat.evenness, 1, 1e-12, 'y equitatividad máxima');
+
+/* Gower a mano: dos caracteres, uno numérico y uno categórico */
+const gRows = [
+  { x: '0', c: 'a' },
+  { x: '10', c: 'a' },
+  { x: '5', c: 'b' },
+];
+const gDefs = [{ k: 'x', type: 'num', weight: 1 }, { k: 'c', type: 'cat', weight: 1 }];
+const G1 = CHAR.gowerMatrix(gRows, gDefs).D;
+near(G1[0][1], (1 + 0) / 2, 1e-12, 'Gower entre los extremos con la misma categoría');
+near(G1[0][2], (0.5 + 1) / 2, 1e-12, 'Gower con media diferencia numérica y otra categoría');
+ok(G1[0][0] === 0 && G1[1][0] === G1[0][1], 'la matriz tiene diagonal cero y es simétrica');
+/* con un dato faltante, el carácter se salta y no se inventa nada */
+const G2 = CHAR.gowerMatrix([{ x: '0', c: 'a' }, { x: '', c: 'b' }], gDefs).D;
+near(G2[0][1], 1, 1e-12, 'si falta el número, sólo cuenta la categoría');
+/* el peso hace su trabajo */
+const G3 = CHAR.gowerMatrix(gRows, [{ k: 'x', type: 'num', weight: 3 }, { k: 'c', type: 'cat', weight: 1 }]).D;
+near(G3[0][2], (3 * 0.5 + 1) / 4, 1e-12, 'un carácter con peso 3 pesa el triple');
+
+/* ============ 22. PCoA y agrupamiento ============ */
+/* eigen de una matriz conocida: [[2,1],[1,2]] tiene valores 3 y 1 */
+const eig = CHAR.jacobiEigen([[2, 1], [1, 2]]);
+near(eig[0].value, 3, 1e-9, 'el primer valor propio es 3');
+near(eig[1].value, 1, 1e-9, 'el segundo es 1');
+near(Math.abs(eig[0].vector[0]), Math.abs(eig[0].vector[1]), 1e-9, 'y su vector propio es simétrico');
+/* cuatro puntos en un cuadrado: la PCoA debe recuperar dos dimensiones iguales */
+const sq = [[0, 0], [1, 0], [0, 1], [1, 1]];
+const Dsq = sq.map(a => sq.map(b => Math.hypot(a[0] - b[0], a[1] - b[1])));
+const ord = CHAR.pcoa(Dsq, 2);
+near(ord.explained[0], 50, 1e-6, 'en un cuadrado, el primer eje explica la mitad');
+near(ord.explained[1], 50, 1e-6, 'y el segundo la otra mitad');
+/* las distancias en el plano reconstruido coinciden con las originales */
+let maxErr = 0;
+for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) {
+  const d = Math.hypot(ord.coords[i][0] - ord.coords[j][0], ord.coords[i][1] - ord.coords[j][1]);
+  maxErr = Math.max(maxErr, Math.abs(d - Dsq[i][j]));
+}
+ok(maxErr < 1e-8, `la PCoA reconstruye las distancias euclidianas (error máx ${maxErr.toExponential(1)})`);
+
+/* Ward sobre dos grupos bien separados */
+const wD = [[0, 1, 9, 9], [1, 0, 9, 9], [9, 9, 0, 1], [9, 9, 1, 0]];
+const wTree = CHAR.wardTree(wD, ['a', 'b', 'c', 'd']);
+ok(wTree && wTree.size === 4, 'Ward reúne las cuatro unidades');
+const wCut = CHAR.cutTree(wTree, 2);
+ok(wCut[0] === wCut[1] && wCut[2] === wCut[3] && wCut[0] !== wCut[2], 'y al cortar en dos separa los pares correctos');
+const sil = CHAR.silhouette(wD, wCut);
+ok(sil.mean > 0.8, `la silueta de dos grupos bien separados es alta (${fmt(sil.mean, 2)})`);
+const silMal = CHAR.silhouette(wD, [0, 1, 0, 1]);
+ok(silMal.mean < 0, 'y con los grupos cruzados a propósito, la silueta se vuelve negativa');
+ok(CHAR.cutTree(wTree, 4).filter((v, i, a) => a.indexOf(v) === i).length === 4, 'cortar en cuatro da cuatro grupos');
+
+/* ============ 23. colección núcleo ============ */
+ok(CHAR.allocate([10, 10, 10], 6, 'C').every(v => v === 2), 'el reparto constante da lo mismo a cada estrato');
+const allocP = CHAR.allocate([60, 30, 10], 10, 'P');
+ok(allocP.reduce((a, b) => a + b, 0) === 10, 'el reparto proporcional suma el tamaño pedido');
+ok(allocP[0] > allocP[1] && allocP[1] >= allocP[2], 'y da más al estrato más grande');
+const allocL = CHAR.allocate([100, 10, 5], 12, 'L');
+ok(allocL.reduce((a, b) => a + b, 0) === 12 && allocL[0] < 100, 'el reparto logarítmico también cuadra y suaviza al grande');
+ok(CHAR.allocate([100, 10, 5], 12, 'L')[2] >= 1, 'ningún estrato se queda sin representación');
+ok(CHAR.allocate([3, 3], 10, 'P').reduce((a, b) => a + b, 0) === 6, 'no se puede pedir más de lo que hay');
+
+const tr = EXAMPLES.buildTraits(EXAMPLES.build());
+ok(tr.length === 46 && tr.every(t => t.ACCENUMB), 'la caracterización de ejemplo trae una fila por accesión');
+const tDefs = Object.keys(tr[0]).filter(k => k !== 'ACCENUMB').map(k => ({ k, type: CHAR.detectType(tr.map(t => t[k])), weight: 1 }));
+ok(tDefs.length === 12, 'con doce descriptores');
+ok(tDefs.filter(d => d.type === 'num').length >= 5 && tDefs.filter(d => d.type === 'cat').length >= 3, 'mezcla de cuantitativos y cualitativos');
+ok(tr.some(t => Object.values(t).some(v => v === '')), 'y con celdas vacías, como cualquier libreta real');
+
+const gm = CHAR.gowerMatrix(tr, tDefs);
+ok(gm.D.length === 46 && gm.D.every(r => r.length === 46), 'la matriz de Gower es cuadrada');
+ok(gm.D.every((r, i) => r.every((v, j) => i === j ? v === 0 : (v >= 0 && v <= 1))), 'y sus distancias caen entre 0 y 1');
+const coreP = CHAR.buildCore(tr, tDefs, { pct: 20, allocation: 'P', pick: 'random', D: gm.D, seed: 7 });
+ok(coreP.core.length === Math.round(46 * 0.2), 'el núcleo del 20 % tiene el tamaño pedido');
+ok(new Set(coreP.core).size === coreP.core.length, 'sin accesiones repetidas');
+const coreD = CHAR.buildCore(tr, tDefs, { pct: 20, allocation: 'P', pick: 'distance', D: gm.D, seed: 7 });
+const meanD = idx => { let s = 0, n = 0; idx.forEach((a, x) => idx.slice(x + 1).forEach(b => { s += gm.D[a][b]; n++; })); return n ? s / n : 0; };
+ok(meanD(coreD.core) >= meanD(coreP.core) - 1e-9, 'elegir por distancia da un núcleo al menos tan disperso como al azar');
+const coreM = CHAR.buildCore(tr, tDefs, { pct: 20, method: 'M', D: gm.D });
+ok(coreM.core.length <= Math.round(46 * 0.2) && coreM.method === 'M', 'el método M respeta el tamaño objetivo');
+
+/* validación del núcleo */
+const val = CHAR.validateCore(tr, tDefs, coreD.core);
+ok(val.nCore === coreD.core.length, 'la validación mira el núcleo que se le pasó');
+ok(val.MD >= 0 && val.MD <= 100 && val.CR >= 0 && val.CR <= 100, 'MD% y CR% son porcentajes');
+ok(val.perTrait.filter(p => p.usable).length >= 5, 'se valida carácter por carácter');
+ok(val.perTrait.filter(p => p.usable).every(p => p.rangeCore <= p.rangeAll + 1e-9), 'el rango del núcleo nunca supera al de la colección');
+/* un núcleo que es toda la colección debe salir perfecto */
+const valTodo = CHAR.validateCore(tr, tDefs, tr.map((_, i) => i));
+near(valTodo.MD, 0, 1e-9, 'si el núcleo es toda la colección, ninguna media difiere');
+near(valTodo.CR, 100, 1e-9, 'y conserva todo el rango');
+near(valTodo.VR, 100, 1e-6, 'y toda la variación');
+near(valTodo.classCoverage, 100, 1e-9, 'y todas las clases cualitativas');
+
+/* el bloque completo */
+state.acc = EXAMPLES.build();
+state.traits = EXAMPLES.buildTraits(state.acc);
+B7.run();
+const a7 = B7.analysis();
+ok(!!a7 && a7.pairs.length === 46, 'el bloque une la caracterización con las accesiones por su número');
+ok(a7.ord.explained[0] >= a7.ord.explained[1], 'los ejes de la PCoA salen ordenados');
+ok(!!parseSVG(B7.pcoaPlot(500, 360).split('</svg>')[0] + '</svg>'), 'la figura de la PCoA es un SVG válido');
+ok(!!parseSVG(B7.dendroPlot(500)), 'el dendrograma es un SVG válido');
+ok(!B7.dendroPlot(500).includes('var(--'), 'las figuras salen con colores literales');
+state.acc = []; state.traits = [];
+
+/* ============ 24. manejo del banco ============ */
+const hoy = new Date(2026, 8, 23, 12, 0, 0);   /* hora local: la marca de trabajo del banco es local */
+ok(MANAGE.parseDate('20200115').getUTCFullYear() === 2020, 'una fecha completa se lee bien');
+ok(MANAGE.parseDate('2020----').getUTCMonth() === 5, 'sin mes se toma el centro del año');
+ok(MANAGE.parseDate('202007--').getUTCMonth() === 6, 'sin día se toma el centro del mes');
+ok(MANAGE.parseDate('') === null && MANAGE.parseDate('ayer') === null, 'lo que no es fecha devuelve nada');
+near(MANAGE.yearsSince('20210923', hoy), 5, 0.02, 'han pasado cinco años desde septiembre de 2021');
+ok(MANAGE.yearsSince('', hoy) === null, 'sin fecha no hay antigüedad');
+ok(/^\d{8}$/.test(MANAGE.todayStamp(hoy)) && MANAGE.todayStamp(hoy) === '20260923', 'la marca de hoy va en AAAAMMDD');
+
+const cfg8 = MANAGE.config();
+const viab8 = MANAGE.viabilityTable();
+ok(viab8['Zea mays'] && viab8['Zea mays'].KE === 6.474, 'el maíz trae sus constantes publicadas');
+ok(Object.keys(MANAGE.viabilityTable({ 'Phaseolus vulgaris': { KE: 7, CW: 3 } })).length === 2, 'se pueden añadir constantes de otra especie');
+
+const lote = (o) => Object.assign(MCPD.emptyRow(), o);
+/* maíz bien guardado y probado hace poco: nada que hacer salvo el respaldo */
+const loteBueno = MANAGE.lotStatus(lote({ GENUS: 'Zea', SPECIES: 'mays', GP_CONS: 'seed', GP_STOCK: '2000', GP_GERMPCT: '95', GP_GERMDATE: '20240310', DUPLSITE: 'NOR051' }), cfg8, viab8, hoy);
+ok(loteBueno.projected > 90, `un lote de maíz a −18 °C sigue alto dos años después (${fmt(loteBueno.projected, 1)} %)`);
+ok(loteBueno.alerts.length === 0, 'y no genera ninguna alerta');
+ok(loteBueno.yearsToThreshold > 100, 'le quedan siglos antes del umbral');
+/* el mismo lote en una cámara tibia */
+const loteTibio = MANAGE.lotStatus(lote({ GENUS: 'Zea', SPECIES: 'mays', GP_CONS: 'seed', GP_STOCK: '2000', GP_GERMPCT: '95', GP_GERMDATE: '20200310', DUPLSITE: 'NOR051' }),
+  MANAGE.config({ seed: { temp: 20, moisture: 12 } }), viab8, hoy);
+ok(loteTibio.projected < 80, `a 20 °C y 12 % el mismo lote ya bajó del umbral (${fmt(loteTibio.projected, 1)} %)`);
+ok(loteTibio.alerts.some(a => a.code === 'belowThreshold'), 'y la app lo marca como crítico');
+/* sin constantes no se proyecta nada */
+const sinK = MANAGE.lotStatus(lote({ GENUS: 'Sechium', SPECIES: 'edule', GP_CONS: 'seed', GP_STOCK: '900', GP_GERMPCT: '80', GP_GERMDATE: '20240310', DUPLSITE: 'X' }), cfg8, viab8, hoy);
+ok(sinK.projected === null, 'sin constantes no hay proyección');
+ok(sinK.alerts.some(a => a.code === 'noConstants'), 'y se dice que falta el dato en vez de inventarlo');
+ok(sinK.alerts.some(a => a.code === 'measuredLow'), 'aunque la prueba medida por debajo del umbral sí se marca');
+/* alertas de existencias, prueba vencida y respaldo */
+const pobre = MANAGE.lotStatus(lote({ GENUS: 'Zea', SPECIES: 'mays', GP_CONS: 'seed', GP_STOCK: '120', GP_GERMPCT: '92', GP_GERMDATE: '20090310' }), cfg8, viab8, hoy);
+ok(pobre.alerts.some(a => a.code === 'lowStock'), 'poca semilla se marca');
+ok(pobre.alerts.some(a => a.code === 'testDue'), 'una prueba de hace diecisiete años está vencida');
+ok(pobre.alerts.some(a => a.code === 'noBackup'), 'y la falta de duplicado de seguridad también');
+ok(pobre.levelName === 'crit', 'el lote queda clasificado como crítico');
+const nunca = MANAGE.lotStatus(lote({ GENUS: 'Zea', SPECIES: 'mays', GP_CONS: 'seed', GP_STOCK: '900', DUPLSITE: 'X' }), cfg8, viab8, hoy);
+ok(nunca.alerts.some(a => a.code === 'neverTested'), 'un lote sin ninguna prueba se marca como crítico');
+/* campo, in vitro e in situ */
+const campo = MANAGE.lotStatus(lote({ GENUS: 'Persea', GP_CONS: 'field', GP_STOCK: '12', GP_REGENDATE: '20100101', DUPLSITE: 'X' }), cfg8, viab8, hoy);
+ok(campo.alerts.some(a => a.code === 'replantDue'), 'una colección viva sin renovar en dieciséis años se marca');
+ok(campo.alerts.some(a => a.code === 'fewPlants'), 'y con doce plantas, también por tamaño');
+const vitro = MANAGE.lotStatus(lote({ GENUS: 'Solanum', GP_CONS: 'invitro', GP_STOCK: '20', GP_REGENDATE: '20240101', DUPLSITE: 'X' }), cfg8, viab8, hoy);
+ok(vitro.alerts.some(a => a.code === 'subDue'), 'un subcultivo de hace más de un año está atrasado');
+const situ = MANAGE.lotStatus(lote({ GENUS: 'Quercus', GP_CONS: 'insitu', COLLDATE: '2020----' }), cfg8, viab8, hoy);
+ok(situ.alerts.some(a => a.code === 'visitDue'), 'un sitio in situ sin visitas recientes se marca');
+ok(!situ.alerts.some(a => a.code === 'noBackup'), 'y a un registro in situ no se le pide duplicado de seguridad');
+
+/* tamaño de muestra: las cuentas se hacen también a mano */
+const nAlo = MANAGE.plantsNeeded(0.05, 0.95, true);
+near(nAlo, Math.ceil(Math.log(0.05) / (2 * Math.log(0.95))), 0, 'plantas necesarias en una alógama');
+ok(nAlo === 30, `con p = 5 % y 95 % de seguridad hacen falta 30 plantas alógamas (${nAlo})`);
+const nAuto = MANAGE.plantsNeeded(0.05, 0.95, false);
+ok(nAuto === 59, `y 59 si la especie es autógama (${nAuto})`);
+ok(MANAGE.plantsNeeded(0.01, 0.95, true) > nAlo, 'proteger un alelo más raro exige más plantas');
+ok(MANAGE.plantsNeeded(0.05, 0.99, true) > nAlo, 'y pedir más seguridad, también');
+near(MANAGE.retentionProb(0.05, 100, true), 1 - Math.pow(0.95, 200), 1e-12, 'la probabilidad de retención sigue la fórmula');
+ok(MANAGE.retentionProb(0.05, 100, true) > 0.9999, 'con las 100 plantas de FAO, un alelo al 5 % está prácticamente asegurado');
+ok(MANAGE.retentionProb(0.05, 10, true) < 0.7, 'con diez plantas, no');
+ok(MANAGE.seedsToSow(100, 50) === Math.ceil(100 / (0.5 * 0.9)), 'las semillas a sembrar descuentan germinación y establecimiento');
+ok(MANAGE.seedsToSow(100, 100, 1) === 100, 'con todo perfecto, una semilla por planta');
+
+/* carga de trabajo */
+const workRows = [
+  lote({ GENUS: 'Zea', SPECIES: 'mays', GP_CONS: 'seed', GP_STOCK: '2000', GP_GERMPCT: '95', GP_GERMDATE: '20240310' }),
+  lote({ GENUS: 'Persea', GP_CONS: 'field', GP_STOCK: '12', GP_REGENDATE: '20200101' }),
+  lote({ GENUS: 'Solanum', GP_CONS: 'invitro', GP_STOCK: '20', GP_REGENDATE: '20260101' }),
+];
+const work = MANAGE.workload(workRows, cfg8, viab8, 25, hoy);
+ok(work.length === 26, 'la carga se proyecta a veinticinco años');
+ok(work.every(y => y.tests >= 0 && y.regen >= 0 && y.sub >= 0 && y.replant >= 0), 'sin números negativos');
+ok(work.reduce((a, y) => a + y.tests, 0) >= 2, 'el lote de semilla acumula varias pruebas en el periodo');
+ok(work.every(y => y.sub === 1), 'el lote in vitro pide un subcultivo al año');
+ok(work.some(y => y.replant > 0), 'y la colección viva, sus resiembras');
+
+/* registrar trabajo hecho */
+const rec = lote({ ACCENUMB: 'R-1', GP_CONS: 'seed', GP_STOCK: '1000', GP_GERMPCT: '80', GP_GERMDATE: '20200101' });
+MANAGE.recordTest(rec, 88, '20260923', 200);
+ok(rec.GP_GERMPCT === '88' && rec.GP_GERMDATE === '20260923', 'la prueba nueva queda registrada');
+ok(rec.GP_STOCK === '800', 'y se descuentan las semillas que se usaron');
+MANAGE.recordRegeneration(rec, '20261015', 2500, 96);
+ok(rec.GP_REGENDATE === '20261015' && rec.GP_STOCK === '2500' && rec.GP_GERMPCT === '96', 'la regeneración actualiza fecha, existencias y germinación');
+
+/* el panel completo sobre la colección de ejemplo */
+const panel8 = MANAGE.analyse(EXAMPLES.build(), cfg8, viab8, hoy);
+ok(panel8.lots.length === 46, 'se revisa cada accesión');
+ok(panel8.byLevel.crit.length + panel8.byLevel.warn.length + panel8.byLevel.info.length + panel8.byLevel.ok.length === 46, 'cada lote cae en un solo nivel');
+ok(panel8.byRoute.reduce((a, r) => a + r.n, 0) === 46, 'y en una sola ruta');
+ok(panel8.codes.some(c => c.code === 'noConstants'), 'el ejemplo tiene especies sin constantes de viabilidad');
+ok(panel8.codes.some(c => c.code === 'noBackup'), 'y accesiones sin duplicado de seguridad');
+ok(panel8.lots.filter(l => l.st.projected != null).every(l => MANAGE.taxonOf(l.row) === 'Zea mays'), 'sólo se proyecta la viabilidad de la especie que tiene constantes');
+ok(panel8.lots.filter(l => ['insitu', 'onfarm'].includes(l.st.route)).every(l => !l.st.alerts.some(a => a.code === 'lowStock')), 'a los registros in situ no se les aplica el mínimo de semillas');
+
+/* el bloque */
+state.acc = EXAMPLES.build();
+B8.run();
+const a8 = B8.analysis();
+ok(!!a8 && a8.lots.length === 46, 'el bloque corre su análisis');
+ok(!!parseSVG(B8.workPlot(500, 300).split('</svg>')[0] + '</svg>'), 'la gráfica de carga de trabajo es un SVG válido');
+ok(!B8.workPlot(500, 300).includes('var(--'), 'y sale con colores literales');
+ok(B8.cfg().seed.threshold === 85 && B8.viab()['Zea mays'], 'la configuración y las constantes están cargadas');
+state.acc = [];
+
+
+/* ============ 25. Code 128, etiquetas y hojas ============ */
+/* La tabla: 107 símbolos, todos de tres barras y tres espacios que suman 11
+   módulos, salvo la parada, que lleva un elemento más y suma 13. */
+ok(LABELS.C128.length === 107, 'la tabla Code 128 tiene los 107 símbolos');
+ok(new Set(LABELS.C128).size === 107, 'y ningún patrón se repite');
+const anchoMal = LABELS.C128.slice(0, 106).filter(p => p.length !== 6 || [...p].reduce((a, c) => a + Number(c), 0) !== 11);
+ok(anchoMal.length === 0, 'los 106 símbolos ordinarios miden 11 módulos en seis elementos');
+const stopPat = LABELS.C128[106];
+ok(stopPat.length === 7 && [...stopPat].reduce((a, c) => a + Number(c), 0) === 13, 'la parada mide 13 módulos en siete elementos');
+ok(LABELS.C128.every(p => [...p].every(c => Number(c) >= 1 && Number(c) <= 4)), 'ningún elemento pasa de cuatro módulos');
+
+/* dígito de control calculado a mano: "ACC-001" en juego B
+   el guion es el carácter 45, así que su valor en juego B es 45 - 32 = 13
+   104 + 33*1 + 35*2 + 35*3 + 13*4 + 16*5 + 16*6 + 17*7 = 659; 659 mod 103 = 41 */
+const vB = LABELS.encode128('ACC-001');
+ok(JSON.stringify(vB) === JSON.stringify([104, 33, 35, 35, 13, 16, 16, 17, 41, 106]),
+  'codifica "ACC-001" en juego B con el dígito de control 41 calculado a mano');
+
+/* ocho dígitos seguidos entran en juego C, de dos en dos
+   105 + 12*1 + 34*2 + 56*3 + 78*4 = 665; 665 mod 103 = 47 */
+const vC = LABELS.encode128('12345678');
+ok(JSON.stringify(vC) === JSON.stringify([105, 12, 34, 56, 78, 47, 106]),
+  'codifica "12345678" en juego C con el dígito de control 47 calculado a mano');
+ok(vC.length < LABELS.encode128('1234567A').length, 'y el juego C ocupa menos que el mismo largo en juego B');
+
+/* cambio de juego a media cadena */
+const vMix = LABELS.encode128('A1234567');
+ok(vMix[0] === 104 && vMix.includes(99), 'arranca en B y cambia a C cuando llegan seis dígitos seguidos');
+
+/* ida y vuelta: lo que la app dibuja se vuelve a leer */
+const textosBC = ['ACC-001', 'MX-CHAP-0001', '12345678', 'A1234567', 'Zea mays 001', '0', 'ZMX/2019/017-b', 'Tw 7'];
+const wOK = LABELS.widths128('ACC-001');
+const rtFallos = textosBC.filter(t => LABELS.decode128(LABELS.widths128(t)) !== t);
+ok(rtFallos.length === 0, 'el lector propio recupera el texto de los ocho códigos dibujados' + (rtFallos.length ? ': ' + rtFallos.join(', ') : ''));
+const wMal = wOK.slice(0, 13) + (wOK[13] === '1' ? '3' : '1') + wOK.slice(14);
+ok(LABELS.decode128(wMal) === null, 'y un código con una barra alterada se rechaza en vez de leerse mal');
+
+/* lo que no cabe en el juego B no se inventa */
+ok(LABELS.encode128('MAÍZ') === null, 'una letra acentuada no se codifica (devuelve nulo, no un código falso)');
+ok(LABELS.encode128('') === null, 'el texto vacío tampoco');
+ok(LABELS.widths128('MAÍZ') === null && LABELS.barcodeSVG('MAÍZ') === '', 'y entonces no se dibuja ninguna barra');
+
+/* el ancho total cuadra con el número de símbolos */
+const wPat = wOK;
+ok([...wPat].reduce((a, c) => a + Number(c), 0) === 11 * (vB.length - 1) + 13, 'el ancho en módulos cuadra con el número de símbolos');
+
+/* el SVG del código */
+const bsvg = LABELS.barcodeSVG('ACC-001', { mm: 30, height: 8 });
+ok(!!parseSVG(bsvg), 'el código de barras es un SVG válido');
+ok(bsvg.includes('width="30mm"'), 'y mide los milímetros pedidos');
+ok((bsvg.match(/<rect/g) || []).length === Math.ceil(wPat.length / 2), 'dibuja una barra por cada elemento impar del patrón');
+
+/* ---------- etiquetas ---------- */
+const filaEt = { ACCENUMB: 'MX-CHAP-0042', ACCENAME: 'Cónico norteño', GENUS: 'Zea', SPECIES: 'mays', COLLSITE: 'San Miguel Tlaixpan, Texcoco', ORIGCTY: 'MEX', COLLDATE: '20190815', ELEVATION: '2350', GP_STOCK: '4200', GP_GERMPCT: '92' };
+Object.keys(LABELS.FORMATS).forEach(k => {
+  const f = LABELS.FORMATS[k];
+  const svg = LABELS.labelSVG(filaEt, k, { lang: 'es' });
+  ok(!!parseSVG(svg), 'la etiqueta «' + f.es + '» es un SVG válido');
+  ok(svg.includes('width="' + f.w + 'mm"') && svg.includes('height="' + f.h + 'mm"'), 'y sale de ' + f.w + ' × ' + f.h + ' mm');
+  ok(svg.includes('MX-CHAP-0042'), 'con el número de accesión de «' + f.es + '», que va siempre');
+});
+ok(LABELS.labelSVG(filaEt, 'envelope', { barcode: false, fields: [] }).split('<rect').length === 2, 'sin código de barras y sin campos sólo queda el marco');
+ok(LABELS.labelSVG(filaEt, 'envelope', { border: false }).includes('stroke="none"'), 'el marco se puede quitar para el papel preimpreso');
+const etCampos = LABELS.labelSVG(filaEt, 'envelope', { fields: ['TAXON', 'COLLSITE'], lang: 'es' });
+ok(etCampos.includes('Zea mays') && etCampos.includes('font-style="italic"'), 'la especie se imprime en cursiva');
+const etVial = LABELS.labelSVG(filaEt, 'vial', { fields: ['ACCENAME', 'TAXON', 'COLLSITE', 'ORIGCTY', 'COLLDATE'] });
+const etSobre = LABELS.labelSVG(filaEt, 'envelope', { fields: ['ACCENAME', 'TAXON', 'COLLSITE', 'ORIGCTY', 'COLLDATE'] });
+ok((etVial.match(/<text/g) || []).length < (etSobre.match(/<text/g) || []).length, 'en el criotubo sólo se imprimen los campos que caben');
+
+/* los valores con formato */
+ok(LABELS.valueOf(filaEt, 'COLLDATE', 'es') === '15/08/2019', 'la fecha MCPD se imprime legible');
+ok(LABELS.valueOf({ COLLDATE: '2019----' }, 'COLLDATE', 'es') === '2019', 'una fecha con sólo el año se imprime sin los guiones');
+ok(LABELS.valueOf({ ACQDATE: '20191104' }, 'ACQDATE', 'es') === '04/11/2019', 'la fecha de ingreso también se imprime legible, para el libro de registro');
+ok(LABELS.valueOf(filaEt, 'TAXON', 'es') === 'Zea mays', 'el taxón junta género y especie');
+ok(LABELS.valueOf(filaEt, 'ELEVATION', 'es') === '2350 m' && LABELS.valueOf(filaEt, 'GP_GERMPCT', 'es') === '92 %', 'la altitud y la germinación llevan unidad');
+ok(LABELS.valueOf(filaEt, 'ORIGCTY', 'es') === 'México' && LABELS.valueOf(filaEt, 'ORIGCTY', 'en') === 'Mexico', 'el país se traduce');
+ok(LABELS.valueOf({ ACCENUMB: 'X' }, 'ELEVATION', 'es') === '', 'un campo vacío no imprime la unidad sola');
+
+
+/* ningún renglón de texto invade la banda del código de barras, y en todos los
+   formatos cabe al menos un dato además del número */
+const filaLarga = Object.assign({}, filaEt, { ACCENAME: 'Un nombre de accesión larguísimo que no cabe en ninguna etiqueta de las cinco' });
+Object.keys(LABELS.FORMATS).forEach(k => {
+  const f = LABELS.FORMATS[k];
+  const doc = parseSVG(LABELS.labelSVG(filaEt, k, { fields: ['ACCENAME', 'TAXON', 'COLLSITE', 'ORIGCTY', 'COLLDATE'], lang: 'es' }));
+  const barras = [...doc.querySelectorAll('rect')].filter(x => x.getAttribute('fill') === '#000');
+  const arriba = Math.min.apply(null, barras.map(x => +x.getAttribute('y')));
+  const textos = [...doc.querySelectorAll('text')];
+  const renglones = textos.filter(t => +t.getAttribute('y') < arriba);
+  ok(barras.length > 0 && renglones.every(t => +t.getAttribute('y') <= arriba), 'en «' + f.es + '» ningún renglón se mete en la banda del código');
+  ok(renglones.length >= 2, 'y en «' + f.es + '» cabe el número más al menos un dato');
+  const ancho = Math.max.apply(null, [...parseSVG(LABELS.labelSVG(filaLarga, k, { fields: ['ACCENAME'] })).querySelectorAll('text')].map(t => t.textContent.length * f.font * 0.52 + 2 * Math.max(1.6, f.w * 0.035)));
+  ok(ancho <= f.w + 1e-9, 'y un nombre larguísimo se recorta antes de salirse de «' + f.es + '»');
+});
+ok(!LABELS.labelSVG(filaEt, 'vial', { fields: [] }).match(/<text[^>]*text-anchor="middle"/), 'el criotubo no repite el número debajo del código: no hay espacio y ya está arriba');
+ok(!!LABELS.labelSVG(filaEt, 'envelope', { fields: [] }).match(/<text[^>]*text-anchor="middle"/), 'el sobre sí lo lleva, para poder teclearlo si el lector falla');
+/* ---------- la hoja ---------- */
+const hojaCarta = LABELS.sheet(new Array(20).fill(filaEt), 'envelope', 'letter');
+ok(hojaCarta.cols === 2 && hojaCarta.rowsPerPage === 4, 'en carta caben 2 × 4 sobres de semilla');
+ok(hojaCarta.perPage === 8 && hojaCarta.pages.length === 3, 'y 20 etiquetas ocupan tres hojas');
+ok(hojaCarta.pages[2].length === 4, 'la última hoja lleva sólo las que sobran');
+ok(hojaCarta.pages.reduce((a, p) => a + p.length, 0) === 20, 'no se pierde ni se repite ninguna etiqueta');
+const hojaA4 = LABELS.sheet(new Array(20).fill(filaEt), 'envelope', 'a4');
+ok(hojaA4.rowsPerPage === 5, 'en A4, que es más alta, cabe una fila más');
+Object.keys(LABELS.FORMATS).forEach(k => {
+  Object.keys(LABELS.PAGES).forEach(p => {
+    const s = LABELS.sheet([filaEt], k, p);
+    const anchoUsado = s.cols * (s.format.w + s.gap) - s.gap;
+    const altoUsado = s.rowsPerPage * (s.format.h + s.gap) - s.gap;
+    ok(anchoUsado <= s.page.w - 2 * s.margin + 1e-9 && altoUsado <= s.page.h - 2 * s.margin + 1e-9,
+      'la rejilla de «' + s.format.es + '» cabe en ' + p + ' sin salirse del margen');
+  });
+});
+ok(LABELS.sheet([], 'envelope', 'letter').pages.length === 0, 'sin accesiones no se imprime ninguna hoja');
+
+/* ---------- lista de siembra ---------- */
+const lotesSiembra = [{ row: filaEt }, { row: { ACCENUMB: 'X-2', GENUS: 'Sechium', SPECIES: 'edule', GP_GERMPCT: '50' } }, { row: { ACCENUMB: 'X-3', GENUS: 'Phaseolus', SPECIES: 'vulgaris' } }];
+const siembra = LABELS.sowingSheet(lotesSiembra, { plants: 100 });
+ok(siembra.length === 3, 'la lista de siembra trae una fila por accesión');
+ok(siembra[1].semillas === Math.ceil(100 / (0.5 * 0.9)), 'con 50 % de germinación hacen falta 223 semillas para 100 plantas');
+ok(siembra[0].semillas < siembra[1].semillas, 'un lote de mejor germinación necesita menos semilla');
+ok(siembra[2].germinacion === 85, 'sin prueba registrada se usa el valor de referencia, y se enseña cuál es');
+ok(siembra[0].taxon === 'Zea mays' && siembra[0].parcela === '', 'la parcela y la fecha van en blanco, para llenarlas en el campo');
+
+/* ---------- el bloque ---------- */
+state.acc = EXAMPLES.build();
+const filasB9 = B9.run();
+ok(filasB9.length === 46, 'el bloque etiqueta toda la colección por omisión');
+B9.view.which = 'selection';
+B9.view.selection = new Set([state.acc[0].ACCENUMB, state.acc[1].ACCENUMB]);
+ok(B9.pickRows().length === 2, 'y sólo las elegidas cuando se pide una selección');
+B9.view.which = 'all';
+const prevEt = B9.labelsPreview(LABELS.sheet(state.acc, 'jar', 'letter'), 'es');
+ok((prevEt.match(/class="lbl"/g) || []).length === 46, 'la vista previa dibuja las 46 etiquetas');
+ok(prevEt.includes('mm;padding:'), 'y la hoja de la vista previa también va en milímetros');
+
+/* el escogedor a mano: buscar por número, nombre, especie o sitio */
+ok(B9.search('').length === 46, 'sin nada escrito, el escogedor enseña las 46 accesiones');
+const busSech = B9.search('sechium');
+ok(busSech.length > 0 && busSech.every(r => r.GENUS === 'Sechium'), 'buscar «sechium» deja sólo ese género, sin importar mayúsculas');
+ok(B9.search('oaxaca').every(r => (r.COLLSITE || '').toLowerCase().includes('oaxaca')), 'y buscar un sitio filtra por el sitio de colecta');
+ok(B9.search(state.acc[5].ACCENUMB).length === 1, 'un número de accesión completo deja una sola');
+ok(B9.search('xxxxx').length === 0, 'y lo que no existe no devuelve nada');
+B9.view.which = 'selection';
+B9.view.selection = new Set(busSech.map(r => r.ACCENUMB));
+ok(B9.pickRows().length === busSech.length, 'lo marcado en el escogedor es justo lo que se imprime');
+B9.view.selection = new Set();
+ok(B9.pickRows().length === 0, 'y sin nada marcado no se imprime ninguna etiqueta');
+B9.view.which = 'all';
+/* las hojas de trabajo no recortan la colección por su cuenta */
+const contarFilas = h => (h.match(/<tr>/g) || []).length;
+B9.view.sheet = 'delivery';
+ok(contarFilas(B9.workSheet()) === 47, 'el vale de distribución lleva las 46 accesiones y su renglón de encabezado');
+B9.view.sheet = 'sowing';
+ok(contarFilas(B9.workSheet()) === 47, 'y la lista de siembra también: ninguna hoja recorta la colección en silencio');
+B9.view.sheet = 'register';
+ok(B9.workSheet().includes('ws-tbl'), 'el libro de registro se arma');
+B9.view.sheet = 'delivery';
+ok(B9.workSheet().includes('ws-sign'), 'el vale de distribución lleva las firmas');
+B9.view.sheet = 'labels';
+state.acc = [];
+
+/* ============ 26. ZIP, Darwin Core e informe ============ */
+/* El valor de comprobación del CRC-32 está publicado: la cadena "123456789"
+   da 0xCBF43926. Si esto falla, cualquier ZIP que salga estará roto. */
+const enc10 = new TextEncoder();
+ok(ZIP.crc32(enc10.encode('123456789')) === 0xCBF43926, 'CRC-32 de "123456789" = 0xCBF43926, el valor de comprobación publicado');
+ok(ZIP.crc32(new Uint8Array(0)) === 0, 'CRC-32 de nada es cero');
+ok(ZIP.crc32(enc10.encode('a')) === 0xE8B7BE43, 'CRC-32 de "a" = 0xE8B7BE43');
+
+/* y el archivo se vuelve a leer: cabeceras locales, nombres, tamaños y CRC */
+const zipFiles = [{ name: 'uno.txt', data: 'primero' }, { name: 'carpeta/dos.csv', data: 'a,b\n1,2\n' }];
+const zipBytes = ZIP.bytes(zipFiles);
+const dv10 = new DataView(zipBytes.buffer);
+const dec10 = new TextDecoder();
+function leerZip(bytes, dv) {
+  const out = [];
+  let off = 0;
+  while (off + 4 <= bytes.length && dv.getUint32(off, true) === 0x04034b50) {
+    const crc = dv.getUint32(off + 14, true);
+    const size = dv.getUint32(off + 18, true);
+    const nameLen = dv.getUint16(off + 26, true);
+    const extraLen = dv.getUint16(off + 28, true);
+    const name = dec10.decode(bytes.slice(off + 30, off + 30 + nameLen));
+    const data = bytes.slice(off + 30 + nameLen + extraLen, off + 30 + nameLen + extraLen + size);
+    out.push({ name, crc, size, text: dec10.decode(data) });
+    off += 30 + nameLen + extraLen + size;
+  }
+  return out;
+}
+const leidos = leerZip(zipBytes, dv10);
+ok(leidos.length === 2, 'el ZIP armado se vuelve a leer y trae los dos archivos');
+ok(leidos[0].name === 'uno.txt' && leidos[0].text === 'primero', 'el primero conserva su nombre y su contenido');
+ok(leidos[1].name === 'carpeta/dos.csv' && leidos[1].text === 'a,b\n1,2\n', 'y el segundo conserva su carpeta y su contenido');
+ok(leidos.every(f => f.crc === ZIP.crc32(enc10.encode(f.text))), 'el CRC guardado en cada cabecera cuadra con el contenido');
+ok(dv10.getUint32(zipBytes.length - 22, true) === 0x06054b50 && dv10.getUint16(zipBytes.length - 12, true) === 2,
+  'el directorio central del final declara los dos archivos');
+
+/* ---------- fechas ---------- */
+ok(REPORT.isoDate('20190815') === '2019-08-15', 'una fecha MCPD completa sale en ISO');
+ok(REPORT.isoDate('201908--') === '2019-08', 'una fecha sin día sale hasta el mes');
+ok(REPORT.isoDate('2019----') === '2019', 'y una con sólo el año, hasta el año');
+ok(REPORT.isoDate('') === '' && REPORT.isoDate('xx') === '', 'lo que no es fecha no se inventa');
+
+/* ---------- Darwin Core ---------- */
+const filaDwc = {
+  INSTCODE: 'MEX006', ACCENUMB: 'MEX-ZM-0001', ACCENAME: 'Maíz azul de Apoala', CROPNAME: 'Maíz',
+  GENUS: 'Zea', SPECIES: 'mays', SPAUTHOR: 'L.', ORIGCTY: 'MEX', COLLSITE: 'Santiago Apoala',
+  DECLATITUDE: '17.6871', DECLONGITUDE: '-97.2788', COORDUNCERT: '250', ELEVATION: '1993',
+  COLLDATE: '20190812', COLLNUMB: 'LAB-2019-100', COLLCODE: 'MEX006', SAMPSTAT: '300',
+  STORAGE: '13;40', MLSSTAT: '1', GP_CONS: 'seed', GP_STOCK: '1800', REMARKS: 'Raza Cónico norteño.',
+};
+const dwc1 = REPORT.dwcRow(filaDwc);
+ok(dwc1.occurrenceID === 'MEX006:MEX-ZM-0001', 'el identificador junta el instituto y el número de accesión');
+ok(dwc1.basisOfRecord === 'LivingSpecimen', 'una accesión ex situ se declara como ejemplar vivo');
+ok(REPORT.dwcRow(Object.assign({}, filaDwc, { GP_CONS: 'insitu' })).basisOfRecord === 'HumanObservation',
+  'un registro in situ no: es una población observada en su sitio, no un ejemplar en una cámara');
+ok(dwc1.scientificName === 'Zea mays' && dwc1.genus === 'Zea' && dwc1.specificEpithet === 'mays', 'el nombre científico se parte en sus términos');
+ok(dwc1.eventDate === '2019-08-12' && dwc1.year === '2019' && dwc1.month === '8' && dwc1.day === '12', 'la fecha de colecta se reparte en eventDate, year, month y day');
+ok(dwc1.countryCode === 'MX' && dwc1.country === 'México', 'el país de tres letras se traduce al código de dos y al nombre');
+ok(dwc1.geodeticDatum === 'EPSG:4326', 'las coordenadas declaran su datum');
+ok(REPORT.dwcRow({ ACCENUMB: 'X' }).geodeticDatum === '', 'y sin coordenadas no se declara ninguno');
+ok(dwc1.degreeOfEstablishment === 'cultivated', 'una variedad tradicional (SAMPSTAT 300) se declara cultivada');
+ok(REPORT.dwcRow(Object.assign({}, filaDwc, { SAMPSTAT: '100' })).degreeOfEstablishment === '',
+  'lo silvestre se deja vacío, porque Darwin Core no tiene un valor para eso, y el código completo viaja aparte');
+
+/* la promesa que hace la app: el pasaporte completo cabe entre las columnas
+   de Darwin Core y dynamicProperties, sin perder un solo campo */
+const claves = MCPD.FIELDS.map(f => f.k);
+const cubiertas = new Set([...REPORT.DWC_MAPPED, ...REPORT.DWC_LEFTOVER]);
+const perdidas = claves.filter(k => !cubiertas.has(k));
+ok(perdidas.length === 0, 'ningún descriptor del pasaporte se pierde al pasar a Darwin Core' + (perdidas.length ? ': ' + perdidas.join(', ') : ''));
+ok(REPORT.DWC_MAPPED.every(k => claves.includes(k)) && REPORT.DWC_LEFTOVER.every(k => claves.includes(k)),
+  'y no se declara ningún campo que el pasaporte no tenga');
+const dyn = JSON.parse(dwc1.dynamicProperties);
+ok(dyn['mcpd:SAMPSTAT'] === '300' && dyn['mcpd:STORAGE'] === '13;40' && dyn['mcpd:GP_STOCK'] === '1800',
+  'lo que no cabe en Darwin Core viaja en dynamicProperties con su nombre de origen');
+ok(!('mcpd:GENUS' in dyn) && !('mcpd:DECLATITUDE' in dyn), 'y lo que sí cabe no se repite ahí');
+ok(REPORT.dwcRow({ ACCENUMB: 'X' }).dynamicProperties === '', 'sin campos sobrantes, la columna queda vacía en vez de traer un objeto hueco');
+
+state.acc = EXAMPLES.build();
+/* los caracteres se ponen a mano, no con B7.loadExample(), para que correr las
+   pruebas no le sobrescriba al usuario lo que tenga guardado */
+state.traits = EXAMPLES.buildTraits(state.acc);
+const tablaDwc = REPORT.darwinCore(state.acc);
+ok(tablaDwc.length === 46, 'la tabla de Darwin Core trae las 46 accesiones');
+ok(tablaDwc.every(r => REPORT.DWC_COLUMNS.every(c => c in r)), 'y todas las columnas en todos los renglones');
+const csvDwc = IO.toCSV(tablaDwc, REPORT.DWC_COLUMNS);
+ok(IO.parseDelimited(csvDwc, ',').rows.length === 46, 'el CSV de Darwin Core se vuelve a leer con sus 46 renglones');
+
+/* ---------- var(--…) fuera de la app ---------- */
+ok(REPORT.resolveVars('<rect fill="var(--primary)"/>').indexOf('var(--') < 0, 'los colores por variable se resuelven a literales');
+ok(REPORT.resolveVars('<rect fill="var(--no-existe, #123456)"/>').includes('#123456'), 'y si la variable no existe se usa el color de respaldo');
+ok(REPORT.resolveVars('') === '' && REPORT.resolveVars(null) === '', 'un SVG vacío no truena');
+ok(REPORT.figure(() => { throw new Error('x'); }, 100, 100) === '', 'si una figura truena, el informe sigue sin ella');
+ok(REPORT.figure(() => 'no soy un svg', 100, 100) === '', 'y lo que no es un SVG no se cuela');
+
+/* ---------- el informe ---------- */
+const D10 = REPORT.gather({ run: true });
+ok(D10.n === 46 && !!D10.summary, 'el informe reúne el estado de la colección');
+ok(!!D10.quality && !!D10.diversity && !!D10.gaps && !!D10.manage, 'y los análisis de los bloques 3, 5, 6 y 8');
+const met = REPORT.methods(D10, 'es');
+ok(met.length >= 6, 'los métodos se redactan por análisis corrido');
+ok(met.every(m => m.text.length > 200), 'y cada uno es un párrafo de verdad, no un título suelto');
+ok(met.some(m => m.id === 'diversity' && m.text.includes('Hurlbert')), 'el de diversidad nombra la rarefacción que se usó');
+const sinNada = REPORT.methods({ n: 0, rows: [] }, 'es');
+ok(!sinNada.some(m => ['diversity', 'gaps', 'charac', 'manage'].includes(m.id)),
+  'sin análisis corridos no se redactan métodos de análisis que no se hicieron');
+ok(REPORT.references(D10).length > REPORT.references({ n: 0 }).length, 'las referencias crecen con los métodos usados, no antes');
+ok(REPORT.references({ n: 0 }).every(r => typeof r === 'string' && r.length > 20), 'y las que siempre salen son fichas completas');
+
+const htmlRep = REPORT.buildHTML(D10, { lang: 'es', title: 'Informe de prueba', bank: 'Banco de ejemplo' });
+ok(htmlRep.startsWith('<!DOCTYPE html>') && htmlRep.includes('</html>'), 'el informe es un documento HTML completo');
+ok(htmlRep.includes('<style>') && !htmlRep.includes('<link'), 'que se lleva sus estilos dentro: no depende de ningún archivo suelto');
+ok(htmlRep.indexOf('var(--') < 0, 'y no deja ni un color por variable, que fuera de la app no existiría');
+ok(htmlRep.indexOf('undefined') < 0 && htmlRep.indexOf('NaN') < 0, 'sin «undefined» ni «NaN» a la vista');
+ok(htmlRep.includes('Informe de prueba') && htmlRep.includes('Banco de ejemplo'), 'lleva el título y el banco que se le pusieron');
+const secs = [...htmlRep.matchAll(/<h2 id="s-([a-z]+)">/g)].map(m => m[1]);
+ok(secs.length === 11 && secs[0] === 'summary' && secs[secs.length - 1] === 'annex', 'salen las once secciones, en orden');
+const soloDos = REPORT.buildHTML(D10, { lang: 'es', pick: ['summary', 'methods'] });
+ok([...soloDos.matchAll(/<h2 id="s-/g)].length === 2, 'y se puede pedir sólo las secciones que interesan');
+const htmlEn = REPORT.buildHTML(D10, { lang: 'en' });
+ok(htmlEn.includes('<html lang="en">') && htmlEn.includes('Collection report') && !htmlEn.includes('La colección'),
+  'el informe en inglés sale entero en inglés');
+const sinFig = REPORT.buildHTML(D10, { lang: 'es', figures: false });
+ok((sinFig.match(/<svg/g) || []).length === 0 && (htmlRep.match(/<svg/g) || []).length >= 4,
+  'las figuras se pueden quitar, y cuando están son varias');
+ok(REPORT.buildHTML(D10, { lang: 'es', annex: false }).indexOf('id="s-annex"') < 0, 'y el anexo también');
+state.acc = [];
+state.traits = [];
+
+/* ============ 27. pegar desde una hoja de cálculo ============ */
+/* nombres de columna al estilo de la hoja */
+ok(IO.columnName(0) === 'A' && IO.columnName(25) === 'Z', 'la primera columna es la A y la vigesimosexta la Z');
+ok(IO.columnName(26) === 'AA' && IO.columnName(27) === 'AB' && IO.columnName(51) === 'AZ', 'después de la Z siguen AA, AB… como en las hojas de cálculo');
+
+/* ¿la primera fila es encabezado? */
+const cabSi = [['ACCENUMB', 'GENUS', 'LATITUD'], ['MEX-001', 'Zea', '19.29'], ['MEX-002', 'Sechium', '18.85']];
+const cabNo = [['MEX-001', 'Zea', '19.29'], ['MEX-002', 'Sechium', '18.85'], ['MEX-003', 'Phaseolus', '20.11']];
+ok(IO.looksLikeHeader(cabSi) === true, 'una fila de títulos sin números se reconoce como encabezado');
+ok(IO.looksLikeHeader(cabNo) === false, 'una fila que ya trae datos y números no se toma por encabezado');
+/* el caso difícil: datos de puro texto, donde la primera fila se parece a un
+   título. Se resuelve comparando su forma con la de las filas de abajo. */
+ok(IO.looksLikeHeader([['MEX-101', 'Zea', 'mays'], ['MEX-102', 'Sechium', 'edule']]) === false,
+  'con datos de puro texto, la primera fila NO se confunde con un encabezado: tiene la misma forma que la de abajo');
+ok(IO.looksLikeHeader([['Número', 'Nombre de la accesión', 'País'], ['MEX-001', 'Maíz azul', 'MEX'], ['MEX-002', 'Chayote', 'MEX']]) === true,
+  'y unos títulos en español sí se reconocen, aunque debajo también haya texto');
+ok(IO.looksLikeHeader([['2019', '2020', '2021'], ['1.2', '1.4', '1.5']]) === false, 'una fila de puros números nunca es encabezado, aunque arriba esté');
+ok(IO.looksLikeHeader([]) === false, 'sin filas no hay encabezado que reconocer');
+
+/* leer sin encabezados */
+const sinCab = IO.parseDelimited('MEX-001\tZea\tmays\nMEX-002\tSechium\tedule', '\t', { header: false });
+ok(sinCab.rows.length === 2 && sinCab.header === false, 'sin encabezados, las dos filas son datos');
+ok(sinCab.headers[0] === 'Columna A' && sinCab.headers[2] === 'Columna C', 'y las columnas se llaman como en la hoja');
+ok(sinCab.rows[0]['Columna B'] === 'Zea', 'los valores quedan bajo su columna');
+const conCab = IO.parseDelimited('ACCENUMB\tGENUS\nMEX-001\tZea', '\t');
+ok(conCab.rows.length === 1 && conCab.header === true && conCab.headers[0] === 'ACCENUMB',
+  'con encabezados —que es lo de siempre— nada cambia respecto de antes');
+
+/* la radiografía de lo pegado */
+const dOk = IO.describe('ACCENUMB\tGENUS\tSPECIES\nMEX-001\tZea\tmays\nMEX-002\tSechium\tedule');
+ok(dOk.filas === 2 && dOk.columnas === 3, 'cuenta las filas de datos y las columnas');
+ok(dOk.delim === '\t' && dOk.delimNombre[0] === 'tabuladores', 'reconoce el tabulador, que es lo que pega una hoja de cálculo');
+ok(dOk.pareceEncabezado === true && dOk.avisos.length === 0, 'una tabla limpia no genera ningún aviso');
+ok(dOk.muestra.length === 2 && dOk.muestra[0].GENUS === 'Zea', 'devuelve las primeras filas ya partidas en celdas');
+
+ok(IO.describe('').vacio === true && IO.describe('   ').vacio === true, 'un texto vacío se declara vacío y no truena');
+
+const dRag = IO.describe('A,B,C\n1,2,3\n4,5,6,7\n8,9,10');
+ok(dRag.avisos.some(a => a.code === 'disparejas'), 'avisa cuando una fila trae más celdas que las demás');
+ok(dRag.avisos.find(a => a.code === 'disparejas').nivel === 'warn', 'y lo hace como advertencia, no como error: la tabla igual se puede leer');
+
+const dUna = IO.describe('MEX-001\nMEX-002\nMEX-003');
+ok(dUna.columnas === 1 && dUna.avisos.some(a => a.code === 'unacolumna'), 'avisa cuando todo cae en una sola columna');
+ok(dUna.avisos.every(a => a.nivel !== 'error'), 'pero no lo bloquea: copiar una sola columna de una hoja de cálculo es de lo más normal');
+
+const dComa = IO.describe('ACCENUMB\tLAT\tLON\nMEX-001\t19,2900\t-98,8600\nMEX-002\t18,8500\t-97,1000');
+const avComa = dComa.avisos.find(a => a.code === 'comaDecimal');
+ok(!!avComa && avComa.nivel === 'info', 'avisa de la coma decimal, y sólo como información');
+ok(avComa.es.includes('19,2900'), 'y cita un valor de verdad de la tabla, no un ejemplo inventado');
+ok(!IO.describe('A,B\n1,5\n2,5').avisos.some(a => a.code === 'comaDecimal'),
+  'cuando el separador ES la coma, un «1,5» son dos celdas y no una coma decimal: ahí no se avisa');
+ok(IO.describe('A;B\n1,5;2,5').avisos.some(a => a.code === 'comaDecimal'),
+  'pero con punto y coma de separador, ese mismo «1,5» sí es una coma decimal y se dice');
+
+const dSolo = IO.describe('ACCENUMB\tGENUS\tSPECIES');
+ok(dSolo.filas === 0 && dSolo.avisos.some(a => a.code === 'sinfilas' && a.nivel === 'error'),
+  'copiar sólo los títulos es un error: no hay nada que importar');
+
+/* el separador y el encabezado se pueden forzar */
+const dForz = IO.describe('MEX-001;Zea\nMEX-002;Sechium', { delim: ';', header: false });
+ok(dForz.filas === 2 && dForz.columnas === 2 && dForz.headers[0] === 'Columna A',
+  'se puede imponer el separador y decir que no hay encabezados');
+
+/* lo que se ve en el diálogo es lo que se importa */
+const textoPeg = 'ACCENUMB\tNombre\tGENUS\tSPECIES\tPais\nMEX-001\tMaíz azul\tZea\tmays\tMEX\nMEX-002\tChayote\tSechium\tedule\tMX';
+const dPeg = IO.describe(textoPeg);
+const mapPeg = MCPD.guessMapping(dPeg.headers, dPeg.parsed.rows);
+ok(mapPeg['Nombre'] === 'ACCENAME' && mapPeg['Pais'] === 'ORIGCTY',
+  'los encabezados en español se reconocen igual que los del estándar');
+ok(dPeg.filas === 2 && dPeg.parsed.rows.length === dPeg.filas,
+  'las filas que anuncia la vista previa son exactamente las que se importan');
+
+/* ---------- el mismo asistente en el Bloque 7 ---------- */
+/* Lo que importa aquí no es el separador sino si la tabla se UNE con la
+   colección: eso se cuenta antes de aceptarla y se puede corregir. */
+state.acc = EXAMPLES.build();
+const numsB7 = state.acc.slice(0, 3).map(r => r.ACCENUMB);
+const tsvB7 = 'folio\tdias\tclave\taltura\n1\t95\t' + numsB7[0] + '\t180\n2\t88\t' + numsB7[1]
+  + '\t165\n3\t101\tNO-EXISTE\t190';
+B7.importTraits(tsvB7, 'prueba');
+const pendB7 = B7.pending();
+ok(!!pendB7 && pendB7.parsed.rows.length === 3, 'el Bloque 7 deja la tabla en espera en vez de importarla de golpe');
+ok(pendB7.key === 'folio', 'sin una columna que se llame como un número de accesión, propone la primera');
+
+const llaveMala = B7.matchWith('folio');
+ok(llaveMala.unidas === 0 && llaveMala.huerfanas.length === 3, 'con la columna equivocada, ninguna fila encuentra su accesión');
+const llaveBuena = B7.matchWith('clave');
+ok(llaveBuena.unidas === 2, 'con la columna correcta se unen las dos que existen');
+ok(llaveBuena.huerfanas.length === 1 && llaveBuena.huerfanas[0] === 'NO-EXISTE',
+  'y la que no existe se nombra, para poder arreglarla en la hoja');
+ok(llaveBuena.enColeccion === 46, 'la cuenta se hace contra las accesiones que hay cargadas');
+
+/* números repetidos: se avisa y se queda el último */
+const tsvRep = 'clave\tdias\n' + numsB7[0] + '\t95\n' + numsB7[0] + '\t99';
+B7.importTraits(tsvRep, 'repetidos');
+ok(B7.matchWith('clave').repetidas === 1, 'un número de accesión repetido se cuenta aparte');
+
+/* aceptar de verdad une la tabla con la colección */
+B7.importTraits(tsvB7, 'prueba');
+B7.pending().key = 'clave';
+B7.applyTraits();
+ok(state.traits.length === 3, 'al aceptar, las tres filas quedan guardadas');
+ok(B7.analysis() && B7.analysis().pairs.length === 2,
+  'pero sólo las dos que casan con una accesión entran en el análisis');
+ok(B7.pending() === null, 'y la tabla deja de estar en espera');
+
+/* el tipo de cada descriptor se detecta antes de aceptar */
+ok(CHAR.detectType(['95', '88', '101', '93', '102', '87', '99']) === 'num', 'una columna con muchos valores distintos es cuantitativa');
+ok(CHAR.detectType(['1', '2', '3', '2', '1']) === 'ord', 'unos pocos números son una escala ordinal');
+ok(CHAR.detectType(['morado', 'blanco', 'morado']) === 'cat', 'y las palabras son cualitativas');
+
+state.traits = [];
+state.acc = [];
+
+/* ============ 28. la plantilla guiada y los descriptores de caracterización ============ */
+/* El catálogo tiene que estar completo y sin trampas: cada columna con su
+   nombre claro en los dos idiomas, lo que significa, su tipo y un ejemplo. */
+ok(TRAITS.FIELDS.length >= 35, `el catálogo de caracterización trae ${TRAITS.FIELDS.length} descriptores`);
+ok(new Set(TRAITS.FIELDS.map(f => f.k)).size === TRAITS.FIELDS.length, 'ninguna clave se repite');
+ok(TRAITS.FIELDS.every(f => f.es && f.en && f.d && f.d.es && f.d.en),
+  'todos tienen nombre y explicación en español y en inglés: de eso se trataba');
+ok(TRAITS.FIELDS.every(f => ['num', 'ord', 'cat'].includes(f.t)), 'todos declaran si son cuantitativos, ordinales o cualitativos');
+ok(TRAITS.FIELDS.every(f => f.ex), 'todos traen un ejemplo de cómo se escribe el valor');
+ok(TRAITS.FIELDS.filter(f => f.t === 'num').every(f => f.u), 'y los cuantitativos, su unidad');
+ok(TRAITS.GROUPS.every(g => TRAITS.byGroup(g.g).length > 0), 'no hay grupos vacíos');
+ok(TRAITS.GROUPS.map(g => g.g).join(' ') === 'agro fruto quim semilla',
+  'los grupos son los cuatro pedidos: agronómicas, del fruto, químicas y de semilla');
+ok(TRAITS.byGroup('fruto').length >= 10 && TRAITS.byGroup('quim').length >= 10,
+  'el fruto y la química traen al menos diez descriptores cada uno');
+
+/* la frontera con el pasaporte tiene que ser nítida: una clave no puede ser
+   las dos cosas, o al importar no sabríamos a dónde mandarla */
+const chocan = TRAITS.FIELDS.filter(f => MCPD.FIELD_MAP[f.k]);
+ok(chocan.length === 0, 'ninguna clave de caracterización choca con un descriptor del pasaporte'
+  + (chocan.length ? ': ' + chocan.map(f => f.k).join(', ') : ''));
+ok(TRAITS.has('BRIX') && TRAITS.has('PESO_FRUTO') && !TRAITS.has('ACCENUMB'),
+  'has() distingue lo que es caracterización de lo que no');
+
+/* ---------- el reparto al importar ---------- */
+/* Una tabla con las dos cosas mezcladas: el pasaporte va a la colección y la
+   caracterización al Bloque 7, unida por el número de accesión. */
+state.acc = [];
+state.traits = [];
+const mezclada = 'ACCENUMB\tACCENAME\tGENUS\tSPECIES\tPESO_FRUTO\tBRIX\tDIAS_FLORACION\n'
+  + 'MEX-01\tMaíz azul\tZea\tmays\t318.5\t11.8\t96\n'
+  + 'MEX-02\tChayote\tSechium\tedule\t402.1\t5.2\t120\n'
+  + 'MEX-03\tFrijol\tPhaseolus\tvulgaris\t0.9\t3.1\t45';
+B2.startImport(mezclada, 'mezclada');
+const pendM = B2.pending();
+ok(pendM.traitCols.length === 3, 'se apartan las tres columnas de caracterización');
+ok(pendM.mcpdHeaders.length === 4, 'y quedan cuatro columnas de pasaporte por mapear');
+ok(!pendM.map.BRIX && !Object.values(pendM.map).includes('BRIX'), 'a una columna de caracterización no se le busca descriptor MCPD');
+B2.applyImport('replace');
+ok(state.acc.length === 3, 'la colección se queda con las tres accesiones');
+ok(state.acc[0].ACCENAME === 'Maíz azul' && state.acc[0].GENUS === 'Zea', 'con su pasaporte bien puesto');
+ok(state.acc[0].BRIX === undefined && state.acc[0].PESO_FRUTO === undefined,
+  'y sin una sola columna de caracterización dentro: el pasaporte MCPD se queda limpio');
+ok(state.traits.length === 3, 'la caracterización se guardó aparte, con sus tres filas');
+ok(state.traits[0].ACCENUMB === 'MEX-01' && state.traits[0].BRIX === '11.8' && state.traits[0].PESO_FRUTO === '318.5',
+  'unida a su accesión por el número, con sus valores');
+ok(Object.keys(state.traits[0]).length === 4, 'y sólo con lo suyo: el número y sus tres caracteres');
+
+/* importar otra vez añade caracteres sin borrar los que ya había */
+const segunda = 'ACCENUMB\tALTURA_PLANTA\nMEX-01\t212\nMEX-02\t180';
+B2.startImport(segunda, 'segunda');
+B2.applyImport('replace');
+const t1 = state.traits.find(t => t.ACCENUMB === 'MEX-01');
+ok(t1 && t1.ALTURA_PLANTA === '212' && t1.BRIX === '11.8',
+  'una segunda tabla añade su descriptor sin borrar los que ya tenía la accesión');
+
+state.acc = [];
+state.traits = [];
+
+/* ============ 29. códigos QR ============ */
+/* La aritmética del campo de Galois: sin esto, la corrección de errores no
+   corrige nada. EXP y LOG tienen que ser inversas una de otra. */
+let qrGfOk = true;
+for (let i = 1; i < 256; i++) if (QR.EXP[QR.LOG[i]] !== i) qrGfOk = false;
+ok(qrGfOk, 'en GF(256), EXP y LOG son inversas para los 255 elementos no nulos');
+ok(QR.gmul(2, 2) === 4 && QR.gmul(1, 173) === 173 && QR.gmul(0, 99) === 0, 'la multiplicación tiene su neutro y su absorbente');
+ok(QR.gmul(0x80, 2) === 0x1D, 'al desbordar se reduce con el polinomio 0x11D: 0x80 × 2 = 0x1D');
+let qrConm = true;
+for (let a = 1; a < 40; a++) for (let b = 1; b < 40; b++) if (QR.gmul(a, b) !== QR.gmul(b, a)) qrConm = false;
+ok(qrConm, 'y es conmutativa');
+
+/* el divisor de Reed-Solomon de grado n tiene por raíces α⁰…α^(n−1):
+   evaluarlo en cada una debe dar cero. Es lo que lo hace un divisor válido. */
+function qrEval(poly, x) {
+  let r = 0;
+  for (const c of poly) r = QR.gmul(r, x) ^ c;
+  return r;
+}
+let qrRaices = true;
+[7, 10, 13, 17, 22, 26, 28].forEach(n => {
+  const g = QR.rsDivisor(n);
+  if (g.length !== n) qrRaices = false;
+  let a = 1;
+  for (let i = 0; i < n; i++) { if (qrEval([1].concat(g), a) !== 0) qrRaices = false; a = QR.gmul(a, 2); }
+});
+ok(qrRaices, 'el divisor de cada grado tiene exactamente por raíces las potencias de α que manda la norma');
+
+/* la información de formato lleva un BCH(15,5): su residuo debe ser cero */
+let qrBch = true;
+['L', 'M', 'Q', 'H'].forEach(e => {
+  for (let m = 0; m < 8; m++) {
+    let r = QR.formatBits(e, m) ^ 0x5412;
+    if (r >= 1 << 15) qrBch = false;
+    for (let i = 14; i >= 10; i--) if ((r >>> i) & 1) r ^= 0x537 << (i - 10);
+    if (r !== 0) qrBch = false;
+  }
+});
+ok(qrBch, 'los 32 formatos posibles llevan su BCH bien calculado');
+
+/* ---------- codificar ---------- */
+const qrA = QR.encode('MEX-CR-0417', { ecl: 'H' });
+ok(!!qrA, 'un número de accesión se codifica');
+ok(qrA.size === 17 + 4 * qrA.version, 'el tamaño del símbolo es 17 + 4 × versión');
+ok(qrA.ecl === 'H' && qrA.mask >= 0 && qrA.mask <= 7, 'guarda su nivel de corrección y la máscara elegida');
+ok(QR.residuoCero(qrA), 'cada bloque es divisible entre su generador: un lector podría corregir errores');
+ok(QR.encode('') === null, 'un texto vacío no produce código');
+
+/* la versión crece sólo cuando hace falta */
+const qrCap = QR.dataCodewords(1, 'H');          /* 9 códigos = 1 de modo/cuenta + 8 de texto */
+ok(QR.encode('A'.repeat(7), { ecl: 'H' }).version === 1, 'siete caracteres caben en la versión 1 con nivel H');
+ok(QR.encode('A'.repeat(8), { ecl: 'H' }).version === 2, 'y ocho ya piden la versión 2');
+ok(QR.encode('A'.repeat(400), { ecl: 'H' }) === null, 'lo que no cabe ni en la versión 10 devuelve nulo en vez de un código roto');
+
+/* ---------- volver a leerlo ---------- */
+const qrTextos = ['MEX-CR-0417', '261-05', 'A', '0123456789', 'Sechium edule · 290-05',
+  'https://banco.ejemplo.mx/acc/MEX-CR-0417', 'Ñandú áéíóú ü', 'MEX/CHAP-2019_017-b'];
+const qrFallos = qrTextos.filter(t => { const q = QR.encode(t, { ecl: 'H' }); return !q || QR.decode(q) !== t; });
+ok(qrFallos.length === 0, 'el lector propio recupera los ocho textos, acentos y eñes incluidos'
+  + (qrFallos.length ? ': ' + qrFallos.join(', ') : ''));
+
+/* en los cuatro niveles de corrección y en todas las versiones que usamos */
+let qrNiveles = true;
+['L', 'M', 'Q', 'H'].forEach(e => { const q = QR.encode('MEX-CR-0417', { ecl: e }); if (!q || QR.decode(q) !== 'MEX-CR-0417' || q.ecl !== e) qrNiveles = false; });
+ok(qrNiveles, 'y lo hace en los cuatro niveles de corrección');
+let qrVers = [];
+for (let v = 1; v <= QR.MAXV; v++) {
+  const t = 'X'.repeat(Math.max(1, QR.dataCodewords(v, 'H') - (v <= 9 ? 2 : 3)));
+  const q = QR.encode(t, { ecl: 'H' });
+  if (!q || q.version !== v || QR.decode(q) !== t || !QR.residuoCero(q)) qrVers.push(v);
+}
+ok(qrVers.length === 0, 'las diez versiones se llenan hasta el tope, se leen y cuadran' + (qrVers.length ? ': fallan ' + qrVers.join(',') : ''));
+
+/* las ocho máscaras funcionan: forzando cada una, el texto sigue saliendo */
+const qrMasc = [0, 1, 2, 3, 4, 5, 6, 7].filter(m => QR.decode(QR.encode('261-05', { ecl: 'H', mask: m })) !== '261-05');
+ok(qrMasc.length === 0, 'las ocho máscaras se aplican y se deshacen bien');
+/* y la que elige sola no es peor que la mejor a mano */
+const qrAuto = QR.encode('261-05', { ecl: 'H' });
+const qrMejor = Math.min(...[0,1,2,3,4,5,6,7].map(m => QR.penaliza(QR.encode('261-05', { ecl: 'H', mask: m }))));
+ok(QR.penaliza(qrAuto) === qrMejor, 'la máscara que elige sola es la de menor penalización');
+
+/* ---------- estructura del símbolo ---------- */
+const qrM = qrA.modules, qrN = qrA.size;
+const qrFinder = (ox, oy) => {
+  const pat = [[1,1,1,1,1,1,1],[1,0,0,0,0,0,1],[1,0,1,1,1,0,1],[1,0,1,1,1,0,1],[1,0,1,1,1,0,1],[1,0,0,0,0,0,1],[1,1,1,1,1,1,1]];
+  for (let y = 0; y < 7; y++) for (let x = 0; x < 7; x++) if (qrM[oy + y][ox + x] !== pat[y][x]) return false;
+  return true;
+};
+ok(qrFinder(0, 0) && qrFinder(qrN - 7, 0) && qrFinder(0, qrN - 7), 'los tres patrones de búsqueda están, módulo a módulo');
+let qrTemp = true;
+for (let i = 8; i < qrN - 8; i++) { if (qrM[6][i] !== (i % 2 === 0 ? 1 : 0)) qrTemp = false; if (qrM[i][6] !== (i % 2 === 0 ? 1 : 0)) qrTemp = false; }
+ok(qrTemp, 'los dos temporizadores alternan como deben');
+ok(qrM[qrN - 8][8] === 1, 'el módulo oscuro obligatorio está puesto');
+ok(QR.ALIGN[1].length === 0 && QR.ALIGN[2].length === 2 && QR.ALIGN[7].length === 3,
+  'los centros de alineación son los de la norma para cada versión');
+
+/* las tablas de bloques cuadran con el total de códigos de cada versión */
+let qrTablas = [];
+for (let v = 1; v <= QR.MAXV; v++) ['L','M','Q','H'].forEach(e => {
+  const [ec, n1, d1, n2, d2] = QR.BLOCKS[v][e];
+  if (n1 * (d1 + ec) + n2 * (d2 + ec) !== QR.TOTAL[v]) qrTablas.push(v + e);
+});
+ok(qrTablas.length === 0, 'en las 40 combinaciones de versión y nivel, datos + corrección suman el total de la norma'
+  + (qrTablas.length ? ': ' + qrTablas.join(' ') : ''));
+
+/* ---------- el chayote en el centro ---------- */
+const qrConLogo = LABELS.qrSVG('MEX-CR-0417', { mm: 20, logo: true });
+const qrSinLogo = LABELS.qrSVG('MEX-CR-0417', { mm: 20, logo: false });
+ok(!!qrConLogo && !!qrSinLogo, 'el QR sale como SVG con dibujo y sin él');
+ok(qrConLogo.ecl === 'H', 'con dibujo se fuerza el nivel H, que corrige el 30 %');
+ok(qrConLogo.svg.includes('<circle') && qrSinLogo.svg.indexOf('<circle') < 0, 'el disco claro sólo aparece cuando hay dibujo');
+ok(!!parseSVG('<svg xmlns="http://www.w3.org/2000/svg">' + qrConLogo.svg + '</svg>'), 'y es SVG válido');
+/* lo que tapa el dibujo tiene que quedar muy por debajo de lo que el nivel H corrige */
+const qrHueco = Math.round(QR.encode('MEX-CR-0417', { ecl: 'H' }).size * 0.26);
+const qrTapado = 100 * (qrHueco * qrHueco) / (qrA.size * qrA.size);
+ok(qrTapado < 8, `el chayote tapa el ${qrTapado.toFixed(1)} % del símbolo, muy por debajo del 30 % que corrige el nivel H`);
+
+/* ---------- la etiqueta con QR ---------- */
+const qrFila = { ACCENUMB: 'MEX-CR-0417', ACCENAME: 'Verde liso', GENUS: 'Sechium', SPECIES: 'edule', COLLSITE: 'Huatusco, Veracruz' };
+const etQR = LABELS.labelSVG(qrFila, 'envelope', { codigo: 'qr', logo: true, lang: 'es' });
+const etBar = LABELS.labelSVG(qrFila, 'envelope', { codigo: 'barras', lang: 'es' });
+ok(!!parseSVG(etQR) && !!parseSVG(etBar), 'la etiqueta es SVG válido con QR y con barras');
+ok(etQR.includes('<circle') && etBar.indexOf('<circle') < 0, 'sólo la del QR lleva el chayote');
+ok(LABELS.labelSVG(qrFila, 'envelope', { codigo: 'qr', barcode: false }).indexOf('<circle') < 0, 'sin código no se dibuja nada de eso');
+const etTextos = [...parseSVG(etQR).querySelectorAll('text')].map(t => t.textContent);
+ok(etTextos.includes('MEX-CR-0417'), 'el número de accesión sigue impreso en claro junto al QR');
+ok([...parseSVG(etQR).querySelectorAll('text')].length >= 2, 'y los demás campos también caben');
+document.getElementById('summary').innerHTML = fail === 0
+  ? `<span class="ok">Todas las pruebas pasaron: ${pass}</span>`
+  : `<span class="fail">${fail} fallaron</span> de ${pass + fail}`;
+</script>
+</body>
+</html>

@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-es="GermplasmPro — El banco de germoplasma, accesión por accesión" data-en="GermplasmPro — The genebank, accession by accession">GermplasmPro — El banco de germoplasma, accesión por accesión</title>
+<meta name="description" content="Passport data, duplicate control, collecting maps and geographic diversity mining for plant genetic resources collections of any species, ex situ and in situ, entirely in the browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-16 -18 32 36'%3E%3Cellipse cx='0' cy='0' rx='9' ry='16' fill='%23e0ab21'/%3E%3Cg fill='%23b5563f' opacity='.55'%3E%3Cellipse cx='-3' cy='-9' rx='2' ry='2.6'/%3E%3Cellipse cx='3' cy='-9' rx='2' ry='2.6'/%3E%3Cellipse cx='-3' cy='-3' rx='2' ry='2.6'/%3E%3Cellipse cx='3' cy='-3' rx='2' ry='2.6'/%3E%3Cellipse cx='-3' cy='3' rx='2' ry='2.6'/%3E%3Cellipse cx='3' cy='3' rx='2' ry='2.6'/%3E%3Cellipse cx='0' cy='9' rx='2' ry='2.6'/%3E%3C/g%3E%3Cpath d='M -8 8 C -15 4, -14 15, -2 14 Z' fill='%235f9e4a'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/labg-base.css">
+<link rel="stylesheet" href="css/style.css">
+<!-- núcleo común de la suite y, enseguida, idioma y tema: i18n.js aplica el
+     tema guardado (germplasmpro:theme) antes de que se pinte la página -->
+<script src="js/labg-core.js"></script>
+<!-- Estudio de figuras y Navegador LABG: módulos compartidos de la suite (íconos de Lucide, ISC; ver LICENSES-TERCEROS.md) -->
+<script src="js/labg-figure-studio.js" defer></script>
+<script src="js/labg-navigator.js" defer></script>
+<script src="js/i18n.js"></script>
+</head>
+<body class="on-home">
+
+<a class="skip-link" href="#main" data-es="Saltar al contenido" data-en="Skip to content">Saltar al contenido</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-row">
+      <a class="brand" href="#b1" id="brand" data-es-title="Inicio de GermplasmPro" data-en-title="GermplasmPro home">
+        <span id="brandLogo"></span>
+        <span>Germplasm<span class="brand-pro">Pro</span></span>
+        <span class="brand-sub">· <span data-l="es">el banco de germoplasma, accesión por accesión</span><span data-l="en">the genebank, accession by accession</span></span>
+      </a>
+      <div class="top-tools">
+        <a class="suite-link" href="https://luisangelbg.github.io/" data-es-title="Volver al portal de la LABG Suite" data-en-title="Back to the LABG Suite portal">
+          <svg class="labg-iso" viewBox="0 0 828 946.2" aria-hidden="true" focusable="false"><defs><linearGradient id="labgIsoHo" gradientUnits="userSpaceOnUse" x1="0" y1="473.1" x2="828" y2="413.1"><stop offset="0" stop-color="#BF8B3C"/><stop offset=".3" stop-color="#C99C49"/><stop offset=".55" stop-color="#D9B05C"/><stop offset=".78" stop-color="#E6C470"/><stop offset="1" stop-color="#F6D985"/></linearGradient><linearGradient id="labgIsoHb"><stop offset="0" stop-color="#FFF8E6" stop-opacity="0"/><stop offset=".5" stop-color="#FFF8E6" stop-opacity=".95"/><stop offset="1" stop-color="#FFF8E6" stop-opacity="0"/></linearGradient><clipPath id="labgIsoHc"><path clip-rule="evenodd" d="M440.8 246.5L421.7 257.7L404.8 247.9L424 236.8ZM318.9 256.4L301.7 266.3L285.7 257.1L302.9 247.2ZM522.2 260.9L438.6 309.1L420.1 298.5L503.7 250.2ZM392.5 269.9L373.4 280.9L356.1 271L375.3 260ZM277 277.3L235 301.6L219.9 292.9L261.9 268.6ZM576.1 291.8L398.2 394.4L380.4 384.1L558.3 281.5ZM348.1 295.6L287.5 330.5L270.1 320.5L330.6 285.6ZM404.3 419.1L577.9 318.9L579.2 318.1C579.6 318 580.7 317.9 581.5 317.6C582.2 317.4 583 317 583.8 316.6C584.5 316.2 585.3 315.8 586 315.5C586.8 315.1 587.6 314.8 588.3 314.4C589 314.1 589.8 313.8 590.6 313.5C591.4 313.2 592.2 313 593 312.9C593.8 312.6 594.6 312.5 595.5 312.4C596.3 312.2 597.1 312.2 597.9 312.1C598.9 312.1 599.7 312.1 600.4 312.1C601.4 312.1 602.2 312.1 603 312.2C603.9 312.3 604.7 312.4 605.5 312.5C606.3 312.7 607.1 313 607.9 313.2C608.7 313.5 609.5 313.9 610.1 314.2C610.9 314.6 611.6 315 612.4 315.5C613.1 315.8 613.8 316.3 614.5 316.7C615.2 317.3 615.8 317.8 616.5 318.3C617.1 318.8 617.8 319.4 618.3 319.9C618.9 320.6 619.5 321.2 620.1 321.9C620.6 322.4 621.1 323.1 621.7 323.8C622.1 324.5 622.6 325.2 623 325.8C623.5 326.5 623.9 327.2 624.4 328C624.8 328.7 625.2 329.4 625.6 330.2C626 330.9 626.4 331.7 626.8 332.3C627.1 333.1 627.5 333.8 627.9 334.6C628.3 335.4 628.6 336.1 628.9 336.9C629.3 337.7 629.6 338.4 630 339.2C630.3 340 630.7 340.7 630.9 341.5C631.2 342.3 631.6 343.1 631.9 343.9C632.1 344.5 632.5 345.3 632.7 346.1C632.9 346.9 633.3 347.7 633.5 348.5C633.7 349.3 634 350.1 634.3 350.9C634.5 351.7 634.8 352.5 635.1 353.3C635.3 354.1 635.7 354.9 635.9 355.7C636.1 356.5 636.5 357.3 636.7 358.1C636.9 358.9 637.2 359.7 637.3 360.5C637.5 361.3 637.7 362.1 638 362.9C638.1 363.8 638.3 364.6 638.5 365.4C638.6 366.2 638.9 367 639.1 367.8C639.2 368.6 639.4 369.4 639.7 370.3C639.9 371.1 640 371.9 640.2 372.7C640.3 373.5 640.5 374.3 640.7 375.2C640.8 376 640.9 376.8 641 377.6C641.1 378.5 641.3 379.3 641.4 380.1C641.5 381 641.5 381.8 641.6 382.6C641.7 383.4 641.7 384.3 641.8 385.1C641.9 385.9 641.9 386.8 642.1 387.6C642.1 388.4 642.2 389.3 642.3 390.1C642.3 390.9 642.4 391.9 642.4 392.7C642.5 393.5 642.6 394.2 642.6 395.2C642.7 396 642.7 396.8 642.9 397.7C642.9 398.5 642.9 399.3 642.9 400.2C642.9 401 642.9 401.8 642.9 402.7C642.9 403.5 642.9 404.3 642.7 405.2C642.6 406 642.6 406.8 642.5 407.7C642.4 408.5 642.3 409.3 642.2 410.1C642.1 411 641.9 411.8 641.7 412.6C641.6 413.4 641.5 414.2 641.3 415.1C641.1 415.9 640.9 416.7 640.8 417.5C640.6 418.3 640.3 419.1 640.2 420C640 420.8 639.8 421.6 639.6 422.4C639.4 423.2 639.2 424 638.9 424.8C638.6 425.6 638.4 426.4 638.2 427.2C637.8 428 637.6 428.8 637.3 429.6C637 430.4 636.8 431.2 636.6 432C636.4 432.8 636.2 433.6 636.1 434.5C636.1 435.3 636.2 436.1 636.4 436.9C636.5 437.8 636.8 438.6 637 439.3C637.4 440.1 637.8 440.9 638.2 441.6C638.6 442.2 639.1 442.9 639.6 443.7C640 444.4 640.5 445.1 640.9 445.8C641.4 446.5 641.8 447.1 642.3 447.9C642.6 448.6 643.1 449.3 643.4 450.1C643.9 450.8 644.2 451.6 644.6 452.4C644.9 453.1 645.3 453.9 645.6 454.7C645.9 455.5 646.2 456.2 646.5 456.9C646.8 457.7 647.1 458.5 647.4 459.3C647.6 460.1 647.9 460.9 648.2 461.7C648.4 462.5 648.7 463.3 648.9 464.1C649.1 464.9 649.2 465.7 649.5 466.5C649.7 467.3 649.8 468.2 650 469C650.2 469.8 650.4 470.6 650.5 471.4C650.6 472.3 650.8 473.1 651 473.9C651.1 474.7 651.3 475.5 651.4 476.4C651.5 477.2 651.7 478 651.9 478.8C652 479.6 652.1 480.5 652.2 481.3C652.3 482.1 652.4 483.1 652.5 483.9C652.7 484.7 652.7 485.4 652.8 486.4C652.8 487.2 652.9 488 652.9 488.9C652.9 489.7 653 490.5 653 491.4C653 492.2 653 493 653 493.9C653 494.7 653 495.5 653 496.4C653 497.2 653 498 653 498.9C653 499.7 653 500.5 652.9 501.4C652.9 502.2 652.9 503 652.9 503.9C652.9 504.7 652.8 505.5 652.8 506.4C652.7 507.2 652.7 508 652.5 508.9C652.5 509.7 652.4 510.5 652.3 511.4C652.3 512.2 652.2 513 652.1 513.8C652 514.7 651.9 515.5 651.7 516.3C651.6 517.1 651.5 518.1 651.3 518.9C651.2 519.6 651.1 520.4 651 521.4C650.8 522.2 650.6 523 650.5 523.8C650.4 524.7 650.3 525.5 650 526.3C649.9 527.1 649.7 527.9 649.6 528.8C649.4 529.6 649.2 530.4 649 531.2C648.9 532 648.7 532.8 648.6 533.7C648.3 534.5 648.1 535.3 648 536.1C647.8 536.9 647.5 537.7 647.3 538.5C647.2 539.3 647 540.2 646.7 541C646.4 541.8 646.2 542.6 645.9 543.4C645.7 544 645.4 544.8 645 545.6C644.8 546.4 644.5 547.2 644.1 548C643.8 548.7 643.5 549.5 643.2 550.3C642.9 551.1 642.5 551.8 642.2 552.6C641.8 553.4 641.6 554.2 641.3 554.9C640.9 555.7 640.6 556.5 640.2 557.3C639.9 558 639.6 558.8 639.2 559.5C638.8 560.2 638.4 561 638 561.7C637.6 562.4 637.2 563.2 636.7 563.9C636.4 564.6 635.9 565.4 635.4 566C635 566.7 634.5 567.4 634 568.1C633.5 568.8 633.1 569.5 632.5 570.2C632 570.7 631.5 571.4 630.9 572.1C630.4 572.7 629.9 573.3 629.3 573.9C628.7 574.6 628.2 575.2 627.6 575.7C626.9 576.3 626.3 576.9 625.6 577.4C625.1 578 624.4 578.5 623.7 579C623 579.5 622.3 580 621.7 580.4C621 581 620.3 581.4 619.6 581.9C618.9 582.3 618 582.9 617.5 583.4C617.2 583.8 617.3 584.4 617.2 584.6L403.2 708.2L380.8 695.3L380.8 575.7L220.4 483.2L218.9 482.3C218.5 482.1 217.4 481.9 216.6 481.7C215.9 481.3 215.1 480.9 214.3 480.5C213.6 480.3 212.8 479.9 212.1 479.7C211.3 479.5 210.3 479.4 209.5 479.4C208.7 479.5 207.5 479.7 207 479.9C206.7 479.9 207 479.9 207 479.9L207 596.8L175.1 578.4L175.1 319.8L203.6 303.3L404.3 419.1ZM400.8 328.5L342.4 362.2L325.6 352.6L384.1 318.8ZM381.2 446.6L381.2 536.9L206.8 436.2L206.8 345.9ZM440.3 521.4L440.3 561.1L605.9 465.6L606.9 464.9C607.2 465.3 607.7 466.4 608.3 467C608.9 467.7 609.7 468 610.4 468.5C610.9 469 611.7 469.5 612.3 470.1C612.9 470.6 613.4 471.2 614 471.9C614.5 472.6 614.9 473.3 615.4 473.9C615.8 474.7 616.2 475.4 616.5 476.2C616.9 476.9 617.2 477.7 617.5 478.5C617.9 479.3 618.1 480.1 618.3 480.9C618.7 481.7 618.9 482.5 619.1 483.3C619.4 484.1 619.6 484.9 619.8 485.7C619.9 486.5 620.2 487.3 620.3 488.1C620.4 489 620.6 489.8 620.7 490.6C620.9 491.4 621 492.3 621 493.1C621.1 493.9 621.2 494.8 621.3 495.6C621.3 496.4 621.4 497.2 621.4 498.1C621.5 498.9 621.5 499.7 621.7 500.6C621.7 501.4 621.8 502.2 621.8 503.1C621.8 503.9 621.8 504.7 621.8 505.6C621.8 506.4 621.8 507.2 621.8 508.1C621.8 508.9 621.7 509.7 621.7 510.6C621.7 511.4 621.5 512.2 621.4 513.2C621.4 513.9 621.3 514.7 621.2 515.5C621.1 516.5 621.1 517.3 621 518.1C620.9 519 620.7 519.8 620.6 520.6C620.5 521.4 620.5 522.3 620.3 523.1C620.2 523.9 620.1 524.8 619.9 525.6C619.7 526.4 619.5 527.2 619.4 528C619.1 528.8 618.8 529.6 618.6 530.4C618.2 531.2 618 532 617.7 532.8C617.3 533.4 617 534.2 616.6 535C616.3 535.8 616 536.5 615.6 537.3C615.3 538.1 614.9 538.8 614.6 539.6C614.1 540.3 613.8 541.1 613.3 541.8C612.9 542.4 612.4 543.1 612 543.8C611.5 544.5 610.9 545.2 610.4 545.8C609.8 546.4 609.2 547 608.7 547.6C608.1 548.1 607.4 548.7 606.7 549.3C606.1 549.7 605.5 550.3 604.8 550.8C604.1 551.3 603.4 552 602.8 552.4C602.2 552.6 601.1 552.8 600.8 552.8C600.4 552.8 600.6 552.6 600.6 552.6L415.5 659.3L415.5 455.6L595.9 351.5L597.6 350.6C597.8 350.8 598.6 351.8 599.3 352.3C600 352.6 600.9 352.6 601.7 352.9C602.5 353.1 603.3 353.6 604 353.9C604.7 354.3 605.4 354.8 606 355.4C606.6 355.9 607.2 356.5 607.7 357.2C608.3 357.9 608.8 358.6 609.2 359.3C609.7 359.9 610.1 360.6 610.5 361.4C610.9 362.1 611.3 362.9 611.6 363.6C612 364.4 612.3 365.2 612.6 366C612.9 366.7 613.2 367.5 613.4 368.3C613.8 369.1 614 369.9 614.4 370.7C614.6 371.4 614.8 372.2 615 373C615.2 373.8 615.4 374.8 615.5 375.6C615.7 376.4 615.8 377.1 616 377.9C616.1 378.9 616.2 379.7 616.3 380.5C616.3 381.4 616.4 382.2 616.5 383C616.5 383.8 616.6 384.7 616.6 385.5C616.8 386.3 616.8 387.2 616.9 388C616.9 388.8 616.9 389.7 616.9 390.5C616.9 391.3 616.9 392.2 616.9 393C616.8 393.8 616.8 394.7 616.8 395.5C616.6 396.3 616.5 397.2 616.5 398C616.4 398.8 616.3 399.6 616.2 400.5C616.1 401.3 615.8 402.1 615.7 402.9C615.5 403.8 615.4 404.6 615.2 405.4C614.9 406.2 614.7 407 614.5 407.8C614.2 408.6 614.1 409.4 613.8 410.2C613.6 411 613.3 411.8 613 412.6C612.8 413.4 612.4 414.2 612.1 414.9C611.7 415.7 611.3 416.5 610.9 417.2C610.5 417.8 610 418.5 609.6 419.2C609 419.9 608.5 420.6 608 421.3C607.4 421.8 606.8 422.5 606.3 423.1C605.7 423.7 605.1 424.3 604.6 424.9C604 425.5 603.4 426.2 602.8 426.7C602.3 427.3 601.6 428 601 428.4C600.6 428.9 600 429.1 599.8 429.2L440.3 521.4ZM596.1 417.6L576.9 428.8L531 402.3L550.4 391.2ZM353.9 441L293.6 475.8L276.3 465.7L336.5 431ZM498.1 481.7L478.6 492.9L423.7 461.3L443.2 450ZM374.5 483.1L343.5 501L326.6 491.3L357.6 473.4ZM603.5 540.4L584 551.7L531.7 521.5L551.2 510.2ZM272.6 534.1L272.6 633.6L255.3 623.6L255.3 524.1ZM320.8 561.3L320.8 596.5L303.7 586.6L303.7 551.5ZM363.7 585.2L363.7 684.2L348.4 675.4L348.4 576.4ZM320.8 609.7L320.8 629.8L302.9 619.4L302.9 599.3ZM320.8 642.9L320.8 661.4L303.3 651.2L303.3 632.9Z"/></clipPath></defs><path fill="url(#labgIsoHo)" fill-rule="evenodd" d="M414 0L828 232.9L828 713.3L414 946.2L0 713.3L0 232.9ZM414 36.6L796 251.5L796 694.7L414 909.6L32 694.7L32 251.5Z"/><path fill="#000" d="M414 36.6L796 251.5L796 694.7L414 909.6L32 694.7L32 251.5Z"/><path class="iso-cubo" fill="url(#labgIsoHo)" fill-rule="evenodd" d="M440.8 246.5L421.7 257.7L404.8 247.9L424 236.8ZM318.9 256.4L301.7 266.3L285.7 257.1L302.9 247.2ZM522.2 260.9L438.6 309.1L420.1 298.5L503.7 250.2ZM392.5 269.9L373.4 280.9L356.1 271L375.3 260ZM277 277.3L235 301.6L219.9 292.9L261.9 268.6ZM576.1 291.8L398.2 394.4L380.4 384.1L558.3 281.5ZM348.1 295.6L287.5 330.5L270.1 320.5L330.6 285.6ZM404.3 419.1L577.9 318.9L579.2 318.1C579.6 318 580.7 317.9 581.5 317.6C582.2 317.4 583 317 583.8 316.6C584.5 316.2 585.3 315.8 586 315.5C586.8 315.1 587.6 314.8 588.3 314.4C589 314.1 589.8 313.8 590.6 313.5C591.4 313.2 592.2 313 593 312.9C593.8 312.6 594.6 312.5 595.5 312.4C596.3 312.2 597.1 312.2 597.9 312.1C598.9 312.1 599.7 312.1 600.4 312.1C601.4 312.1 602.2 312.1 603 312.2C603.9 312.3 604.7 312.4 605.5 312.5C606.3 312.7 607.1 313 607.9 313.2C608.7 313.5 609.5 313.9 610.1 314.2C610.9 314.6 611.6 315 612.4 315.5C613.1 315.8 613.8 316.3 614.5 316.7C615.2 317.3 615.8 317.8 616.5 318.3C617.1 318.8 617.8 319.4 618.3 319.9C618.9 320.6 619.5 321.2 620.1 321.9C620.6 322.4 621.1 323.1 621.7 323.8C622.1 324.5 622.6 325.2 623 325.8C623.5 326.5 623.9 327.2 624.4 328C624.8 328.7 625.2 329.4 625.6 330.2C626 330.9 626.4 331.7 626.8 332.3C627.1 333.1 627.5 333.8 627.9 334.6C628.3 335.4 628.6 336.1 628.9 336.9C629.3 337.7 629.6 338.4 630 339.2C630.3 340 630.7 340.7 630.9 341.5C631.2 342.3 631.6 343.1 631.9 343.9C632.1 344.5 632.5 345.3 632.7 346.1C632.9 346.9 633.3 347.7 633.5 348.5C633.7 349.3 634 350.1 634.3 350.9C634.5 351.7 634.8 352.5 635.1 353.3C635.3 354.1 635.7 354.9 635.9 355.7C636.1 356.5 636.5 357.3 636.7 358.1C636.9 358.9 637.2 359.7 637.3 360.5C637.5 361.3 637.7 362.1 638 362.9C638.1 363.8 638.3 364.6 638.5 365.4C638.6 366.2 638.9 367 639.1 367.8C639.2 368.6 639.4 369.4 639.7 370.3C639.9 371.1 640 371.9 640.2 372.7C640.3 373.5 640.5 374.3 640.7 375.2C640.8 376 640.9 376.8 641 377.6C641.1 378.5 641.3 379.3 641.4 380.1C641.5 381 641.5 381.8 641.6 382.6C641.7 383.4 641.7 384.3 641.8 385.1C641.9 385.9 641.9 386.8 642.1 387.6C642.1 388.4 642.2 389.3 642.3 390.1C642.3 390.9 642.4 391.9 642.4 392.7C642.5 393.5 642.6 394.2 642.6 395.2C642.7 396 642.7 396.8 642.9 397.7C642.9 398.5 642.9 399.3 642.9 400.2C642.9 401 642.9 401.8 642.9 402.7C642.9 403.5 642.9 404.3 642.7 405.2C642.6 406 642.6 406.8 642.5 407.7C642.4 408.5 642.3 409.3 642.2 410.1C642.1 411 641.9 411.8 641.7 412.6C641.6 413.4 641.5 414.2 641.3 415.1C641.1 415.9 640.9 416.7 640.8 417.5C640.6 418.3 640.3 419.1 640.2 420C640 420.8 639.8 421.6 639.6 422.4C639.4 423.2 639.2 424 638.9 424.8C638.6 425.6 638.4 426.4 638.2 427.2C637.8 428 637.6 428.8 637.3 429.6C637 430.4 636.8 431.2 636.6 432C636.4 432.8 636.2 433.6 636.1 434.5C636.1 435.3 636.2 436.1 636.4 436.9C636.5 437.8 636.8 438.6 637 439.3C637.4 440.1 637.8 440.9 638.2 441.6C638.6 442.2 639.1 442.9 639.6 443.7C640 444.4 640.5 445.1 640.9 445.8C641.4 446.5 641.8 447.1 642.3 447.9C642.6 448.6 643.1 449.3 643.4 450.1C643.9 450.8 644.2 451.6 644.6 452.4C644.9 453.1 645.3 453.9 645.6 454.7C645.9 455.5 646.2 456.2 646.5 456.9C646.8 457.7 647.1 458.5 647.4 459.3C647.6 460.1 647.9 460.9 648.2 461.7C648.4 462.5 648.7 463.3 648.9 464.1C649.1 464.9 649.2 465.7 649.5 466.5C649.7 467.3 649.8 468.2 650 469C650.2 469.8 650.4 470.6 650.5 471.4C650.6 472.3 650.8 473.1 651 473.9C651.1 474.7 651.3 475.5 651.4 476.4C651.5 477.2 651.7 478 651.9 478.8C652 479.6 652.1 480.5 652.2 481.3C652.3 482.1 652.4 483.1 652.5 483.9C652.7 484.7 652.7 485.4 652.8 486.4C652.8 487.2 652.9 488 652.9 488.9C652.9 489.7 653 490.5 653 491.4C653 492.2 653 493 653 493.9C653 494.7 653 495.5 653 496.4C653 497.2 653 498 653 498.9C653 499.7 653 500.5 652.9 501.4C652.9 502.2 652.9 503 652.9 503.9C652.9 504.7 652.8 505.5 652.8 506.4C652.7 507.2 652.7 508 652.5 508.9C652.5 509.7 652.4 510.5 652.3 511.4C652.3 512.2 652.2 513 652.1 513.8C652 514.7 651.9 515.5 651.7 516.3C651.6 517.1 651.5 518.1 651.3 518.9C651.2 519.6 651.1 520.4 651 521.4C650.8 522.2 650.6 523 650.5 523.8C650.4 524.7 650.3 525.5 650 526.3C649.9 527.1 649.7 527.9 649.6 528.8C649.4 529.6 649.2 530.4 649 531.2C648.9 532 648.7 532.8 648.6 533.7C648.3 534.5 648.1 535.3 648 536.1C647.8 536.9 647.5 537.7 647.3 538.5C647.2 539.3 647 540.2 646.7 541C646.4 541.8 646.2 542.6 645.9 543.4C645.7 544 645.4 544.8 645 545.6C644.8 546.4 644.5 547.2 644.1 548C643.8 548.7 643.5 549.5 643.2 550.3C642.9 551.1 642.5 551.8 642.2 552.6C641.8 553.4 641.6 554.2 641.3 554.9C640.9 555.7 640.6 556.5 640.2 557.3C639.9 558 639.6 558.8 639.2 559.5C638.8 560.2 638.4 561 638 561.7C637.6 562.4 637.2 563.2 636.7 563.9C636.4 564.6 635.9 565.4 635.4 566C635 566.7 634.5 567.4 634 568.1C633.5 568.8 633.1 569.5 632.5 570.2C632 570.7 631.5 571.4 630.9 572.1C630.4 572.7 629.9 573.3 629.3 573.9C628.7 574.6 628.2 575.2 627.6 575.7C626.9 576.3 626.3 576.9 625.6 577.4C625.1 578 624.4 578.5 623.7 579C623 579.5 622.3 580 621.7 580.4C621 581 620.3 581.4 619.6 581.9C618.9 582.3 618 582.9 617.5 583.4C617.2 583.8 617.3 584.4 617.2 584.6L403.2 708.2L380.8 695.3L380.8 575.7L220.4 483.2L218.9 482.3C218.5 482.1 217.4 481.9 216.6 481.7C215.9 481.3 215.1 480.9 214.3 480.5C213.6 480.3 212.8 479.9 212.1 479.7C211.3 479.5 210.3 479.4 209.5 479.4C208.7 479.5 207.5 479.7 207 479.9C206.7 479.9 207 479.9 207 479.9L207 596.8L175.1 578.4L175.1 319.8L203.6 303.3L404.3 419.1ZM400.8 328.5L342.4 362.2L325.6 352.6L384.1 318.8ZM381.2 446.6L381.2 536.9L206.8 436.2L206.8 345.9ZM440.3 521.4L440.3 561.1L605.9 465.6L606.9 464.9C607.2 465.3 607.7 466.4 608.3 467C608.9 467.7 609.7 468 610.4 468.5C610.9 469 611.7 469.5 612.3 470.1C612.9 470.6 613.4 471.2 614 471.9C614.5 472.6 614.9 473.3 615.4 473.9C615.8 474.7 616.2 475.4 616.5 476.2C616.9 476.9 617.2 477.7 617.5 478.5C617.9 479.3 618.1 480.1 618.3 480.9C618.7 481.7 618.9 482.5 619.1 483.3C619.4 484.1 619.6 484.9 619.8 485.7C619.9 486.5 620.2 487.3 620.3 488.1C620.4 489 620.6 489.8 620.7 490.6C620.9 491.4 621 492.3 621 493.1C621.1 493.9 621.2 494.8 621.3 495.6C621.3 496.4 621.4 497.2 621.4 498.1C621.5 498.9 621.5 499.7 621.7 500.6C621.7 501.4 621.8 502.2 621.8 503.1C621.8 503.9 621.8 504.7 621.8 505.6C621.8 506.4 621.8 507.2 621.8 508.1C621.8 508.9 621.7 509.7 621.7 510.6C621.7 511.4 621.5 512.2 621.4 513.2C621.4 513.9 621.3 514.7 621.2 515.5C621.1 516.5 621.1 517.3 621 518.1C620.9 519 620.7 519.8 620.6 520.6C620.5 521.4 620.5 522.3 620.3 523.1C620.2 523.9 620.1 524.8 619.9 525.6C619.7 526.4 619.5 527.2 619.4 528C619.1 528.8 618.8 529.6 618.6 530.4C618.2 531.2 618 532 617.7 532.8C617.3 533.4 617 534.2 616.6 535C616.3 535.8 616 536.5 615.6 537.3C615.3 538.1 614.9 538.8 614.6 539.6C614.1 540.3 613.8 541.1 613.3 541.8C612.9 542.4 612.4 543.1 612 543.8C611.5 544.5 610.9 545.2 610.4 545.8C609.8 546.4 609.2 547 608.7 547.6C608.1 548.1 607.4 548.7 606.7 549.3C606.1 549.7 605.5 550.3 604.8 550.8C604.1 551.3 603.4 552 602.8 552.4C602.2 552.6 601.1 552.8 600.8 552.8C600.4 552.8 600.6 552.6 600.6 552.6L415.5 659.3L415.5 455.6L595.9 351.5L597.6 350.6C597.8 350.8 598.6 351.8 599.3 352.3C600 352.6 600.9 352.6 601.7 352.9C602.5 353.1 603.3 353.6 604 353.9C604.7 354.3 605.4 354.8 606 355.4C606.6 355.9 607.2 356.5 607.7 357.2C608.3 357.9 608.8 358.6 609.2 359.3C609.7 359.9 610.1 360.6 610.5 361.4C610.9 362.1 611.3 362.9 611.6 363.6C612 364.4 612.3 365.2 612.6 366C612.9 366.7 613.2 367.5 613.4 368.3C613.8 369.1 614 369.9 614.4 370.7C614.6 371.4 614.8 372.2 615 373C615.2 373.8 615.4 374.8 615.5 375.6C615.7 376.4 615.8 377.1 616 377.9C616.1 378.9 616.2 379.7 616.3 380.5C616.3 381.4 616.4 382.2 616.5 383C616.5 383.8 616.6 384.7 616.6 385.5C616.8 386.3 616.8 387.2 616.9 388C616.9 388.8 616.9 389.7 616.9 390.5C616.9 391.3 616.9 392.2 616.9 393C616.8 393.8 616.8 394.7 616.8 395.5C616.6 396.3 616.5 397.2 616.5 398C616.4 398.8 616.3 399.6 616.2 400.5C616.1 401.3 615.8 402.1 615.7 402.9C615.5 403.8 615.4 404.6 615.2 405.4C614.9 406.2 614.7 407 614.5 407.8C614.2 408.6 614.1 409.4 613.8 410.2C613.6 411 613.3 411.8 613 412.6C612.8 413.4 612.4 414.2 612.1 414.9C611.7 415.7 611.3 416.5 610.9 417.2C610.5 417.8 610 418.5 609.6 419.2C609 419.9 608.5 420.6 608 421.3C607.4 421.8 606.8 422.5 606.3 423.1C605.7 423.7 605.1 424.3 604.6 424.9C604 425.5 603.4 426.2 602.8 426.7C602.3 427.3 601.6 428 601 428.4C600.6 428.9 600 429.1 599.8 429.2L440.3 521.4ZM596.1 417.6L576.9 428.8L531 402.3L550.4 391.2ZM353.9 441L293.6 475.8L276.3 465.7L336.5 431ZM498.1 481.7L478.6 492.9L423.7 461.3L443.2 450ZM374.5 483.1L343.5 501L326.6 491.3L357.6 473.4ZM603.5 540.4L584 551.7L531.7 521.5L551.2 510.2ZM272.6 534.1L272.6 633.6L255.3 623.6L255.3 524.1ZM320.8 561.3L320.8 596.5L303.7 586.6L303.7 551.5ZM363.7 585.2L363.7 684.2L348.4 675.4L348.4 576.4ZM320.8 609.7L320.8 629.8L302.9 619.4L302.9 599.3ZM320.8 642.9L320.8 661.4L303.3 651.2L303.3 632.9Z"/><g clip-path="url(#labgIsoHc)"><rect class="iso-brillo" x="-300" y="-40" width="220" height="1030" fill="url(#labgIsoHb)" transform="skewX(-18)"/></g></svg>
+          <span class="suite-text">LABG Suite</span>
+        </a>
+        <div class="seg lang-seg" role="group" aria-label="Idioma / Language">
+          <button type="button" data-lang="es" title="Español">ES</button><button type="button" data-lang="en" title="English">EN</button>
+        </div>
+        <button type="button" class="icon-btn theme-btn" id="themeBtn" title="Cambiar el tema" aria-label="Cambiar el tema">
+          <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+          <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+        </button>
+        <button type="button" class="icon-btn" id="helpBtn" data-es-title="Atajos de teclado (?)" data-en-title="Keyboard shortcuts (?)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.6"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </div>
+    <nav class="stepper" id="stepper" aria-label="Bloques"></nav>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+
+<!-- ==================== BLOQUE 1 · PORTADA ==================== -->
+<section class="step-panel active" id="panel-1">
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="eyebrow"><span data-l="es">Recursos fitogenéticos · conservación ex situ e in situ · cualquier especie</span><span data-l="en">Plant genetic resources · ex situ and in situ conservation · any species</span></div>
+        <h1><span data-l="es">El banco, <span class="accent">accesión</span> por <span class="gold">accesión</span></span><span data-l="en">The genebank, <span class="accent">accession</span> by <span class="gold">accession</span></span></h1>
+        <p class="lead"><span data-l="es">La libreta de campo, el pasaporte, el mapa de colecta y el inventario de tu colección en un solo lugar, sea
+          cual sea la especie y sea cual sea la forma en que la conservas: <b>semillas</b> en cámara, <b>colecciones
+          vivas</b> en campo, <b>frascos in vitro</b>, <b>criotubos</b> o poblaciones conservadas <b>in situ</b> y
+          <b>en la parcela</b>. Descriptores <b>MCPD</b> completos, <b>control de duplicados</b>, <b>mapas</b> sin
+          internet, <b>diversidad geográfica</b> y <b>vacíos de colecta</b>. Sin hojas de cálculo sueltas, sin portales externos y sin
+          que tus datos salgan de tu computadora.</span><span data-l="en">Your field notebook, passport data, collecting map and inventory in one place, whatever the species and
+          whatever way you conserve it: <b>seeds</b> in a cold store, <b>living collections</b> in the field,
+          <b>in-vitro jars</b>, <b>cryovials</b>, or populations conserved <b>in situ</b> and <b>on farm</b>.
+          Complete <b>MCPD</b> descriptors, <b>duplicate control</b>, offline <b>maps</b>, <b>geographic
+          diversity</b> and <b>collecting gaps</b>. No spreadsheets, no external portals, and nothing leaves your
+          computer.</span></p>
+        <div class="hero-cta">
+          <button class="btn btn-primary btn-lg" data-go="2"><span data-l="es">Cargar mis accesiones →</span><span data-l="en">Load my accessions →</span></button>
+          <button class="btn btn-secondary btn-lg" id="goSim"><span data-l="es">Prueba el simulador ↓</span><span data-l="en">Try the simulator ↓</span></button>
+          <button class="btn btn-ghost btn-lg" id="citeBtn"><span data-l="es">Cómo citar</span><span data-l="en">How to cite</span></button>
+        </div>
+        <div class="badge-row">
+          <span class="badge ok"><span data-l="es">Cualquier cultivo, árbol o pariente silvestre</span><span data-l="en">Any crop, tree or wild relative</span></span>
+          <span class="badge ok"><span data-l="es">Ex situ e in situ</span><span data-l="en">Ex situ and in situ</span></span>
+          <span class="badge ok"><span data-l="es">Funciona sin internet</span><span data-l="en">Works offline</span></span>
+          <span class="badge ok"><span data-l="es">Descriptores FAO/Bioversity (MCPD v2.1)</span><span data-l="en">FAO/Bioversity descriptors (MCPD v2.1)</span></span>
+          <span class="badge ok"><span data-l="es">Español e inglés · tema claro y oscuro</span><span data-l="en">Spanish and English · light and dark theme</span></span>
+        </div>
+      </div>
+      <div class="hero-stage">
+        <div id="heroArt" role="img" aria-label="Accesiones de un banco de germoplasma sobre una cuadrícula de colecta"></div>
+        <button class="hero-caption" id="artNew" style="cursor:pointer"><span data-l="es">otra colecta al azar ↻</span><span data-l="en">another random collection ↻</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- los tipos de banco ---------- -->
+  <h2 class="section-title"><span data-l="es">No hay un solo tipo de banco de germoplasma</span><span data-l="en">There is no single kind of genebank</span></h2>
+  <p class="section-sub"><span data-l="es">Un banco de semillas sólo sirve para las especies cuya semilla tolera secarse y congelarse. Lo demás —los
+    árboles frutales y forestales de semilla recalcitrante, la papa, la yuca, el agave, la vainilla, el chayote, todo
+    lo que se propaga por estaca, tubérculo o hijuelo— se conserva en colecciones vivas, en frascos de cultivo de
+    tejidos o en nitrógeno líquido. Y nada de eso sustituye a la conservación <b>in situ</b>, la única en la que la
+    población sigue evolucionando en su sitio o en la parcela de quien la siembra. GermplasmPro trabaja con las cinco
+    rutas a la vez, porque una colección real casi siempre usa varias. Toca una tarjeta para simularla.</span><span data-l="en">A seed bank only works for species whose seed tolerates drying and freezing. Everything else —fruit and forest
+    trees with recalcitrant seed, potato, cassava, agave, vanilla, chayote, anything propagated by cutting, tuber or
+    offset— is conserved in living collections, in tissue-culture jars or in liquid nitrogen. And none of that
+    replaces <b>in situ</b> conservation, the only route in which the population keeps evolving where it belongs or
+    in the field of whoever sows it. GermplasmPro works with all five routes at once, because a real collection
+    almost always uses several. Tap a card to simulate it.</span></p>
+  <div class="feature-grid" id="methodGrid"></div>
+  <div class="trick">
+    <b data-es="¿Y el banco de ADN?" data-en="What about the DNA bank?">¿Y el banco de ADN?</b>
+    <span data-l="es"> Conserva información, no material vivo: de un tubo de ADN no sale una planta. GermplasmPro lo
+    registra en el pasaporte, junto con las muestras de herbario y de polen, pero no lo simula aquí porque no hay
+    ciclo de regeneración que seguir.</span><span data-l="en"> It conserves information, not living material: no plant grows back from a DNA tube. GermplasmPro records it
+    in the passport, together with herbarium and pollen samples, but does not simulate it here because there is no
+    regeneration cycle to follow.</span>
+  </div>
+
+  <!-- ---------- el flujo del banco ---------- -->
+  <h2 class="section-title"><span data-l="es">El camino de una accesión</span><span data-l="en">The life of an accession</span></h2>
+  <p class="section-sub"><span data-l="es">La app sigue el orden en que de verdad ocurre el trabajo de una colección de recursos fitogenéticos: primero la
+    colecta y su pasaporte, después la limpieza y los duplicados, luego el análisis de lo que tienes y de lo que te
+    falta, y al final el manejo del material vivo y los papeles.</span><span data-l="en">The app follows the order in which work on a plant genetic resources collection actually happens: first the
+    collection and its passport data, then cleaning and duplicates, then the analysis of what you hold and what you
+    are missing, and finally the management of the living material and the paperwork.</span></p>
+  <div class="workflow">
+    <div class="wf-step"><div class="wf-n" data-es="Paso 1" data-en="Step 1">Paso 1</div><div class="wf-t"><span data-l="es">Colectar</span><span data-l="en">Collect</span></div><div class="wf-d"><span data-l="es">sitio, altitud, informante</span><span data-l="en">site, elevation, informant</span></div></div>
+    <div class="wf-step"><div class="wf-n" data-es="Paso 2" data-en="Step 2">Paso 2</div><div class="wf-t"><span data-l="es">Registrar</span><span data-l="en">Register</span></div><div class="wf-d"><span data-l="es">pasaporte MCPD</span><span data-l="en">MCPD passport</span></div></div>
+    <div class="wf-step"><div class="wf-n" data-es="Paso 3" data-en="Step 3">Paso 3</div><div class="wf-t"><span data-l="es">Depurar</span><span data-l="en">Clean</span></div><div class="wf-d"><span data-l="es">errores y duplicados</span><span data-l="en">errors and duplicates</span></div></div>
+    <div class="wf-step"><div class="wf-n" data-es="Paso 4" data-en="Step 4">Paso 4</div><div class="wf-t"><span data-l="es">Ubicar</span><span data-l="en">Map</span></div><div class="wf-d"><span data-l="es">mapas y rejillas</span><span data-l="en">maps and grids</span></div></div>
+    <div class="wf-step"><div class="wf-n" data-es="Paso 5" data-en="Step 5">Paso 5</div><div class="wf-t"><span data-l="es">Analizar</span><span data-l="en">Analyse</span></div><div class="wf-d"><span data-l="es">diversidad y vacíos</span><span data-l="en">diversity and gaps</span></div></div>
+    <div class="wf-step"><div class="wf-n" data-es="Paso 6" data-en="Step 6">Paso 6</div><div class="wf-t"><span data-l="es">Conservar</span><span data-l="en">Conserve</span></div><div class="wf-d"><span data-l="es">la ruta que le toque a cada especie</span><span data-l="en">whichever route each species needs</span></div></div>
+    <div class="wf-step"><div class="wf-n" data-es="Paso 7" data-en="Step 7">Paso 7</div><div class="wf-t"><span data-l="es">Entregar</span><span data-l="en">Deliver</span></div><div class="wf-d"><span data-l="es">etiquetas e informe</span><span data-l="en">labels and report</span></div></div>
+  </div>
+
+  <!-- ---------- simulador ---------- -->
+  <h2 class="section-title" id="simulator"><span data-l="es">Pruébalo: la vida de una accesión, por la ruta que elijas</span><span data-l="en">Try it: the life of an accession, along the route you choose</span></h2>
+  <p class="section-sub"><span data-l="es">Elige una especie y una forma de conservarla. El simulador sigue a la accesión durante décadas con dos relojes
+    en marcha: el del <b>material</b> —la germinación del lote según la ecuación de Ellis y Roberts, las plantas vivas
+    de la parcela, los frascos del laboratorio, los explantes que rebrotan al descongelar o el tamaño de la población
+    en su sitio— y el de la <b>integridad genética</b>, porque cada cuello de botella vuelve a sortear las frecuencias
+    alélicas y se lleva los alelos raros. Si el camino no le queda a la especie, la app te lo dice y te propone el que
+    sí.</span><span data-l="en">Pick a species and a way of conserving it. The simulator follows the accession for decades with two clocks
+    running: the <b>material</b> one —lot germination from the Ellis and Roberts equation, living plants in the plot,
+    jars in the laboratory, explants that regrow after thawing, or the size of the population at its site— and the
+    <b>genetic integrity</b> one, because every bottleneck re-draws the allele frequencies and takes the rare alleles
+    with it. If the route does not suit the species, the app says so and offers the one that does.</span></p>
+
+  <div class="playground">
+    <div class="pg-controls">
+      <label class="inline-label"><span data-l="es">Escenario</span><span data-l="en">Scenario</span>
+        <select class="sel" id="simPreset"></select>
+      </label>
+      <label class="inline-label"><span data-l="es">Forma de conservación</span><span data-l="en">Conservation method</span>
+        <select class="sel" id="simMethod"></select>
+      </label>
+      <label class="inline-label"><span data-l="es">Especie</span><span data-l="en">Species</span>
+        <select class="sel" id="simSpecies"></select>
+      </label>
+      <label class="inline-label" id="wrapBehaviour" style="display:none"><span data-l="es">Su semilla es</span><span data-l="en">Its seed is</span>
+        <select class="sel" id="simBehaviour"></select>
+      </label>
+      <label class="inline-label" id="wrapKE" style="display:none">K<sub>E</sub>
+        <input class="inp" id="simKE" type="number" step="0.001" style="width:96px">
+      </label>
+      <label class="inline-label" id="wrapCW" style="display:none">C<sub>W</sub>
+        <input class="inp" id="simCW" type="number" step="0.001" style="width:96px">
+      </label>
+      <button class="btn btn-secondary btn-sm" id="simSeed"><span data-l="es">Otra corrida al azar ↻</span><span data-l="en">Another random run ↻</span></button>
+    </div>
+
+    <div id="simVerdict"></div>
+
+    <div class="sim-grid">
+      <div class="pg-pane">
+        <div class="pg-title"><span data-l="es">El estado del material · líneas verticales = ciclos (regeneración, resiembra, generación) · puntos = pruebas de germinación</span><span data-l="en">The state of the material · vertical lines = cycles (regeneration, replanting, generation) · dots = germination tests</span></div>
+        <div id="simViab"></div>
+      </div>
+      <div class="pg-pane">
+        <div class="pg-title"><span data-l="es">Lo que queda de la diversidad original</span><span data-l="en">What is left of the original diversity</span></div>
+        <div id="simDiv"></div>
+        <div class="legend" id="simDivLegend"></div>
+      </div>
+    </div>
+
+    <div class="field-grid" style="margin-top:14px" id="simSliders"></div>
+    <div class="stat-row" id="simStats"></div>
+    <div class="sim-note" id="simNote"></div>
+  </div>
+
+  <!-- ---------- los diez bloques ---------- -->
+  <h2 class="section-title"><span data-l="es">Los diez bloques</span><span data-l="en">The ten blocks</span></h2>
+  <p class="section-sub"><span data-l="es">Cada bloque hace una parte del trabajo y le entrega el resultado al siguiente. Se van abriendo conforme se
+    terminan; el Bloque 1 —esta portada y el simulador— ya está listo.</span><span data-l="en">Each block does one part of the job and hands the result to the next. They open as they are finished; Block 1
+    —this home page and the simulator— is ready.</span></p>
+  <div class="feature-grid" id="blockGrid"></div>
+
+  <!-- ---------- qué corre dónde ---------- -->
+  <h2 class="section-title"><span data-l="es">Qué corre dónde</span><span data-l="en">What runs where</span></h2>
+  <div class="card">
+    <p class="hint" style="margin-top:0"><span data-l="es">Todo se calcula y se dibuja en tu navegador con JavaScript simple: no hay servidor, no se sube nada y nada de
+      lo que haces sale de tu computadora. Los mapas se dibujan con geometrías incluidas en la propia app, así que
+      también funcionan sin conexión. Puedes abrir la aplicación con doble clic en <code>index.html</code>, o con
+      <code>Open GermplasmPro.bat</code> si tu institución bloquea las páginas locales.</span><span data-l="en">Everything is computed and drawn in your browser with plain JavaScript: there is no server, nothing is
+      uploaded, and nothing you do leaves your computer. Maps are drawn from geometries bundled with the app, so they
+      work offline too. Open it by double-clicking <code>index.html</code>, or with
+      <code>Open GermplasmPro.bat</code> if your institution blocks local pages.</span></p>
+    <div class="note-warn">
+      <b data-es="Sobre las constantes de viabilidad." data-en="About the viability constants.">Sobre las constantes de viabilidad.</b>
+      <span data-l="es"> La app trae las publicadas para <i class="sci">Zea mays</i>; en cualquier otra especie de
+      semilla son un punto de partida editable. Tómalas de la Seed Information Database (Kew) o de la literatura de tu
+      especie antes de usar los años que calcula el simulador para programar una regeneración.</span><span data-l="en"> The app ships the published constants for <i class="sci">Zea mays</i>; for any other seeded species they
+      are an editable starting point. Take them from the Seed Information Database (Kew) or from the literature of
+      your species before using the simulator's years to schedule a regeneration.</span>
+    </div>
+    <div class="trick">
+      <b data-es="Un banco no es una hoja de cálculo." data-en="A genebank is not a spreadsheet.">Un banco no es una hoja de cálculo.</b>
+      <span data-l="es"> La misma accesión escrita de tres maneras, una coordenada con el signo cambiado, un lote que
+      lleva doce años sin prueba de germinación o una parcela in situ que nadie ha visitado desde 2014 no se ven en una
+      hoja con mil renglones. Esta app está hecha para que se vean.</span><span data-l="en"> The same accession spelled three ways, a coordinate with the wrong sign, a lot with no germination test for
+      twelve years, or an in-situ site nobody has visited since 2014 are invisible in a thousand-row sheet. This app
+      is built to make them visible.</span>
+    </div>
+  </div>
+
+  <!-- ---------- referencias ---------- -->
+  <h2 class="section-title"><span data-l="es">De dónde salen los métodos</span><span data-l="en">Where the methods come from</span></h2>
+  <ul class="refs">
+    <li>Ellis, R.H. y Roberts, E.H. (1980). Improved equations for the prediction of seed longevity. <i>Annals of Botany</i> 45(1): 13–30.</li>
+    <li>FAO (2014). <i>Genebank standards for plant genetic resources for food and agriculture</i>. Roma. (Normas para semillas, campo, in vitro y criopreservación.)</li>
+    <li>Alercia, A., Diulgheroff, S. y Mackay, M. (2015). <i>FAO/Bioversity multi-crop passport descriptors V.2.1 (MCPD V.2.1)</i>. Bioversity International y FAO.</li>
+    <li>Engels, J.M.M. y Ebert, A.W. (2021). A critical review of the current global ex situ conservation system for plant agrobiodiversity. <i>Plants</i> 10(9): 1904.</li>
+    <li>Maxted, N., Dulloo, M.E. y Ford-Lloyd, B.V. (eds.) (2016). <i>Enhancing crop genepool use: capturing wild relative and landrace diversity for crop improvement</i>. CABI. (Conservación in situ y on-farm.)</li>
+    <li>Royal Botanic Gardens Kew. <i>Seed Information Database (SID)</i>: constantes de viabilidad y comportamiento de almacenamiento por especie.</li>
+  </ul>
+
+  <dialog class="dlg" id="citeDlg">
+    <div class="dlg-h"><h3>GermplasmPro</h3><button class="icon-btn" data-close>✕</button></div>
+    <p class="hint"><span data-l="es">La aplicación está en construcción por bloques. Mientras no haya versión publicada, cítala así:</span><span data-l="en">The app is being built block by block. Until a released version exists, cite it as:</span></p>
+    <div class="cite-box">Barrera-Guzmán, L.A. (2026). GermplasmPro: el banco de germoplasma, accesión por accesión [software]. Versión en desarrollo.</div>
+  </dialog>
+
+</section>
+
+<!-- ==================== BLOQUE 2 · PASAPORTE ==================== -->
+<section class="step-panel" id="panel-2">
+
+  <h2 class="blk-title"><span data-l="es">Bloque 2 · El pasaporte de las accesiones</span><span data-l="en">Block 2 · The passport of your accessions</span></h2>
+  <p class="section-sub"><span data-l="es">El pasaporte es lo que convierte un montón de sobres en una colección: quién es cada accesión, de dónde vino,
+    quién la colectó y cómo se conserva. Aquí traes tu lista —de un archivo, de un pegado desde tu hoja de cálculo o desde cero—, la
+    app reconoce tus columnas y las pone en los <b>descriptores multicultivo de FAO/Bioversity (MCPD v2.1)</b>, revisa
+    cada dato y te deja corregirlo. Lo que salga de aquí lo usan todos los bloques siguientes.</span><span data-l="en">Passport data is what turns a pile of envelopes into a collection: who each accession is, where it came from,
+    who collected it and how it is conserved. Here you bring your list —from a file, from a spreadsheet paste or from
+    scratch—, the app recognizes your columns and maps them onto the <b>FAO/Bioversity multi-crop passport
+    descriptors (MCPD v2.1)</b>, checks every value and lets you fix it. What comes out of here feeds every later
+    block.</span></p>
+
+  <!-- ---------- traer los datos ---------- -->
+  <div class="card">
+    <div class="imp-row">
+      <label class="btn btn-primary" for="b2File"><span data-l="es">Abrir un archivo (CSV, TSV o proyecto)</span><span data-l="en">Open a file (CSV, TSV or project)</span></label>
+      <input type="file" id="b2File" accept=".csv,.tsv,.txt,.json" style="display:none">
+      <button class="btn btn-secondary" id="b2Paste"><span data-l="es">Pegar desde una hoja de cálculo</span><span data-l="en">Paste from a spreadsheet</span></button>
+      <button class="btn btn-secondary" id="b2Example"><span data-l="es">Abrir la colección de ejemplo</span><span data-l="en">Open the example collection</span></button>
+      <button class="btn btn-ghost" id="b2Blank"><span data-l="es">Empezar en blanco</span><span data-l="en">Start from scratch</span></button>
+      <button class="btn btn-ghost" id="b2Template"><span data-l="es">Descargar la plantilla</span><span data-l="en">Download the template</span></button>
+      <span class="hint" id="b2Count"></span>
+      <span class="hint" id="b2Saved"></span>
+    </div>
+    <p class="hint" style="margin-bottom:0"><span data-l="es">Desde tu hoja de cálculo, lo más rápido es seleccionar la tabla con sus encabezados, copiarla y usar <b>Pegar desde una hoja de cálculo</b>;
+      también sirve guardar la hoja como CSV. Tus datos se quedan en este navegador: se guardan solos para que no se
+      pierdan si cierras la ventana, y no se suben a ningún lado.</span><span data-l="en">From your spreadsheet, the quickest way is to select the table with its headers, copy it and use <b>Paste from a spreadsheet</b>;
+      saving the sheet as CSV works too. Your data stay in this browser: they are saved automatically so nothing is
+      lost if you close the window, and they are never uploaded.</span></p>
+  </div>
+
+  <!-- ---------- mapeo de columnas ---------- -->
+  <div class="card" id="b2MapCard" style="display:none;margin-top:16px">
+    <h3 style="margin-top:0"><span data-l="es">¿Qué es cada columna?</span><span data-l="en">What is each column?</span></h3>
+    <p class="hint" id="b2MapInfo"></p>
+    <div class="table-wrap" style="max-height:420px;overflow:auto">
+      <table class="tbl"><thead><tr>
+        <th><span data-l="es">Columna de tu archivo</span><span data-l="en">Column in your file</span></th>
+        <th><span data-l="es">Descriptor</span><span data-l="en">Descriptor</span></th>
+        <th><span data-l="es">Clave</span><span data-l="en">Key</span></th>
+        <th><span data-l="es">Qué tal encaja</span><span data-l="en">How well it fits</span></th>
+      </tr></thead><tbody id="b2MapBody"></tbody></table>
+    </div>
+    <div class="imp-row" style="margin-top:12px">
+      <button class="btn btn-primary" id="b2MapApply"><span data-l="es">Importar y reemplazar</span><span data-l="en">Import and replace</span></button>
+      <button class="btn btn-secondary" id="b2MapAppend"><span data-l="es">Añadir a lo que ya hay</span><span data-l="en">Append to what is there</span></button>
+      <button class="btn btn-ghost" id="b2MapAuto"><span data-l="es">Reconocer otra vez</span><span data-l="en">Detect again</span></button>
+      <button class="btn btn-ghost" id="b2MapCancel"><span data-l="es">Cancelar</span><span data-l="en">Cancel</span></button>
+    </div>
+  </div>
+
+  <!-- ---------- la tabla ---------- -->
+  <h3 class="section-title" style="margin-top:34px"><span data-l="es">La colección, accesión por accesión</span><span data-l="en">The collection, accession by accession</span></h3>
+  <div class="card">
+    <div class="imp-row">
+      <label class="sr-only" for="b2Q"><span data-l="es">Buscar en la colección</span><span data-l="en">Search the collection</span></label>
+      <input class="inp" id="b2Q" style="min-width:220px" data-es-ph="Buscar en todos los campos…" data-en-ph="Search every field…">
+      <label class="sr-only" for="b2FRoute"><span data-l="es">Filtrar por ruta de conservación</span><span data-l="en">Filter by conservation route</span></label>
+      <select class="sel" id="b2FRoute"></select>
+      <label class="sr-only" for="b2FCrop"><span data-l="es">Filtrar por cultivo</span><span data-l="en">Filter by crop</span></label>
+      <select class="sel" id="b2FCrop"></select>
+      <label class="sr-only" for="b2FCty"><span data-l="es">Filtrar por país</span><span data-l="en">Filter by country</span></label>
+      <select class="sel" id="b2FCty"></select>
+      <button class="chip" id="b2OnlyIssues"><span data-l="es">sólo las que tienen algo que revisar</span><span data-l="en">only those with something to check</span></button>
+      <button class="btn btn-secondary btn-sm" id="b2Add"><span data-l="es">+ Accesión</span><span data-l="en">+ Accession</span></button>
+      <button class="btn btn-ghost btn-sm" id="b2Clear"><span data-l="es">Vaciar</span><span data-l="en">Empty</span></button>
+    </div>
+    <div class="chips" id="b2Cols" style="margin:10px 0"></div>
+    <div id="b2Table"></div>
+    <div class="imp-row" id="b2Pager" style="margin-top:10px"></div>
+  </div>
+
+  <!-- ---------- validación ---------- -->
+  <h3 class="section-title"><span data-l="es">Lo que hay que revisar</span><span data-l="en">What needs checking</span></h3>
+  <p class="section-sub"><span data-l="es">La validación sigue las reglas del estándar (formatos de fecha y de coordenadas, códigos de las listas, países en
+    ISO alfa-3) y además compara campos entre sí: fechas en orden imposible, coordenadas que no concuerdan entre sus
+    dos formatos, un estatus silvestre con una fuente de colecta de troje, un registro in situ sin sitio. Los
+    <b>errores</b> hay que corregirlos; los <b>avisos</b> son datos que conviene completar o confirmar.</span><span data-l="en">Validation follows the rules of the standard (date and coordinate formats, code lists, ISO alpha-3 countries)
+    and also compares fields with each other: dates in an impossible order, coordinates that disagree between their
+    two formats, a wild status with a farm-store collecting source, an in-situ record with no site. <b>Errors</b>
+    must be fixed; <b>warnings</b> are values worth completing or confirming.</span></p>
+  <div class="card">
+    <div class="imp-row" id="b2IssueHead" style="margin-bottom:10px"></div>
+    <div id="b2Issues"></div>
+  </div>
+
+  <!-- ---------- retrato de la colección ---------- -->
+  <h3 class="section-title"><span data-l="es">El retrato de la colección</span><span data-l="en">The portrait of the collection</span></h3>
+  <div id="b2Summary"></div>
+
+  <h3 class="section-title"><span data-l="es">Qué tan completo está el pasaporte</span><span data-l="en">How complete the passport is</span></h3>
+  <p class="section-sub"><span data-l="es">Porcentaje de accesiones que traen cada descriptor. Los marcados con asterisco son obligatorios en el estándar;
+    los del final son la extensión de GermplasmPro, que no forma parte de MCPD.</span><span data-l="en">Percentage of accessions carrying each descriptor. Those marked with an asterisk are mandatory in the standard;
+    the ones at the end are the GermplasmPro extension, which is not part of MCPD.</span></p>
+  <div class="card" id="b2Complete"></div>
+
+  <!-- ---------- exportar ---------- -->
+  <h3 class="section-title"><span data-l="es">Llevarte los datos</span><span data-l="en">Take your data with you</span></h3>
+  <div class="card">
+    <div class="imp-row">
+      <button class="btn btn-primary" id="b2ExpMcpd"><span data-l="es">Exportar MCPD (sólo el estándar)</span><span data-l="en">Export MCPD (standard only)</span></button>
+      <button class="btn btn-secondary" id="b2ExpFull"><span data-l="es">Exportar todo (con la extensión)</span><span data-l="en">Export everything (with the extension)</span></button>
+      <button class="btn btn-secondary" id="b2ExpProj"><span data-l="es">Guardar el proyecto (.json)</span><span data-l="en">Save the project (.json)</span></button>
+    </div>
+    <p class="hint" style="margin-bottom:0"><span data-l="es">El archivo MCPD lleva sólo los descriptores del estándar, con sus claves oficiales: es el que puedes mandar a
+      Genesys, al SINAREFI o a cualquier otro sistema. El completo añade los campos de la extensión (los que empiezan
+      con <code>GP_</code>) para que no pierdas el manejo interno. El proyecto en JSON guarda todo tal como está y se
+      vuelve a abrir con el mismo botón de arriba.</span><span data-l="en">The MCPD file carries only the descriptors of the standard, with their official keys: that is the one you can
+      send to Genesys or any other system. The full file adds the extension fields (those starting with
+      <code>GP_</code>) so you do not lose your internal management data. The JSON project stores everything as it is
+      and reopens with the same button above.</span></p>
+  </div>
+
+  <dialog class="dlg dlg-wide" id="pasteDlg">
+    <div class="dlg-h"><h3 id="pasteTitle"><span data-l="es">Pega tu tabla</span><span data-l="en">Paste your table</span></h3><button class="icon-btn" data-close>✕</button></div>
+    <p class="hint" id="pasteAyuda" style="margin-top:0"></p>
+
+    <div class="tabs" id="pasteTabs" role="tablist">
+      <button class="tab on" data-ptab="pegar" role="tab"><span data-l="es">Pegar mi tabla</span><span data-l="en">Paste my table</span></button>
+      <button class="tab" data-ptab="plantilla" role="tab"><span data-l="es">Armar la tabla columna por columna</span><span data-l="en">Build the table column by column</span></button>
+    </div>
+
+    <!-- ---------- plantilla guiada ---------- -->
+    <div id="pasteTplPane" style="display:none">
+      <p class="hint"><span data-l="es">Éstas son las columnas que la app entiende, con su nombre completo y lo que significan. Marca las que vayas a
+        usar y abajo aparece la tabla: puedes escribir en ella, pegar una columna entera copiada de tu hoja de cálculo —haz clic en
+        la primera celda y pega— o pegar el bloque completo de una vez.</span><span data-l="en">These are the columns the app understands, with their full name and what they mean. Tick the ones you will use
+        and the table appears below: you can type in it, paste a whole column copied from your spreadsheet —click the first cell
+        and paste— or paste the whole block at once.</span></p>
+
+      <div class="imp-row" style="margin-bottom:8px">
+        <input class="inp" id="tplSearch" style="min-width:200px" data-es-ph="Buscar una columna…" data-en-ph="Search for a column…">
+        <button class="btn btn-ghost btn-sm" id="tplBasics"><span data-l="es">Sólo lo indispensable</span><span data-l="en">Only the essentials</span></button>
+        <button class="btn btn-ghost btn-sm" id="tplNone"><span data-l="es">Quitar todas</span><span data-l="en">Clear all</span></button>
+        <span class="hint" id="tplCount"></span>
+      </div>
+
+      <div class="tpl-cat" id="tplCat"></div>
+
+      <div class="imp-row" style="margin:10px 0 6px">
+        <label class="inline-label"><span data-l="es">Filas</span><span data-l="en">Rows</span>
+          <input class="inp" type="number" id="tplRows" min="1" max="500" step="1" value="10" style="width:80px"></label>
+        <button class="btn btn-secondary btn-sm" id="tplCsv"><span data-l="es">Descargar esta plantilla en CSV</span><span data-l="en">Download this template as CSV</span></button>
+        <span class="hint"><span data-l="es">para llenarla en tu hoja de cálculo y volver con ella</span><span data-l="en">to fill it in your spreadsheet and come back with it</span></span>
+      </div>
+      <div class="tpl-grid-wrap" id="tplGridWrap"></div>
+    </div>
+
+    <!-- zona de pegado: acepta Ctrl+V en cualquier punto del diálogo -->
+    <div id="pastePegarPane"><div class="paste-zone" id="pasteZone">
+      <textarea id="pasteArea" spellcheck="false"></textarea>
+      <div class="paste-hint" id="pasteHint">
+        <svg class="paste-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="8" y="3" width="8" height="4" rx="1"/>
+          <path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/>
+          <path d="M9 12h6M9 16h4"/>
+        </svg>
+        <p><span data-l="es">Pega aquí con <span class="kbd">Ctrl</span> + <span class="kbd">V</span></span><span data-l="en">Paste here with <span class="kbd">Ctrl</span> + <span class="kbd">V</span></span></p>
+        <p class="small"><span data-l="es">Desde cualquier hoja de cálculo o tabla. También sirve texto separado por comas, punto y coma o tabuladores.</span><span data-l="en">From any spreadsheet or table. Text separated by commas, semicolons or tabs works too.</span></p>
+        <button class="btn btn-secondary btn-sm" id="pasteClip"><span data-l="es">Pegar del portapapeles</span><span data-l="en">Paste from the clipboard</span></button>
+      </div>
+    </div>
+
+    <!-- lo que la app entendió -->
+    <div id="pasteRead" style="display:none">
+      <div class="paste-stats" id="pasteStats"></div>
+      <div id="pasteWarns"></div>
+
+      <div class="imp-row paste-opts">
+        <label class="chk"><input type="checkbox" id="pasteHeader" checked>
+          <span data-l="es">La primera fila son los encabezados</span><span data-l="en">The first row holds the headers</span></label>
+        <label class="inline-label"><span data-l="es">Separador</span><span data-l="en">Separator</span>
+          <select class="sel" id="pasteSep">
+            <option value="" data-es="automático" data-en="automatic">automático</option>
+            <option value="&#9;" data-es="tabulador" data-en="tab">tabulador</option>
+            <option value="," data-es="coma" data-en="comma">coma</option>
+            <option value=";" data-es="punto y coma" data-en="semicolon">punto y coma</option>
+            <option value="|" data-es="barra vertical" data-en="pipe">barra vertical</option>
+          </select></label>
+        <button class="btn btn-ghost btn-sm" id="pasteClear"><span data-l="es">Borrar y empezar de nuevo</span><span data-l="en">Clear and start over</span></button>
+      </div>
+
+      <div class="paste-prev" id="pastePrev"></div>
+    </div></div>
+
+    <div class="imp-row" style="margin-top:14px">
+      <button class="btn btn-primary" id="pasteGo" disabled><span data-l="es">Leer la tabla</span><span data-l="en">Read the table</span></button>
+      <button class="btn btn-ghost" data-close><span data-l="es">Cancelar</span><span data-l="en">Cancel</span></button>
+      <span class="hint" id="pasteGoHint"></span>
+    </div>
+  </dialog>
+
+  <dialog class="dlg dlg-wide" id="fichaDlg">
+    <div class="dlg-h">
+      <h3 id="fichaTitle"></h3>
+      <span id="fichaNav"></span>
+      <button class="icon-btn" id="fichaPrev" data-es-title="Anterior" data-en-title="Previous">←</button>
+      <button class="icon-btn" id="fichaNext" data-es-title="Siguiente" data-en-title="Next">→</button>
+      <button class="icon-btn" data-close>✕</button>
+    </div>
+    <div id="fichaBody" class="ficha-body"></div>
+  </dialog>
+
+</section>
+
+<!-- ==================== BLOQUE 3 · CALIDAD Y DUPLICADOS ==================== -->
+<section class="step-panel" id="panel-3">
+
+  <h2 class="blk-title"><span data-l="es">Bloque 3 · Calidad y duplicados</span><span data-l="en">Block 3 · Quality and duplicates</span></h2>
+  <p class="section-sub"><span data-l="es">El Bloque 2 revisa cada dato por separado; aquí se revisa lo que sólo se ve mirando toda la colección junta: la
+    coordenada que cae en el mar porque la longitud perdió el signo, el género escrito de dos maneras, el sitio con
+    tres ortografías y, sobre todo, <b>la misma colecta entrada dos veces</b> —o conservada en dos bancos sin que
+    nadie lo sepa—. La app diagnostica y propone; aplicar o no, lo decides tú.</span><span data-l="en">Block 2 checks each value on its own; here the app checks what only shows when the whole collection is seen at
+    once: the coordinate that lands in the sea because the longitude lost its sign, the genus spelled two ways, the
+    site with three spellings and, above all, <b>the same collection entered twice</b> —or held in two genebanks
+    without anyone knowing—. The app diagnoses and proposes; applying it is your call.</span></p>
+
+  <div class="imp-row">
+    <button class="btn btn-primary" id="b3Run"><span data-l="es">Revisar la colección</span><span data-l="en">Check the collection</span></button>
+    <button class="btn btn-secondary" id="b3Report"><span data-l="es">Descargar el informe de calidad</span><span data-l="en">Download the quality report</span></button>
+    <span class="tag ok" id="b3Msg" style="display:none"></span>
+  </div>
+
+  <div class="stat-row" id="b3Stats" style="margin-top:14px"></div>
+  <div id="b3Body"></div>
+
+</section>
+
+<!-- ==================== BLOQUE 4 · MAPA DE COLECTA ==================== -->
+<section class="step-panel" id="panel-4">
+
+  <h2 class="blk-title"><span data-l="es">Bloque 4 · El mapa de colecta</span><span data-l="en">Block 4 · The collecting map</span></h2>
+  <p class="section-sub"><span data-l="es">Tus accesiones en el mapa, dibujadas aquí mismo: los contornos vienen con la app, así que funciona igual sin
+    internet y <b>ninguna coordenada sale de tu computadora</b> —que no es un detalle cuando se trata de sitios de
+    parientes silvestres o de parcelas de familias custodias—. <b>México se dibuja con sus 32 entidades</b> y el resto
+    del mundo con el contorno de los países. Colorea los puntos por lo que quieras, pinta una coropleta por entidad o
+    por país, tira una rejilla encima y exporta la figura.</span><span data-l="en">Your accessions on a map, drawn right here: the outlines ship with the app, so it works the same offline and
+    <b>no coordinate leaves your computer</b> —not a small thing when the sites belong to crop wild relatives or to
+    custodian families—. <b>Mexico is drawn with its 32 states</b> and the rest of the world with country outlines.
+    Colour the points by whatever you like, paint a choropleth per state or country, drop a grid on top and export
+    the figure.</span></p>
+
+  <div class="card">
+    <div class="imp-row">
+      <label class="inline-label"><span data-l="es">Encuadre</span><span data-l="en">Extent</span><select class="sel" id="b4Scope"></select></label>
+      <label class="inline-label"><span data-l="es">Color de los puntos</span><span data-l="en">Point colour</span><select class="sel" id="b4Color"></select></label>
+      <label class="inline-label"><span data-l="es">Coropleta</span><span data-l="en">Choropleth</span><select class="sel" id="b4Choro"></select></label>
+      <label class="inline-label"><span data-l="es">Rejilla</span><span data-l="en">Grid</span><select class="sel" id="b4Grid"></select></label>
+      <label class="inline-label"><span data-l="es">Tamaño</span><span data-l="en">Size</span><select class="sel" id="b4Size"></select></label>
+      <label class="inline-label"><span data-l="es">Cultivo</span><span data-l="en">Crop</span><select class="sel" id="b4Crop"></select></label>
+      <label class="inline-label"><span data-l="es">Ruta</span><span data-l="en">Route</span><select class="sel" id="b4Route"></select></label>
+      <button class="chip on" id="b4Labels"><span data-l="es">claves de entidad</span><span data-l="en">state codes</span></button>
+      <label class="sr-only" for="b4Title"><span data-l="es">Título del mapa</span><span data-l="en">Map title</span></label>
+      <input class="inp" id="b4Title" style="min-width:200px" data-es-ph="Título del mapa (opcional)" data-en-ph="Map title (optional)">
+    </div>
+
+    <div class="map-wrap" id="b4Map"></div>
+    <div class="map-info" id="b4Info"></div>
+    <div class="map-legends" id="b4Legend"></div>
+
+    <div class="imp-row" style="margin-top:12px">
+      <button class="btn btn-secondary btn-sm" id="b4SVG"><span data-l="es">Exportar SVG</span><span data-l="en">Export SVG</span></button>
+      <button class="btn btn-secondary btn-sm" id="b4PNG"><span data-l="es">Exportar PNG (2×)</span><span data-l="en">Export PNG (2×)</span></button>
+      <button class="btn btn-ghost btn-sm" id="b4CSV"><span data-l="es">Puntos en CSV (con entidad y celda)</span><span data-l="en">Points as CSV (with state and cell)</span></button>
+      <span class="hint"><span data-l="es">Toca un punto para abrir su ficha; toca una entidad para acercarte a ella.</span><span data-l="en">Tap a point to open its record; tap a state to zoom into it.</span></span>
+    </div>
+  </div>
+
+  <div class="stat-row" id="b4Stats" style="margin-top:14px"></div>
+  <div id="b4Tables" style="margin-top:14px"></div>
+  <!-- el Bloque 5 va después de este bloque -->
+  <div id="b4End" style="display:none"></div>
+
+  <div class="trick">
+    <b data-es="De dónde salen los contornos." data-en="Where the outlines come from.">De dónde salen los contornos.</b>
+    <span data-l="es"> De <b>Natural Earth</b>, que es de dominio público: las entidades de México del conjunto
+    admin-1 a 1:10 millones y los países del admin-0 a 1:110 millones, simplificados y guardados dentro de la app. A
+    esa escala el contorno sirve para situar una colecta en su entidad o en su país, no para verificar un límite
+    municipal ni una línea de costa metro a metro.</span><span data-l="en"> From <b>Natural Earth</b>, which is public domain: the Mexican states from the 1:10 million admin-1 set and
+    the countries from the 1:110 million admin-0 set, simplified and bundled with the app. At that scale the outline
+    is good for placing a collection in its state or country, not for checking a municipal boundary or a coastline
+    metre by metre.</span>
+  </div>
+
+</section>
+
+<!-- ==================== BLOQUE 5 · DIVERSIDAD GEOGRÁFICA ==================== -->
+<section class="step-panel" id="panel-5">
+
+  <h2 class="blk-title"><span data-l="es">Bloque 5 · Diversidad geográfica</span><span data-l="en">Block 5 · Geographic diversity</span></h2>
+  <p class="section-sub"><span data-l="es">Una colección no vale por cuántos sobres tiene, sino por cuántas cosas distintas guarda, dónde están y cuánto
+    falta por colectar. Aquí se calculan, para la unidad geográfica que elijas, la riqueza y los índices clásicos
+    —<b>Shannon</b>, <b>Gini-Simpson</b>, <b>equitatividad</b> y los <b>números de Hill</b>—, la <b>riqueza
+    rarificada</b> que hace justa la comparación entre un estado con treinta colectas y otro con tres, los
+    <b>estimadores</b> de lo que no se ha colectado (<b>Chao1</b>, <b>Chao2</b>, <b>jackknife</b>) y la
+    <b>composición</b> entre regiones, con su agrupamiento y su prueba de <b>Mantel</b>.</span><span data-l="en">A collection is not worth what it holds in envelopes but in distinct things, where they are and how much is
+    still to be collected. Here, for whatever geographic unit you choose, the app computes richness and the classic
+    indices —<b>Shannon</b>, <b>Gini-Simpson</b>, <b>evenness</b> and the <b>Hill numbers</b>—, the <b>rarefied
+    richness</b> that makes it fair to compare a state with thirty collections against one with three, the
+    <b>estimators</b> of what has not been collected (<b>Chao1</b>, <b>Chao2</b>, <b>jackknife</b>) and the
+    <b>composition</b> between regions, with its clustering and its <b>Mantel</b> test.</span></p>
+
+  <div class="card">
+    <div class="imp-row">
+      <label class="inline-label"><span data-l="es">Unidad geográfica</span><span data-l="en">Geographic unit</span><select class="sel" id="b5Unit"></select></label>
+      <label class="inline-label"><span data-l="es">Qué cuenta como tipo</span><span data-l="en">What counts as a type</span><select class="sel" id="b5Class"></select></label>
+      <label class="inline-label"><span data-l="es">Tamaño de celda</span><span data-l="en">Cell size</span><select class="sel" id="b5Grid"></select></label>
+      <label class="inline-label"><span data-l="es">Franja altitudinal</span><span data-l="en">Elevation belt</span><select class="sel" id="b5Band"></select></label>
+      <label class="inline-label"><span data-l="es">Rarificar</span><span data-l="en">Rarefy</span><select class="sel" id="b5Effort"></select></label>
+      <label class="inline-label"><span data-l="es">Distancia de composición</span><span data-l="en">Compositional distance</span><select class="sel" id="b5Dist"></select></label>
+    </div>
+  </div>
+
+  <div class="stat-row" id="b5Stats" style="margin-top:14px"></div>
+  <div id="b5Body"></div>
+
+  <div class="trick">
+    <b data-es="Por qué la rarefacción no es un capricho." data-en="Why rarefaction is not a whim.">Por qué la rarefacción no es un capricho.</b>
+    <span data-l="es"> La riqueza crece con el número de accesiones examinadas casi siempre: un estado con muchas
+    colectas parecerá más diverso aunque no lo sea. La rarefacción de Hurlbert calcula cuántos tipos esperarías en
+    cada unidad si de todas hubieras tomado el mismo número de accesiones, y sólo entonces la comparación dice algo
+    del territorio y no del presupuesto de la salida de campo.</span><span data-l="en"> Richness almost always grows with the number of accessions examined: a state with many collections will look
+    more diverse even when it is not. Hurlbert rarefaction works out how many types you would expect in each unit had
+    you taken the same number of accessions everywhere, and only then does the comparison say something about the
+    territory rather than about the field-trip budget.</span>
+  </div>
+
+</section>
+
+<!-- ==================== BLOQUE 6 · VACÍOS DE COLECTA ==================== -->
+<section class="step-panel" id="panel-6">
+
+  <h2 class="blk-title"><span data-l="es">Bloque 6 · Vacíos de colecta</span><span data-l="en">Block 6 · Collecting gaps</span></h2>
+  <p class="section-sub"><span data-l="es">Dónde <b>no</b> has colectado, a dónde conviene ir la próxima vez y qué material ya tienes pero podrías perder.
+    La app tira una rejilla sobre el territorio, marca las celdas vacías, calcula a qué distancia les queda la
+    colecta más cercana y las ordena con un <b>índice de prioridad</b> cuyos cuatro componentes puedes pesar como
+    quieras. Aparte, revisa los vacíos que no se ven en un mapa: tipos con una sola accesión, sin duplicado de
+    seguridad, sólo en banco de campo o sólo in situ.</span><span data-l="en">Where you have <b>not</b> collected, where to go next time, and which material you already hold but could lose.
+    The app throws a grid over the territory, marks the empty cells, works out how far the nearest collection lies
+    and ranks them with a <b>priority index</b> whose four components you can weight as you like. Separately, it
+    reviews the gaps a map cannot show: types with a single accession, with no safety duplicate, only in a field
+    collection or only in situ.</span></p>
+
+  <div class="card">
+    <div class="imp-row">
+      <label class="inline-label"><span data-l="es">Territorio</span><span data-l="en">Territory</span><select class="sel" id="b6Scope"></select></label>
+      <label class="inline-label"><span data-l="es">Tamaño de celda</span><span data-l="en">Cell size</span><select class="sel" id="b6Size"></select></label>
+      <label class="inline-label"><span data-l="es">Qué cuenta como tipo</span><span data-l="en">What counts as a type</span><select class="sel" id="b6Class"></select></label>
+    </div>
+  </div>
+
+  <div class="stat-row" id="b6Stats" style="margin-top:14px"></div>
+  <div id="b6Body"></div>
+
+  <div class="note-warn">
+    <b data-es="Hasta dónde llega este análisis." data-en="How far this analysis goes.">Hasta dónde llega este análisis.</b>
+    <span data-l="es"> Esto es un análisis de vacíos <b>geográficos y de colección</b>, no ecogeográfico: para saber
+    qué combinaciones de clima, suelo y vegetación faltan en tu colección hacen falta capas ambientales, y
+    GermplasmPro no las trae ni las descarga —nada de lo que hace esta app sale de tu computadora—. Si necesitas ese
+    paso, exporta aquí las coordenadas y llévalas a una herramienta de modelado ambiental. Lo que sí hace este bloque
+    es todo lo que se puede hacer con el pasaporte y la geografía, que es la mayor parte del trabajo de decidir a
+    dónde ir.</span><span data-l="en"> This is a <b>geographic and collection</b> gap analysis, not an ecogeographic one: knowing which combinations
+    of climate, soil and vegetation your collection is missing requires environmental layers, and GermplasmPro
+    neither bundles nor downloads them —nothing this app does leaves your computer—. If you need that step, export
+    the coordinates here and take them to an environmental modelling tool. What this block does do is everything the
+    passport and the geography allow, which is most of the work of deciding where to go.</span>
+  </div>
+
+</section>
+
+<!-- ==================== BLOQUE 7 · CARACTERIZACIÓN Y NÚCLEO ==================== -->
+<section class="step-panel" id="panel-7">
+
+  <h2 class="blk-title"><span data-l="es">Bloque 7 · Caracterización y colección núcleo</span><span data-l="en">Block 7 · Characterization and core collection</span></h2>
+  <p class="section-sub"><span data-l="es">Lo que se mide de cada accesión —días a floración, altura, color del grano, hábito— casi nunca es homogéneo:
+    hay números, categorías y celdas vacías. Todo este bloque está hecho para esa mezcla. Calcula la variación
+    descriptor por descriptor, la <b>distancia de Gower</b> entre accesiones, sus <b>coordenadas principales</b> y su
+    <b>agrupamiento</b>, y con eso arma una <b>colección núcleo</b> que puedas caracterizar a fondo o evaluar en
+    campo sin mover todo el banco. Al final comprueba, con los criterios de Hu <i>et al.</i>, que el núcleo de verdad
+    representa a la colección.</span><span data-l="en">What is measured on each accession —days to flowering, height, grain colour, growth habit— is hardly ever
+    homogeneous: there are numbers, categories and empty cells. This whole block is built for that mixture. It
+    computes the variation trait by trait, the <b>Gower distance</b> between accessions, their <b>principal
+    coordinates</b> and their <b>clustering</b>, and with that it builds a <b>core collection</b> you can
+    characterize in depth or evaluate in the field without moving the whole genebank. Finally it checks, with the
+    Hu <i>et al.</i> criteria, that the core really represents the collection.</span></p>
+
+  <div class="card">
+    <div class="imp-row">
+      <label class="btn btn-primary" for="b7File"><span data-l="es">Cargar mi caracterización (CSV)</span><span data-l="en">Load my characterization (CSV)</span></label>
+      <input type="file" id="b7File" accept=".csv,.tsv,.txt" style="display:none">
+      <button class="btn btn-secondary" id="b7Paste"><span data-l="es">Pegar desde una hoja de cálculo</span><span data-l="en">Paste from a spreadsheet</span></button>
+      <button class="btn btn-secondary" id="b7Example"><span data-l="es">Usar la caracterización de ejemplo</span><span data-l="en">Use the example characterization</span></button>
+      <button class="btn btn-ghost" id="b7Template"><span data-l="es">Descargar la plantilla</span><span data-l="en">Download the template</span></button>
+      <button class="btn btn-ghost" id="b7Clear"><span data-l="es">Quitar la caracterización</span><span data-l="en">Remove the characterization</span></button>
+    </div>
+    <p class="hint" style="margin-bottom:0"><span data-l="es">El archivo se une a tus accesiones por la columna <code>ACCENUMB</code> (o la primera que se le parezca): una
+      fila por accesión y una columna por descriptor. Las celdas vacías no estorban, la distancia de Gower las
+      salta.</span><span data-l="en">The file is matched to your accessions through the <code>ACCENUMB</code> column (or the first one that looks
+      like it): one row per accession and one column per descriptor. Empty cells are fine, Gower distance skips
+      them.</span></p>
+  </div>
+
+  <!-- ---------- confirmar la caracterización leída ---------- -->
+  <div class="card" id="b7MapCard" style="display:none;margin-top:16px">
+    <h3 style="margin-top:0"><span data-l="es">¿Cómo se une esto con tu colección?</span><span data-l="en">How does this join your collection?</span></h3>
+    <p class="hint" id="b7MapInfo"></p>
+    <div class="imp-row" style="margin-bottom:10px">
+      <label class="inline-label"><span data-l="es">Columna con el número de accesión</span><span data-l="en">Column holding the accession number</span>
+        <select class="sel" id="b7MapKey"></select></label>
+    </div>
+    <div id="b7MapMatch"></div>
+    <div class="table-wrap" style="max-height:340px;overflow:auto">
+      <table class="tbl"><thead><tr>
+        <th><span data-l="es">Descriptor</span><span data-l="en">Descriptor</span></th>
+        <th><span data-l="es">Se tratará como</span><span data-l="en">Will be treated as</span></th>
+        <th><span data-l="es">Con dato</span><span data-l="en">Filled</span></th>
+        <th><span data-l="es">Valores</span><span data-l="en">Values</span></th>
+      </tr></thead><tbody id="b7MapBody"></tbody></table>
+    </div>
+    <p class="hint" style="margin:8px 0 0"><span data-l="es">El tipo de cada descriptor es una propuesta: se cambia después, en la tabla de descriptores, donde además se
+      puede <b>apagar</b> el que no quieras que entre en la distancia —un folio de laboratorio, por ejemplo— y
+      dar más peso a los que importen.</span><span data-l="en">The type of each descriptor is a proposal: it can be changed later, in the descriptors table, where you can also
+      <b>switch off</b> any column you do not want in the distance —a laboratory serial number, say— and give more
+      weight to the ones that matter.</span></p>
+    <div class="imp-row" style="margin-top:12px">
+      <button class="btn btn-primary" id="b7MapApply"><span data-l="es">Usar esta caracterización</span><span data-l="en">Use this characterization</span></button>
+      <button class="btn btn-ghost" id="b7MapCancel"><span data-l="es">Cancelar</span><span data-l="en">Cancel</span></button>
+    </div>
+  </div>
+
+  <div class="stat-row" id="b7Stats" style="margin-top:14px"></div>
+  <div id="b7Body"></div>
+
+  <div class="trick">
+    <b data-es="Un núcleo no es una muestra al azar." data-en="A core is not a random sample.">Un núcleo no es una muestra al azar.</b>
+    <span data-l="es"> Si se toma al azar, el núcleo hereda los sesgos de la colección: repite lo que abunda y se
+    salta lo raro, que es justamente lo que vale. Por eso se estratifica primero —por grupos, por región o por
+    especie— y dentro de cada estrato se eligen las accesiones más distintas entre sí. Las cuatro cifras de
+    validación dicen si funcionó: un buen núcleo conserva las medias (MD% bajo), casi todo el rango (CR% alto) y al
+    menos la misma variación relativa (VR% cercano o superior a 100).</span><span data-l="en"> Sampled at random, a core inherits the collection's biases: it repeats what is abundant and skips what is
+    rare, which is precisely what matters. That is why you stratify first —by cluster, region or species— and then
+    pick the most distinct accessions inside each stratum. The four validation figures tell you whether it worked: a
+    good core keeps the means (low MD%), nearly the whole range (high CR%) and at least the same relative variation
+    (VR% at or above 100).</span>
+  </div>
+
+</section>
+
+<!-- ==================== BLOQUE 8 · MANEJO DEL BANCO ==================== -->
+<section class="step-panel" id="panel-8">
+
+  <h2 class="blk-title"><span data-l="es">Bloque 8 · El manejo del banco</span><span data-l="en">Block 8 · Running the genebank</span></h2>
+  <p class="section-sub"><span data-l="es">El simulador de la portada seguía a una accesión imaginaria; esto hace lo mismo con <b>tus</b> lotes. Con la
+    última prueba de germinación, las existencias y las condiciones de tu cámara, la <b>ecuación de viabilidad</b>
+    proyecta en qué porcentaje anda hoy cada lote y cuántos años le quedan; el resto son alertas de trabajo
+    —pruebas vencidas, existencias bajas, subcultivos y resiembras atrasados, accesiones sin respaldo— ordenadas por
+    urgencia, con las calculadoras de tamaño de muestra y la carga de trabajo de los próximos años.</span><span data-l="en">The home-page simulator followed an imaginary accession; this does the same with <b>your</b> lots. From the last
+    germination test, the stock and your store conditions, the <b>viability equation</b> projects where each lot
+    stands today and how many years it has left; the rest are working alerts —overdue tests, low stock, late
+    subcultures and replantings, accessions with no backup— sorted by urgency, with the sample-size calculators and
+    the workload for the years ahead.</span></p>
+
+  <div class="stat-row" id="b8Stats"></div>
+  <div id="b8Body"></div>
+
+  <div class="note-warn">
+    <b data-es="Una proyección no sustituye a una prueba." data-en="A projection is not a substitute for a test.">Una proyección no sustituye a una prueba.</b>
+    <span data-l="es"> La ecuación de viabilidad dice lo que <i>debería</i> pasarle a un lote en esas condiciones, no
+    lo que le pasó: un secado incompleto, un frasco mal cerrado o un corte de luz de tres semanas no aparecen en
+    ninguna fórmula. Úsala para decidir a qué lotes hacerles prueba primero, no para ahorrarte la prueba. Y si la app
+    no tiene constantes de tu especie, no proyecta nada: te dice la fecha de la última prueba y ya.</span><span data-l="en"> The viability equation says what <i>should</i> happen to a lot under those conditions, not what did happen: an
+    incomplete drying, a badly sealed jar or a three-week power cut appear in no formula. Use it to decide which lots
+    to test first, not to skip the test. And if the app has no constants for your species, it projects nothing: it
+    gives you the date of the last test and stops there.</span>
+  </div>
+
+</section>
+
+<section class="step-panel" id="panel-9">
+
+  <h2 class="blk-title"><span data-l="es">Bloque 9 · Etiquetas y registro</span><span data-l="en">Block 9 · Labels and register</span></h2>
+  <p class="section-sub"><span data-l="es">Lo que sale del banco lleva papel: la etiqueta pegada al sobre, al frasco, a la estaca o al criotubo, y la hoja que
+    acompaña al material. Aquí se imprime todo eso a la medida real, en milímetros, con un <b>código de barras Code 128</b>
+    de verdad —no unas rayas decorativas— que cualquier lector de mano descifra, y que la propia suite de pruebas vuelve a
+    leer para comprobar que está bien dibujado. Además de las etiquetas, salen la lista de siembra para la regeneración,
+    el vale de distribución y el libro de registro de la colección.</span><span data-l="en">Whatever leaves the genebank carries paper: the label stuck to the envelope, the jar, the field stake or the cryovial,
+    and the sheet that travels with the material. All of that is printed here at real size, in millimetres, with a genuine
+    <b>Code 128 barcode</b> —not decorative stripes— that any handheld reader decodes, and that the test suite reads back
+    to check it is drawn correctly. Besides labels, you get the sowing list for regeneration, the delivery note and the
+    collection register book.</span></p>
+
+  <div id="b9Body"></div>
+
+  <div class="note-warn no-print">
+    <b data-es="Comprueba la primera hoja antes de imprimir cien." data-en="Check the first sheet before printing a hundred.">Comprueba la primera hoja antes de imprimir cien.</b>
+    <span data-l="es"> La app dibuja en milímetros, pero el navegador puede reescalar al imprimir: en el diálogo de impresión pon la escala en
+    <b>100 %</b> (no «ajustar a la página») y desactiva encabezados y pies. Imprime una hoja, mídela con una regla y pásale el
+    lector al código de barras; si el número que aparece en pantalla es el que lee el aparato, ya puedes con el resto. Para el
+    campo y la cámara fría, el papel importa tanto como la tinta: etiqueta de poliéster o papel resistente al agua, y tinta
+    láser o lápiz, porque la de inyección se corre con la condensación.</span><span data-l="en"> The app draws in millimetres, but the browser may rescale when printing: in the print dialogue set the scale to
+    <b>100 %</b> (not "fit to page") and turn off headers and footers. Print one sheet, measure it with a ruler and scan the
+    barcode; if the reader returns the number shown on screen, you can print the rest. For the field and the cold store the
+    paper matters as much as the ink: polyester or waterproof label stock, and laser ink or pencil, because inkjet runs with
+    condensation.</span>
+  </div>
+
+</section>
+<section class="step-panel" id="panel-10">
+
+  <h2 class="blk-title"><span data-l="es">Bloque 10 · El informe</span><span data-l="en">Block 10 · The report</span></h2>
+  <p class="section-sub"><span data-l="es">Todo lo que los nueve bloques anteriores calcularon, reunido en un documento que se lee solo: las cifras, las figuras
+    y los <b>métodos redactados en prosa</b>, con los ajustes que de verdad se usaron, listos para pegarse en el informe
+    anual o en un artículo. Sólo aparece lo que se corrió —lo que no, no se inventa— y las referencias que salen son
+    únicamente las de los métodos empleados. La vista previa de abajo no es una aproximación: es el archivo mismo.
+    Y el pasaporte sale en los dos idiomas de los datos, MCPD para hablar con otros bancos y Darwin Core para
+    hablar con GBIF.</span><span data-l="en">Everything the previous nine blocks computed, gathered into a document that stands on its own: the numbers, the
+    figures and the <b>methods written out in prose</b>, with the settings actually used, ready to paste into the annual
+    report or a paper. Only what was run appears —what was not is not invented— and the references listed are only those
+    of the methods employed. The preview below is not an approximation: it is the file itself. And the passport is
+    exported in both languages of the data, MCPD to talk to other genebanks and Darwin Core to talk to GBIF.</span></p>
+
+  <div id="b10Body"></div>
+
+  <div class="note-warn no-print">
+    <b data-es="Un informe no vuelve buenos unos datos flojos." data-en="A report does not turn weak data into good data.">Un informe no vuelve buenos unos datos flojos.</b>
+    <span data-l="es"> Si el Bloque 3 dejó coordenadas sin arreglar o duplicados sin revisar, el informe los arrastra tal cual: las
+    cifras de diversidad y de vacíos se calculan sobre lo que hay, no sobre lo que debería haber. Antes de firmar el
+    documento, vale la pena volver al Bloque 3 y dejar la casa en orden. Lo mismo con las proyecciones de viabilidad:
+    salen de la ecuación, no de una prueba de germinación, y el informe lo dice donde se puede leer.</span><span data-l="en"> If Block 3 left coordinates unfixed or duplicates unreviewed, the report carries them through as they are:
+    diversity and gap figures are computed on what is there, not on what ought to be. Before signing the document it is
+    worth going back to Block 3 and putting the house in order. The same goes for viability projections: they come from
+    the equation, not from a germination test, and the report says so where it can be read.</span>
+  </div>
+
+</section>
+</main>
+
+<footer class="foot">
+  <span data-l="es">GermplasmPro · licencia GPL-3.0 · todo se calcula en tu navegador</span><span data-l="en">GermplasmPro · GPL-3.0 licence · everything is computed in your browser</span>
+</footer>
+
+<script src="js/core.js"></script>
+<script src="js/genebank.js"></script>
+<script src="js/mcpd.js"></script>
+<script src="js/traits.js"></script>
+<script src="js/io.js"></script>
+<script src="js/paste.js"></script>
+<script src="js/examples.js"></script>
+<script src="js/quality.js"></script>
+<script src="data/mexico-states.js"></script>
+<script src="data/world.js"></script>
+<script src="js/geo.js"></script>
+<script src="js/diversity.js"></script>
+<script src="js/gaps.js"></script>
+<script src="js/charac.js"></script>
+<script src="js/manage.js"></script>
+<script src="js/qr.js"></script>
+<script src="js/labels.js"></script>
+<script src="js/zip.js"></script>
+<script src="js/report.js"></script>
+<script src="js/art.js"></script>
+<script src="js/home.js"></script>
+<script src="js/block2.js"></script>
+<script src="js/block3.js"></script>
+<script src="js/block4.js"></script>
+<script src="js/block5.js"></script>
+<script src="js/block6.js"></script>
+<script src="js/block7.js"></script>
+<script src="js/block8.js"></script>
+<script src="js/block9.js"></script>
+<script src="js/block10.js"></script>
+<script>
+  /* el botón de la portada que baja al simulador */
+  document.addEventListener('DOMContentLoaded', () => {
+    const b = document.getElementById('goSim');
+    if (b) b.addEventListener('click', () => document.getElementById('simulator').scrollIntoView({ behavior: 'smooth' }));
+  });
+</script>
+</body>
+</html>
