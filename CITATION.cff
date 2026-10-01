@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "GermplasmPro: a browser-based platform for the day-to-day management of plant genetic resources collections"
+abstract: >-
+  GermplasmPro is a self-contained web application for the daily work of a plant genetic resources collection, for
+  any species and any conservation route: seed bank, field genebank or living collection, slow-growth in vitro
+  culture, cryopreservation, and in-situ or on-farm conservation. It handles passport data with the 42 FAO/Bioversity
+  multi-crop passport descriptors (MCPD v2.1) plus extension fields for management and in-situ data, with automatic
+  column recognition, field-by-field and cross-field validation, coordinates checked against the declared country
+  and score-based duplicate detection with merging. It draws offline collecting maps, measures geographic diversity
+  (Hill numbers, rarefaction, Chao and jackknife estimators, UPGMA and a Mantel test), finds collecting gaps with a
+  transparent priority index and a complementarity-based minimum set, and builds and validates core collections from
+  mixed characterization data with Gower distance, PCoA and clustering. It projects seed viability lot by lot with
+  the Ellis-Roberts equation, issues work alerts and a 25-year workload, prints millimetre-accurate labels with QR
+  and Code 128 codes generated in the browser, and writes a self-contained report with passport export in MCPD and
+  Darwin Core. Everything runs locally, in Spanish and English.
+type: software
+authors:
+  - given-names: "Luis Ángel"
+    family-names: "Barrera-Guzmán"
+    email: lbarrerag@chapingo.mx
+    orcid: "https://orcid.org/0000-0001-8057-2583"
+version: "1.0.0"
+date-released: "2026-10-01"
+repository-code: "https://github.com/luisangelbg/GermplasmPro"
+url: "https://luisangelbg.github.io/GermplasmPro/"
+license: GPL-3.0-or-later
+keywords:
+  - genebank management
+  - plant genetic resources
+  - germplasm conservation
+  - ex situ conservation
+  - in situ conservation
+  - passport data
+  - MCPD
+  - duplicate detection
+  - collecting gaps
+  - geographic diversity
+  - core collection
+  - seed viability
+  - Darwin Core
+  - genebank labels

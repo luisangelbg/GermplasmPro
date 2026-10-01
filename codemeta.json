@@ -1,0 +1,29 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "GermplasmPro",
+  "description": "A browser-based platform for the day-to-day management of plant genetic resources collections, for any species and any conservation route (seed bank, field genebank, in vitro, cryopreservation, in situ and on-farm): MCPD v2.1 passport data with extension fields, automatic column recognition and validation, coordinate checks and duplicate detection, offline collecting maps, geographic diversity with rarefaction and richness estimators, collecting gaps with a priority index and complementarity, characterization with Gower distance, PCoA, clustering and validated core collections, Ellis-Roberts viability projection, work alerts and workload, millimetre-accurate labels with QR and Code 128 codes, and a self-contained report with MCPD and Darwin Core export. No installation, no third-party libraries, Spanish and English.",
+  "version": "1.0.0",
+  "dateCreated": "2026-09-22",
+  "datePublished": "2026-10-01",
+  "codeRepository": "https://github.com/luisangelbg/GermplasmPro",
+  "url": "https://luisangelbg.github.io/GermplasmPro/",
+  "license": "https://spdx.org/licenses/GPL-3.0-or-later",
+  "programmingLanguage": ["JavaScript", "HTML", "CSS"],
+  "runtimePlatform": "Web browser",
+  "operatingSystem": "Any",
+  "applicationCategory": "Plant genetic resources",
+  "keywords": ["genebank management", "plant genetic resources", "germplasm conservation", "ex situ conservation", "in situ conservation", "passport data", "MCPD", "duplicate detection", "collecting gaps", "geographic diversity", "core collection", "seed viability", "Darwin Core", "genebank labels"],
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Luis Ángel",
+      "familyName": "Barrera-Guzmán",
+      "email": "lbarrerag@chapingo.mx",
+      "@id": "https://orcid.org/0000-0001-8057-2583"
+    }
+  ],
+  "softwareRequirements": ["A modern web browser (Chrome, Edge, Firefox or Safari)"],
+  "readme": "README.md",
+  "developmentStatus": "active"
+}

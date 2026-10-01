@@ -342,6 +342,31 @@ Todo se calcula y se dibuja en el navegador con JavaScript simple: no hay servid
 que haces sale de tu computadora. No usa bibliotecas de terceros; las figuras y las ilustraciones las genera el
 propio código en SVG. La interfaz está en español e inglés, con tema claro y oscuro.
 
+## Licencia y componentes de terceros
+
+Copyright © 2026 Luis Ángel Barrera-Guzmán. GermplasmPro es software libre: se puede usar, estudiar, modificar y
+redistribuir según los términos de la **Licencia Pública General de GNU, versión 3**, cuyo texto completo está en
+[LICENSE](LICENSE). Toda versión modificada que se redistribuya debe conservar la misma licencia y dar crédito al
+autor.
+
+Casi todo el código es propio. Lo que viene de terceros se declara en
+[LICENSES-TERCEROS.md](LICENSES-TERCEROS.md), con su licencia: los íconos de Lucide (ISC) del navegador y del
+estudio de figuras, y las letras de la suite, que se cargan del portal cuando hay conexión. Los contornos de México
+y del mundo son de Natural Earth, de dominio público. La colección de ejemplo es ficticia.
+
+## Cómo citarla
+
+> Barrera-Guzmán, L.Á. (2026). *GermplasmPro: el banco de germoplasma, accesión por accesión* (versión 1.0.0)
+> [software]. https://github.com/luisangelbg/GermplasmPro
+
+La portada de la app trae la misma cita en «Cómo citar». Los datos para gestores de referencias están en
+[CITATION.cff](CITATION.cff).
+
+## Publicada
+
+- Código fuente: <https://github.com/luisangelbg/GermplasmPro>
+- La app en línea: <https://luisangelbg.github.io/GermplasmPro/>
+
 ## Referencias
 
 - Ellis, R.H. y Roberts, E.H. (1980). Improved equations for the prediction of seed longevity. *Annals of Botany* 45(1): 13–30.
@@ -373,3 +398,6 @@ every bottleneck) and Block 2 (passport data: import with automatic column recog
 descriptors plus 7 extension fields for in-situ and management data, field-by-field and cross-field validation, an
 editable table, the full record of each accession, the portrait of the collection and MCPD export) and Block 3 (quality control and duplicates: coordinates checked against the declared country with a diagnosis and a proposed fix, name and catalogue consistency, and blocked, score-based duplicate detection with side-by-side comparison and merging) and Block 4 (the collecting map: Mexico with its 32 states and the world by countries, drawn offline from bundled Natural Earth outlines, with point colouring by any descriptor, choropleths, a grid, a scale bar and SVG/PNG export) and Block 5 (geographic diversity: richness and the classic indices per state, country, grid cell or elevation belt, Hurlbert rarefaction to a common effort, Chao1/Chao2/jackknife estimators with a warning when Chao1 is unreliable, compositional heat map with UPGMA clustering, and a Mantel test against geographic distance) and Block 6 (collecting gaps: empty cells and distance to the nearest collection, a transparent priority index with adjustable weights, at-risk types, empty elevation belts and a complementarity-based minimum set) and Block 7 (characterization and core collection: mixed traits with missing data, Gower distance, PCoA, Ward or UPGMA clustering with silhouette, core building by strata or method M, and validation against the Hu et al. criteria) and Block 8 (running the genebank: viability projected lot by lot from your own conditions and constants, work alerts by conservation route, an exportable work plan, sample-size calculators for regeneration and a 25-year workload) and Block 9 (labels and register: five millimetre-accurate label formats —seed envelope, cold-store jar, field stake, cryovial and shipping label— laid out on Letter or A4 sheets, with a genuine Code 128 barcode that the test suite reads back with its own decoder, selectable fields, a hand-picked selection, and the sowing list, delivery note and register book) and Block 10 (the report: a standalone HTML document with the figures embedded and the methods written out in prose, only for the analyses actually run, printable to PDF, plus a ZIP package with data and figures and passport export in both MCPD v2.1 and Darwin Core, where descriptors with no Darwin Core term travel in dynamicProperties so that nothing is lost) are ready. **The application is complete.** Everything runs locally, in Spanish and English, with light and dark themes. Open
 `index.html` by double-clicking it, or run `server.ps1` for `http://localhost:9600`. Tests: `tests/index.html`.
+
+Free software under the GNU GPL v3 (© 2026 Luis Ángel Barrera-Guzmán). Source code:
+<https://github.com/luisangelbg/GermplasmPro>; running app: <https://luisangelbg.github.io/GermplasmPro/>.
