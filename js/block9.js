@@ -57,6 +57,7 @@
     const lang = I18N.lang;
 
     el('b9Body').innerHTML = `
+      <h3 class="section-title no-print">${T('1 · Qué se imprime y en qué formato', '1 · What gets printed and in which format')}</h3>
       <div class="card no-print">
         <div class="imp-row">
           <label class="inline-label">${T('Qué imprimir', 'What to print')}<select class="sel" id="b9Which">
@@ -100,6 +101,7 @@
 
       ${view.which === 'selection' ? picker() : ''}
 
+      <h3 class="section-title no-print">${T('2 · La hoja, tal como saldrá impresa', '2 · The sheet, exactly as it will print')}</h3>
       <div id="b9Preview">${view.sheet === 'labels' ? labelsPreview(s, lang) : workSheet()}</div>`;
 
     /* eventos */

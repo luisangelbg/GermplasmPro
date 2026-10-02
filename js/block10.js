@@ -46,6 +46,7 @@
     };
 
     el('b10Body').innerHTML = `
+      <h3 class="section-title">${T('1 · Qué lleva el informe', '1 · What goes into the report')}</h3>
       <div class="card">
         <div class="imp-row">
           <label class="inline-label">${T('Título', 'Title')}<input class="inp" id="b10Title" value="${esc(view.title)}"
@@ -78,6 +79,7 @@
         </div>
       </div>
 
+      <h3 class="section-title">${T('2 · El informe, tal como sale', '2 · The report, as it comes out')}</h3>
       <div class="rep-frame"><iframe id="b10Frame" title="${esc(T('vista previa del informe', 'report preview'))}"></iframe></div>`;
 
     paint();

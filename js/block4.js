@@ -347,6 +347,7 @@
     pts = currentPoints();
     const total = state.acc.length;
     const sinCoord = total - GEO.pointsOf(state.acc).length;
+    el('b4CountsHead').hidden = !total;   /* sin accesiones no hay cuentas que titular */
 
     if (!total) {
       el('b4Map').innerHTML = `<div class="sim-empty">${T('Primero carga tus accesiones en el Bloque 2.', 'Load your accessions in Block 2 first.')}</div>`;
