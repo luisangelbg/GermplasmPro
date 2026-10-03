@@ -25,7 +25,7 @@
   };
   let G = null;
 
-  const cv = n => B4.cssVar(n);
+  const cv = n => B4.paint(n);   /* referencias al tema: la figura cambia sola con él */
   const ramp = t => B4.ramp(t);
 
   /* ============ el mapa de vacíos ============ */
@@ -269,7 +269,7 @@
       if (s) s.addEventListener('change', () => { view.weights[k] = Number(s.value); runUI(); });
     });
     el('b6CSV').addEventListener('click', exportRoute);
-    el('b6SVG').addEventListener('click', () => download(gapMap(1000, 580), 'vacios-colecta.svg', 'image/svg+xml'));
+    el('b6SVG').addEventListener('click', () => download(B4.forFile(() => gapMap(1000, 580)), 'vacios-colecta.svg', 'image/svg+xml'));
   }
 
   function exportRoute() {

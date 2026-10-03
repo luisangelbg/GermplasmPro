@@ -30,8 +30,10 @@
 
   /* ================= figuras ================= */
   /* Las figuras del informe salen con los colores del tema claro, porque el
-     informe es papel: se genera en claro pase lo que pase en la pantalla. */
+     informe es papel: se genera en claro pase lo que pase en la pantalla. Con el
+     Bloque 4 cargado, en su modo de archivo: colores fijos (también las rampas). */
   function inLight(fn) {
+    if (window.B4 && typeof B4.forFile === 'function') return B4.forFile(fn);
     const root = document.documentElement;
     const prev = root.getAttribute('data-theme');
     root.setAttribute('data-theme', 'light');

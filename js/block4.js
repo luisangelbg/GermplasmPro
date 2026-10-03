@@ -42,8 +42,22 @@
     cssCache[name] = v;
     return v;
   }
+  /* En pantalla, las figuras llevan referencias al tema (var(--…), y color-mix() en las rampas): cambian solas
+     con él y el Estudio de figuras puede exportarlas con los colores del tema claro. Para un archivo (las
+     descargas, el ZIP y el informe) se dibujan con colores fijos del tema claro, que se leen en cualquier lado. */
+  let LIVE = true;
+  const paint = name => (LIVE ? `var(${name})` : cssVar(name));
+  function forFile(fn) {
+    const root = document.documentElement, prev = root.getAttribute('data-theme'), was = LIVE;
+    LIVE = false;
+    root.setAttribute('data-theme', 'light');
+    try { return fn(); } finally {
+      LIVE = was;
+      if (prev === null) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', prev);
+    }
+  }
   const CAT_VARS = ['--s1', '--s2', '--s3', '--s4', '--s5', '--s6', '--s7', '--s8', '--mzAzul', '--mzRojo', '--mzAmarillo', '--squash'];
-  function catColor(i) { return cssVar(CAT_VARS[i % CAT_VARS.length]); }
+  function catColor(i) { return paint(CAT_VARS[i % CAT_VARS.length]); }
   function mix(a, b, t) {
     const pa = hex(a), pb = hex(b);
     const c = pa.map((v, k) => Math.round(v + (pb[k] - v) * clamp(t, 0, 1)));
@@ -59,11 +73,12 @@
     return m ? m.slice(0, 3).map(Number) : [136, 136, 136];
   }
   /* rampa secuencial de la app: crema → ocre → morado */
+  const RAMP = ['--bg-soft', '--gold', '--accent', '--primary'];
   function ramp(t) {
-    const stops = [cssVar('--bg-soft'), cssVar('--gold'), cssVar('--accent'), cssVar('--primary')];
-    const x = clamp(t, 0, 1) * (stops.length - 1);
-    const i = Math.min(stops.length - 2, Math.floor(x));
-    return mix(stops[i], stops[i + 1], x - i);
+    const x = clamp(t, 0, 1) * (RAMP.length - 1);
+    const i = Math.min(RAMP.length - 2, Math.floor(x)), f = x - i;
+    if (LIVE) return `color-mix(in srgb, var(${RAMP[i + 1]}) ${(f * 100).toFixed(1)}%, var(${RAMP[i]}))`;
+    return mix(cssVar(RAMP[i]), cssVar(RAMP[i + 1]), f);
   }
 
   /* ---------- qué colorea los puntos ---------- */
@@ -122,8 +137,8 @@
     const bbox = currentBBox();
     const proj = GEO.projection(bbox, W, H, 10);
     const g = [];
-    const cBg = cssVar('--bg-soft'), cLand = cssVar('--card-bg'), cLine = cssVar('--border-strong'),
-      cText = cssVar('--text'), cMuted = cssVar('--text-muted'), cGrid = cssVar('--grid');
+    const cBg = paint('--bg-soft'), cLand = paint('--card-bg'), cLine = paint('--border-strong'),
+      cText = paint('--text'), cMuted = paint('--text-muted'), cGrid = paint('--grid');
 
     g.push(`<rect x="0" y="0" width="${W}" height="${H}" fill="${cBg}"/>`);
 
@@ -180,7 +195,7 @@
           fill = e ? ramp(0.15 + 0.85 * e.n / maxC) : cLand;
         }
         const sel = view.scope === s.code;
-        statePaths.push(`<path d="${d}" fill="${fill}" stroke="${sel ? cssVar('--primary') : cLine}" stroke-width="${sel ? 1.8 : 0.7}" fill-rule="evenodd" data-state="${s.code}"><title>${esc(s.name)}</title></path>`);
+        statePaths.push(`<path d="${d}" fill="${fill}" stroke="${sel ? paint('--primary') : cLine}" stroke-width="${sel ? 1.8 : 0.7}" fill-rule="evenodd" data-state="${s.code}"><title>${esc(s.name)}</title></path>`);
         if (view.labels && !wide) {
           const cx = proj.X((s.bbox[0] + s.bbox[2]) / 2), cy = proj.Y((s.bbox[1] + s.bbox[3]) / 2);
           const e = choroS && choroS.get(s.code);
@@ -216,7 +231,7 @@
         r = 2.5 + 5.5 * Math.sqrt(v / rMax || 0);
       }
       const on = view.hover === p.i;
-      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(on ? r + 2.5 : r).toFixed(1)}" fill="${col}" fill-opacity="${on ? 1 : 0.85}" stroke="${on ? cText : cssVar('--card-bg')}" stroke-width="${on ? 1.8 : 0.9}" data-pt="${p.i}"><title>${esc((p.row.ACCENUMB || '') + ' · ' + (p.row.ACCENAME || ''))}</title></circle>`;
+      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(on ? r + 2.5 : r).toFixed(1)}" fill="${col}" fill-opacity="${on ? 1 : 0.85}" stroke="${on ? cText : paint('--card-bg')}" stroke-width="${on ? 1.8 : 0.9}" data-pt="${p.i}"><title>${esc((p.row.ACCENUMB || '') + ' · ' + (p.row.ACCENAME || ''))}</title></circle>`;
     }).join('');
     g.push(`<g>${circles}</g>`);
     g.push(`<g>${stateLabels.join('')}</g>`);
@@ -224,7 +239,7 @@
     /* barra de escala y norte */
     const sb = GEO.scaleBar(proj, Math.min(140, W * 0.22));
     g.push(`<g transform="translate(${W - sb.px - 26},${H - 26})">
-      <rect x="-6" y="-14" width="${(sb.px + 12).toFixed(1)}" height="26" rx="6" fill="${cssVar('--card-bg')}" fill-opacity="0.82"/>
+      <rect x="-6" y="-14" width="${(sb.px + 12).toFixed(1)}" height="26" rx="6" fill="${paint('--card-bg')}" fill-opacity="0.82"/>
       <line x1="0" y1="0" x2="${sb.px.toFixed(1)}" y2="0" stroke="${cText}" stroke-width="2"/>
       <line x1="0" y1="-4" x2="0" y2="4" stroke="${cText}" stroke-width="2"/>
       <line x1="${sb.px.toFixed(1)}" y1="-4" x2="${sb.px.toFixed(1)}" y2="4" stroke="${cText}" stroke-width="2"/>
@@ -251,7 +266,7 @@
   function colorInfo() {
     const def = COLOR_BY.find(c => c.k === view.color) || COLOR_BY[0];
     if (def.kind === 'none') {
-      return { def, colorOf: () => cssVar('--s1'), legend: [] };
+      return { def, colorOf: () => paint('--s1'), legend: [] };
     }
     if (def.kind === 'num') {
       const vals = pts.map(p => valueOf(p, def.k)).filter(v => isFinite(v));
@@ -260,7 +275,7 @@
         def, lo, hi,
         colorOf: p => {
           const v = valueOf(p, def.k);
-          return isFinite(v) ? ramp(hi > lo ? (v - lo) / (hi - lo) : 0.5) : cssVar('--border-strong');
+          return isFinite(v) ? ramp(hi > lo ? (v - lo) / (hi - lo) : 0.5) : paint('--border-strong');
         },
         legend: 'ramp',
       };
@@ -276,7 +291,7 @@
       def, top, counts,
       colorOf: p => {
         const v = String(valueOf(p, def.k) || '');
-        return idx[v] != null ? catColor(idx[v]) : cssVar('--border-strong');
+        return idx[v] != null ? catColor(idx[v]) : paint('--border-strong');
       },
       legend: 'cat',
     };
@@ -294,7 +309,7 @@
     if (cinfo.legend === 'cat') {
       return `<div class="map-legend"><b>${esc(T(cinfo.def.es, cinfo.def.en))}</b>
         ${cinfo.top.map((v, i) => `<span class="lg-item"><i style="background:${catColor(i)}"></i>${esc(labelOf(cinfo.def.k, v))} <span class="muted">(${cinfo.counts.get(v)})</span></span>`).join('')}
-        ${cinfo.counts.size > cinfo.top.length ? `<span class="lg-item"><i style="background:${cssVar('--border-strong')}"></i>${T('los demás', 'the rest')}</span>` : ''}
+        ${cinfo.counts.size > cinfo.top.length ? `<span class="lg-item"><i style="background:${paint('--border-strong')}"></i>${T('los demás', 'the rest')}</span>` : ''}
       </div>`;
     }
     return '';
@@ -455,23 +470,29 @@
   }
 
   /* ---------- exportación ---------- */
+  /* el mapa que se ve, dibujado de nuevo para un archivo: colores fijos del tema claro */
+  function fileSVG() {
+    const m = /viewBox="0 0 (\d+) (\d+)"/.exec(lastSVG);
+    return forFile(() => drawMap(m ? Number(m[1]) : 900, m ? Number(m[2]) : 560).svg);
+  }
   function exportSVG() {
     if (!lastSVG) return;
-    download(lastSVG, 'mapa-colecta.svg', 'image/svg+xml;charset=utf-8');
+    download(fileSVG(), 'mapa-colecta.svg', 'image/svg+xml;charset=utf-8');
   }
   function exportPNG(scale) {
     if (!lastSVG) return;
     const k = scale || 2;
-    const m = /viewBox="0 0 (\d+) (\d+)"/.exec(lastSVG);
+    const svg = fileSVG(), bg = forFile(() => cssVar('--bg-soft'));
+    const m = /viewBox="0 0 (\d+) (\d+)"/.exec(svg);
     const W = m ? Number(m[1]) : 900, H = m ? Number(m[2]) : 560;
     const img = new Image();
-    const blob = new Blob([lastSVG], { type: 'image/svg+xml;charset=utf-8' });
+    const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     img.onload = () => {
       const cv = document.createElement('canvas');
       cv.width = W * k; cv.height = H * k;
       const ctx = cv.getContext('2d');
-      ctx.fillStyle = cssVar('--bg-soft');
+      ctx.fillStyle = bg;
       ctx.fillRect(0, 0, cv.width, cv.height);
       ctx.drawImage(img, 0, 0, cv.width, cv.height);
       URL.revokeObjectURL(url);
@@ -525,5 +546,5 @@
   document.addEventListener('langchange', () => { if (el('panel-4')) { syncControls(); render(); } });
   document.addEventListener('themechange', () => { cssCache = {}; cssTheme = ''; if (el('panel-4')) render(); });
 
-  window.B4 = { render, view, drawMap, colorInfo, exportSVG, exportPNG, cssVar, ramp, speciesIn, points: () => pts };
+  window.B4 = { render, view, drawMap, colorInfo, exportSVG, exportPNG, cssVar, paint, forFile, ramp, speciesIn, points: () => pts };
 })();

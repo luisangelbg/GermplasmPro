@@ -28,7 +28,7 @@
   };
   let A = null;
 
-  const cv = n => B4.cssVar(n);
+  const cv = n => B4.paint(n);   /* referencias al tema: la figura cambia sola con él */
   const ramp = t => B4.ramp(t);
 
   const UNITS = [
@@ -330,8 +330,8 @@
       ix.addEventListener('change', () => { view.index = ix.value; render(pts); });
     }
     el('b5CSV').addEventListener('click', exportCSV);
-    el('b5SVG').addEventListener('click', () => download(curvePlot(700, 440), 'curva-acumulacion.svg', 'image/svg+xml'));
-    el('b5SVG2').addEventListener('click', () => download(heatmap(700), 'similitud-composicion.svg', 'image/svg+xml'));
+    el('b5SVG').addEventListener('click', () => download(B4.forFile(() => curvePlot(700, 440)), 'curva-acumulacion.svg', 'image/svg+xml'));
+    el('b5SVG2').addEventListener('click', () => download(B4.forFile(() => heatmap(700)), 'similitud-composicion.svg', 'image/svg+xml'));
   }
 
   function mantelPlot(W, H) {

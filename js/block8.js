@@ -17,7 +17,7 @@
   const view = { filter: 'all', route: '', sort: 'score', horizon: 25 };
   let cfg = null, viab = null, A = null;
 
-  const cv = n => B4.cssVar(n);
+  const cv = n => B4.paint(n);   /* referencias al tema: la figura cambia sola con él */
 
   function loadCfg() {
     cfg = MANAGE.config(Prefs.get('bankConfig', null));

@@ -739,9 +739,11 @@ ok(GEO.gridCount(ptsEx, 0.25).length >= celdas.length, 'con celdas más chicas h
 /* el dibujo del Bloque 4 */
 state.acc = exMapa;
 B4.view.scope = 'mx'; B4.view.choro = 'accState'; B4.view.grid = 0;
-const drawn = B4.drawMap(900, 560);
+const drawn = B4.forFile(() => B4.drawMap(900, 560));
 ok(!!parseSVG(drawn.svg), 'el mapa es un SVG válido');
-ok(!drawn.svg.includes('var(--'), 'el SVG exportable no deja variables CSS sin resolver');
+ok(!drawn.svg.includes('var(--') && !drawn.svg.includes('color-mix('), 'el SVG para un archivo no deja variables CSS ni mezclas sin resolver');
+const enVivo = B4.drawMap(900, 560);
+ok(!!parseSVG(enVivo.svg) && enVivo.svg.includes('var(--text') && enVivo.svg.includes('var(--bg-soft)'), 'en pantalla, el mapa lleva referencias al tema (cambia solo con él y el estudio lo exporta en claros)');
 ok((drawn.svg.match(/data-state=/g) || []).length === 32, 'el mapa de México dibuja sus 32 entidades');
 const dibujadosMX = (drawn.svg.match(/data-pt=/g) || []).length;
 const enMexico = ptsEx.filter(p => p.lon >= -118.5 && p.lon <= -86.6 && p.lat >= 14.3 && p.lat <= 32.8).length;
@@ -758,7 +760,17 @@ const drawnO = B4.drawMap(900, 560);
 ok(!!parseSVG(drawnO.svg), 'el acercamiento a una entidad con rejilla es válido');
 ok(drawnO.bbox[0] > -100 && drawnO.bbox[2] < -93, 'y el encuadre se ciñe a Oaxaca');
 B4.view.scope = 'mx'; B4.view.grid = 0; B4.view.choro = 'none';
-ok(/^#|^rgb/.test(B4.ramp(0.5)), 'la rampa de color devuelve un color literal');
+ok(/^#|^rgb/.test(B4.forFile(() => B4.ramp(0.5))), 'para un archivo, la rampa de color devuelve un color literal');
+ok(/^color-mix\(in srgb, var\(--[\w-]+\) [\d.]+%, var\(--[\w-]+\)\)$/.test(B4.ramp(0.5)), 'en pantalla, la rampa es una mezcla de variables del tema');
+{
+  const raiz = document.documentElement, th0 = raiz.getAttribute('data-theme');
+  raiz.setAttribute('data-theme', 'dark');
+  const dentro = B4.forFile(() => raiz.getAttribute('data-theme'));
+  ok(raiz.getAttribute('data-theme') === 'dark', 'el modo de archivo deja el tema como estaba');
+  ok(dentro === 'light', 'y dibuja con el tema claro aunque la pantalla esté en oscuro');
+  ok(B4.paint('--text') === 'var(--text)', 'al salir vuelve al modo de pantalla');
+  if (th0 === null) raiz.removeAttribute('data-theme'); else raiz.setAttribute('data-theme', th0);
+}
 ok(B4.speciesIn(ptsEx) >= 12, 'el contador de especies del mapa funciona');
 state.acc = [];
 
@@ -878,7 +890,8 @@ const an2 = B5.analysis();
 ok(!!an2, 'el bloque corre su análisis');
 ok(!!parseSVG(B5.curvePlot(520, 320)), 'la curva de acumulación es un SVG válido');
 ok(!!parseSVG(B5.heatmap(540)), 'el mapa de calor con su dendrograma es un SVG válido');
-ok(!B5.curvePlot(520, 320).includes('var(--'), 'las figuras salen con colores literales, listas para exportar');
+ok(!B4.forFile(() => B5.curvePlot(520, 320)).includes('var(--'), 'para un archivo, las figuras salen con colores literales, listas para exportar');
+ok(B5.curvePlot(520, 320).includes('var(--'), 'en pantalla llevan referencias al tema');
 const im = B5.indexMap(600, 300);
 ok(!im || !!parseSVG(im), 'el mapa del índice es válido cuando aplica');
 ok(!!parseSVG(B5.scatter(400, 300, [{ x: 1, y: 2 }, { x: 3, y: 4 }], 'x', 'y', { line: true })), 'la dispersión con recta es válida');
@@ -977,7 +990,7 @@ const g6 = B6.analysis();
 ok(!!g6 && g6.cells.length > 0, 'el bloque corre su análisis');
 ok(!!parseSVG(B6.gapMap(700, 420)), 'el mapa de vacíos es un SVG válido');
 ok(!!parseSVG(B6.compCurve(500, 300)), 'la curva de complementariedad es un SVG válido');
-ok(!B6.gapMap(700, 420).includes('var(--'), 'el mapa exportable no deja variables CSS');
+ok(!B4.forFile(() => B6.gapMap(700, 420)).includes('var(--'), 'el mapa para un archivo no deja variables CSS');
 ok(Object.values(B6.FLAGS).every(f => f.es && f.en && f.c), 'las banderas de riesgo están en dos idiomas');
 state.acc = [];
 
@@ -1124,7 +1137,7 @@ ok(!!a7 && a7.pairs.length === 46, 'el bloque une la caracterización con las ac
 ok(a7.ord.explained[0] >= a7.ord.explained[1], 'los ejes de la PCoA salen ordenados');
 ok(!!parseSVG(B7.pcoaPlot(500, 360).split('</svg>')[0] + '</svg>'), 'la figura de la PCoA es un SVG válido');
 ok(!!parseSVG(B7.dendroPlot(500)), 'el dendrograma es un SVG válido');
-ok(!B7.dendroPlot(500).includes('var(--'), 'las figuras salen con colores literales');
+ok(!B4.forFile(() => B7.dendroPlot(500)).includes('var(--'), 'para un archivo, las figuras salen con colores literales');
 state.acc = []; state.traits = [];
 
 /* ============ 24. manejo del banco ============ */
@@ -1227,7 +1240,7 @@ B8.run();
 const a8 = B8.analysis();
 ok(!!a8 && a8.lots.length === 46, 'el bloque corre su análisis');
 ok(!!parseSVG(B8.workPlot(500, 300).split('</svg>')[0] + '</svg>'), 'la gráfica de carga de trabajo es un SVG válido');
-ok(!B8.workPlot(500, 300).includes('var(--'), 'y sale con colores literales');
+ok(!B4.forFile(() => B8.workPlot(500, 300)).includes('var(--'), 'y para un archivo sale con colores literales');
 ok(B8.cfg().seed.threshold === 85 && B8.viab()['Zea mays'], 'la configuración y las constantes están cargadas');
 state.acc = [];
 

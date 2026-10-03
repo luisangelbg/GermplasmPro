@@ -28,7 +28,7 @@
   let defs = [];          /* [{k, type, weight, use}] */
   let A = null;           /* resultados */
 
-  const cv = n => B4.cssVar(n);
+  const cv = n => B4.paint(n);   /* referencias al tema: la figura cambia sola con él */
   const ramp = t => B4.ramp(t);
   const CATC = ['--s1', '--s2', '--s3', '--s4', '--s5', '--s6', '--s7', '--s8'];
 
@@ -331,7 +331,7 @@
     el('b7Export').addEventListener('click', () => exportCore(false));
     el('b7ExportAll').addEventListener('click', () => exportCore(true));
     el('b7ExportD').addEventListener('click', exportD);
-    el('b7SVG').addEventListener('click', () => download(pcoaPlot(700, 500).split('</svg>')[0] + '</svg>', 'pcoa-gower.svg', 'image/svg+xml'));
+    el('b7SVG').addEventListener('click', () => download(B4.forFile(() => pcoaPlot(700, 500)).split('</svg>')[0] + '</svg>', 'pcoa-gower.svg', 'image/svg+xml'));
   }
 
   function exportCore(all) {
