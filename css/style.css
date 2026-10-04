@@ -76,16 +76,6 @@ sub, sup { line-height: 0; }
 i.sci, .sci { font-style: italic; }
 code, .mono { font-family: var(--mono); font-size: .88em; }
 
-/* ---------- barra superior en pantallas muy angostas ----------
-   Con el portal, ES | EN, tema y ayuda, a 360 px no caben el logo y el
-   nombre completos: se esconde el logo y el nombre se recorta si hace falta. */
-@media (max-width: 420px) {
-  #brandLogo { display: none; }
-  .brand { flex: 1 1 auto; overflow: hidden; }
-  .brand > span:not(.brand-sub) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .top-tools { gap: var(--sp-1); }
-}
-
 /* ---------- paneles ---------- */
 .step-panel { display: none; }
 .step-panel.active { display: block; }
