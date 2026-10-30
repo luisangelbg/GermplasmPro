@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · Manual de usuario · Capítulo 2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- reparte el contenido en hojas tamaño carta, con encabezados, números de página e índice -->
+<script src="../paginar.js"></script>
+<style>
+  figure.reducida { width: 74%; margin-left: auto; margin-right: auto; }
+  figure.mediana { width: 86%; margin-left: auto; margin-right: auto; }
+  table.descr td:first-child { white-space: nowrap; }
+  table.descr td.g { background: var(--marino-suave); font-weight: 600; }
+  .muestra { font-family: var(--mono); font-size: 8.4pt; background: var(--marino-suave); border-radius: 5px; padding: 0.07in 0.12in; margin: 0.08in 0; white-space: pre; line-height: 1.45; }
+</style>
+</head>
+<body>
+
+<section class="capitulo" id="cap-b2" data-pestana="2" data-orden="2" style="--acento: var(--b2)">
+  <div class="cap-apertura">
+    <div class="cap-num">2</div>
+    <div class="cap-etiqueta">Capítulo dos · Bloque 2 · Pasaporte</div>
+    <h1 data-corto="Pasaporte">El pasaporte de las accesiones</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">El Bloque 2 es la puerta de entrada de la colección. Aquí llega tu lista de accesiones —de un archivo, de un pegado desde la hoja de cálculo o escrita en una plantilla—, la app reconoce qué descriptor del estándar MCPD v2.1 es cada columna, revisa cada dato por separado y contra los demás, y te deja corregirlo en una tabla o en la ficha de cada accesión. Termina con el retrato de la colección, la completitud de cada descriptor y los archivos para llevarte el pasaporte. Todo lo que hacen los bloques siguientes sale de aquí.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>2.1</b>El pasaporte MCPD v2.1 y la extensión GP_</li>
+      <li><b>2.2</b>Las formas de traer los datos</li>
+      <li><b>2.3</b>Pegar desde una hoja de cálculo</li>
+      <li><b>2.4</b>La plantilla guiada</li>
+      <li><b>2.5</b>¿Qué es cada columna?</li>
+      <li><b>2.6</b>La validación: errores y avisos</li>
+      <li><b>2.7</b>La tabla y la ficha de cada accesión</li>
+      <li><b>2.8</b>El retrato de la colección y la completitud</li>
+      <li><b>2.9</b>Llevarte los datos y el guardado automático</li>
+    </ul>
+  </div>
+
+  <!-- 2.1 -->
+  <h2 id="b2-1"><span class="num">2.1</span>El pasaporte MCPD v2.1 y la extensión GP_</h2>
+  <p class="lead">La primera idea de la introducción (I.3) lo resume: la accesión es la unidad y su pasaporte es su identidad. GermplasmPro escribe ese pasaporte con los <b>descriptores multicultivo de pasaporte de FAO/Bioversity, versión 2.1</b> (MCPD; Alercia, Diulgheroff y Mackay, 2015), la forma que entienden los bancos de germoplasma y los sistemas de información del mundo. Cada descriptor tiene una clave fija en mayúsculas —<code>ACCENUMB</code>, <code>DECLATITUDE</code>, <code>SAMPSTAT</code>— y la app la muestra siempre junto a su nombre completo en español, para que nadie tenga que memorizar abreviaturas.</p>
+  <p>La app reconoce los <b>42 descriptores</b> del estándar y los reparte en siete grupos, los mismos con que se ordenan la ficha de cada accesión, el selector del mapeo de columnas y el catálogo de la plantilla. Tres son <b>obligatorios</b> —el código del instituto que conserva, el número de accesión y el género— y doce más son <b>muy recomendables</b>: sin ellos la accesión existe, pero vale menos. A esos 42 suma siete campos propios, la <b>extensión GermplasmPro</b>, cuyas claves empiezan con <code>GP_</code>.</p>
+  <table class="compacta">
+    <caption><b>Tabla 2.1.</b> Los grupos de descriptores del pasaporte. Obligatorios: <code>INSTCODE</code>, <code>ACCENUMB</code> y <code>GENUS</code>. Muy recomendables: los doce de la última columna.</caption>
+    <thead><tr><th style="width:1.9in">Grupo</th><th class="c" style="width:0.7in">Descriptores</th><th>Los muy recomendables del grupo</th></tr></thead>
+    <tbody>
+      <tr><td>Identificación</td><td class="c">6</td><td>— (aquí están dos de los obligatorios)</td></tr>
+      <tr><td>Taxonomía</td><td class="c">6</td><td><code>SPECIES</code>, <code>CROPNAME</code> (y el obligatorio <code>GENUS</code>)</td></tr>
+      <tr><td>Colecta</td><td class="c">7</td><td><code>COLLDATE</code>, <code>COLLSRC</code></td></tr>
+      <tr><td>Sitio y coordenadas</td><td class="c">10</td><td><code>ORIGCTY</code>, <code>COLLSITE</code>, <code>DECLATITUDE</code>, <code>DECLONGITUDE</code>, <code>ELEVATION</code></td></tr>
+      <tr><td>Origen y estatus</td><td class="c">5</td><td><code>SAMPSTAT</code>, <code>ACQDATE</code></td></tr>
+      <tr><td>Donante y duplicados</td><td class="c">5</td><td>—</td></tr>
+      <tr><td>Conservación y disponibilidad</td><td class="c">3</td><td><code>STORAGE</code></td></tr>
+      <tr><td>Extensión GermplasmPro</td><td class="c">7</td><td>— (fuera del estándar)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Los 42 descriptores del estándar</h3>
+  <p>La tabla 2.2 sirve de referencia para decidir a qué descriptor corresponde cada columna de tu hoja. El nombre es el que aparece en la app; el ejemplo es el que la app propone en la ficha y en la plantilla. Las descripciones completas están en la propia app: en la ficha, al lado de cada casilla, y en el catálogo de la plantilla (apartado 2.4). Por eso esta referencia va aquí y no en un apéndice: es lo que necesitas a la mano mientras confirmas el mapeo.</p>
+  <table class="compacta descr">
+    <caption><b>Tabla 2.2.</b> Los descriptores MCPD v2.1, por grupo. * obligatorio · ° muy recomendable.</caption>
+    <thead><tr><th style="width:1.35in">Clave</th><th style="width:2.3in">Nombre en la app</th><th>Qué guarda · ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td class="g" colspan="3">Identificación</td></tr>
+      <tr><td><code>PUID</code></td><td>Identificador único persistente</td><td>Un identificador que nunca cambia y sirve fuera de tu banco · <code>doi:10.18730/ABC12</code></td></tr>
+      <tr><td><code>INSTCODE</code> *</td><td>Código del instituto que conserva</td><td>Código WIEWS: tres letras de país y tres dígitos · <code>MEX006</code></td></tr>
+      <tr><td><code>ACCENUMB</code> *</td><td>Número de accesión</td><td>Único en tu banco; no se repite ni se reutiliza · <code>MEX-CR-0417</code></td></tr>
+      <tr><td><code>ACCENAME</code></td><td>Nombre de la accesión</td><td>Nombre local o de cultivar; varios, con punto y coma · <code>Cónico norteño; Maíz azul</code></td></tr>
+      <tr><td><code>ACCEURL</code></td><td>Dirección web de la accesión</td><td>Su página en el catálogo público de tu institución</td></tr>
+      <tr><td><code>OTHERNUMB</code></td><td>Otros números de identificación</td><td>Los números que tiene en otros bancos, con punto y coma · <code>CIMMYTMA 2317; PI 484512</code></td></tr>
+      <tr><td class="g" colspan="3">Taxonomía</td></tr>
+      <tr><td><code>GENUS</code> *</td><td>Género</td><td>Con mayúscula inicial, sin abreviar · <code>Zea</code></td></tr>
+      <tr><td><code>SPECIES</code> °</td><td>Epíteto específico</td><td>Sólo el epíteto, en minúsculas, o «sp.» · <code>mays</code></td></tr>
+      <tr><td><code>SPAUTHOR</code></td><td>Autoridad de la especie</td><td><code>L.</code></td></tr>
+      <tr><td><code>SUBTAXA</code></td><td>Infraespecífico</td><td>Con su abreviatura de rango · <code>subsp. mexicana</code></td></tr>
+      <tr><td><code>SUBTAUTHOR</code></td><td>Autoridad del infraespecífico</td><td><code>(Schrad.) H.H.Iltis</code></td></tr>
+      <tr><td><code>CROPNAME</code> °</td><td>Nombre común del cultivo</td><td><code>Maíz</code></td></tr>
+      <tr><td class="g" colspan="3">Colecta</td></tr>
+      <tr><td><code>COLLNUMB</code></td><td>Número de colecta</td><td>El número de la libreta de campo · <code>LAB-2019-033</code></td></tr>
+      <tr><td><code>COLLCODE</code></td><td>Código del instituto colector</td><td>Código WIEWS · <code>MEX006</code></td></tr>
+      <tr><td><code>COLLNAME</code></td><td>Instituto colector</td><td>Su nombre, cuando no hay código</td></tr>
+      <tr><td><code>COLLINSTADDRESS</code></td><td>Dirección del instituto colector</td><td>Dirección postal</td></tr>
+      <tr><td><code>COLLMISSID</code></td><td>Identificador de la misión de colecta</td><td>Reúne las accesiones de un mismo viaje · <code>SIERRA-2019</code></td></tr>
+      <tr><td><code>COLLDATE</code> °</td><td>Fecha de colecta</td><td>AAAAMMDD, con guiones donde no se sepa · <code>20190812</code>, <code>2019----</code></td></tr>
+      <tr><td><code>COLLSRC</code> °</td><td>Fuente de colecta</td><td>Código de la lista: hábitat silvestre, parcela, troje, mercado… · <code>26</code></td></tr>
+      <tr><td class="g" colspan="3">Sitio y coordenadas</td></tr>
+      <tr><td><code>ORIGCTY</code> °</td><td>País de origen</td><td>ISO 3166-1 alfa-3 · <code>MEX</code></td></tr>
+      <tr><td><code>COLLSITE</code> °</td><td>Sitio de colecta</td><td>De lo general a lo particular · <code>Oaxaca, Santiago Apoala, 3 km al norte</code></td></tr>
+      <tr><td><code>DECLATITUDE</code> °</td><td>Latitud decimal</td><td>Con signo, negativa al sur · <code>17.6423</code></td></tr>
+      <tr><td><code>DECLONGITUDE</code> °</td><td>Longitud decimal</td><td>Con signo, negativa al oeste · <code>-97.3311</code></td></tr>
+      <tr><td><code>LATITUDE</code></td><td>Latitud en grados, minutos y segundos</td><td>Formato GGMMSSH · <code>173832N</code></td></tr>
+      <tr><td><code>LONGITUDE</code></td><td>Longitud en grados, minutos y segundos</td><td>Formato GGGMMSSH · <code>0971952W</code></td></tr>
+      <tr><td><code>COORDUNCERT</code></td><td>Incertidumbre de las coordenadas (m)</td><td>Radio en metros donde está el sitio real · <code>250</code></td></tr>
+      <tr><td><code>COORDDATUM</code></td><td>Datum geodésico</td><td><code>WGS84</code></td></tr>
+      <tr><td><code>GEOREFMETH</code></td><td>Método de georreferenciación</td><td>GPS, de un mapa, de un nomenclátor o de la descripción · <code>GPS</code></td></tr>
+      <tr><td><code>ELEVATION</code> °</td><td>Altitud (m)</td><td>Metros sobre el nivel del mar · <code>2180</code></td></tr>
+      <tr><td class="g" colspan="3">Origen y estatus</td></tr>
+      <tr><td><code>SAMPSTAT</code> °</td><td>Estatus biológico</td><td>Código de la lista: silvestre, criolla, mejorado… · <code>300</code></td></tr>
+      <tr><td><code>ANCEST</code></td><td>Genealogía</td><td>Pedigrí del material de mejoramiento</td></tr>
+      <tr><td><code>BREDCODE</code></td><td>Código del instituto fitomejorador</td><td>Código WIEWS</td></tr>
+      <tr><td><code>BREDNAME</code></td><td>Instituto fitomejorador</td><td>Su nombre, cuando no hay código</td></tr>
+      <tr><td><code>ACQDATE</code> °</td><td>Fecha de ingreso al banco</td><td>AAAAMMDD; no es la fecha de colecta · <code>20191104</code></td></tr>
+      <tr><td class="g" colspan="3">Donante y duplicados</td></tr>
+      <tr><td><code>DONORCODE</code></td><td>Código del donante</td><td>Código WIEWS</td></tr>
+      <tr><td><code>DONORNAME</code></td><td>Donante</td><td>Su nombre, cuando no hay código</td></tr>
+      <tr><td><code>DONORNUMB</code></td><td>Número del donante</td><td>El número que tenía en la colección del donante</td></tr>
+      <tr><td><code>DUPLSITE</code></td><td>Sitio del duplicado de seguridad</td><td>Código WIEWS del banco del respaldo; varios, con punto y coma · <code>NOR051</code></td></tr>
+      <tr><td><code>DUPLINSTNAME</code></td><td>Institución del duplicado</td><td>Su nombre, cuando no hay código</td></tr>
+      <tr><td class="g" colspan="3">Conservación y disponibilidad</td></tr>
+      <tr><td><code>STORAGE</code> °</td><td>Tipo de almacenamiento</td><td>Uno o varios códigos con punto y coma: 10–13 semillas, 20 campo, 30 in vitro, 40 crio, 50 ADN, 99 otro · <code>13;40</code></td></tr>
+      <tr><td><code>MLSSTAT</code></td><td>Estatus en el Sistema Multilateral</td><td>0 no está, 1 está, 99 otro · <code>1</code></td></tr>
+      <tr><td><code>REMARKS</code></td><td>Observaciones</td><td>Lo que no cabe en otro campo, con la clave a la que se refiere al principio</td></tr>
+    </tbody>
+  </table>
+  <p>Cuatro descriptores toman su valor de una lista cerrada de códigos: <code>SAMPSTAT</code> (21 códigos, de 100 silvestre a 999 otro), <code>COLLSRC</code> (22, de 10 hábitat silvestre a 99 otro), <code>STORAGE</code> (9) y <code>MLSSTAT</code> (3); <code>GEOREFMETH</code> admite cuatro textos fijos. No hace falta aprenderlos: en la tabla y en la ficha, al escribir en esas casillas aparece la lista con el significado de cada código, y debajo del valor se lee su nombre (<i>300 · Variedad tradicional o criolla (landrace)</i>). La lista de países es otra cosa: la app trae 119 códigos ISO alfa-3 de uso frecuente en germoplasma, no las 249 entradas del estándar, y por eso un código bien formado que no esté en ella sólo provoca un aviso.</p>
+
+  <h3>La extensión GermplasmPro</h3>
+  <p>MCPD es un estándar para colecciones <b>ex situ</b>: una población que se conserva en su reserva o en la parcela de quien la siembra no tiene tipo de almacenamiento ni fecha de ingreso al banco, pero hay que registrarla igual. Y un banco necesita saber cosas que el estándar no pide, como cuánta semilla queda o cuándo se probó por última vez. Para eso son los siete campos <code>GP_</code>. Nunca se confunden con los del estándar: en la ficha llevan la marca <span class="ui">fuera del estándar</span>, en la completitud van al final y el archivo MCPD no los incluye (apartado 2.9).</p>
+  <table class="compacta">
+    <caption><b>Tabla 2.3.</b> Los siete campos de la extensión GermplasmPro y quién los usa.</caption>
+    <thead><tr><th style="width:1.3in">Clave</th><th style="width:1.75in">Nombre en la app</th><th>Qué cubre</th></tr></thead>
+    <tbody>
+      <tr><td><code>GP_CONS</code></td><td>Ruta de conservación activa</td><td>La ruta con que se maneja hoy el material: <code>seed</code>, <code>field</code>, <code>invitro</code>, <code>cryo</code>, <code>dna</code>, <code>insitu</code> u <code>onfarm</code>. Incluye las dos in situ que <code>STORAGE</code> no contempla. Si se deja vacía, la app la deduce del primer código de <code>STORAGE</code> que tenga ruta (13 → semillas, 20 → campo…); los demás códigos quedan como respaldo.</td></tr>
+      <tr><td><code>GP_SITEID</code></td><td>Identificador del sitio in situ</td><td>La clave de la reserva, el predio o la parcela, para poder volver.</td></tr>
+      <tr><td><code>GP_KEEPER</code></td><td>Persona o comunidad custodia</td><td>Quién conserva la población, con su consentimiento.</td></tr>
+      <tr><td><code>GP_STOCK</code></td><td>Existencias</td><td>Cuánto hay hoy: semillas, plantas, frascos o criotubos, según la ruta.</td></tr>
+      <tr><td><code>GP_GERMPCT</code></td><td>Última germinación (%)</td><td>El resultado de la última prueba de viabilidad, de 0 a 100.</td></tr>
+      <tr><td><code>GP_GERMDATE</code></td><td>Fecha de la última prueba</td><td>Cuándo se hizo esa prueba, en AAAAMMDD.</td></tr>
+      <tr><td><code>GP_REGENDATE</code></td><td>Fecha de la última regeneración</td><td>Cuándo se regeneró, resembró o subcultivó por última vez, en AAAAMMDD.</td></tr>
+    </tbody>
+  </table>
+  <p>La ruta decide mucho en los bloques siguientes: qué alertas da el Bloque 8, qué etiqueta imprime el Bloque 9 y, ya en éste, qué validaciones se aplican. Los cuatro campos de existencias y fechas son el punto de partida del manejo del banco del Bloque 8.</p>
+
+  <!-- 2.2 -->
+  <h2 id="b2-2"><span class="num">2.2</span>Las formas de traer los datos</h2>
+  <p>La primera tarjeta del bloque reúne cinco botones. Junto a ellos, el contador (<i>46 accesiones en la colección</i>) y la hora del último guardado en el navegador; la figura I.2 de la introducción muestra esa barra con la colección de ejemplo cargada.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2.1in">Botón</th><th>Qué hace</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Abrir un archivo (CSV, TSV o proyecto)</span></td><td>Lee un <span class="ruta">.csv</span>, <span class="ruta">.tsv</span> o <span class="ruta">.txt</span> y pasa al mapeo de columnas (apartado 2.5). Si es un <span class="ruta">.json</span> guardado con <span class="ui">Guardar el proyecto (.json)</span>, lo abre directamente, sin mapeo.</td></tr>
+      <tr><td><span class="ui">Pegar desde una hoja de cálculo</span></td><td>Abre el asistente de pegado, con sus dos pestañas: pegar la tabla (apartado 2.3) o armarla columna por columna en la plantilla guiada (2.4).</td></tr>
+      <tr><td><span class="ui">Abrir la colección de ejemplo</span></td><td>Carga las 46 accesiones con que se ilustra este manual (apartado I.7).</td></tr>
+      <tr><td><span class="ui">Empezar en blanco</span></td><td>Deja la colección con una sola accesión vacía y abre su ficha para llenarla (apartado 2.7).</td></tr>
+      <tr><td><span class="ui">Descargar la plantilla</span></td><td>Descarga <span class="ruta">plantilla-pasaporte.csv</span>: las 49 columnas, con su clave como encabezado, y una fila con el ejemplo de cada descriptor.</td></tr>
+    </tbody>
+  </table>
+  <p>Al leer un archivo, la app adivina el separador —tabulador, punto y coma, coma o barra vertical— eligiendo el que parte todas las líneas en el mismo número de campos, no el que más abunda. Respeta las comillas, de modo que una coma dentro de <i>«Veracruz, Huatusco»</i> no parte la celda, y admite saltos de línea dentro de una celda entrecomillada. Quita la marca de orden de bytes que algunas hojas de cálculo ponen al principio y, si al leerlo como UTF-8 aparecen caracteres rotos, lo vuelve a leer como Windows-1252, la codificación que suelen usar las hojas de cálculo en Windows; así los acentos y las eñes llegan bien. Un encabezado vacío se llama <i>Columna A</i>, <i>Columna B</i>…, como en la hoja, y uno repetido se numera (<i>Sitio (2)</i>) para no perder la columna.</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Tres botones reemplazan lo que hay sin preguntar</div>
+    <p><span class="ui">Abrir la colección de ejemplo</span>, <span class="ui">Empezar en blanco</span> y abrir un proyecto <span class="ruta">.json</span> sustituyen la colección actual sin pedir confirmación. Si tienes una colección propia cargada, guarda antes el proyecto (apartado 2.9). Al importar un archivo o un pegado, en cambio, eliges en el mapeo entre <span class="ui">Importar y reemplazar</span> y <span class="ui">Añadir a lo que ya hay</span>. Sólo <span class="ui">Vaciar</span> y el ✕ de cada fila piden confirmación.</p>
+  </div>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Si usas la plantilla descargada</div>
+    <p>La fila de ejemplo de <span class="ruta">plantilla-pasaporte.csv</span> es sólo una guía de formato (<code>MEX-CR-0417</code>, <code>Zea</code>, <code>20190812</code>…). Bórrala antes de volver con el archivo lleno, o entrará como una accesión más. Las columnas que no vayas a usar puedes dejarlas vacías o quitarlas: la app reconoce las que queden por su clave.</p>
+  </div>
+
+  <!-- 2.3 -->
+  <h2 id="b2-3"><span class="num">2.3</span>Pegar desde una hoja de cálculo</h2>
+  <p>Es la forma más rápida de traer una colección: en tu hoja de cálculo seleccionas la tabla con sus encabezados, la copias, pulsas <span class="ui">Pegar desde una hoja de cálculo</span> y pegas con Ctrl + V. No hace falta atinarle al recuadro: el diálogo acepta el pegado en cualquier punto. El botón <span class="ui">Pegar del portapapeles</span> hace lo mismo con un clic, si el navegador da permiso para leer el portapapeles; si no lo da, la app te pide pegar con Ctrl + V. También sirve texto separado por comas, por punto y coma o por tabuladores, escrito o copiado de cualquier otro lado.</p>
+  <p>La idea del asistente es que nadie pulse «leer» a ciegas. En cuanto el texto entra, la app lo lee y enseña qué entendió, antes de importar nada:</p>
+  <figure style="width:78%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/b2-asistente.png" alt="El diálogo «Pega tu tabla de pasaporte» con un pegado de prueba de tres chayotes: las tarjetas 3 filas, 11 columnas y tabuladores; el aviso de coma decimal; la casilla «La primera fila son los encabezados», el selector Separador en automático, la vista previa partida en celdas y el botón Leer 3 filas"></div>
+    <figcaption><b>Figura 2.1.</b> El asistente con un pegado de prueba: tres chayotes copiados de una hoja de cálculo, con las coordenadas en coma decimal. Arriba, el texto tal como llegó; después, las tres tarjetas, el aviso, las opciones y la vista previa ya partida en celdas.</figcaption>
+  </figure>
+  <ul>
+    <li><b>Las tarjetas.</b> Cuántas filas de datos salen, cuántas columnas y con qué separador se partieron.</li>
+    <li><b>Los avisos.</b> Lo que suele salir mal al copiar de una hoja, explicado en una frase (tabla 2.4).</li>
+    <li><b>Las opciones.</b> La casilla <span class="ui">La primera fila son los encabezados</span> y el selector <span class="ui">Separador</span> (<i>automático</i>, <i>tabulador</i>, <i>coma</i>, <i>punto y coma</i> o <i>barra vertical</i>). Cualquier cambio vuelve a leer el texto al instante. <span class="ui">Borrar y empezar de nuevo</span> vacía el recuadro.</li>
+    <li><b>La vista previa.</b> Las primeras seis filas, partidas en celdas, con hasta nueve columnas; las demás se resumen en una columna <i>+2</i>, y debajo se dice cuántas filas más hay.</li>
+  </ul>
+  <p>La casilla de encabezados la marca la app la primera vez. Para decidir compara la primera fila con las que le siguen: un título no tiene la forma de los datos que encabeza —no es un número sobre una columna de números, ni una fecha sobre fechas, ni un código como <i>MEX-001</i> sobre códigos—. Si la tabla sólo tiene texto, busca que la primera fila parezca un título: sin números, sin celdas vacías y sin textos repetidos. Si se equivoca, basta desmarcar o marcar la casilla. Sin encabezados, las columnas se llaman <i>Columna A</i>, <i>Columna B</i>…, y en el mapeo eliges a mano qué es cada una.</p>
+  <table class="compacta">
+    <caption><b>Tabla 2.4.</b> Los avisos del asistente de pegado. Sólo el último impide seguir.</caption>
+    <thead><tr><th style="width:2.55in">Lo que dice el aviso</th><th>Qué pasó y qué hacer</th></tr></thead>
+    <tbody>
+      <tr><td><i>«1 fila no tiene el mismo número de celdas que las demás (3)…»</i></td><td>Casi siempre una coma suelta dentro de un texto sin comillas, o celdas combinadas en la hoja. Revisa esa fila en la vista previa; si es una coma, prueba otro separador.</td></tr>
+      <tr><td><i>«Todo quedó en una sola columna…»</i></td><td>Si tu tabla tenía más columnas, el separador no es el correcto: elígelo en <span class="ui">Separador</span>. Si copiaste a propósito una sola columna, sigue adelante.</td></tr>
+      <tr><td><i>«6 valores usan coma decimal, como «19,149»…»</i></td><td>Es informativo: la app convierte la coma en punto al validar e importar números y coordenadas. Aun así, conviene que tu hoja use punto.</td></tr>
+      <tr><td><i>«Sólo hay una fila y se está tomando como encabezado…»</i></td><td>Copiaste sólo los títulos, o una sola fila de datos que parece título. Desmarca la casilla de encabezados si era un dato, o vuelve a copiar la tabla completa. El botón queda desactivado hasta corregirlo.</td></tr>
+    </tbody>
+  </table>
+  <p>Cuando todo está en orden, el botón principal dice cuántas filas va a leer (<span class="ui">Leer 3 filas</span>) y, al pulsarlo, el diálogo se cierra y aparece el mapeo de columnas del apartado 2.5.</p>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo · el pegado de prueba de este capítulo</div>
+    <p>Las figuras 2.1 y 2.3 usan este pegado, copiado de una hoja de cálculo (las columnas van separadas por tabuladores; aquí se recortan):</p>
+    <div class="muestra">No. accesión  Género   Especie  Cultivo  País  Localidad           Latitud  Longitud  …  Fecha de colecta  PESO_FRUTO
+CH-001        Sechium  edule    Chayote  MEX   Veracruz, Huatusco  19,149   -96,966   …  20230915          318.5
+CH-002        Sechium  edule    Chayote  MX    Veracruz, Coatepec  19,453   -96,961   …  20230916          290
+CH-003        Sechium  edule    Chayote  MEX   Puebla, Cuetzalan   20,019   -97,519   …  20230231          402.7</div>
+    <p>El asistente lee <b>3 filas</b> y <b>11 columnas</b> separadas por <b>tabuladores</b>, marca solo la casilla de encabezados y avisa de los <b>6 valores</b> con coma decimal. Lleva a propósito tres problemas que el mapeo descubre: un país de dos letras, un 31 de febrero y una columna de caracterización.</p>
+  </div>
+
+  <!-- 2.4 -->
+  <h2 id="b2-4"><span class="num">2.4</span>La plantilla guiada</h2>
+  <p>La segunda pestaña del asistente, <span class="ui">Armar la tabla columna por columna</span>, es para quien no tiene la tabla armada o no sabe cómo llamar a las columnas. Muestra el catálogo completo de lo que la app entiende, con el nombre de cada columna, su clave, qué significa y un ejemplo; marcas las que vas a usar y debajo aparece una tabla lista para llenar.</p>
+  <figure style="width:80%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/b2-plantilla.png" alt="La pestaña «Armar la tabla columna por columna»: el buscador, los botones Sólo lo indispensable y Quitar todas, el contador 15 columnas elegidas, el grupo Identificación abierto con sus seis columnas explicadas y dos marcadas como obligatorias, el número de filas en 4, el botón Descargar esta plantilla en CSV y la rejilla con tres filas llenas"></div>
+    <figcaption><b>Figura 2.2.</b> La plantilla guiada recién abierta: ya trae marcadas las 15 columnas indispensables. Arriba, el grupo <i>Identificación</i> desplegado; abajo, la rejilla con tres filas escritas y el botón <span class="ui">Leer 3 filas</span>.</figcaption>
+  </figure>
+  <h3>El catálogo de columnas</h3>
+  <p>El catálogo tiene <b>86 columnas</b> en doce grupos que se abren y se cierran: los ocho del pasaporte (los 42 descriptores MCPD y los 7 de la extensión) y cuatro de <b>caracterización</b>, con 37 descriptores que no son pasaporte: <i>Agronómicas y de la planta</i> (11), <i>Morfológicas del fruto</i> (10), <i>Químicas y de calidad</i> (12) y <i>Semilla</i> (4). Estos últimos llevan su unidad entre paréntesis —<i>Peso del fruto (g)</i>, <i>Sólidos solubles (°Brix)</i>, <i>Vigor de la planta (1–9)</i>— y una línea que dice cómo se mide. Al lado del nombre de cada grupo, un contador dice cuántas columnas tiene o, si ya marcaste alguna, cuántas de ellas (<i>2/6</i>). Los tres descriptores obligatorios llevan la marca <span class="ui">obligatorio</span>.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2in">Control</th><th>Para qué sirve</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Buscar una columna…</span></td><td>Filtra el catálogo por nombre, por clave o por lo que dice la descripción, sin importar acentos ni mayúsculas: «fruto» encuentra nueve columnas de caracterización. Los grupos con coincidencias se abren solos.</td></tr>
+      <tr><td><span class="ui">Sólo lo indispensable</span></td><td>Deja marcadas sólo las 15 columnas obligatorias y muy recomendables (tabla 2.1). Es la selección con que se abre la pestaña.</td></tr>
+      <tr><td><span class="ui">Quitar todas</span></td><td>Desmarca todo, para empezar tu propia selección.</td></tr>
+      <tr><td><span class="ui">Filas</span></td><td>Cuántas filas tiene la rejilla, de 1 a 500; empieza en 10.</td></tr>
+      <tr><td><span class="ui">Descargar esta plantilla en CSV</span></td><td>Descarga <span class="ruta">plantilla-germplasmpro.csv</span> sólo con las columnas marcadas, con las claves como encabezados y con lo que ya escribiste en la rejilla. Sirve para llenarla en tu hoja de cálculo y volver con ella.</td></tr>
+    </tbody>
+  </table>
+  <h3>La rejilla</h3>
+  <p>Cada columna marcada aparece en la rejilla con su nombre completo y su clave debajo, en el orden en que la marcaste. Se escribe en ella como en una hoja. Lo que la hace práctica es el pegado de columnas enteras: copia en tu hoja de cálculo una columna de valores —los números de accesión, por ejemplo—, haz clic en la primera celda de la columna correspondiente de la rejilla y pega. Los valores se reparten hacia abajo, uno por fila, y si son más que las filas, la rejilla crece hasta 500. Si lo que copiaste tiene varias columnas, se reparten también hacia la derecha, sobre las columnas que siguen.</p>
+  <p>Las filas vacías no cuentan: el botón principal dice cuántas filas tienen algo (<span class="ui">Leer 3 filas</span>). Al pulsarlo, la rejilla sigue el mismo camino que un pegado y llega al mapeo de columnas, donde las claves se reconocen todas a la primera.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Un solo valor se escribe, no se pega</div>
+    <p>En la versión 1.0.0, pegar un valor suelto (sin saltos de línea ni tabuladores) dentro de una celda de la rejilla no lo deja en la celda: el diálogo lo toma como si fuera una tabla nueva y el botón queda en <span class="ui">Leer 0 filas</span>. Escribe los valores sueltos a mano; la siguiente tecla que escribas en la rejilla devuelve el botón a su cuenta. Pegar columnas o bloques de celdas funciona como se describe arriba.</p>
+  </div>
+
+  <!-- 2.5 -->
+  <h2 id="b2-5"><span class="num">2.5</span>¿Qué es cada columna?</h2>
+  <p>Venga de un archivo, de un pegado o de la plantilla, la tabla pasa por la tarjeta <span class="ui">¿Qué es cada columna?</span> antes de entrar a la colección. Arriba, una línea dice qué se leyó (<i>Se leyeron 3 filas y 11 columnas de texto pegado. La app reconoció 10 columnas; revisa las demás.</i>); abajo, una fila por columna de tu archivo, con cuatro datos:</p>
+  <ul>
+    <li><span class="ui">Columna de tu archivo</span>: el encabezado original y, debajo, sus tres primeros valores, para saber de qué se trata.</li>
+    <li><span class="ui">Descriptor</span>: el selector con los 49 descriptores agrupados como en la tabla 2.1, más <i>— no importar —</i>. La app lo llena con su propuesta.</li>
+    <li><span class="ui">Clave</span>: la clave elegida, en verde si es del estándar y en otro color si es de la extensión <code>GP_</code>.</li>
+    <li><span class="ui">Qué tal encaja</span>: qué pasaría si importaras la columna como ese descriptor (lo explica el recuadro de abajo).</li>
+  </ul>
+  <figure style="width:82%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/b2-mapeo.png" alt="La tarjeta «¿Qué es cada columna?» después de leer el pegado de prueba: el aviso de que una columna es de caracterización (Peso del fruto), el aviso de que falta el Código del instituto que conserva y diez filas reconocidas; en Qué tal encaja, «3 bien» en todas salvo País (1 de 3 fallan, MX) y Fecha de colecta (1 de 3 fallan, 20230231)"></div>
+    <figcaption><b>Figura 2.3.</b> El mapeo del pegado de prueba. Las diez columnas de pasaporte quedaron reconocidas; <i>PESO_FRUTO</i> se apartó como caracterización. En <span class="ui">Qué tal encaja</span>, el país <i>MX</i> y el 31 de febrero ya se ven antes de importar. (En la app, la lista se desplaza dentro de su marco cuando hay muchas columnas.)</figcaption>
+  </figure>
+  <h3>Cómo reconoce la app tus columnas</h3>
+  <p>Los encabezados reales llegan en español, en inglés, con acentos, con puntos, con unidades o con la clave MCPD. Antes de compararlos, la app los normaliza: quita acentos, mayúsculas, espacios y signos, de modo que <i>No. accesión</i>, <i>no_accesion</i> y <i>NO ACCESIÓN</i> son lo mismo. Después busca en tres pasadas, y cada descriptor recibe una sola columna:</p>
+  <ol class="pasos">
+    <li><b>La clave exacta del estándar.</b> Una columna llamada <code>ACCENUMB</code>, <code>accenumb</code> o <code>GP_CONS</code> se reconoce primero.</li>
+    <li><b>Los sinónimos.</b> La app trae 224 nombres comunes de columna para los 49 descriptores: <i>número de accesión</i>, <i>accession number</i>, <i>clave</i>; <i>país</i>, <i>country</i>, <i>iso3</i>; <i>altitud</i>, <i>msnm</i>, <i>elevación</i>; <i>custodio</i>, <i>agricultor</i>, <i>comunidad</i> para <code>GP_KEEPER</code>; <i>existencias</i>, <i>inventario</i> para <code>GP_STOCK</code>, y así con los demás.</li>
+    <li><b>Las coincidencias parciales.</b> Un encabezado que contiene un sinónimo de al menos cuatro letras se asigna al de la coincidencia más larga: <i>Altitud (msnm)</i> contiene <i>altitudmsnm</i> y va a <code>ELEVATION</code>; <i>Germinación %</i> va a <code>GP_GERMPCT</code>.</li>
+  </ol>
+  <p>Las coordenadas tienen un paso más, porque el encabezado no basta: una columna <i>Latitud</i> puede traer <i>17.6423</i> o <i>173832N</i>. La app mira hasta diez valores y, si la mayoría tiene forma de grados-minutos-segundos, la manda a <code>LATITUDE</code>; si son decimales, a <code>DECLATITUDE</code> (y lo mismo con la longitud), intercambiando las dos columnas si hace falta. Si sólo vienen las coordenadas en grados-minutos-segundos, al importar se calculan las decimales, que son las que usan los mapas.</p>
+  <p>Como cada descriptor recibe una sola columna, cuando dos columnas compiten gana la primera: en una hoja con <i>Estado</i>, <i>Municipio</i> y <i>Localidad</i>, sólo una llega a <code>COLLSITE</code> y las otras quedan en <i>— no importar —</i>. Si eliges a mano un descriptor que ya tenía otra columna, la otra se desmarca sola. <span class="ui">Reconocer otra vez</span> deshace tus cambios y vuelve a la propuesta de la app.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · «qué tal encaja»</div>
+    <p>Para cada columna asignada, la app valida todos sus valores no vacíos como si ya fueran de ese descriptor, con las mismas reglas del apartado 2.6. Si ninguno da error, escribe <span class="ui">3 bien</span> (con el número de valores); si alguno falla, <span class="ui">1 de 3 fallan</span> y, al lado, el primer valor que falla. Sólo cuentan los errores, no los avisos. Es la forma más rápida de descubrir una columna mal asignada: si la columna de altitud quedó como fecha de colecta, fallarán casi todas. Vale más verlo aquí que después, con los datos ya dentro.</p>
+  </div>
+  <h3>Lo que queda fuera del pasaporte</h3>
+  <p>Debajo de la línea de resumen pueden aparecer dos recuadros:</p>
+  <ul>
+    <li><b>Las columnas de caracterización.</b> Si una columna se llama exactamente como una clave del catálogo de caracterización (<code>PESO_FRUTO</code>, <code>BRIX</code>, <code>DIAS_FLORACION</code>…), la app no le busca descriptor MCPD: la aparta, la nombra en el recuadro (<i>1 columna es de caracterización y no de pasaporte (Peso del fruto)</i>) y, al importar, la guarda en la caracterización del Bloque 7, unida a su accesión por el número. MCPD es un estándar de intercambio y no se le cuelgan campos. Una columna con otro nombre, como <i>Peso del fruto</i>, no se reconoce así: o la renombras con la clave, o la cargas en el Bloque 7.</li>
+    <li><b>Los obligatorios sin columna.</b> <i>Sin columna todavía: Código del instituto que conserva.</i> Puedes importar igual y llenarlo después en la tabla; mientras tanto, cada accesión tendrá ese error.</li>
+  </ul>
+  <p>Al final, cuatro botones: <span class="ui">Importar y reemplazar</span> sustituye la colección por lo leído; <span class="ui">Añadir a lo que ya hay</span> lo pone al final de la colección actual (sin buscar repetidos: eso lo hace el Bloque 3); <span class="ui">Reconocer otra vez</span> y <span class="ui">Cancelar</span>. Al importar, los valores numéricos y las coordenadas pasan de coma a punto decimal y los países, a mayúsculas.</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Después de importar, guarda o edita algo</div>
+    <p>En la versión 1.0.0 la colección recién importada desde un archivo o un pegado no se guarda sola en el navegador hasta el siguiente cambio: la hora junto al contador no aparece. Si intentas cerrar la ventana, el navegador avisa que hay cambios sin guardar. Pulsa <span class="ui">Guardar el proyecto (.json)</span> o corrige cualquier celda y el guardado automático se pone al día.</p>
+  </div>
+
+  <!-- 2.6 -->
+  <h2 id="b2-6"><span class="num">2.6</span>La validación: errores y avisos</h2>
+  <p>Cada vez que la colección cambia, la app revisa todas las accesiones, campo por campo y entre campos, y da a cada problema uno de dos niveles. Los <b>errores</b> son datos que el estándar no admite —una fecha que no existe, un código que no está en la lista, un obligatorio vacío— y hay que corregirlos. Los <b>avisos</b> son datos que conviene completar o confirmar: un muy recomendable vacío, una altitud rara, dos campos que no concuerdan.</p>
+  <table class="compacta">
+    <caption><b>Tabla 2.5.</b> Las reglas de validación campo por campo.</caption>
+    <thead><tr><th style="width:1.75in">Tipo de dato</th><th>Error</th><th style="width:1.85in">Aviso</th></tr></thead>
+    <tbody>
+      <tr><td>Cualquier descriptor vacío</td><td>Si es obligatorio: <i>Falta un dato obligatorio.</i></td><td>Si es muy recomendable.</td></tr>
+      <tr><td>Fechas (<code>COLLDATE</code>, <code>ACQDATE</code>, <code>GP_GERMDATE</code>, <code>GP_REGENDATE</code>)</td><td>No va en AAAAMMDD con guiones donde no se sepa; año antes de 1700 o en el futuro; mes fuera de 01–12; día fuera de 01–31; un día que no existe en ese mes (30 de febrero).</td><td>—</td></tr>
+      <tr><td>Coordenadas decimales</td><td>No es un número; fuera de −90 a 90 o de −180 a 180.</td><td>Un cero exacto, que casi siempre es un dato faltante escrito como cero.</td></tr>
+      <tr><td>Grados, minutos y segundos</td><td>No sigue GGMMSSH (<i>173832N</i>).</td><td>—</td></tr>
+      <tr><td>Números</td><td>No es un número; germinación fuera de 0–100; incertidumbre o existencias negativas.</td><td>Altitud fuera de −430 a 6 500 m.</td></tr>
+      <tr><td>País (<code>ORIGCTY</code>)</td><td>No son tres letras.</td><td>Tres letras que no están en la lista de 119 países.</td></tr>
+      <tr><td>Códigos WIEWS (<code>INSTCODE</code>, <code>COLLCODE</code>, <code>BREDCODE</code>, <code>DONORCODE</code>, <code>DUPLSITE</code>)</td><td>—</td><td>No son tres letras y tres dígitos. <code>DUPLSITE</code> admite varios, separados por punto y coma.</td></tr>
+      <tr><td>Listas de códigos</td><td>Un valor que no está en la lista del descriptor; en <code>STORAGE</code>, cualquier código de la lista separada por punto y coma que no exista.</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <table class="compacta">
+    <caption><b>Tabla 2.6.</b> Las reglas que comparan campos de la misma accesión.</caption>
+    <thead><tr><th style="width:2.25in">Lo que se compara</th><th style="width:0.6in">Nivel</th><th>Qué dice la app</th></tr></thead>
+    <tbody>
+      <tr><td>Una sola de las dos coordenadas decimales</td><td>error</td><td><i>Falta la otra coordenada: una sola no ubica nada.</i></td></tr>
+      <tr><td>Coordenadas decimales y en grados-minutos-segundos</td><td>aviso</td><td>No coinciden (difieren en más de 0.02°).</td></tr>
+      <tr><td>Fecha de colecta posterior a la de ingreso</td><td>aviso</td><td><i>La accesión habría entrado al banco antes de ser colectada.</i></td></tr>
+      <tr><td>Última prueba o regeneración anterior al ingreso</td><td>aviso</td><td>La prueba (o la regeneración) es anterior al ingreso al banco.</td></tr>
+      <tr><td>Estatus silvestre (100) y fuente cultivada o almacén (21, 22, 23, 26, 27)</td><td>aviso</td><td><i>Dice silvestre pero se colectó en un sitio cultivado o en un almacén.</i></td></tr>
+      <tr><td>Estatus criolla (300) y hábitat silvestre (10–15)</td><td>aviso</td><td><i>Dice variedad criolla pero se colectó en hábitat silvestre.</i></td></tr>
+      <tr><td>Ruta in situ con tipo de almacenamiento</td><td>aviso</td><td>Si tienes las dos cosas, conviene registrar dos accesiones enlazadas.</td></tr>
+      <tr><td>Ruta in situ sin <code>GP_SITEID</code></td><td>aviso</td><td><i>Un registro in situ sin identificador de sitio no se puede volver a visitar.</i></td></tr>
+      <tr><td>Ruta ex situ sin <code>DUPLSITE</code></td><td>aviso</td><td><i>Sin duplicado de seguridad: la accesión depende de una sola instalación.</i></td></tr>
+      <tr><td>Ruta ex situ con <code>DUPLSITE</code> sólo en la propia institución</td><td>aviso</td><td><i>El duplicado de seguridad está en la misma institución que la accesión: no la protege si esa institución pierde su colección.</i></td></tr>
+    </tbody>
+  </table>
+  <p>La ruta cambia lo que se exige. A un registro in situ (reserva genética o parcela) no se le piden <code>STORAGE</code>, <code>ACQDATE</code>, <code>DUPLSITE</code> ni <code>INSTCODE</code>: no tiene almacenamiento, no entró a ningún banco y no se duplica en otro. Y el duplicado de seguridad sólo cuenta si al menos uno de los sitios de <code>DUPLSITE</code> es <b>otra institución</b> que la de <code>INSTCODE</code>: una copia en la cámara de al lado no protege de un incendio en el mismo edificio. Esa misma regla es la que usa el recuadro <i>Con duplicado de seguridad</i> del retrato (apartado 2.8). Una accesión sin ruta reconocible —ni <code>GP_CONS</code> ni un código de <code>STORAGE</code> válido— no recibe los avisos del duplicado.</p>
+
+  <h3>Lo que hay que revisar</h3>
+  <p>La sección <span class="ui">Lo que hay que revisar</span> reúne los problemas de toda la colección, agrupados por descriptor y mensaje, que es como se corrigen: primero los errores y, dentro de cada nivel, los más frecuentes. Encima, tres datos: cuántos errores, cuántos avisos y en cuántas accesiones. El botón <span class="ui">ver</span> de cada fila activa el filtro <span class="ui">sólo las que tienen algo que revisar</span>, quita los demás filtros, añade a la tabla la columna del problema si no estaba y abre la ficha de la primera accesión afectada.</p>
+  <figure style="width:62%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/b2-validacion.png" alt="La sección «Lo que hay que revisar» con la colección de ejemplo: 3 errores, 26 avisos, en 21 accesiones de 46; tres errores (COLLDATE, ORIGCTY, STORAGE) y siete grupos de avisos, el mayor DUPLSITE con 20 accesiones"></div>
+    <figcaption><b>Figura 2.4.</b> La validación de la colección de ejemplo recién cargada: 3 errores y 26 avisos en 21 de las 46 accesiones, en diez grupos.</figcaption>
+  </figure>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo · los 29 problemas de la colección de ejemplo</div>
+    <p>Los errores sembrados (apartado I.7) que el Bloque 2 puede ver con una sola accesión a la vista son éstos:</p>
+    <table class="compacta"><tbody>
+      <tr><td style="width:40%"><b>MEX-CU-0040 · Calabaza pipiana</b></td><td>error en <code>COLLDATE</code>: <i>20190230</i>, un 30 de febrero.</td></tr>
+      <tr><td><b>MEX-PH-0041 · Frijol tepari</b></td><td>error en <code>ORIGCTY</code> (<i>MX</i>, dos letras) y aviso en <code>ELEVATION</code> (<i>25000</i> m).</td></tr>
+      <tr><td><b>MEX-CH-0042 · Chile costeño</b></td><td>error en <code>STORAGE</code>: <i>Códigos que no existen: 15.</i> Sin ruta, tampoco se le pide duplicado.</td></tr>
+      <tr><td><b>MEX-ZM-0043 · Maíz ancho de riego</b></td><td>tres avisos: sin latitud, sin longitud y sin altitud.</td></tr>
+      <tr><td><b>MEX-ZM-0044 · Maíz reventador</b></td><td>dos avisos cruzados: estatus silvestre colectado en una troje y fecha de ingreso (<i>20190105</i>) anterior a la colecta.</td></tr>
+      <tr><td><b>20 accesiones ex situ</b></td><td>aviso en <code>DUPLSITE</code>: sin duplicado de seguridad.</td></tr>
+    </tbody></table>
+    <p>Suman 3 errores y 6 + 20 = 26 avisos, en 21 accesiones (las cinco de arriba, más dieciséis que sólo tienen el aviso del duplicado). Las 20 accesiones con duplicado lo tienen en otra institución (<code>NOR051</code>, <code>MEX008</code>, <code>BOL004</code> o <code>PER001</code>), así que ninguna recibe el aviso de la misma institución; la figura 2.6 lo provoca a propósito. Lo que el Bloque 2 <b>no</b> ve: la longitud sin signo de MEX-ZM-0039 es un número válido (sólo el Bloque 3 descubre que cae fuera de México) y los dos pares de duplicados accidentales son, cada uno por separado, accesiones correctas.</p>
+  </div>
+
+  <!-- 2.7 -->
+  <h2 id="b2-7"><span class="num">2.7</span>La tabla y la ficha de cada accesión</h2>
+  <p>La sección <span class="ui">La colección, accesión por accesión</span> muestra la colección en una tabla editable, de 50 en 50 filas, con las flechas ← → y la cuenta (<i>mostrando 1–46 de 46</i>) al pie. Arriba van la búsqueda, los filtros y los botones para añadir y vaciar.</p>
+  <figure style="width:82%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/b2-revisar.png" alt="La tabla con el filtro «sólo las que tienen algo que revisar» activo y seis columnas: número de accesión, país, altitud, fecha de colecta, tipo de almacenamiento y sitio del duplicado de seguridad; las celdas con error en rojo (MX, 20190230, 15) y con aviso en ocre (25000 y las celdas vacías del duplicado); a la derecha de cada fila, la cuenta de problemas, el botón de la ficha y el de eliminar"></div>
+    <figcaption><b>Figura 2.5.</b> La tabla con <span class="ui">sólo las que tienen algo que revisar</span> (21 filas) y las columnas elegidas para ver los problemas: en rojo los errores, en ocre los avisos. El círculo de la derecha cuenta los problemas de cada accesión, en rojo si alguno es error.</figcaption>
+  </figure>
+  <table class="compacta">
+    <thead><tr><th style="width:2.2in">Control</th><th>Para qué sirve</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Buscar en todos los campos…</span></td><td>Busca en los 49 campos a la vez, sin importar acentos, mayúsculas ni guiones: «chayote» deja 3 filas.</td></tr>
+      <tr><td><span class="ui">todas las rutas</span>, <span class="ui">todos los cultivos</span>, <span class="ui">todos los países</span></td><td>Filtran por ruta de conservación (sólo las que están en uso), por nombre común del cultivo y por país de origen (con su nombre; un código que no está en la lista, como <i>MX</i>, aparece tal cual). Con la colección de ejemplo, <i>Banco de campo o colección viva</i> deja 8 filas.</td></tr>
+      <tr><td><span class="ui">sólo las que tienen algo que revisar</span></td><td>Deja sólo las accesiones con algún error o aviso: 21 en la colección de ejemplo.</td></tr>
+      <tr><td><span class="ui">+ Accesión</span></td><td>Añade una accesión vacía al final y abre su ficha.</td></tr>
+      <tr><td><span class="ui">Vaciar</span></td><td>Borra toda la colección, también la guardada en el navegador, después de pedir confirmación.</td></tr>
+      <tr><td>Las 18 etiquetas de columnas</td><td>Eligen qué columnas se ven; las resaltadas están visibles. Hay que dejar al menos dos. Se abre con nueve: número y nombre de la accesión, género, epíteto, cultivo, país, sitio, altitud y ruta.</td></tr>
+    </tbody>
+  </table>
+  <p>Un clic en el título de una columna ordena por ella (▲) y otro invierte el orden (▼); las coordenadas, la altitud y los demás números se ordenan como números. La tabla abre ordenada por número de accesión, y el número gris de la izquierda es la posición de la accesión en la colección, que no cambia al ordenar ni al filtrar. Cada celda se edita escribiendo en ella; el cambio se aplica al salir de la celda y la validación se rehace al momento. Las celdas de códigos ofrecen la lista al escribir y muestran el significado debajo (un <i>?</i> si el código no existe). Al pasar el ratón por una celda marcada aparece el mensaje del problema. A la derecha de cada fila, ▤ abre la ficha completa y ✕ elimina la accesión, con confirmación.</p>
+
+  <h3>La ficha completa</h3>
+  <p>La ficha muestra los 49 campos de una accesión, en los ocho grupos de la tabla 2.1. El título da el número de accesión y el nombre científico; a la derecha, su posición (<i>44 / 46</i>) y las flechas ← → para pasar a la anterior o a la siguiente sin cerrar el diálogo. Cada renglón tiene el nombre del descriptor con su clave (y un asterisco si es obligatorio), la casilla y, a la derecha, la descripción del descriptor o, si hay un problema, el mensaje en negritas, con el renglón teñido de rojo o de ocre. Las casillas de texto vacías muestran el ejemplo del descriptor como guía.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b2-ficha.png" alt="La ficha de MEX-ZM-0044 · Zea mays, 44 de 46, con los grupos Origen y estatus y Donante y duplicados: avisos en Estatus biológico (Dice silvestre pero se colectó en un sitio cultivado o en un almacén), Fecha de ingreso al banco (La accesión habría entrado al banco antes de ser colectada) y Sitio del duplicado de seguridad, con MEX006 (El duplicado de seguridad está en la misma institución que la accesión)"></div>
+    <figcaption><b>Figura 2.6.</b> La ficha de MEX-ZM-0044 · Maíz reventador. Además de sus dos avisos sembrados, aquí se escribió <i>MEX006</i> en el sitio del duplicado —el mismo código del instituto que la conserva— y el aviso cambió de <i>Sin duplicado</i> al de la misma institución. Con <i>NOR051</i> desaparece; con <i>MEX006;NOR051</i> también, porque uno de los dos sitios es otra institución.</figcaption>
+  </figure>
+  <p>Lo que escribes en la ficha se aplica al salir de la casilla y todo se actualiza a la vez: la ficha, la tabla, la lista de problemas y el retrato. <span class="ui">Empezar en blanco</span> y <span class="ui">+ Accesión</span> abren la ficha de una accesión vacía, que empieza con 3 errores (los tres obligatorios) y 12 avisos (los muy recomendables); se van apagando conforme la llenas. La ficha se cierra con ✕ o con Esc.</p>
+
+  <!-- 2.8 -->
+  <h2 id="b2-8"><span class="num">2.8</span>El retrato de la colección y la completitud</h2>
+  <p><span class="ui">El retrato de la colección</span> empieza con los cinco recuadros que ya presentó la introducción (figura I.3): accesiones, con coordenadas, con duplicado de seguridad (en rojo mientras no llegue al 80 %), países y rutas en uso. Debajo vienen seis gráficas, que se rehacen con cada cambio (figura 2.7):</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2.2in">Gráfica</th><th>Qué cuenta · con la colección de ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Accesiones por ruta de conservación</span></td><td>Cada ruta en uso, declarada o deducida de <code>STORAGE</code>: 28 en semillas, 8 en campo, 3 in vitro, 3 en la parcela, 2 en reserva genética y 1 criopreservada. La accesión sin ruta no aparece.</td></tr>
+      <tr><td><span class="ui">Accesiones por especie</span></td><td>Las diez especies con más accesiones (género y epíteto): <i>Zea mays</i> con 18, <i>Capsicum annuum</i> y <i>Sechium edule</i> con 3. Las 24 están en el recuadro de taxones.</td></tr>
+      <tr><td><span class="ui">Estatus biológico</span></td><td>Hasta ocho estatus: 39 variedades criollas, 4 silvestres, 2 naturales y 1 línea de mejorador.</td></tr>
+      <tr><td><span class="ui">País de origen</span></td><td>Hasta ocho países: México con 37, Guatemala y Perú con 2, y uno cada uno Bolivia, Etiopía, India, Colombia y <i>MX</i>.</td></tr>
+      <tr><td><span class="ui">Altitud de los sitios de colecta (m)</span></td><td>Histograma en 12 clases de igual ancho entre la mínima y la máxima: aquí, de 20 a 25 000 m. Las altitudes vacías o iguales a cero no entran.</td></tr>
+      <tr><td><span class="ui">Año de colecta</span></td><td>Histograma en 10 clases con el año de <code>COLLDATE</code>: de 2014 a 2022, con la mayoría entre 2018 y 2020.</td></tr>
+    </tbody>
+  </table>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b2-graficas.png" alt="Las seis gráficas del retrato: accesiones por ruta (28 semillas, 8 campo, 3 in vitro, 3 parcela, 2 reserva, 1 crio), por especie (Zea mays 18 y otras nueve), estatus biológico (39 criollas, 4 silvestres, 2 naturales, 1 línea de mejorador), país de origen (México 37 y siete más, entre ellos MX), histograma de altitud de 20 a 25 000 m y de año de colecta de 2014 a 2022"></div>
+    <figcaption><b>Figura 2.7.</b> Las gráficas del retrato con la colección de ejemplo. En la altitud, la accesión de 25 000 m estira el eje hasta dejar casi todas las demás en las dos primeras barras: un error de captura salta a la vista.</figcaption>
+  </figure>
+  <p>Los nombres largos se recortan en las barras (<i>Variedad tradicional o cri…</i>). Las gráficas cuentan lo que hay escrito, no lo que debería haber: el código <i>MX</i> aparece como un octavo país hasta que lo corrijas a <i>MEX</i>, y la altitud de 25 000 m deforma el histograma. Por eso conviene volver a mirar el retrato después del Bloque 3.</p>
+
+  <h3>Qué tan completo está el pasaporte</h3>
+  <p>La última sección de resultados da, para cada descriptor, el porcentaje de accesiones que lo traen. La barra es verde desde el 90 %, ocre del 50 al 90 % y roja por debajo del 50 %; un asterisco marca los obligatorios, y al pasar el ratón por un renglón aparece la descripción del descriptor. Para no llenar la lista de ceros, se omiten los descriptores opcionales que ninguna accesión trae; los obligatorios, los muy recomendables y los siete de la extensión aparecen siempre, al final estos últimos.</p>
+  <figure style="width:70%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/b2-completitud.png" alt="La completitud de la colección de ejemplo: 39 descriptores con su barra y su porcentaje, de 100 % en los obligatorios y la mayoría de los muy recomendables a 2 % en la autoridad del infraespecífico y el donante; sitio del duplicado de seguridad en 43 %, fecha de ingreso y tipo de almacenamiento en 89 %, y al final los siete campos GP_"></div>
+    <figcaption><b>Figura 2.8.</b> La completitud de la colección de ejemplo: 39 renglones; los 10 descriptores que ninguna accesión trae (como <code>PUID</code> o <code>ANCEST</code>) no se muestran.</figcaption>
+  </figure>
+  <p>Se lee de dos maneras. Por descriptor, dice qué falta en toda la colección: aquí, el sitio del duplicado (43 %) es el hueco más serio de los que importan para conservar, y la fecha de la última regeneración (28 %) el de la extensión. Y contra lo que la validación pide: la fecha de ingreso y el tipo de almacenamiento están en 89 % (41 de 46) y, sin embargo, no producen avisos, porque las cinco accesiones que no los tienen son in situ y no deben tenerlos. La completitud mide presencia, no corrección: <i>MX</i> cuenta como un país presente.</p>
+
+  <!-- 2.9 -->
+  <h2 id="b2-9"><span class="num">2.9</span>Llevarte los datos y el guardado automático</h2>
+  <p>La sección <span class="ui">Llevarte los datos</span> tiene tres botones, cada uno con un destino distinto:</p>
+  <figure style="width:60%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/b2-exportar.png" alt="La sección «Llevarte los datos» con los botones Exportar MCPD (sólo el estándar), Exportar todo (con la extensión) y Guardar el proyecto (.json), y la explicación de cada archivo"></div>
+    <figcaption><b>Figura 2.9.</b> Los tres botones de exportación del Bloque 2.</figcaption>
+  </figure>
+  <table class="compacta">
+    <thead><tr><th style="width:2.15in">Botón</th><th style="width:1.55in">Archivo</th><th>Qué lleva y para qué sirve</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Exportar MCPD (sólo el estándar)</span></td><td><span class="ruta">pasaporte-mcpd.csv</span></td><td>Los 42 descriptores del estándar, con sus claves oficiales como encabezados y en el orden de la tabla 2.2. Es el que se manda a Genesys, al SINAREFI o a cualquier otro sistema.</td></tr>
+      <tr><td><span class="ui">Exportar todo (con la extensión)</span></td><td><span class="ruta">pasaporte-completo.csv</span></td><td>Los 49 campos: el estándar y, al final, los siete <code>GP_</code>, para no perder el manejo interno. Vuelve a entrar por <span class="ui">Abrir un archivo (CSV, TSV o proyecto)</span> con todas las columnas reconocidas por su clave.</td></tr>
+      <tr><td><span class="ui">Guardar el proyecto (.json)</span></td><td><span class="ruta">coleccion-germplasmpro.json</span></td><td>Las accesiones tal como están, con todos sus campos. Se abre con el mismo botón de arriba, sin pasar por el mapeo, en cualquier navegador o computadora.</td></tr>
+    </tbody>
+  </table>
+  <p>Los CSV salen separados por comas y en UTF-8, y sólo se entrecomillan las celdas que lo necesitan (las que llevan comas, comillas o saltos de línea). Los archivos se exportan con los valores tal como están, errores incluidos: corrige antes lo que la validación marca. El proyecto del Bloque 2 guarda el pasaporte; la caracterización del Bloque 7 y los registros del Bloque 8 no van en este archivo: se guardan aparte en el navegador y se manejan en sus bloques.</p>
+  <h3>El guardado automático</h3>
+  <p>Cada cambio en la colección —una celda, la ficha, una accesión añadida o eliminada, la colección de ejemplo— se guarda solo en el almacenamiento local del navegador, un instante después, y junto al contador aparece <i>guardado en este navegador · </i> con la hora. Al volver a abrir la app en ese navegador, la colección sigue ahí. No es un respaldo: vive en una sola computadora, en un solo navegador, y se pierde si se borran los datos de navegación. El respaldo es el proyecto <span class="ruta">.json</span>; guárdalo al terminar cada sesión de trabajo y después de cada importación (apartado 2.5).</p>
+
+  <h3>Cuando algo no sale</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:40%">Lo que ves</th><th>Por qué pasa y qué hacer</th></tr></thead>
+    <tbody>
+      <tr><td>Los acentos llegan rotos (<i>Ã©</i>, <i>�</i>)</td><td>La app ya prueba UTF-8 y Windows-1252; si aun así salen mal, guarda la hoja como «CSV UTF-8» o usa el pegado, que no depende de la codificación.</td></tr>
+      <tr><td><span class="ui">Leer 0 filas</span> o el botón desactivado</td><td>Copiaste sólo los encabezados, o la casilla de encabezados se comió la única fila (tabla 2.4). En la plantilla, ninguna fila tiene datos, o se pegó un valor suelto en una celda (apartado 2.4).</td></tr>
+      <tr><td>En el mapeo, una columna quedó en <i>— no importar —</i></td><td>Su encabezado no se parece a ningún sinónimo, o su descriptor ya lo tomó otra columna. Elígelo a mano en el selector.</td></tr>
+      <tr><td><span class="ui">Qué tal encaja</span> dice que fallan casi todos</td><td>La columna está asignada al descriptor equivocado. Cambia el selector antes de importar.</td></tr>
+      <tr><td>Las coordenadas quedaron como texto o en otra columna</td><td>Venían en grados-minutos-segundos con otra forma, o con coma decimal y separador coma. Revisa el separador en el asistente y el selector de la columna en el mapeo.</td></tr>
+      <tr><td>Todas las accesiones tienen <i>Falta un dato obligatorio.</i> en <code>INSTCODE</code></td><td>Tu archivo no traía el código del instituto. Agrega la columna en tu hoja y vuelve a importar, o escríbelo en la tabla.</td></tr>
+      <tr><td>Una columna de caracterización entró al pasaporte</td><td>Sólo se aparta si su encabezado es una clave exacta del catálogo (<code>PESO_FRUTO</code>). Ponla en <i>— no importar —</i> y cárgala en el Bloque 7.</td></tr>
+      <tr><td>La colección desapareció al volver a abrir la app</td><td>Se abrió en otro navegador o con los datos de navegación borrados, o se importó y se cerró sin ningún cambio posterior. Abre el proyecto <span class="ruta">.json</span>.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja regla">
+    <div class="caja-t"><span class="ico">✓</span>Regla de decisión · qué hacer en el Bloque 2</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:44%"><b>Si</b> tu colección está en una hoja de cálculo</td><td><b>entonces</b> cópiala con sus encabezados y usa <span class="ui">Pegar desde una hoja de cálculo</span>; revisa las tarjetas y los avisos antes de leerla.</td></tr>
+      <tr><td><b>Si</b> no sabes cómo llamar a tus columnas</td><td><b>entonces</b> arma la tabla en la plantilla guiada, empezando por <span class="ui">Sólo lo indispensable</span>, o descárgala en CSV para llenarla en tu hoja.</td></tr>
+      <tr><td><b>Si</b> en el mapeo una columna falla en <span class="ui">Qué tal encaja</span></td><td><b>entonces</b> mira el primer valor que falla: si es uno, impórtala y corrígelo en la tabla; si son casi todos, cambia el descriptor.</td></tr>
+      <tr><td><b>Si</b> la validación da errores</td><td><b>entonces</b> corrígelos antes de seguir; los avisos del duplicado de seguridad y los muy recomendables vacíos son trabajo pendiente de la colección, no de la captura.</td></tr>
+      <tr><td><b>Si</b> una accesión ex situ sólo tiene copia en tu propia institución</td><td><b>entonces</b> no tiene duplicado de seguridad: gestiona uno en otro banco y regístralo en <code>DUPLSITE</code>.</td></tr>
+      <tr><td><b>Si</b> terminaste de cargar y corregir</td><td><b>entonces</b> guarda el proyecto <span class="ruta">.json</span> y pasa al Bloque 3, antes de cualquier análisis.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">Lo que corrijas aquí lo ven todos los bloques; el Bloque 3 busca después lo que una accesión sola no deja ver: coordenadas fuera de su país, nombres desordenados y la misma colecta entrada dos veces.</p>
+  </div>
+
+</section>
+
+</body>
+</html>
