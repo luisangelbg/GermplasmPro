@@ -194,7 +194,7 @@
     }
 
     /* algo que vale para todas las rutas ex situ */
-    if (!['insitu', 'onfarm'].includes(route) && !String(row.DUPLSITE || '').trim()) {
+    if (!['insitu', 'onfarm'].includes(route) && !MCPD.hasSafetyDup(row)) {
       add('noBackup', 'warn', 'Sin duplicado de seguridad en otra institución.', 'No safety duplicate in another institution.');
     }
 

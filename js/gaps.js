@@ -189,7 +189,7 @@
       e.rows.push(i);
       const route = MCPD.consRoute(r);
       if (route) e.routes.add(route);
-      if (String(r.DUPLSITE || '').trim()) e.dupl++;
+      if (MCPD.hasSafetyDup(r)) e.dupl++;
       const lon = Number(r.DECLONGITUDE), lat = Number(r.DECLATITUDE);
       if (isFinite(lon) && isFinite(lat) && !(lon === 0 && lat === 0)) {
         e.coords++;

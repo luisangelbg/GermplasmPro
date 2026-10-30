@@ -432,10 +432,11 @@
       `"${a}" and "${b}" are too similar to be two different genera.`,
       rows.map((r, i) => (r.GENUS === a || r.GENUS === b) ? i : -1).filter(i => i >= 0)));
 
-    /* un mismo taxón con nombres de cultivo distintos */
+    /* un mismo taxón con nombres de cultivo distintos (con la subespecie o la variedad: el
+       teocintle, Zea mays subsp. parviglumis, no es otro nombre del maíz) */
     const cropByTaxon = new Map();
     rows.forEach((r, i) => {
-      const t = taxonOf(r), c = normStr(r.CROPNAME);
+      const t = [taxonOf(r), normStr(r.SUBTAXA)].filter(Boolean).join(' '), c = normStr(r.CROPNAME);
       if (!t || !c) return;
       if (!cropByTaxon.has(t)) cropByTaxon.set(t, new Map());
       const m = cropByTaxon.get(t);

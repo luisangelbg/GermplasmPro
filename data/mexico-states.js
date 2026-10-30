@@ -1,4 +1,4 @@
-/* Simplified boundaries of the 32 federal entities of Mexico, used by the region filter of step 2.
+/* Simplified boundaries of the 32 federal entities of Mexico, used by the collecting map (Block 4) and the analyses by state (Blocks 5 and 6).
    Source: Natural Earth, admin 1 states and provinces at 1:10 million (public domain, naturalearthdata.com),
    filtered to Mexico and simplified with the Douglas-Peucker algorithm at a tolerance of 0.004 degrees
    (about 0 km), coordinates rounded to four decimals. Rings are flat [lon, lat, ...] arrays. */

@@ -280,7 +280,7 @@
       d: { es: 'Nombre de quien donó la muestra, cuando no hay código.', en: 'Name of the donor, when there is no code.' }, ex: '' },
     { k: 'DONORNUMB', g: 'don', t: 'text', es: 'Número del donante', en: 'Donor accession number',
       d: { es: 'El número que la accesión tenía en la colección del donante. Es la otra gran pista de duplicados.', en: 'The number the accession had in the donor’s collection. It is the other major duplicate clue.' }, ex: '' },
-    { k: 'DUPLSITE', g: 'don', t: 'inst', es: 'Sitio del duplicado de seguridad', en: 'Safety duplicate site',
+    { k: 'DUPLSITE', g: 'don', t: 'inst', multi: true, es: 'Sitio del duplicado de seguridad', en: 'Safety duplicate site',
       d: { es: 'Código WIEWS del banco donde está el respaldo. Una accesión sin duplicado de seguridad está a una falla eléctrica de perderse.', en: 'WIEWS code of the genebank holding the backup. An accession with no safety duplicate is one power failure away from being lost.' }, ex: 'NOR051' },
     { k: 'DUPLINSTNAME', g: 'don', t: 'text', es: 'Institución del duplicado', en: 'Safety duplicate institute name',
       d: { es: 'Nombre del banco donde está el respaldo, cuando no hay código.', en: 'Name of the genebank holding the backup, when there is no code.' }, ex: '' },
@@ -407,7 +407,9 @@
         return null;
       }
       case 'inst': {
-        if (!/^[A-Za-z]{3}\d{3}$/.test(v)) return { level: 'warn', msg: { es: 'Un código WIEWS son tres letras de país más tres dígitos (MEX006).', en: 'A WIEWS code is three country letters plus three digits (MEX006).' } };
+        /* DUPLSITE admite varios sitios separados por punto y coma (MCPD v2.1) */
+        const vals = f.multi ? v.split(';').map(s => s.trim()).filter(Boolean) : [v];
+        if (!vals.every(x => /^[A-Za-z]{3}\d{3}$/.test(x))) return { level: 'warn', msg: { es: 'Un código WIEWS son tres letras de país más tres dígitos (MEX006).', en: 'A WIEWS code is three country letters plus three digits (MEX006).' } };
         return null;
       }
       case 'code': {
@@ -467,7 +469,8 @@
     const cons = consRoute(row);
     if (cons && ['insitu', 'onfarm'].includes(cons) && row.STORAGE) push('STORAGE', 'warn', 'Un registro in situ no debería llevar tipo de almacenamiento ex situ: si tienes las dos cosas, conviene registrar dos accesiones enlazadas.', 'An in-situ record should not carry an ex-situ storage type: if you hold both, register two linked accessions.');
     if (cons && ['insitu', 'onfarm'].includes(cons) && !row.GP_SITEID) push('GP_SITEID', 'warn', 'Un registro in situ sin identificador de sitio no se puede volver a visitar.', 'An in-situ record with no site identifier cannot be revisited.');
-    if (cons && !['insitu', 'onfarm'].includes(cons) && !row.DUPLSITE) push('DUPLSITE', 'warn', 'Sin duplicado de seguridad: la accesión depende de una sola instalación.', 'No safety duplicate: the accession depends on a single facility.');
+    if (cons && !['insitu', 'onfarm'].includes(cons) && dupSites(row).length && !hasSafetyDup(row)) push('DUPLSITE', 'warn', 'El duplicado de seguridad está en la misma institución que la accesión: no la protege si esa institución pierde su colección.', 'The safety duplicate is held by the same institution as the accession: it does not protect it if that institution loses its collection.');
+    if (cons && !['insitu', 'onfarm'].includes(cons) && !dupSites(row).length) push('DUPLSITE', 'warn', 'Sin duplicado de seguridad: la accesión depende de una sola instalación.', 'No safety duplicate: the accession depends on a single facility.');
     return out;
   }
 
@@ -489,6 +492,15 @@
       if (hit && hit.route) return hit.route;
     }
     return '';
+  }
+  /* duplicado de seguridad: sólo cuenta si al menos uno de los sitios de DUPLSITE (puede haber
+     varios, separados por punto y coma) es otra institución que la que conserva la accesión */
+  function dupSites(row) {
+    return String(row.DUPLSITE || '').split(';').map(s => s.trim()).filter(Boolean);
+  }
+  function hasSafetyDup(row) {
+    const own = String(row.INSTCODE || '').trim().toUpperCase();
+    return dupSites(row).some(s => s.toUpperCase() !== own);
   }
   function storageRoutes(row) {
     const st = String(row.STORAGE || '').split(';').map(s => s.trim()).filter(Boolean);
@@ -674,7 +686,7 @@
       routes: count(r => consRoute(r)),
       sources: count(r => r.COLLSRC),
       withCoords: withCoords.length,
-      withDupl: rows.filter(r => String(r.DUPLSITE || '').trim()).length,
+      withDupl: rows.filter(hasSafetyDup).length,
       elevations: rows.map(r => Number(r.ELEVATION)).filter(v => isFinite(v) && v !== 0),
       years: rows.map(r => Number(String(r.COLLDATE || '').slice(0, 4))).filter(y => y >= 1700),
     };
@@ -692,6 +704,6 @@
     FIELDS, FIELD_MAP, MCPD_FIELDS, GP_FIELDS, GROUPS,
     SAMPSTAT, COLLSRC, STORAGE, MLSSTAT, GEOREFMETH, GPCONS, COUNTRIES, COUNTRY_MAP,
     SYNONYMS, norm, dmsToDec, decToDms, validateValue, validateRow, dateNum,
-    consRoute, storageRoutes, guessMapping, emptyRow, applyMapping, summarize, completeness,
+    consRoute, storageRoutes, dupSites, hasSafetyDup, guessMapping, emptyRow, applyMapping, summarize, completeness,
   };
 })();

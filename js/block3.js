@@ -155,7 +155,7 @@
       : `<div class="note-ok">${T('Todas las coordenadas caen dentro del país que declara cada accesión.', 'Every coordinate falls inside the country each accession declares.')}</div>`;
 
     const nota = info.length
-      ? `<p class="hint" style="margin-top:10px">${T(`En ${info.length} accesiones no se pudo comparar la coordenada con el país porque la app no trae el contorno de ese país. Las cajas incluidas cubren ${Object.keys(QC.BBOX).length} países.`, `In ${info.length} accessions the coordinate could not be checked against the country because the app does not bundle that country's outline. The bundled boxes cover ${Object.keys(QC.BBOX).length} countries.`)}</p>`
+      ? `<p class="hint" style="margin-top:10px">${T(`En ${info.length} ${info.length === 1 ? 'accesión' : 'accesiones'} no se pudo comparar la coordenada con el país porque la app no trae el contorno de ese país. Las cajas incluidas cubren ${Object.keys(QC.BBOX).length} países.`, `In ${info.length} ${info.length === 1 ? 'accession' : 'accessions'} the coordinate could not be checked against the country because the app does not bundle that country's outline. The bundled boxes cover ${Object.keys(QC.BBOX).length} countries.`)}</p>`
       : '';
 
     const sec = section(

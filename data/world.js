@@ -1,7 +1,7 @@
-/* SciMetricsPro - world map: country outlines from Natural Earth 1:110m Admin 0 - Countries (public domain,
+/* GermplasmPro - world map (shared with the other LABG apps): country outlines from Natural Earth 1:110m Admin 0 - Countries (public domain,
    https://www.naturalearthdata.com), simplified to two decimals, without Antarctica.
    Each entry: [ISO 3166-1 alpha-2 code, [polygon, ...]]; polygon = [outer ring, holes...]; ring = [lon, lat, lon, lat, ...].
-   Built with tools/local/build-world.ps1. */
+   Built with a local tool of the LABG suite that is not distributed. */
 'use strict';
 window.WORLD_MAP = [
   ['FJ', [[[180,-16.07,180,-16.56,179.36,-16.8,178.73,-17.01,178.6,-16.64,179.1,-16.43,179.41,-16.38,180,-16.07]],[[178.13,-17.5,178.37,-17.34,178.72,-17.63,178.55,-18.15,177.93,-18.29,177.38,-18.16,177.29,-17.72,177.67,-17.38,178.13,-17.5]],[[-179.79,-16.02,-179.92,-16.5,-180,-16.56,-180,-16.07,-179.79,-16.02]]]],

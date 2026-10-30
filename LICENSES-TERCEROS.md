@@ -71,3 +71,12 @@ SOFTWARE.
 
 El programa no trae letras de otros ni las pide a internet: la interfaz, el navegador y el estudio
 de figuras usan las letras del sistema.
+
+## Contornos de Natural Earth
+
+- **Qué son:** los contornos de los países (`data/world.js`, escala 1:110 millones) y de las 32 entidades de
+  México (`data/mexico-states.js`, escala 1:10 millones) que dibujan el mapa de colecta y con los que se asigna
+  cada accesión a su país y su entidad.
+- **De dónde vienen:** Natural Earth (<https://www.naturalearthdata.com>), simplificados para la app.
+- **Licencia:** dominio público. Natural Earth no pide licencia ni atribución; se declara aquí sólo para que
+  quede claro de dónde salen.

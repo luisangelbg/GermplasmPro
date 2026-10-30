@@ -429,6 +429,14 @@ const rowCoord = Object.assign(MCPD.emptyRow(), { ACCENUMB: 'A5', INSTCODE: 'MEX
 ok(MCPD.validateRow(rowCoord).some(p => p.field === 'LATITUDE' && p.level === 'warn'), 'los dos formatos de coordenada se comparan entre sí');
 const rowStat = Object.assign(MCPD.emptyRow(), { ACCENUMB: 'A6', INSTCODE: 'MEX006', GENUS: 'Zea', SAMPSTAT: '100', COLLSRC: '26' });
 ok(MCPD.validateRow(rowStat).some(p => p.field === 'SAMPSTAT'), 'silvestre colectado en la troje se detecta');
+/* el duplicado de seguridad sólo cuenta si está en otra institución */
+const rowDupPropio = Object.assign(MCPD.emptyRow(), { ACCENUMB: 'A7', INSTCODE: 'MEX006', GENUS: 'Zea', GP_CONS: 'seed', DUPLSITE: 'MEX006' });
+const rowDupOtro = Object.assign(MCPD.emptyRow(), { ACCENUMB: 'A8', INSTCODE: 'MEX006', GENUS: 'Zea', GP_CONS: 'seed', DUPLSITE: 'MEX006;NOR051' });
+ok(!MCPD.hasSafetyDup(rowDupPropio), 'un duplicado en la misma institución no es duplicado de seguridad');
+ok(MCPD.hasSafetyDup(rowDupOtro), 'basta con que uno de los sitios sea otra institución');
+ok(MCPD.validateRow(rowDupPropio).some(p => p.field === 'DUPLSITE' && /misma institución/.test(p.msg.es)), 'la validación avisa del duplicado en casa');
+ok(!MCPD.validateRow(rowDupOtro).some(p => p.field === 'DUPLSITE'), 'y no avisa cuando hay un sitio fuera');
+ok(MCPD.summarize([rowDupPropio, rowDupOtro]).withDupl === 1, 'el retrato de la colección sólo cuenta el respaldado fuera');
 
 /* la ruta de conservación se deduce del almacenamiento */
 ok(MCPD.consRoute({ STORAGE: '13' }) === 'seed', '13 es banco de semillas');
@@ -628,6 +636,10 @@ ok(codes.includes('speciesCase'), 'detecta el epíteto con mayúscula');
 ok(codes.includes('speciesAuthor'), 'detecta la autoridad metida en el epíteto');
 ok(codes.includes('genusTypo'), 'detecta Phaseolus / Phaseolous como el mismo género mal escrito');
 ok(codes.includes('cropName'), 'detecta el mismo taxón con dos nombres de cultivo');
+ok(!QC.consistency([
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'T1', GENUS: 'Zea', SPECIES: 'mays', CROPNAME: 'Maíz' }),
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'T2', GENUS: 'Zea', SPECIES: 'mays', SUBTAXA: 'subsp. parviglumis', CROPNAME: 'Teocintle' }),
+]).some(c => c.code === 'cropName'), 'el teocintle (otra subespecie) no cuenta como otro nombre del maíz');
 ok(codes.includes('siteSpelling'), 'detecta el mismo sitio escrito de dos maneras');
 ok(codes.includes('sameCoords'), 'detecta dos sitios distintos con las mismas coordenadas');
 ok(cons.every(c => c.msg.es && c.msg.en && c.items.length), 'cada hallazgo está en dos idiomas y dice a quién afecta');

@@ -94,7 +94,7 @@
         GENUS: 'Zea', SPECIES: 'mays', SPAUTHOR: 'L.', CROPNAME: 'Maíz',
         COLLNUMB: `LAB-2019-${100 + i}`, COLLCODE: inst, COLLMISSID: i < 8 ? 'SIERRA-2019' : 'GUATE-2020',
         COLLDATE: fecha, COLLSRC: i % 3 === 0 ? '26' : '21',
-        SAMPSTAT: '300', ACQDATE: '20191104',
+        SAMPSTAT: '300', ACQDATE: i < 8 ? '20191104' : '20200415',
         STORAGE: i % 4 === 0 ? '13;40' : '13', MLSSTAT: '1',
         DUPLSITE: i % 5 === 0 ? '' : 'NOR051',
         GP_CONS: 'seed', GP_STOCK: String(1800 + i * 130), GP_GERMPCT: String(88 + (i % 8)),
@@ -150,7 +150,7 @@
       INSTCODE: 'PER001', ACCENUMB: num('PER-ST'), ACCENAME: 'Papa nativa Huayro',
       GENUS: 'Solanum', SPECIES: 'tuberosum', SUBTAXA: 'subsp. andigenum', CROPNAME: 'Papa',
       COLLNUMB: 'AND-2018-07', COLLMISSID: 'ANDES-2018', COLLDATE: '20180322', COLLSRC: '21',
-      SAMPSTAT: '300', ACQDATE: '20180901', STORAGE: '30;40', MLSSTAT: '1', DUPLSITE: 'PER001',
+      SAMPSTAT: '300', ACQDATE: '20180901', STORAGE: '30;40', MLSSTAT: '1', DUPLSITE: 'BOL004',
       GP_CONS: 'invitro', GP_STOCK: '24', GP_REGENDATE: '20240118',
       REMARKS: 'Veinticuatro frascos en crecimiento lento; respaldo criopreservado de ápices.',
     }, at('cusco', 0.15, 22))));
@@ -180,7 +180,7 @@
       GENUS: 'Vanilla', SPECIES: 'planifolia', CROPNAME: 'Vainilla',
       COLLNUMB: 'LAB-2021-330', COLLDATE: '20210610', COLLSRC: '22', SAMPSTAT: '300',
       ACQDATE: '20210805', STORAGE: '30', GP_CONS: 'invitro', GP_STOCK: '30',
-      GP_REGENDATE: '20240220', DUPLSITE: 'MEX006',
+      GP_REGENDATE: '20240220', DUPLSITE: 'MEX008',
     }, at('papantla', 0.1, 26))));
 
     /* ---------- árboles y recalcitrantes: colección viva ---------- */
@@ -189,7 +189,7 @@
       GENUS: 'Persea', SPECIES: 'americana', SUBTAXA: 'var. drymifolia', CROPNAME: 'Aguacate',
       COLLNUMB: 'LAB-2017-055', COLLDATE: '20170714', COLLSRC: '23', SAMPSTAT: '300',
       ACQDATE: '20171101', STORAGE: '20', GP_CONS: 'field', GP_STOCK: '12',
-      GP_REGENDATE: '20171101', DUPLSITE: 'MEX006',
+      GP_REGENDATE: '20171101', DUPLSITE: 'MEX008',
       REMARKS: 'Doce árboles injertados en la colección viva.',
     }, at('uruapan', 0.1, 27))));
     rows.push(acc(Object.assign({
@@ -258,7 +258,7 @@
       GENUS: 'Manihot', SPECIES: 'esculenta', CROPNAME: 'Yuca',
       COLLNUMB: 'COL-2019-077', COLLDATE: '20190624', COLLSRC: '21', SAMPSTAT: '300',
       ACQDATE: '20191015', STORAGE: '30;40', GP_CONS: 'invitro', GP_STOCK: '18',
-      GP_REGENDATE: '20240105', DUPLSITE: 'COL003',
+      GP_REGENDATE: '20240105', DUPLSITE: 'PER001',
     }, at('antioquia', 0.15, 36))));
 
     /* ---------- conservación en la parcela (on-farm) ---------- */
@@ -435,8 +435,8 @@
     build, buildTraits, TRAIT_PROFILES,
     SITES,
     info: {
-      es: 'Colección de ejemplo: 45 accesiones de 18 especies, de México, Guatemala, Perú, Bolivia, Colombia, Etiopía e India, conservadas por las cinco rutas. Trae a propósito los errores típicos de un archivo real (una longitud sin signo, un 30 de febrero, un país de dos letras, una altitud de 25 000 m, un código de almacenamiento inventado, una accesión sin coordenadas, fechas al revés y dos duplicados) para que el Bloque 3 tenga qué encontrar.',
-      en: 'Example collection: 45 accessions of 18 species from Mexico, Guatemala, Peru, Bolivia, Colombia, Ethiopia and India, conserved along all five routes. It deliberately carries the typical errors of a real file (a longitude without its sign, a 30 February, a two-letter country, an elevation of 25,000 m, an invented storage code, an accession with no coordinates, reversed dates and two duplicates) so that Block 3 has something to find.',
+      es: 'Colección de ejemplo: 46 accesiones de 24 taxones y 18 géneros, de México, Guatemala, Perú, Bolivia, Colombia, Etiopía e India, conservadas por las cinco rutas. Trae a propósito los errores típicos de un archivo real (una longitud sin signo, un 30 de febrero, un país de dos letras, una altitud de 25 000 m, un código de almacenamiento inventado, una accesión sin coordenadas, fechas al revés y dos duplicados) para que el Bloque 3 tenga qué encontrar.',
+      en: 'Example collection: 46 accessions of 24 taxa in 18 genera from Mexico, Guatemala, Peru, Bolivia, Colombia, Ethiopia and India, conserved along all five routes. It deliberately carries the typical errors of a real file (a longitude without its sign, a 30 February, a two-letter country, an elevation of 25,000 m, an invented storage code, an accession with no coordinates, reversed dates and two duplicates) so that Block 3 has something to find.',
     },
   };
 })();
