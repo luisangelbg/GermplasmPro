@@ -54,8 +54,9 @@
       Cada vez que la accesión pasa por un cuello de botella (una regeneración,
       una resiembra, un subcultivo, la recuperación de un criotubo o una
       generación en el campo del agricultor), las frecuencias se vuelven a
-      sortear: 2*Ne gametos si hay reproducción sexual, o Ne líneas si el
-      material es clonal. Los alelos raros son los primeros en perderse, la
+      sortear sus 2*Ne gametos. En una accesión clonal (estacas, frascos o
+      criotubos de un mismo genotipo) no hay nada que sortear: perder plantas
+      o líneas sólo acerca el riesgo de perderla entera. Los alelos raros son los primeros en perderse, la
       heterocigosis esperada baja y la consanguinidad acumulada crece con
       1 - prod(1 - 1/(2*Ne_i)). De ahí la regla de oro del banco: pocos ciclos
       y con muchos individuos. In situ ocurre lo mismo cada generación, pero el
@@ -361,7 +362,8 @@
       return out;
     }
     const fn = { seed: simulateSeed, field: simulateField, invitro: simulateInVitro, cryo: simulateCryo, insitu: simulateInSitu }[o.method] || simulateSeed;
-    const out = fn(o, sp, beh);
+    /* la especie genérica marcada como clonal se propaga como clon aunque su ficha diga sexual */
+    const out = fn(o, beh === 'clonal' && sp.sexual !== false ? Object.assign({}, sp, { sexual: false }) : sp, beh);
     out.behaviour = beh;
     out.fit = verdict;
     out.blocked = false;
@@ -462,10 +464,14 @@
       if (since >= o.interval) {
         const Ne = Math.max(0, Math.round(plants * o.establishment));
         if (Ne < 2) { emptyLot = emptyLot || y; plants = 0; continue; }
-        const before = alleleCount(loci);
-        loci = driftOnce(loci, Ne, rnd, { genes: sexual ? 2 * Ne : Ne });
-        lost += before - alleleCount(loci);
-        F = 1 - (1 - F) * (1 - 1 / (2 * Ne));
+        /* resembrar de semilla vuelve a sortear gametos; resembrar con estacas o hijuelos de un
+           clon copia el mismo genotipo y no le quita alelos a la accesión */
+        if (sexual) {
+          const before = alleleCount(loci);
+          loci = driftOnce(loci, Ne, rnd, { genes: 2 * Ne });
+          lost += before - alleleCount(loci);
+          F = 1 - (1 - F) * (1 - 1 / (2 * Ne));
+        }
         NeSum += Ne; NeN++;
         out.regens.push({ year: y, Ne, reason: 'replant', germ: 100 * (plants / target) });
         plants = target; since = 0;
@@ -479,6 +485,10 @@
   /* ======================= IN VITRO ======================= */
   function simulateInVitro(o, sp) {
     const rnd = mulberry32(o.seed);
+    /* en material clonal todas las líneas son copias del mismo genotipo: perder frascos no cambia los
+       alelos de la accesión, sólo el riesgo de quedarse sin ella. Las líneas de una especie sexual
+       (plántulas de semillas distintas) sí son individuos distintos, y se sortean sus 2N gametos. */
+    const sexual = sp.sexual !== false;
     let loci = startFreqs(o.nLoci, rnd);
     const A0 = alleleCount(loci), He0 = expHet(loci);
     const target = Math.max(2, Math.round(o.lines));
@@ -508,10 +518,12 @@
         /* frascos que se pierden por contaminación o por mal enraizamiento */
         const survivors = lines - rbinom(lines, clamp(o.contam / 100, 0, 1), rnd);
         if (survivors < 2) { emptyLot = emptyLot || y; lines = 0; break; }
-        const before = alleleCount(loci);
-        loci = driftOnce(loci, survivors, rnd, { genes: survivors });  /* clones: se sortean líneas, no gametos */
-        lost += before - alleleCount(loci);
-        F = 1 - (1 - F) * (1 - 1 / (2 * survivors));
+        if (sexual) {
+          const before = alleleCount(loci);
+          loci = driftOnce(loci, survivors, rnd, { genes: 2 * survivors });
+          lost += before - alleleCount(loci);
+          F = 1 - (1 - F) * (1 - 1 / (2 * survivors));
+        }
         NeSum += survivors; NeN++; subs++;
         /* variación somaclonal: cada subcultivo deja atrás una parte del material fiel */
         fidelity *= (1 - clamp(o.soma / 100, 0, 1));
@@ -541,10 +553,14 @@
     const survivors = Math.max(0, Math.round(o.explants * clamp(o.recovery / 100, 0, 1)));
     let F = 0, lost = 0, emptyLot = 0, alive = survivors >= 2;
     if (alive) {
-      const before = alleleCount(loci);
-      loci = driftOnce(loci, survivors, rnd, { genes: sexual ? 2 * survivors : survivors });
-      lost += before - alleleCount(loci);
-      F = 1 / (2 * survivors);
+      /* en material clonal los explantes son copias de un mismo genotipo: el cuello de botella
+         no le quita alelos, sólo decide si queda material */
+      if (sexual) {
+        const before = alleleCount(loci);
+        loci = driftOnce(loci, survivors, rnd, { genes: 2 * survivors });
+        lost += before - alleleCount(loci);
+        F = 1 / (2 * survivors);
+      }
       out.regens.push({ year: 0, Ne: survivors, reason: 'cryo-entry', germ: o.recovery });
     } else {
       emptyLot = 0;

@@ -2,6 +2,18 @@
 
 ## Después de la 1.0.0 — 2026-10-30
 
+- **Simulador del Bloque 1:**
+  - Las constantes de viabilidad (K_E y C_W) ya no pasan de una especie a otra: al cambiar de especie o de escenario
+    se toman las de la nueva (antes, al pasar del café al trigo se quedaba K_E = 5.2 y la semilla parecía durar 47
+    años en vez de 883).
+  - Una accesión clonal (estacas, frascos o criotubos de un mismo genotipo) ya no pierde alelos ni se consanguiniza
+    en el banco de campo, in vitro ni en la criopreservación: perder plantas o líneas sólo acerca el riesgo de
+    perderla entera. Las líneas in vitro de una especie sexual se sortean como 2N gametos. La especie genérica marcada
+    como clonal se trata como clon.
+  - El título de la gráfica sólo habla de pruebas de germinación en el banco de semillas; la entrada a la
+    criopreservación ya no se dibuja como un ciclo; con la ruta bloqueada se ocultan los deslizadores; K_E y C_W ya no
+    se parten en dos renglones; la sección «Los diez bloques» dice que los diez están listos, la tarjeta del Bloque 2
+    se llama «Pasaporte» y la del Bloque 6 ya no habla de ambientes. 919 pruebas, todas en verde.
 - **Duplicado de seguridad:** sólo cuenta si al menos uno de los sitios de `DUPLSITE` es otra institución que la que
   conserva la accesión (`MCPD.hasSafetyDup`). Lo usan el retrato de la colección (Bloque 2), los riesgos por tipo
   (Bloque 6) y las alertas del manejo del banco (Bloque 8). La validación avisa cuando el duplicado está en la misma

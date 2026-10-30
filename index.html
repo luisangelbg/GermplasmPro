@@ -157,10 +157,10 @@
       <label class="inline-label" id="wrapBehaviour" style="display:none"><span data-l="es">Su semilla es</span><span data-l="en">Its seed is</span>
         <select class="sel" id="simBehaviour"></select>
       </label>
-      <label class="inline-label" id="wrapKE" style="display:none">K<sub>E</sub>
+      <label class="inline-label" id="wrapKE" style="display:none"><span>K<sub>E</sub></span>
         <input class="inp" id="simKE" type="number" step="0.001" style="width:96px">
       </label>
-      <label class="inline-label" id="wrapCW" style="display:none">C<sub>W</sub>
+      <label class="inline-label" id="wrapCW" style="display:none"><span>C<sub>W</sub></span>
         <input class="inp" id="simCW" type="number" step="0.001" style="width:96px">
       </label>
       <button class="btn btn-secondary btn-sm" id="simSeed"><span data-l="es">Otra corrida al azar ↻</span><span data-l="en">Another random run ↻</span></button>
@@ -170,7 +170,7 @@
 
     <div class="sim-grid">
       <div class="pg-pane">
-        <div class="pg-title"><span data-l="es">El estado del material · líneas verticales = ciclos (regeneración, resiembra, generación) · puntos = pruebas de germinación</span><span data-l="en">The state of the material · vertical lines = cycles (regeneration, replanting, generation) · dots = germination tests</span></div>
+        <div class="pg-title" id="simViabTitle"><span data-l="es">El estado del material · líneas verticales = ciclos (regeneración, resiembra, generación) · puntos = pruebas de germinación</span><span data-l="en">The state of the material · vertical lines = cycles (regeneration, replanting, generation) · dots = germination tests</span></div>
         <div id="simViab"></div>
       </div>
       <div class="pg-pane">
@@ -187,9 +187,9 @@
 
   <!-- ---------- los diez bloques ---------- -->
   <h2 class="section-title"><span data-l="es">Los diez bloques</span><span data-l="en">The ten blocks</span></h2>
-  <p class="section-sub"><span data-l="es">Cada bloque hace una parte del trabajo y le entrega el resultado al siguiente. Se van abriendo conforme se
-    terminan; el Bloque 1 —esta portada y el simulador— ya está listo.</span><span data-l="en">Each block does one part of the job and hands the result to the next. They open as they are finished; Block 1
-    —this home page and the simulator— is ready.</span></p>
+  <p class="section-sub"><span data-l="es">Cada bloque hace una parte del trabajo y le entrega el resultado al siguiente. Los diez están
+    listos: entra a cualquiera desde aquí o desde la barra lateral.</span><span data-l="en">Each block does one part of the job and hands the result to the next. All ten are
+    ready: open any of them from here or from the side bar.</span></p>
   <div class="feature-grid" id="blockGrid"></div>
 
   <!-- ---------- qué corre dónde ---------- -->

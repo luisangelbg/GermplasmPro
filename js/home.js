@@ -148,7 +148,8 @@
       const name = n => s.sci ? `${s[n]} (${s.sci})` : s[n];
       return `<option value="${k}" data-es="${esc(name('es'))}" data-en="${esc(name('en'))}">${esc(name('es'))}</option>`;
     }).join('');
-    sp.addEventListener('change', () => { cur.species = sp.value; cur.behaviour = null; syncControls(); run(); });
+    /* las constantes de viabilidad son de cada especie: al cambiarla se toman las de la nueva */
+    sp.addEventListener('change', () => { cur.species = sp.value; cur.behaviour = null; delete cur.KE; delete cur.CW; syncControls(); run(); });
 
     const be = el('simBehaviour');
     be.innerHTML = Object.keys(GB.BEHAVIOUR).map(k =>
@@ -165,7 +166,7 @@
     const pr = el('simPreset');
     pr.innerHTML = Object.keys(PRESETS).map(k =>
       `<option value="${k}" data-es="${esc(PRESETS[k].es)}" data-en="${esc(PRESETS[k].en)}">${esc(PRESETS[k].es)}</option>`).join('');
-    pr.addEventListener('change', () => { Object.assign(cur, PRESETS[pr.value].v); cur.behaviour = null; syncControls(); run(); });
+    pr.addEventListener('change', () => { delete cur.KE; delete cur.CW; Object.assign(cur, PRESETS[pr.value].v); cur.behaviour = null; syncControls(); run(); });
 
     el('simSeed').addEventListener('click', () => { cur.seed = Math.floor(Math.random() * 1e9); run(); });
   }
@@ -249,6 +250,15 @@
 
   function draw(r) {
     el('simVerdict').innerHTML = verdictBox(r);
+    /* con la ruta bloqueada no hay nada que mover */
+    if (el('simSliders')) el('simSliders').style.display = r.blocked ? 'none' : '';
+    /* sólo el banco de semillas tiene pruebas de germinación que dibujar como puntos */
+    const tit = el('simViabTitle');
+    if (tit) tit.innerHTML = r.method === 'seed'
+      ? L2('El estado del material · líneas verticales = ciclos (regeneración, resiembra, generación) · puntos = pruebas de germinación', 'The state of the material · vertical lines = cycles (regeneration, replanting, generation) · dots = germination tests')
+      : ['field', 'insitu', 'onfarm'].includes(r.method)
+        ? L2('El estado del material · líneas verticales = ciclos (resiembra, generación)', 'The state of the material · vertical lines = cycles (replanting, generation)')
+        : L2('El estado del material', 'The state of the material');
 
     if (r.blocked) {
       const alt = Object.keys(GB.METHODS).filter(k => GB.fit(r.opts.species, k, r.behaviour) === 'ok');
@@ -273,7 +283,7 @@
       ylab: T(r.mainLabel.es, r.mainLabel.en),
       series: [{ pts: r.years.map((y, i) => [y, r.germ[i]]), color: 'var(--s1)', width: 2.2 }],
       hlines: isSeed ? [{ y: r.opts.threshold, color: 'var(--danger)', label: T('umbral', 'threshold') }] : [],
-      vlines: r.regens.length <= 60 ? r.regens.map(g => ({ x: g.year, color: g.reason === 'stock' ? 'var(--s2)' : 'var(--s3)' })) : [],
+      vlines: r.regens.length <= 60 ? r.regens.filter(g => g.reason !== 'cryo-entry').map(g => ({ x: g.year, color: g.reason === 'stock' ? 'var(--s2)' : 'var(--s3)' })) : [],
       points: r.tests.map(t => ({ x: t.year, y: t.value, color: 'var(--s2)', r: 2.6 })),
     });
 
@@ -377,7 +387,9 @@
         `Alargar el intervalo entre subcultivos —con menos temperatura, menos luz o medios con osmóticos— es la única forma de bajar ese costo sin perder la colección; el respaldo definitivo es la criopreservación.`,
         `Stretching the interval between subcultures —lower temperature, less light, osmotic media— is the only way to cut that cost without losing the collection; the definitive backup is cryopreservation.`));
     } else if (r.method === 'cryo') {
-      bits.push(T(
+      bits.push(sp.sexual === false ? T(
+        `De ${o.explants} explantes congelados se recuperan ${fmtInt(s.survivors)}. Como son copias de un mismo clon, ese cuello de botella no le quita alelos a la accesión: sólo decide si queda material para rebrotar. Después no pasa nada más: a −196 °C no hay envejecimiento ni ciclos de regeneración.`,
+        `Of ${o.explants} frozen explants, ${fmtInt(s.survivors)} are recovered. Since they are copies of one clone, that bottleneck takes no alleles from the accession: it only decides whether there is material left to regrow. Nothing else happens afterwards: at −196 °C there is no ageing and no regeneration cycles.`) : T(
         `De ${o.explants} explantes congelados se recuperan ${fmtInt(s.survivors)}: ese único cuello de botella deja la accesión con ${fmt(s.allelesLeft, 0)} % de sus alelos y una consanguinidad de ${fmt(s.F, 1)} %. Después no pasa nada más: a −196 °C no hay envejecimiento ni ciclos de regeneración.`,
         `Of ${o.explants} frozen explants, ${fmtInt(s.survivors)} are recovered: that single bottleneck leaves the accession with ${fmt(s.allelesLeft, 0)}% of its alleles and an inbreeding of ${fmt(s.F, 1)}%. Nothing else happens afterwards: at −196 °C there is no ageing and no regeneration cycles.`));
       bits.push(s.hazards
@@ -404,14 +416,14 @@
 
   /* ============ la rejilla de bloques ============ */
   const BLOCKS = [
-    { n: 2, es: 'Pasaporte de accesiones', en: 'Accession passport', d: { es: 'Importa tu lista de accesiones —de cualquier especie y de cualquier tipo de banco— y ordénala con los descriptores de pasaporte multicultivo (MCPD): identificadores, taxonomía, sitio de colecta, donante, tipo de material y forma de conservación.', en: 'Import your accession list —any species, any kind of collection— and organize it with the multi-crop passport descriptors (MCPD): identifiers, taxonomy, collecting site, donor, material type and conservation method.' } },
-    { n: 3, es: 'Calidad y duplicados', en: 'Quality and duplicates', d: { es: 'Coordenadas imposibles, fechas al revés, nombres escritos de tres maneras y, sobre todo, las accesiones que son la misma colecta entrada dos veces o repetida en dos bancos.', en: 'Impossible coordinates, reversed dates, names spelled three ways and, above all, accessions that are the same collection entered twice or held in two collections.' } },
+    { n: 2, es: 'Pasaporte', en: 'Passport', d: { es: 'Importa tu lista de accesiones —de cualquier especie y de cualquier tipo de banco— y ordénala con los descriptores de pasaporte multicultivo (MCPD): identificadores, taxonomía, sitio de colecta, donante, tipo de material y forma de conservación.', en: 'Import your accession list —any species, any kind of collection— and organize it with the multi-crop passport descriptors (MCPD): identifiers, taxonomy, collecting site, donor, material type and conservation method.' } },
+    { n: 3, es: 'Calidad y duplicados', en: 'Quality & duplicates', d: { es: 'Coordenadas imposibles, fechas al revés, nombres escritos de tres maneras y, sobre todo, las accesiones que son la misma colecta entrada dos veces o repetida en dos bancos.', en: 'Impossible coordinates, reversed dates, names spelled three ways and, above all, accessions that are the same collection entered twice or held in two collections.' } },
     { n: 4, es: 'Mapa de colecta', en: 'Collecting map', d: { es: 'Tus accesiones y tus sitios in situ en el mapa, sin internet y sin subir nada: por especie, por altitud, por año de colecta o por tipo de conservación.', en: 'Your accessions and your in-situ sites on a map, offline and with nothing uploaded: by species, elevation, collecting year or conservation method.' } },
     { n: 5, es: 'Diversidad geográfica', en: 'Geographic diversity', d: { es: 'Cuántas accesiones y cuánta variación hay por estado, por cuadro de rejilla y por franja altitudinal; curvas de acumulación y rarefacción de la colección.', en: 'How many accessions and how much variation there is per state, grid cell and elevation belt; accumulation and rarefaction curves for the collection.' } },
-    { n: 6, es: 'Vacíos de colecta', en: 'Collecting gaps', d: { es: 'Dónde no has colectado y qué poblaciones no están respaldadas: cuadros vacíos, ambientes sin representar y una ruta de prioridades por complementariedad.', en: 'Where you have not collected and which populations are not backed up: empty cells, unrepresented environments and a complementarity-based priority list.' } },
-    { n: 7, es: 'Caracterización y núcleo', en: 'Characterization and core', d: { es: 'Descriptores morfológicos, distancia de Gower, agrupamiento y selección de una colección núcleo que conserve la diversidad con menos accesiones.', en: 'Morphological descriptors, Gower distance, clustering and the selection of a core collection that keeps the diversity with fewer accessions.' } },
+    { n: 6, es: 'Vacíos de colecta', en: 'Collecting gaps', d: { es: 'Dónde no has colectado y qué poblaciones no están respaldadas: cuadros vacíos, franjas de altitud sin muestras y una ruta de prioridades por complementariedad.', en: 'Where you have not collected and which populations are not backed up: empty cells, elevation bands with no samples and a complementarity-based priority list.' } },
+    { n: 7, es: 'Caracterización y núcleo', en: 'Characterization & core', d: { es: 'Descriptores morfológicos, distancia de Gower, agrupamiento y selección de una colección núcleo que conserve la diversidad con menos accesiones.', en: 'Morphological descriptors, Gower distance, clustering and the selection of a core collection that keeps the diversity with fewer accessions.' } },
     { n: 8, es: 'Manejo del banco', en: 'Genebank management', d: { es: 'Existencias, pruebas de germinación y ecuación de viabilidad por lote, calendarios de resiembra y de subcultivo, inventario de criotubos y alertas de regeneración.', en: 'Stocks, germination tests and the viability equation lot by lot, replanting and subculture calendars, cryovial inventory and regeneration alerts.' } },
-    { n: 9, es: 'Etiquetas y registro', en: 'Labels and register', d: { es: 'Etiquetas de sobre, frasco, maceta y criotubo con código de barras, listas de siembra, vales de distribución y el libro de registro del banco.', en: 'Envelope, jar, pot and cryovial labels with barcodes, sowing lists, distribution slips and the genebank register.' } },
+    { n: 9, es: 'Etiquetas y registro', en: 'Labels & register', d: { es: 'Etiquetas de sobre, frasco, maceta y criotubo con código de barras, listas de siembra, vales de distribución y el libro de registro del banco.', en: 'Envelope, jar, pot and cryovial labels with barcodes, sowing lists, distribution slips and the genebank register.' } },
     { n: 10, es: 'Informe', en: 'Report', d: { es: 'El informe del estado de la colección en HTML y PDF, con los métodos redactados, más la exportación en MCPD y en Darwin Core.', en: 'The collection status report in HTML and PDF, with the methods written out, plus MCPD and Darwin Core exports.' } },
   ];
   function buildBlocks() {

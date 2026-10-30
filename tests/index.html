@@ -253,12 +253,21 @@ near(iv.summary.subcultures, 50, 1, 'con subcultivo anual hay un pase por año')
 const ivRapido = GB.simulate({ species: 'papa', method: 'invitro', subMonths: 3, lines: 20, contam: 2, years: 50, seed: 3 });
 ok(ivRapido.summary.subcultures > 3 * iv.summary.subcultures - 5, 'subcultivar cada 3 meses cuadruplica los pases');
 ok(ivRapido.summary.fidelity < iv.summary.fidelity, 'más subcultivos, menos fidelidad genética');
-ok(ivRapido.summary.allelesLeft <= iv.summary.allelesLeft, 'más subcultivos, menos variantes conservadas');
 ok(ivRapido.summary.labour > iv.summary.labour, 'más subcultivos, más trabajo de laboratorio');
 ok(iv.summary.fidelity > 0 && iv.summary.fidelity <= 100, 'la fidelidad genética es un porcentaje');
 ok(iv.germ.every((g, i) => i === 0 || g <= iv.germ[i - 1] + 1e-9), 'la fidelidad nunca sube');
-const ivPocas = GB.simulate({ species: 'papa', method: 'invitro', subMonths: 12, lines: 6, contam: 2, years: 50, seed: 3 });
-ok(ivPocas.summary.allelesLeft < iv.summary.allelesLeft, 'mantener seis frascos conserva menos que mantener veinte');
+/* un clon no pierde alelos por perder frascos: todas las líneas son el mismo genotipo */
+ok(iv.summary.allelesLeft === 100 && iv.summary.F === 0, 'la papa (clonal) in vitro conserva sus alelos y no se consanguiniza');
+ok(ivRapido.summary.allelesLeft === 100, 'ni siquiera con subcultivos cada tres meses');
+/* las plántulas de una especie sexual sí son individuos distintos */
+const ivCa = GB.simulate({ species: 'encino', method: 'invitro', subMonths: 12, lines: 20, contam: 2, years: 50, seed: 3 });
+const ivCaRapido = GB.simulate({ species: 'encino', method: 'invitro', subMonths: 3, lines: 20, contam: 2, years: 50, seed: 3 });
+const ivCaPocas = GB.simulate({ species: 'encino', method: 'invitro', subMonths: 12, lines: 6, contam: 2, years: 50, seed: 3 });
+ok(ivCa.summary.allelesLeft < 100 && ivCa.summary.F > 0, 'un encino (sexual) in vitro sí pierde alelos con los pases');
+ok(ivCaRapido.summary.allelesLeft <= ivCa.summary.allelesLeft, 'más subcultivos, menos variantes conservadas');
+ok(ivCaPocas.summary.allelesLeft < ivCa.summary.allelesLeft, 'mantener seis frascos conserva menos que mantener veinte');
+const ivGen = GB.simulate({ species: 'generica', behaviour: 'clonal', method: 'invitro', subMonths: 3, lines: 6, contam: 2, years: 50, seed: 3 });
+ok(ivGen.summary.allelesLeft === 100, 'la especie genérica marcada como clonal también se trata como clon');
 
 /* ============ 5d. criopreservación ============ */
 const cr = GB.simulate({ species: 'papa', method: 'cryo', explants: 200, recovery: 50, failure: 0, years: 100, seed: 4 });
@@ -268,8 +277,10 @@ ok(cr.regens.length === 1 && cr.regens[0].year === 0, 'el único cuello de botel
 const aleMin = Math.min(...cr.alleles.slice(1)), aleMax = Math.max(...cr.alleles.slice(1));
 ok(aleMin === aleMax, 'después de entrar al nitrógeno la diversidad ya no cambia');
 ok(cr.f.slice(1).every(v => v === cr.f[1]), 'la consanguinidad tampoco vuelve a subir');
-const crPocos = GB.simulate({ species: 'papa', method: 'cryo', explants: 30, recovery: 40, failure: 0, years: 100, seed: 4 });
-ok(crPocos.summary.allelesLeft < cr.summary.allelesLeft, 'congelar pocos explantes cuesta diversidad');
+ok(cr.summary.allelesLeft === 100 && cr.summary.F === 0, 'los explantes de un clon son el mismo genotipo: la entrada no le quita alelos');
+const crCa = GB.simulate({ species: 'encino', method: 'cryo', explants: 200, recovery: 50, failure: 0, years: 100, seed: 4 });
+const crCaPocos = GB.simulate({ species: 'encino', method: 'cryo', explants: 30, recovery: 40, failure: 0, years: 100, seed: 4 });
+ok(crCaPocos.summary.allelesLeft < crCa.summary.allelesLeft, 'en una especie sexual, congelar pocos embriones cuesta diversidad');
 const crFalla = GB.simulate({ species: 'papa', method: 'cryo', explants: 200, recovery: 50, failure: 20, years: 200, seed: 77 });
 ok(crFalla.summary.hazards >= 1 && crFalla.germ[crFalla.germ.length - 1] === 0, 'si falla el tanque se pierde todo el material');
 
