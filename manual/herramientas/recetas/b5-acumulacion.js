@@ -1,4 +1,4 @@
-/* Bloque 5: el aviso de Chao1 y la sección 1, curva de acumulación y riqueza contra esfuerzo */
+/* Bloque 5: la nota de las accesiones analizadas, el aviso de Chao1 y la sección 1, curva de acumulación y riqueza contra esfuerzo */
 (async () => {
   const W = ms => new Promise(r => setTimeout(r, ms));
   const top = n => n.getBoundingClientRect().top + window.scrollY;
@@ -16,7 +16,7 @@
   await W(1000); goStep(2); await W(400); document.getElementById("b2Example").click(); await W(2500);
   Object.assign(B5.view, { unit: "state", cls: "species", grid: 1, band: 500, dist: "jaccard", effort: "q1", index: "S", sort: { k: "N", dir: -1 } });
   goStep(5); await W(3500);
-  const w = document.querySelector("#b5Body .note-warn"), s = seccion("1");
+  const w = document.querySelector("#b5Body > .hint"), s = seccion("1");
   await irA(w);
   return caja([w, ...s], 8);
 })()
