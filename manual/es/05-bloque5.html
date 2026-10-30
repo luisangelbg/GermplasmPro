@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · Manual de usuario · Capítulo 5</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- reparte el contenido en hojas tamaño carta, con encabezados, números de página e índice -->
+<script src="../paginar.js"></script>
+<style>
+  .formula { font-family: var(--mono); font-size: 9pt; background: var(--marino-suave); border-radius: 5px; padding: 0.07in 0.12in; margin: 0.08in 0; }
+  .cuenta td { font-family: var(--mono); font-size: 8.6pt; }
+  .csv td { font-family: var(--mono); font-size: 7.6pt; }
+  figure.reducida { width: 74%; margin-left: auto; margin-right: auto; }
+  figure.mediana { width: 86%; margin-left: auto; margin-right: auto; }
+  .dos-figs { display: flex; gap: 0.18in; align-items: flex-start; margin: 0.1in 0; }
+  .dos-figs > figure { flex: 1 1 0; margin: 0; }
+  figure.chica { width: 72%; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<section class="capitulo" id="cap-b5" data-pestana="5" data-orden="5" style="--acento: var(--b5)">
+  <div class="cap-apertura">
+    <div class="cap-num">5</div>
+    <div class="cap-etiqueta">Capítulo cinco · Bloque 5 · Diversidad geográfica</div>
+    <h1 data-corto="Diversidad geográfica">Diversidad geográfica</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">Una colección no vale por cuántos sobres tiene, sino por cuántas cosas distintas guarda y dónde. El Bloque 5 cuenta esa diversidad por región, por celda o por franja de altitud; la compara a esfuerzo igual, para que la entidad con más salidas de campo no parezca la más diversa sólo por eso; estima cuánto falta por colectar, y pregunta si las regiones cercanas guardan lo mismo. Todo sale del pasaporte: no hace falta capturar nada más.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>5.1</b>Unidades, tipos y el resumen del bloque</li>
+      <li><b>5.2</b>Los índices de diversidad, unidad por unidad</li>
+      <li><b>5.3</b>La rarefacción: comparar con el mismo esfuerzo</li>
+      <li><b>5.4</b>¿Cuánto falta? Acumulación, estimadores y cobertura</li>
+      <li><b>5.5</b>Los tipos exclusivos y el mapa del índice</li>
+      <li><b>5.6</b>¿Se parecen las regiones? Semejanza y agrupamiento</li>
+      <li><b>5.7</b>La prueba de Mantel y el recambio entre unidades</li>
+      <li><b>5.8</b>El gradiente altitudinal</li>
+      <li><b>5.9</b>Exportar, y cómo cambia todo con la unidad</li>
+    </ul>
+  </div>
+
+  <!-- 5.1 -->
+  <h2 id="b5-1"><span class="num">5.1</span>Unidades, tipos y el resumen del bloque</h2>
+  <p class="lead">El Bloque 5 trabaja sobre las accesiones con coordenadas del pasaporte (capítulo 2): al entrar, o al cambiar cualquier selector, calcula todo con la espera animada <i>Calculando la diversidad y la prueba de Mantel</i>. Con la colección de ejemplo entran <b>45 de las 46 accesiones</b>; la que no tiene coordenadas (MEX-ZM-0043) queda fuera de todo el bloque. Si no hay accesiones, el bloque dice <span class="ui">Primero carga tus accesiones en el Bloque 2.</span></p>
+  <figure class="chica">
+    <div class="marco"><img src="../img/b5-controles.png" alt="La cabecera del Bloque 5: el título, el párrafo de presentación, los selectores Unidad geográfica en Entidad de México, Qué cuenta como tipo en Especie (género + epíteto), Franja altitudinal en 500 m, Rarificar al primer cuartil (recomendado) y Distancia de composición en Jaccard, y seis recuadros: 45 accesiones mapeadas en 10 unidades con datos, 24 tipos observados, riqueza estimada Chao1 224.0 con 200.0 por colectar, cobertura de la muestra 55.6 %, recambio entre unidades 7.89 con alfa media 2.7 y diversidad efectiva 12.9"></div>
+    <figcaption><b>Figura 5.1.</b> La cabecera del bloque con la colección de ejemplo y los valores de fábrica. El selector <span class="ui">Tamaño de celda</span> sólo aparece cuando la unidad es <span class="ui">Celda de rejilla</span>.</figcaption>
+  </figure>
+  <p>Dos decisiones gobiernan todo lo que sigue: <b>en qué se reparte el territorio</b> (la unidad) y <b>qué cuenta como distinto</b> (el tipo). Los demás selectores afinan detalles.</p>
+  <table class="compacta">
+    <caption><b>Tabla 5.1.</b> Los seis selectores del bloque y sus opciones (en negritas, la de fábrica).</caption>
+    <thead><tr><th style="width:1.6in">Selector</th><th>Opciones y qué hacen</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Unidad geográfica</span></td><td><b><span class="ui">Entidad de México</span></b>: cada punto va a la entidad cuyo contorno lo contiene, y los puntos fuera de México no forman unidad. <span class="ui">País</span>: el país donde cae el punto (si no cae en ninguno, el de <code>ORIGCTY</code>). <span class="ui">Celda de rejilla</span>: cuadros de 0.25°, 0.5°, 1° o 2°. <span class="ui">Franja altitudinal</span>: tramos de altitud según <code>ELEVATION</code>; las accesiones sin altitud no entran.</td></tr>
+      <tr><td><span class="ui">Qué cuenta como tipo</span></td><td><b><span class="ui">Especie (género + epíteto)</span></b>, <span class="ui">Cultivo</span> (<code>CROPNAME</code>), <span class="ui">Género</span> o <span class="ui">Nombre de la accesión</span> (<code>ACCENAME</code>). La especie no distingue subespecies: el teocintle cuenta como <i>Zea mays</i>. Un dato vacío cuenta como el tipo «—».</td></tr>
+      <tr><td><span class="ui">Tamaño de celda</span></td><td><span class="ui">0.25°</span>, <span class="ui">0.5°</span>, <b><span class="ui">1°</span></b> o <span class="ui">2°</span>; sólo con la unidad en rejilla. Las celdas son las mismas que dibuja el mapa del Bloque 4 (capítulo 4).</td></tr>
+      <tr><td><span class="ui">Franja altitudinal</span></td><td><span class="ui">100 m</span>, <span class="ui">250 m</span>, <b><span class="ui">500 m</span></b> o <span class="ui">1000 m</span>. Sirve para la unidad en franjas y, siempre, para la sección del gradiente (apartado 5.8).</td></tr>
+      <tr><td><span class="ui">Rarificar</span></td><td>El esfuerzo común al que se compara la riqueza (apartado 5.3): <b><span class="ui">al primer cuartil (recomendado)</span></b>, <span class="ui">a la mediana</span>, <span class="ui">a la unidad más pequeña</span> o a 5, 10 o 20 accesiones.</td></tr>
+      <tr><td><span class="ui">Distancia de composición</span></td><td><b><span class="ui">Jaccard</span></b>, <span class="ui">Sørensen</span> o <span class="ui">Bray-Curtis</span> (apartado 5.6).</td></tr>
+    </tbody>
+  </table>
+  <p>Los seis recuadros de arriba resumen la colección <b>completa</b>, no una unidad. Con la unidad en entidades, la colección de ejemplo reparte 36 de sus 45 accesiones mapeadas en 10 entidades; las otras nueve —los dos maíces de Guatemala, las papas, la oca, la cebada, el amaranto de la India, la yuca y el maíz cuya longitud perdió el signo— no forman unidad, pero sí cuentan en los recuadros.</p>
+  <table class="compacta">
+    <caption><b>Tabla 5.2.</b> Los recuadros del resumen con la colección de ejemplo.</caption>
+    <thead><tr><th style="width:1.85in">Recuadro</th><th class="c" style="width:0.6in">Ejemplo</th><th>Qué dice</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Accesiones mapeadas</span></td><td class="c">45</td><td>Las accesiones con coordenadas; debajo, cuántas unidades tienen datos (10).</td></tr>
+      <tr><td><span class="ui">Tipos observados</span></td><td class="c">24</td><td>Los tipos distintos en toda la colección mapeada: aquí, 24 especies.</td></tr>
+      <tr><td><span class="ui">Riqueza estimada (Chao1)</span></td><td class="c">224.0</td><td>Cuántos tipos habría en total según Chao1, y cuántos faltarían por colectar (200.0). Con esta colección, poco confiable (apartado 5.4).</td></tr>
+      <tr><td><span class="ui">Cobertura de la muestra</span></td><td class="c">55.6 %</td><td>La cobertura de Good-Turing (apartado 5.4).</td></tr>
+      <tr><td><span class="ui">Recambio entre unidades (β)</span></td><td class="c">7.89</td><td>La beta de Whittaker; debajo, la riqueza media por unidad, α = 2.7 (apartado 5.7).</td></tr>
+      <tr><td><span class="ui">Diversidad efectiva</span></td><td class="c">12.9</td><td>El número de Hill de orden 1 de toda la colección (apartado 5.2).</td></tr>
+    </tbody>
+  </table>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Limpia antes de medir</div>
+    <p>El Bloque 5 cuenta lo que hay en el pasaporte, con sus errores. En la colección de ejemplo sin corregir, el maíz <i>Tuxpeño de la costa</i>, con la longitud sin signo, no cae en Veracruz (cae en Birmania, que aparece como «país» si eliges esa unidad); el frijol tépari de 25 000 m crea una franja de altitud imposible, y los dos duplicados cuentan doble. Resuelve antes los Bloques 2 y 3 (capítulos 2 y 3). Las cifras de este capítulo son las de la colección recién cargada, para que puedas reproducirlas; donde la limpieza cambia algo importante, se dice.</p>
+  </div>
+
+  <!-- 5.2 -->
+  <h2 id="b5-2"><span class="num">5.2</span>Los índices de diversidad, unidad por unidad</h2>
+  <p>La sección <span class="ui">2 · ¿Dónde está?</span> es una tabla con una fila por unidad y diez columnas. Un clic en el encabezado ordena por esa columna —de mayor a menor la primera vez, salvo <span class="ui">Unidad</span>, que va en orden alfabético— y otro clic invierte el orden; la flecha marca la columna activa. De fábrica, las unidades van de la que tiene más accesiones a la que tiene menos (las franjas, de la más baja a la más alta).</p>
+  <figure>
+    <div class="marco"><img src="../img/b5-tabla.png" alt="La tabla de la sección 2 con diez entidades: Oaxaca 7 accesiones, riqueza 3, rarificada a 2 1.52, H 0.80, 1 menos D 0.449, J 0.72, Hill q1 2.22, 0 exclusivos, 1,836 m; Puebla 7, 5, 1.86, 1.48, 0.735, 0.92, 4.37, 4, 1,661 m; Veracruz 6, 4, 1.80, 1.24, 0.667, 0.90, 3.46, 4, 939 m; Chiapas 4, 4, 2.00, 1.39, 0.750, 1.00, 4.00, 3; Michoacán, Chihuahua, Yucatán, México, Jalisco y Sonora, esta última con 1 accesión, sin valor rarificado y altitud media de 25,000 m"></div>
+    <figcaption><b>Figura 5.2.</b> La tabla de índices por entidad con la colección de ejemplo. La altitud media de Sonora, 25 000 m, es el error sembrado del frijol tépari.</figcaption>
+  </figure>
+  <table class="compacta">
+    <caption><b>Tabla 5.3.</b> Las columnas de la tabla.</caption>
+    <thead><tr><th style="width:1.35in">Columna</th><th>Qué es</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Accesiones</span></td><td><i>N</i>: cuántas accesiones caen en la unidad.</td></tr>
+      <tr><td><span class="ui">Riqueza S</span></td><td><i>S</i>: cuántos tipos distintos hay en ella.</td></tr>
+      <tr><td><span class="ui">Rarificada a 2</span></td><td>Los tipos que se esperarían con el mismo número de accesiones en todas las unidades; el número del encabezado es ese esfuerzo (apartado 5.3).</td></tr>
+      <tr><td><span class="ui">H′</span>, <span class="ui">1 − D</span>, <span class="ui">J′</span>, <span class="ui">Hill q1</span></td><td>Shannon, Gini-Simpson, equitatividad de Pielou y diversidad efectiva (abajo). La riqueza S es el número de Hill q0; el q2 no tiene columna, pero es 1 / (1 − (1 − D)).</td></tr>
+      <tr><td><span class="ui">Exclusivos</span></td><td>Los tipos que no están en ninguna otra unidad (apartado 5.5).</td></tr>
+      <tr><td><span class="ui">Altitud media</span></td><td>El promedio de <code>ELEVATION</code> de las accesiones de la unidad.</td></tr>
+    </tbody>
+  </table>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · Shannon, Gini-Simpson y Pielou</div>
+    <p>En una unidad con <i>N</i> accesiones repartidas en <i>S</i> tipos, sea <i>p<sub>i</sub></i> = <i>N<sub>i</sub></i>/<i>N</i> la proporción del tipo <i>i</i>. Los índices clásicos son:</p>
+    <div class="formula">H′ = −Σ p<sub>i</sub> ln p<sub>i</sub>  ·  1 − D = 1 − Σ p<sub>i</sub>²  ·  J′ = H′ / ln S</div>
+    <p><b>Shannon</b> (H′) crece con el número de tipos y con lo parejo de su reparto; usa logaritmo natural. <b>Gini-Simpson</b> (1 − D) es la probabilidad de que dos accesiones tomadas al azar, con reemplazo, sean de tipos distintos. <b>Pielou</b> (J′) va de 0 a 1 y sólo mide lo parejo: 1 es que todos los tipos tienen las mismas accesiones. Con un solo tipo, J′ no está definida; la app escribe 1.</p>
+  </div>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · los números de Hill</div>
+    <p>Shannon, Gini-Simpson y Pielou están en escalas distintas y no se pueden comparar entre sí. Los <b>números de Hill</b> los traducen a una sola escala, la de los <b>tipos efectivos</b>: cuántos tipos igual de abundantes darían la misma diversidad.</p>
+    <div class="formula">q0 = S  ·  q1 = exp(H′)  ·  q2 = 1 / Σ p<sub>i</sub>²</div>
+    <p>q0 cuenta todos los tipos por igual; q1 los pesa por su proporción; q2 da todavía más peso a los abundantes. Siempre q0 ≥ q1 ≥ q2, y la distancia entre ellos dice qué tan dominada está la unidad por unos pocos tipos.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · los siete sobres de Oaxaca</div>
+    <p>Oaxaca tiene 7 accesiones: 5 de <i>Zea mays</i>, 1 de <i>Phaseolus vulgaris</i> y 1 de <i>Capsicum annuum</i>, así que <i>p</i> = 5/7, 1/7, 1/7.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">H′ = −(5/7 · ln 5/7 + 2 · 1/7 · ln 1/7) = 0.24034 + 0.55597 = 0.7963  →  la app escribe 0.80</td></tr>
+      <tr><td style="width:50%">Σ p² = (25 + 1 + 1)/49 = 27/49 = 0.5510</td><td>1 − D = 22/49 = 0.449</td></tr>
+      <tr><td>J′ = 0.7963 / ln 3 = 0.7963 / 1.0986 = 0.72</td><td>q1 = e<sup>0.7963</sup> = 2.22</td></tr>
+      <tr><td colspan="2">q0 = 3  ·  q2 = 49/27 = 1.81  →  3 tipos, pero «valen» como 2.2 parejos, o 1.8 si se pesa más a los abundantes</td></tr>
+    </tbody></table>
+  </div>
+  <p>Cómo se lee para decidir: Oaxaca y Puebla tienen las mismas 7 accesiones, pero Puebla guarda 5 especies con J′ = 0.92 y Oaxaca 3 con J′ = 0.72: en Oaxaca, cinco de siete sobres son maíz. Oaxaca está bien representada para el maíz y mal para lo demás. En el otro extremo, Chiapas tiene 4 accesiones y 4 especies (J′ = 1, q1 = 4): cada colecta trajo algo nuevo, señal de que ahí la colección no ha empezado a repetirse y que más esfuerzo seguiría rindiendo tipos nuevos.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Toda la colección también tiene índices</div>
+    <p>Las mismas fórmulas, aplicadas a las 45 accesiones mapeadas, dan H′ = 2.559, 1 − D = 0.837, J′ = 0.805, q1 = 12.92 y q2 = 6.12. El recuadro <span class="ui">Diversidad efectiva</span> muestra q1 = 12.9: la colección tiene 24 especies, pero el peso del maíz (17 de 45 accesiones) la hace equivalente a unas 13 especies igual de representadas.</p>
+  </div>
+
+  <!-- 5.3 -->
+  <h2 id="b5-3"><span class="num">5.3</span>La rarefacción: comparar con el mismo esfuerzo</h2>
+  <p>La riqueza crece con el número de accesiones examinadas: una entidad con treinta colectas casi siempre tendrá más tipos que una con tres, aunque su territorio no sea más diverso. La propia app lo recuerda al pie del panel: <span class="ui">Por qué la rarefacción no es un capricho.</span> La <b>rarefacción de Hurlbert</b> responde cuántos tipos esperarías en cada unidad si de todas hubieras tomado el mismo número <i>n</i> de accesiones.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · la rarefacción de Hurlbert y su varianza</div>
+    <p>Si de <i>N</i> accesiones se toman <i>n</i> sin reemplazo, la probabilidad de no ver el tipo <i>i</i>, que tiene <i>N<sub>i</sub></i>, es π<sub>i</sub> = C(N − N<sub>i</sub>, n) / C(N, n), donde C es el número de combinaciones. La riqueza esperada es la suma de las probabilidades de sí verlo:</p>
+    <div class="formula">E[S<sub>n</sub>] = Σ (1 − π<sub>i</sub>)  ·  Var = Σ π<sub>i</sub>(1 − π<sub>i</sub>) + 2 Σ<sub>i&lt;j</sub> (π<sub>ij</sub> − π<sub>i</sub>π<sub>j</sub>)</div>
+    <p>La varianza es la de Heck, van Belle y Simberloff (1975); π<sub>ij</sub> = C(N − N<sub>i</sub> − N<sub>j</sub>, n) / C(N, n) es la probabilidad de no ver ninguno de los dos. La app calcula las combinaciones con el logaritmo de la función gamma, para que no se desborden con colecciones grandes. Con <i>n</i> = <i>N</i> la rarefacción da <i>S</i> con varianza cero.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · Oaxaca rarificada a 2 accesiones</div>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">C(7, 2) = 21  ·  π<sub>maíz</sub> = C(2, 2)/21 = 1/21  ·  π<sub>frijol</sub> = π<sub>chile</sub> = C(6, 2)/21 = 15/21</td></tr>
+      <tr><td colspan="2">E[S<sub>2</sub>] = (1 − 1/21) + 2 × (1 − 15/21) = 0.9524 + 0.5714 = 1.5238  →  1.52, como en la tabla</td></tr>
+      <tr><td colspan="2">Var = 0.4535 − 0.2041 = 0.2494  ·  desviación estándar = 0.50</td></tr>
+    </tbody></table>
+    <p>Se comprueba a mano: con dos sobres sólo hay 1 tipo si los dos son de maíz, C(5, 2)/21 = 10/21; en los otros 11 casos de 21 hay 2 tipos. P(S = 2) = 0.5238, y la varianza de una variable así es 0.5238 × 0.4762 = 0.2494.</p>
+  </div>
+  <p>El selector <span class="ui">Rarificar</span> elige <i>n</i>. Las unidades con menos de <i>n</i> accesiones quedan con «—», porque, como dice la nota bajo la tabla, <span class="ui">rarificar hacia arriba sería inventar</span>. Las opciones relativas nunca bajan de 2.</p>
+  <table class="compacta">
+    <caption><b>Tabla 5.4.</b> El esfuerzo común con la colección de ejemplo (10 entidades, de 1 a 7 accesiones).</caption>
+    <thead><tr><th style="width:2in">Opción</th><th class="c" style="width:0.4in">n</th><th>Qué queda</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">al primer cuartil (recomendado)</span></td><td class="c">2</td><td>Nueve entidades; sólo Sonora, con una accesión, queda vacía. Es un valor al que llegan tres de cada cuatro unidades.</td></tr>
+      <tr><td><span class="ui">a la mediana</span></td><td class="c">3</td><td>Cinco: Chiapas y Michoacán 3.00, Puebla 2.60, Veracruz 2.45, Oaxaca 1.86.</td></tr>
+      <tr><td><span class="ui">a la unidad más pequeña</span></td><td class="c">2</td><td>Igual que el cuartil: la más pequeña tiene 1, y la app no baja de 2.</td></tr>
+      <tr><td><span class="ui">a 5 accesiones</span></td><td class="c">5</td><td>Tres: Puebla 3.86, Veracruz 3.50, Oaxaca 2.43 (figura 5.3).</td></tr>
+      <tr><td><span class="ui">a 10</span> o <span class="ui">a 20 accesiones</span></td><td class="c">10, 20</td><td>Ninguna: la columna queda entera en «—».</td></tr>
+    </tbody>
+  </table>
+  <figure>
+    <div class="marco"><img src="../img/b5-rarefaccion.png" alt="La tabla de índices con el encabezado Rarificada a 5: sólo Oaxaca 2.43, Puebla 3.86 y Veracruz 3.50 tienen valor; las demás entidades muestran una raya"></div>
+    <figcaption><b>Figura 5.3.</b> La tabla con <span class="ui">Rarificar</span> en <span class="ui">a 5 accesiones</span>: sólo las tres entidades con 5 o más accesiones se pueden comparar a ese esfuerzo.</figcaption>
+  </figure>
+  <p>El compromiso es claro: un <i>n</i> pequeño deja comparar casi todas las unidades, pero distingue poco (con <i>n</i> = 2 el máximo posible es 2); uno grande compara mejor, pero a menos unidades. Mira dos o tres esfuerzos y fíjate en si el orden de las unidades se mantiene. En el ejemplo se mantiene: a 2, a 3 y a 5 accesiones, Oaxaca queda siempre por debajo de Puebla y de Veracruz, aunque tenga tantas o más accesiones. Esa es la conclusión robusta.</p>
+
+  <!-- 5.4 -->
+  <h2 id="b5-4"><span class="num">5.4</span>¿Cuánto falta? Acumulación, estimadores y cobertura</h2>
+  <p>La sección <span class="ui">1 · ¿Cuánto hay y cuánto falta?</span> mira la colección entera. A la izquierda, la <b>curva de acumulación</b>: la rarefacción de toda la colección para <i>n</i> = 1, 2…, 45, con una banda de ±1.96 desviaciones estándar (la varianza de Heck del apartado anterior), y cuatro líneas punteadas con los estimadores de la riqueza total. A la derecha, <span class="ui">Riqueza contra esfuerzo, unidad por unidad</span>: cada unidad como un punto (accesiones contra tipos), con su recta de mínimos cuadrados y el coeficiente de Pearson.</p>
+  <figure>
+    <div class="marco"><img src="../img/b5-acumulacion.png" alt="El aviso Cuidado con Chao1 en esta colección y la sección 1: la curva de acumulación sube casi en línea recta hasta 24 tipos con 45 accesiones, con las líneas punteadas Chao1 224, Chao2 119, Jackknife 2 43 y Jackknife 1 32; a la derecha, la dispersión de riqueza contra accesiones por entidad con la recta y r = 0.83"></div>
+    <figcaption><b>Figura 5.4.</b> El aviso sobre Chao1 y la sección 1 con la colección de ejemplo. La curva no muestra ningún aplanamiento: cada accesión nueva sigue trayendo, en promedio, media especie nueva.</figcaption>
+  </figure>
+  <p><b>Cómo se lee la curva.</b> Si se aplana al final, colectar más de lo mismo ya casi no trae tipos nuevos; si termina subiendo, como aquí, la colección está lejos de saturarse. La de ejemplo pasa de 23.11 tipos esperados con 43 accesiones a 24 con 45. La dispersión de la derecha responde otra pregunta: con r = 0.83, la riqueza de cada entidad la explica sobre todo cuántas accesiones tiene, y por eso la tabla trae la columna rarificada.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · los estimadores de la riqueza total</div>
+    <p>Todos usan los tipos raros, porque son la huella de lo que todavía no has visto. Con <b>abundancias</b> (accesiones por tipo, en toda la colección), f<sub>1</sub> es el número de tipos con una sola accesión (<i>singletons</i>) y f<sub>2</sub> los que tienen dos (<i>doubletons</i>). Con <b>presencias</b> (en cuántas unidades está cada tipo, de <i>m</i> unidades), Q<sub>1</sub> y Q<sub>2</sub> son los tipos presentes en una y en dos unidades.</p>
+    <div class="formula">Chao1 = S + f<sub>1</sub>² / (2 f<sub>2</sub>)    (si f<sub>2</sub> = 0: S + f<sub>1</sub>(f<sub>1</sub> − 1)/2)<br>Chao2 = S + ((m − 1)/m) · Q<sub>1</sub>² / (2 Q<sub>2</sub>)<br>Jackknife 1 = S + Q<sub>1</sub>(m − 1)/m  ·  Jackknife 2 = S + Q<sub>1</sub>(2m − 3)/m − Q<sub>2</sub>(m − 2)² / (m(m − 1))<br>Cobertura de Good-Turing = 1 − f<sub>1</sub> / N</div>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · los estimadores de la colección de ejemplo</div>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">Abundancias: N = 45, S = 24, f<sub>1</sub> = 20 (20 especies con una accesión), f<sub>2</sub> = 1 (<i>Phaseolus vulgaris</i>)</td></tr>
+      <tr><td style="width:50%">Chao1 = 24 + 20² / (2 × 1) = 224</td><td>cobertura = 1 − 20/45 = 0.556 = 55.6 %</td></tr>
+      <tr><td colspan="2">Presencias en las m = 10 entidades: S = 18, Q<sub>1</sub> = 15, Q<sub>2</sub> = 1 (<i>P. vulgaris</i>, en Oaxaca y Michoacán)</td></tr>
+      <tr><td>Chao2 = 18 + 0.9 × 225/2 = 119.25</td><td>Jackknife 1 = 18 + 15 × 0.9 = 31.5</td></tr>
+      <tr><td colspan="2">Jackknife 2 = 18 + 15 × 17/10 − 1 × 64/90 = 18 + 25.5 − 0.71 = 42.79</td></tr>
+    </tbody></table>
+    <p>En la curva, las etiquetas van redondeadas: Chao1 224, Chao2 119, Jackknife 2 43, Jackknife 1 32. La <b>cobertura</b> es la probabilidad de que la próxima accesión que colectes sea de un tipo que ya tienes: aquí, 56 %; con 44 % de probabilidad, la siguiente sería una especie nueva.</p>
+  </div>
+  <p>Con un solo dobletón, la fracción de Chao1 se dispara. Cuando hay <b>menos de tres dobletones</b>, la app pone arriba de la sección el aviso <span class="ui">Cuidado con Chao1 en esta colección.</span>, pero el recuadro del resumen sigue mostrando 224.0: no lo cites sin el aviso. El jackknife 1 es el más estable; Chao2, con un solo tipo en dos unidades, se dispara como Chao1.</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Dos colecciones distintas detrás de los estimadores</div>
+    <p>Chao1, la curva y la cobertura usan las 45 accesiones mapeadas. Chao2 y los jackknife usan las unidades, y con la unidad en entidades eso deja fuera las nueve accesiones de fuera de México: por eso su <i>S</i> es 18 y no 24. Si comparas los estimadores con la curva, ten presente esa diferencia, y cambia la unidad a <span class="ui">País</span> o a <span class="ui">Celda de rejilla</span> si quieres que los de presencias cubran toda la colección (apartado 5.9).</p>
+  </div>
+
+  <!-- 5.5 -->
+  <h2 id="b5-5"><span class="num">5.5</span>Los tipos exclusivos y el mapa del índice</h2>
+  <p>Un tipo es <b>exclusivo</b> de una unidad cuando no aparece en ninguna otra. La columna <span class="ui">Exclusivos</span> los cuenta, y su suma es la Q<sub>1</sub> del apartado anterior. En la colección de ejemplo hay 15, repartidos así: Puebla 4 (<i>Cucurbita pepo</i>, <i>Amaranthus hypochondriacus</i>, <i>Physalis philadelphica</i>, <i>Cucurbita argyrosperma</i>), Veracruz 4 (<i>Cucurbita moschata</i>, <i>Vanilla planifolia</i>, <i>Coffea arabica</i>, <i>Sechium edule</i>), Chiapas 3 (<i>Phaseolus coccineus</i>, <i>Theobroma cacao</i>, <i>Quercus crassifolia</i>), y uno en Michoacán (aguacate), México (trigo), Jalisco (agave) y Sonora (frijol tépari). Oaxaca, con 7 accesiones, no tiene ninguno.</p>
+  <p>Para el banco, un exclusivo es un riesgo y una prioridad a la vez: si se pierden las accesiones de esa unidad, el tipo desaparece de la colección. Son buenos candidatos para el duplicado de seguridad y para volver a colectar en la misma región; el Bloque 6 (capítulo 6) revisa además los tipos con una sola accesión, que no son lo mismo: un tipo puede ser exclusivo de una unidad con varias accesiones.</p>
+  <p>Debajo de la tabla, con la unidad en entidades, países o celdas, va el <span class="ui">Mapa del índice</span>: un mapa coroplético que colorea cada unidad según el índice que elijas en su selector —<span class="ui">Accesiones</span>, <span class="ui">Riqueza observada (S)</span> (de fábrica), <span class="ui">Riqueza rarificada</span>, <span class="ui">Shannon (H′)</span>, <span class="ui">Gini-Simpson (1 − D)</span>, <span class="ui">Equitatividad (J′)</span>, <span class="ui">Tipos efectivos (Hill q=1)</span> o <span class="ui">Exclusivos</span>—, con una frase al lado que explica lo que mide. Las unidades sin dato van en blanco; la rampa va de <span class="ui">menos</span> a <span class="ui">más</span>, del valor mínimo al máximo de las unidades, sin cifras. El mapa usa los contornos y la proyección del Bloque 4, que se explican en el capítulo 4. Con la unidad en franjas de altitud no hay mapa.</p>
+  <div class="dos-figs">
+  <figure>
+    <div class="marco"><img src="../img/b5-mapa.png" alt="El mapa del índice con Exclusivos: Puebla y Veracruz en morado, Chiapas en café rojizo, Sonora, Jalisco, Michoacán y México en ocre, Oaxaca, Chihuahua y Yucatán en el tono más claro y las entidades sin accesiones en blanco"></div>
+    <figcaption><b>Figura 5.5.</b> El mapa del índice con <span class="ui">Exclusivos</span>. Las tres entidades más claras tienen accesiones, pero ningún tipo propio; las blancas no tienen accesiones.</figcaption>
+  </figure>
+  <figure>
+    <div class="marco"><img src="../img/b5-rejilla.png" alt="El mapa del índice con la unidad en celdas de 1 grado y la riqueza observada: celdas en el centro y sur de México, Chihuahua y Yucatán, la más oscura al oriente del Valle de México"></div>
+    <figcaption><b>Figura 5.6.</b> Con <span class="ui">Unidad geográfica</span> en <span class="ui">Celda de rejilla</span> de 1°, el mapa pinta las celdas sobre las entidades. La más rica, con 5 especies en 6 accesiones, es la de 19.50, −98.50.</figcaption>
+  </figure>
+  </div>
+  <p>Con celdas, la etiqueta de cada unidad es la coordenada de su centro. La rejilla de 1° reparte las 45 accesiones en 21 celdas, de las que nueve tienen una sola accesión. Es la unidad más honesta cuando las entidades son muy distintas de tamaño, pero, cuanto más fina, más celdas con una o dos accesiones y menos se puede rarificar.</p>
+
+  <!-- 5.6 -->
+  <h2 id="b5-6"><span class="num">5.6</span>¿Se parecen las regiones? Semejanza y agrupamiento</h2>
+  <p>La sección <span class="ui">3 · ¿Se parecen las regiones?</span> compara la <b>composición</b> de las unidades: no cuánto tienen, sino si tienen lo mismo. Sólo entran las unidades con al menos dos accesiones, y hacen falta al menos tres; en el ejemplo entran 9 entidades (Sonora queda fuera).</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · Jaccard, Sørensen y Bray-Curtis</div>
+    <p>Para dos unidades A y B, con <i>a</i> y <i>b</i> tipos y <i>c</i> tipos en común, y con <i>x<sub>k</sub></i>, <i>y<sub>k</sub></i> las accesiones del tipo <i>k</i> en cada una, las disimilitudes son:</p>
+    <div class="formula">Jaccard = 1 − c / (a + b − c)  ·  Sørensen = 1 − 2c / (a + b)  ·  Bray-Curtis = Σ |x<sub>k</sub> − y<sub>k</sub>| / Σ (x<sub>k</sub> + y<sub>k</sub>)</div>
+    <p>Las tres van de 0 (composición idéntica) a 1 (nada en común). Jaccard y Sørensen sólo miran presencias; Sørensen da doble peso a lo compartido y siempre es igual o menor que Jaccard. Bray-Curtis toma en cuenta cuántas accesiones hay de cada tipo, así que dos unidades con las mismas especies, pero una cargada de maíz, salen distintas.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · Oaxaca y Yucatán</div>
+    <p>Oaxaca: maíz 5, frijol 1, chile 1. Yucatán: maíz 1, chile 1. Comparten <i>c</i> = 2 de <i>a</i> = 3 y <i>b</i> = 2 tipos.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td style="width:50%">Jaccard = 1 − 2/3 = 0.333</td><td>Sørensen = 1 − 4/5 = 0.200</td></tr>
+      <tr><td colspan="2">Bray-Curtis = (|5 − 1| + |1 − 0| + |1 − 1|) / (7 + 2) = 5/9 = 0.556</td></tr>
+    </tbody></table>
+    <p>Con Jaccard es el par más parecido de las nueve entidades, y por eso es el primero que une el árbol.</p>
+  </div>
+  <p>Con la matriz de disimilitudes, la app agrupa las unidades por <b>UPGMA</b> (promedios no ponderados): une el par más cercano, sustituye a los dos por un grupo cuya distancia a cada unidad es el promedio, ponderado por tamaño, de las de sus miembros, y repite hasta que queda un solo grupo. Cada unión se dibuja a una altura igual a la mitad de su distancia; Oaxaca y Yucatán se unen a 0.167 (la mitad de 0.333).</p>
+  <figure>
+    <div class="marco"><img src="../img/b5-composicion.png" alt="La sección 3: a la izquierda, el mapa de calor de nueve entidades con el dendrograma arriba, en el orden Veracruz, Jalisco, Puebla, Chiapas, Chihuahua, México, Michoacán, Oaxaca y Yucatán, con Veracruz sin color fuera de la diagonal; a la derecha, la dispersión de distancia geográfica contra disimilitud con una recta que baja, r = -0.42, y la nota Mantel: r = -0.422, p = 0.123 con 999 permutaciones y 9 unidades. No hay evidencia de estructura geográfica en esta escala"></div>
+    <figcaption><b>Figura 5.7.</b> La sección 3 con Jaccard. Filas y columnas del mapa de calor van en el orden de las hojas del dendrograma, así que los grupos aparecen como bloques de color junto a la diagonal.</figcaption>
+  </figure>
+  <p><b>Cómo se lee.</b> En el mapa de calor cada celda es la semejanza (1 − disimilitud) entre dos unidades: cuanto más oscura, más comparten; la diagonal es cada unidad consigo misma. Pasa el puntero sobre una celda para ver el par y su porcentaje. En el ejemplo, Veracruz se separa de todas a la altura máxima, 0.5: sus cuatro especies son exclusivas, y no comparte ninguna con nadie. No es una rareza del territorio, sino un efecto de los datos: su maíz es el que perdió el signo de la longitud. Con las correcciones del Bloque 3 aplicadas, Veracruz recupera el maíz (queda con 7 accesiones y 5 especies) y deja de estar aislada. Chihuahua y México (0.25) y el grupo Michoacán–Oaxaca–Yucatán son los bloques de maíz con un acompañante.</p>
+  <p>Cambiar la distancia cambia el árbol: con Sørensen el orden es casi el mismo; con Bray-Curtis, que pesa la abundancia, Oaxaca y Yucatán pasan de 0.333 a 0.556, porque los cinco maíces de Oaxaca pesan, y los pares más cercanos son ahora los de entidades con dos accesiones parecidas (Chihuahua, México y Yucatán entre sí, a 0.500).</p>
+
+  <!-- 5.7 -->
+  <h2 id="b5-7"><span class="num">5.7</span>La prueba de Mantel y el recambio entre unidades</h2>
+  <p>¿Las unidades cercanas guardan lo mismo, y las lejanas cosas distintas? La <b>prueba de Mantel</b> lo pregunta comparando dos matrices: la de distancias en kilómetros entre las unidades (haversine, apartado 3.5) y la de disimilitud de composición. Es la gráfica de la derecha de la figura 5.7: un punto por cada par de unidades —36 con nueve entidades— y la recta de mínimos cuadrados como ayuda visual.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · la prueba de Mantel</div>
+    <p>El estadístico es la correlación de Pearson <i>r</i> entre los elementos de las dos matrices, debajo de la diagonal. Como esos elementos no son independientes (cada unidad entra en muchos pares), su significancia no se toma de una tabla: se permutan al azar las filas y columnas de una de las matrices, 999 veces, se recalcula <i>r</i> cada vez y</p>
+    <div class="formula">p = (número de permutaciones con |r<sub>perm</sub>| ≥ |r| + 1) / (999 + 1)</div>
+    <p>La prueba es de dos colas. Las permutaciones usan una semilla fija, así que el mismo análisis da siempre el mismo <i>p</i>. Un <i>r</i> positivo y significativo dice que «lo cercano se parece».</p>
+  </div>
+  <p>Con la colección de ejemplo, la nota bajo la gráfica dice <i>Mantel: r = -0.422, p = 0.123 con 999 permutaciones y 9 unidades. No hay evidencia de estructura geográfica en esta escala.</i> El signo negativo —las entidades lejanas se parecerían un poco más— no significa nada con <i>p</i> = 0.123 y nueve unidades; lo que sí dice es que la composición no la ordena la geografía, sino lo que se colectó en cada salida. Con <i>p</i> &lt; 0.05 la frase cambia a <i>Hay estructura geográfica: lo cercano se parece.</i></p>
+  <p>Hacen falta al menos cuatro unidades con dos accesiones o más. La posición de cada entidad o país es el centro del rectángulo que lo envuelve, y la de cada celda, su centro: con entidades grandes, la distancia entre centros es una aproximación gruesa. Con la unidad en franjas de altitud, la app usa la coordenada de la primera accesión de cada franja, que no representa a la franja: no tomes en cuenta la prueba de Mantel con esa unidad.</p>
+  <h3>El recambio entre unidades</h3>
+  <p>El recuadro <span class="ui">Recambio entre unidades (β)</span> trae la <b>beta de Whittaker</b>, la medida más sencilla de cuánto cambia la composición de una unidad a otra:</p>
+  <div class="formula">β = γ / ᾱ − 1    (γ: tipos de toda la colección; ᾱ: riqueza media por unidad)</div>
+  <p>Con el ejemplo, ᾱ = (3 + 5 + 4 + 4 + 3 + 1 + 2 + 2 + 2 + 1)/10 = 2.7 y β = 24/2.7 − 1 = <b>7.89</b>. β = 0 sería que cada unidad tiene todos los tipos; un β grande, que cada unidad guarda una parte pequeña y distinta de la colección, como aquí. Para el banco, un β alto significa que ninguna región sustituye a otra: perder o dejar de colectar una entidad deja huecos que las demás no cubren. Igual que en los estimadores de presencias, γ son los 24 tipos de toda la colección mapeada, pero ᾱ sólo promedia las unidades; con la unidad en entidades, los tipos de fuera de México inflan β.</p>
+
+  <!-- 5.8 -->
+  <h2 id="b5-8"><span class="num">5.8</span>El gradiente altitudinal</h2>
+  <p>La sección <span class="ui">4 · El gradiente altitudinal</span> reparte por franjas de altitud las accesiones mapeadas que tienen <code>ELEVATION</code>, cualquiera que sea la unidad elegida (con la unidad en franjas no aparece, porque la tabla ya es eso). Por cada franja dibuja dos barras: arriba las accesiones, abajo los tipos distintos, con las dos cifras al lado; la más alta va arriba. El ancho de las franjas es el del selector <span class="ui">Franja altitudinal</span>.</p>
+  <figure>
+    <div class="marco"><img src="../img/b5-gradiente.png" alt="La sección 4 con franjas de 500 m: 0-500 m 5 accesiones y 4 especies; 500-1,000 m 3 y 3; 1,000-1,500 m 7 y 5; 1,500-2,000 m 11 y 6; 2,000-2,500 m 15 y 9; 2,500-3,000 m 2 y 2; 3,500-4,000 m 1 y 1; 25,000-25,500 m 1 y 1; abajo, los botones Tabla en CSV, Curva en SVG y Mapa de calor en SVG"></div>
+    <figcaption><b>Figura 5.8.</b> El gradiente con franjas de 500 m y, debajo, los tres botones de exportación del bloque. La franja de 25 000 m es el error sembrado.</figcaption>
+  </figure>
+  <p>En el ejemplo, más de la mitad de la colección está entre 1 500 y 2 500 m (26 de 45 accesiones, con 6 y 9 especies), la altitud de los valles centrales donde se concentran los maíces. En la franja de 2 000 a 2 500 m, 15 accesiones dan sólo 9 especies; en la de 0 a 500 m, 5 dan 4. Las tierras bajas están poco colectadas, pero lo poco que hay es variado: es donde más rendiría una salida.</p>
+  <p>Ojo con dos cosas. La gráfica sólo dibuja las franjas que tienen accesiones: de 3 000 a 3 500 m no hay ninguna y la franja no aparece, en vez de verse vacía. Mira las etiquetas, no sólo las barras, para encontrar los huecos del gradiente. Y una altitud imposible, como los 25 000 m del tépari, aparece como franja propia: corrígela en el Bloque 2 (capítulo 2).</p>
+
+  <!-- 5.9 -->
+  <h2 id="b5-9"><span class="num">5.9</span>Exportar, y cómo cambia todo con la unidad</h2>
+  <p>Al final del panel van tres botones (figura 5.8):</p>
+  <ul>
+    <li><span class="ui">Tabla en CSV</span> guarda <span class="ruta">diversidad-geografica.csv</span>, en UTF-8, con una fila por unidad y las columnas <code>unidad</code>, <code>clave</code> (el código de la entidad, del país, de la celda o el límite inferior de la franja), <code>accesiones</code>, <code>riqueza</code>, <code>rarificada</code>, <code>shannon</code>, <code>gini_simpson</code>, <code>pielou</code>, <code>hill_q1</code>, <code>exclusivos</code>, <code>altitud_media</code>, <code>lat</code> y <code>lon</code> (la posición que usa la prueba de Mantel). Los índices van con tres decimales, sin redondear a dos como en pantalla.</li>
+    <li><span class="ui">Curva en SVG</span> guarda <span class="ruta">curva-acumulacion.svg</span>, la curva con sus estimadores.</li>
+    <li><span class="ui">Mapa de calor en SVG</span> guarda <span class="ruta">similitud-composicion.svg</span>, el mapa de calor con su dendrograma.</li>
+  </ul>
+  <p>Los SVG llevan los colores del tema claro, para que se vean igual en un documento. Como en los demás bloques, las figuras se pueden abrir también en el estudio de figuras (apartado I.6). El CSV no guarda la configuración: anota qué unidad, tipo y esfuerzo usaste.</p>
+  <h3>La misma colección, otras unidades</h3>
+  <p>Todos los resultados dependen de la unidad y del tipo. Con la colección de ejemplo:</p>
+  <table class="compacta">
+    <caption><b>Tabla 5.5.</b> Lo que cambia con la unidad y el tipo (colección de ejemplo sin corregir; los demás selectores, de fábrica).</caption>
+    <thead><tr><th style="width:1.55in">Unidad · tipo</th><th class="c" style="width:0.55in">Unidades</th><th class="c" style="width:0.5in">γ</th><th class="c" style="width:0.5in">β</th><th>Mantel y lo que conviene notar</th></tr></thead>
+    <tbody>
+      <tr><td>Entidad · especie</td><td class="c">10</td><td class="c">24</td><td class="c">7.89</td><td>r = −0.422, p = 0.123, 9 unidades. Las cifras de este capítulo.</td></tr>
+      <tr><td>País · especie</td><td class="c">8</td><td class="c">24</td><td class="c">6.39</td><td>México concentra 36 accesiones; sólo tres países tienen dos o más, así que hay mapa de calor pero no Mantel. Birmania aparece por la longitud sin signo.</td></tr>
+      <tr><td>Celda de 1° · especie</td><td class="c">21</td><td class="c">24</td><td class="c">12.62</td><td>r = −0.408, p = 0.055, 12 celdas. Chao2 = 234, jackknife 1 = 44.0: con toda la colección dentro, los de presencias suben.</td></tr>
+      <tr><td>Celda de 0.5° · especie</td><td class="c">26</td><td class="c">24</td><td class="c">15.00</td><td>r = −0.399, p = 0.077, 12 celdas; 14 de las 26 celdas tienen una sola accesión.</td></tr>
+      <tr><td>Franja de 500 m · especie</td><td class="c">8</td><td class="c">24</td><td class="c">5.19</td><td>No hay mapa del índice; no uses la prueba de Mantel (apartado 5.7).</td></tr>
+      <tr><td>Entidad · género</td><td class="c">10</td><td class="c">18</td><td class="c">5.92</td><td>Chao1 baja a 48.25: hay más géneros con dos o más accesiones.</td></tr>
+      <tr><td>Entidad · cultivo</td><td class="c">10</td><td class="c">23</td><td class="c">7.52</td><td>Oaxaca sube a 4 tipos: el cultivo separa lo que la especie junta.</td></tr>
+      <tr><td>Entidad · nombre de la accesión</td><td class="c">10</td><td class="c">44</td><td class="c">11.57</td><td>Casi cada accesión es un tipo: ninguna entidad comparte nombres y la prueba de Mantel no se puede calcular.</td></tr>
+    </tbody>
+  </table>
+  <p>La especie es el tipo natural para la diversidad interespecífica de un banco de muchos cultivos. En un banco de un solo cultivo, el nombre de la accesión (la variedad local o la raza) es lo que interesa, siempre que esté escrito de manera uniforme (apartado 3.3). La entidad sirve para informar a quien administra el territorio; la celda, para comparar con justicia y para planear salidas, y la franja, para ver qué ambientes faltan.</p>
+
+  <h3>Cuando algo no sale</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:40%">Lo que ves</th><th>Por qué pasa y qué hacer</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Primero carga tus accesiones en el Bloque 2.</span></td><td>No hay pasaporte. Carga tu colección o la de ejemplo (capítulo 2).</td></tr>
+      <tr><td><span class="ui">Accesiones mapeadas</span> es menor que el total</td><td>Las accesiones sin coordenadas no entran al bloque. Complétalas en el Bloque 2.</td></tr>
+      <tr><td>Una accesión de tu colección no está en ninguna entidad</td><td>Su punto cae fuera de México (en otro país, en el mar o, por un signo perdido, en otro continente). Revísala en el Bloque 3 y en el mapa del Bloque 4.</td></tr>
+      <tr><td>La columna rarificada está llena de «—»</td><td>El esfuerzo es mayor que las accesiones de casi todas las unidades. Elige <span class="ui">al primer cuartil (recomendado)</span> o una unidad más grande.</td></tr>
+      <tr><td>Aparece <span class="ui">Cuidado con Chao1 en esta colección.</span></td><td>Hay menos de tres tipos con dos accesiones. Lee el jackknife 1 y la curva, no Chao1.</td></tr>
+      <tr><td><span class="ui">hacen falta al menos tres unidades con dos accesiones cada una</span></td><td>No hay con qué comparar composición. Usa una unidad más grande (celdas de 2°, franjas de 1000 m).</td></tr>
+      <tr><td><span class="ui">Hacen falta al menos cuatro unidades con coordenadas para la prueba de Mantel.</span></td><td>Hay menos de cuatro unidades con dos o más accesiones. La app escribe la misma frase cuando sí hay unidades, pero la correlación no se puede calcular porque ningún par comparte nada (todas las disimilitudes valen 1), como con el nombre de la accesión: cambia el tipo.</td></tr>
+      <tr><td>Una franja de altitud imposible, o una altitud media enorme</td><td>Una altitud mal capturada. Corrígela en la ficha del Bloque 2.</td></tr>
+      <tr><td>No se ve el <span class="ui">Mapa del índice</span></td><td>La unidad es la franja altitudinal, que no tiene geografía.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja regla">
+    <div class="caja-t"><span class="ico">✓</span>Regla de decisión · qué hacer en el Bloque 5</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:44%"><b>Si</b> vas a medir la diversidad</td><td><b>entonces</b> corrige antes coordenadas, altitudes y duplicados (Bloques 2 y 3): cada error cambia unidades, árbol y estimadores.</td></tr>
+      <tr><td><b>Si</b> quieres saber qué unidad está mejor representada</td><td><b>entonces</b> compara la columna rarificada, a dos o tres esfuerzos, y no la riqueza cruda; quédate con el orden que se mantiene.</td></tr>
+      <tr><td><b>Si</b> una unidad tiene S igual a N, o J′ = 1 con pocas accesiones</td><td><b>entonces</b> ahí falta muestreo: cada colecta trajo algo nuevo. Es candidata a la próxima salida (Bloque 6).</td></tr>
+      <tr><td><b>Si</b> una unidad tiene muchas accesiones y q1 bajo</td><td><b>entonces</b> está saturada de un tipo: colecta ahí otras especies, no más de lo mismo.</td></tr>
+      <tr><td><b>Si</b> la curva de acumulación no se aplana o la cobertura es baja</td><td><b>entonces</b> la colección está lejos de saturarse; informa el jackknife 1 como piso de lo que falta, y Chao1 sólo si no aparece el aviso.</td></tr>
+      <tr><td><b>Si</b> una unidad tiene tipos exclusivos</td><td><b>entonces</b> asegura su duplicado de seguridad y considera volver a colectar ahí.</td></tr>
+      <tr><td><b>Si</b> la prueba de Mantel da p &lt; 0.05 con r positivo</td><td><b>entonces</b> la diversidad tiene estructura geográfica: reparte las colectas en el territorio en vez de concentrarlas.</td></tr>
+      <tr><td><b>Si</b> en el gradiente falta una franja</td><td><b>entonces</b> esa altitud no está representada: anótala como vacío para el Bloque 6.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">El Bloque 5 no cambia el pasaporte: sólo lo mide. Lo que aquí resulta pobre o ausente es lo que el Bloque 6 convierte en celdas prioritarias y en una ruta de colecta.</p>
+  </div>
+
+</section>
+
+</body>
+</html>

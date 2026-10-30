@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · Manual de usuario · Capítulo 4</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- reparte el contenido en hojas tamaño carta, con encabezados, números de página e índice -->
+<script src="../paginar.js"></script>
+<style>
+  .formula { font-family: var(--mono); font-size: 9pt; background: var(--marino-suave); border-radius: 5px; padding: 0.07in 0.12in; margin: 0.08in 0; }
+  .cuenta td { font-family: var(--mono); font-size: 8.6pt; }
+  .csv td { font-family: var(--mono); font-size: 7.6pt; }
+  figure.reducida { width: 74%; margin-left: auto; margin-right: auto; }
+  figure.mediana { width: 86%; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<section class="capitulo" id="cap-b4" data-pestana="4" data-orden="4" style="--acento: var(--b4)">
+  <div class="cap-apertura">
+    <div class="cap-num">4</div>
+    <div class="cap-etiqueta">Capítulo cuatro · Bloque 4 · Mapa de colecta</div>
+    <h1 data-corto="Mapa de colecta">El mapa de colecta</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">El Bloque 4 pone cada accesión en el sitio donde se colectó. El mapa se dibuja dentro de la app, con contornos que viajan con ella, así que funciona sin internet y ninguna coordenada sale de tu computadora. Sirve para ver la colección de un vistazo —qué hay, de qué ruta, de qué altitud—, para descubrir el punto que cayó donde no debía y para contar cuántas accesiones caen en cada entidad, cada país o cada celda de una rejilla, que es la puerta de entrada a los Bloques 5 y 6.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>4.1</b>Un mapa que no necesita internet</li>
+      <li><b>4.2</b>De la esfera a la pantalla: la proyección</li>
+      <li><b>4.3</b>¿En qué entidad y en qué país cae cada punto?</li>
+      <li><b>4.4</b>El encuadre: tus datos, México, el mundo o una entidad</li>
+      <li><b>4.5</b>El color, el tamaño y los filtros de los puntos</li>
+      <li><b>4.6</b>La coropleta y la rejilla</li>
+      <li><b>4.7</b>Las cuentas por entidad y por país</li>
+      <li><b>4.8</b>Llevarte el mapa y los puntos</li>
+    </ul>
+  </div>
+
+  <!-- 4.1 -->
+  <h2 id="b4-1"><span class="num">4.1</span>Un mapa que no necesita internet</h2>
+  <p class="lead">El Bloque 4 toma las accesiones que cargaste en el Bloque 2 (capítulo 2), con lo que hayas corregido en el Bloque 3 (capítulo 3), y dibuja un punto por cada una que tenga latitud y longitud decimales. Al entrar no hay que pulsar nada: el mapa, su leyenda, los recuadros y las tablas se rehacen solos cada vez que abres el bloque. Si todavía no hay pasaporte, en lugar del mapa aparece <span class="ui">Primero carga tus accesiones en el Bloque 2.</span></p>
+  <figure style="width:72%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/b4-mexico.png" alt="La sección 1 del Bloque 4: los controles Encuadre en México completo, Color de los puntos en Ruta de conservación, Coropleta, Rejilla, Tamaño, Cultivo, Ruta, el botón claves de entidad y el campo Título del mapa; debajo, el mapa de México con sus 32 entidades rotuladas con su clave, los puntos coloreados por ruta, la flecha del norte y una barra de escala de 500 km; la leyenda con Banco de semillas (27), Banco de campo o colección viva (8), Cultivo in vitro (3), Conservación en la parcela (3), Reserva genética (2), Criopreservación (1) y sin declarar (1); y los botones Exportar SVG, Exportar PNG (2×) y Puntos en CSV"></div>
+    <figcaption><b>Figura 4.1.</b> La sección <span class="ui">1 · Las accesiones en el mapa</span> con la colección de ejemplo y el encuadre en <span class="ui">México completo</span>. Cada punto es una accesión, coloreada por su ruta de conservación.</figcaption>
+  </figure>
+  <p>El bloque tiene dos secciones. La primera, <span class="ui">1 · Las accesiones en el mapa</span>, reúne en una tarjeta los controles, el mapa, la leyenda y los botones de exportación (figura 4.1). La segunda, <span class="ui">2 · Cuántas caen en cada entidad y en cada país</span>, da cinco recuadros y dos tablas (apartado 4.7). Al final, un recuadro recuerda de dónde salen los contornos.</p>
+  <h3>De dónde salen los contornos</h3>
+  <p>Los contornos vienen de <b>Natural Earth</b>, un conjunto de mapas de <b>dominio público</b>, y están guardados dentro de la app, en dos archivos de la carpeta <span class="ruta">data/</span>:</p>
+  <table class="compacta">
+    <thead><tr><th style="width:1.45in">Archivo</th><th style="width:1.9in">Conjunto de Natural Earth</th><th>Qué trae</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ruta">mexico-states.js</span></td><td>admin-1 (estados y provincias) a escala 1:10 millones</td><td>Las <b>32 entidades federativas</b> de México, simplificadas con el algoritmo de Douglas-Peucker a una tolerancia de 0.004° (unos 400 m) y con las coordenadas redondeadas a cuatro decimales. Cada entidad lleva su nombre y su clave de tres letras (<i>OAX</i>, <i>PUE</i>, <i>CMX</i>…).</td></tr>
+      <tr><td><span class="ruta">world.js</span></td><td>admin-0 (países) a escala 1:110 millones</td><td>Los contornos de <b>174 países</b>, simplificados a dos decimales y sin la Antártida.</td></tr>
+    </tbody>
+  </table>
+  <p>La diferencia de escala es deliberada. México se dibuja con el detalle que pide un mapa estatal; el resto del mundo, con el trazo grueso que basta para situar una colecta en su país. Ni uno ni otro sirven para decidir si un punto cae de un lado o del otro de un límite municipal, o a cien metros de la costa.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Por qué importa que el mapa no salga de tu computadora</div>
+    <p>Un visor en línea pide a un servidor los mosaicos de la zona que miras; aquí no hay petición alguna. Eso permite trabajar en campo, sin señal, y no es un detalle menor cuando las coordenadas son de poblaciones de parientes silvestres, de especies sujetas a saqueo o de las parcelas de familias custodias (apartado I.3), datos que muchas colecciones no publican con todos sus decimales.</p>
+  </div>
+
+  <!-- 4.2 -->
+  <h2 id="b4-2"><span class="num">4.2</span>De la esfera a la pantalla: la proyección</h2>
+  <p>Una coordenada es un ángulo sobre una esfera; la pantalla es plana. La app usa la proyección más sencilla que da un mapa razonable de un país: la <b>equirrectangular</b> (o <i>plate carrée</i>), en la que meridianos y paralelos son rectas a distancias iguales, con una corrección: el ancho de cada grado de longitud se multiplica por el <b>coseno de la latitud central</b> del encuadre.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · la equirrectangular con corrección por coseno</div>
+    <p>Un grado de latitud mide casi lo mismo en toda la Tierra (unos 111 km), pero un grado de longitud se acorta hacia los polos: mide 111 km × cos φ a la latitud φ. Con un encuadre que va de las longitudes λ<sub>0</sub> a λ<sub>1</sub> y de las latitudes φ<sub>0</sub> a φ<sub>1</sub>, la latitud central es φ<sub>m</sub> = (φ<sub>0</sub> + φ<sub>1</sub>)/2 y cada punto se lleva a la pantalla con:</p>
+    <div class="formula">k = cos φ<sub>m</sub>  ·  x = o<sub>x</sub> + (λ − λ<sub>0</sub>) · k · s  ·  y = o<sub>y</sub> + (φ<sub>1</sub> − φ) · s</div>
+    <p>donde s son los píxeles por grado de latitud, el mayor valor con el que el encuadre cabe en el lienzo de 900 × 560 dejando 10 px de margen, y o<sub>x</sub>, o<sub>y</sub> centran el dibujo. La <b>y</b> crece hacia abajo, por eso se resta la latitud de la máxima: el norte queda arriba. La forma es fiel cerca de φ<sub>m</sub>; para un país o una región basta.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · el maíz azul de Apoala en el mapa de México</div>
+    <p>El encuadre <span class="ui">México completo</span> va de −118.5 a −86.6 de longitud y de 14.3 a 32.8 de latitud. MEX-ZM-0001 está en 17.6871, −97.2788.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td style="width:50%">φ<sub>m</sub> = (14.3 + 32.8)/2 = 23.55°</td><td>k = cos 23.55° = 0.91671</td></tr>
+      <tr><td>ancho = 31.9° × 0.91671 = 29.243</td><td>alto = 32.8 − 14.3 = 18.5°</td></tr>
+      <tr><td colspan="2">s = mín(880/29.243, 540/18.5) = mín(30.09, 29.189) = 29.189 px por grado</td></tr>
+      <tr><td colspan="2">o<sub>x</sub> = 10 + (880 − 29.243 × 29.189)/2 = 23.21 · o<sub>y</sub> = 10</td></tr>
+      <tr><td colspan="2">x = 23.21 + (−97.2788 + 118.5) × 0.91671 × 29.189 = 23.21 + 567.84 = 591.0</td></tr>
+      <tr><td colspan="2">y = 10 + (32.8 − 17.6871) × 29.189 = 10 + 441.13 = 451.1, como el centro del círculo en el SVG de la app</td></tr>
+    </tbody></table>
+    <p>Sin la corrección, el ancho sería de 31.9° y México saldría un 9 % más ancho de lo que es a esa latitud.</p>
+  </div>
+  <h3>La barra de escala, la flecha del norte y la retícula</h3>
+  <p>En la esquina inferior derecha, la <b>barra de escala</b> da una distancia redonda —1, 2, 5, 10, 25, 50, 100, 200, 250, 500, 1 000, 2 000 o 5 000 km— que quepa en 140 píxeles del lienzo. Se mide a la latitud central: en el mapa de México, 1° de longitud a 23.55° de latitud mide 101.93 km por la fórmula de haversine (apartado 3.5) y ocupa 26.76 px, así que cada píxel vale 3.81 km y la barra elegida es la de <b>500 km</b>, de 131 px. En la esquina inferior izquierda va la <b>flecha del norte</b>, que siempre apunta hacia arriba. Detrás de la tierra, una retícula de meridianos y paralelos se traza cada 20° si el encuadre abarca más de 60° de longitud, cada 5° si abarca más de 14°, cada 2° si abarca más de 4° y cada grado en encuadres más pequeños.</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>La escala es exacta sólo en el centro</div>
+    <p>En un mapa de una entidad o de México, la barra vale para todo el mapa con un error pequeño. En el mapa del mundo no: la barra de 5 000 km se mide a la latitud central del encuadre (12°) y, lejos de ella, las distancias este-oeste quedan exageradas, cada vez más hacia los polos. Para medir la distancia entre dos colectas no uses la barra; usa la columna de distancias de los duplicados (capítulo 3) o los cálculos de los Bloques 5 y 6, que trabajan sobre la esfera.</p>
+  </div>
+
+  <!-- 4.3 -->
+  <h2 id="b4-3"><span class="num">4.3</span>¿En qué entidad y en qué país cae cada punto?</h2>
+  <p>La app no confía en el texto del pasaporte para decir dónde está una accesión. No lee el estado escrito en <code>COLLSITE</code> ni el país de <code>ORIGCTY</code>: mira <b>dónde cae el punto</b> y busca la entidad o el país cuyo contorno lo contiene. A eso se le llama prueba de <b>punto en polígono</b>.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · la regla par-impar</div>
+    <p>Desde el punto se traza una semirrecta hacia el este y se cuentan las veces que cruza el borde del polígono. Si las cruza un número impar de veces, el punto está adentro; si par, afuera. La regla respeta los huecos: un punto dentro de un hueco cruza el borde exterior y el del hueco, dos veces, y queda afuera; y sirve igual para las entidades con islas, que son varios anillos. Para no probar los 32 contornos completos con cada punto, la app descarta primero las entidades cuyo rectángulo envolvente no contiene el punto, y sólo con las que quedan hace la prueba fina. Igual con los países.</p>
+  </div>
+  <p>Con la colección de ejemplo, la prueba asigna una entidad a las 36 accesiones que caen en México, y para todas coincide con el estado escrito al principio de su sitio de colecta. Las que no coinciden con su pasaporte son dos, y las dos son errores sembrados (apartado I.7):</p>
+  <table class="compacta">
+    <thead><tr><th style="width:1.05in">Accesión</th><th style="width:1.55in">Lo que dice el pasaporte</th><th style="width:1.2in">Dónde cae el punto</th><th>Qué hace la app</th></tr></thead>
+    <tbody>
+      <tr><td>MEX-ZM-0039<br><i>Tuxpeño de la costa</i></td><td><code>ORIGCTY</code> = MEX; sitio «Veracruz, Tlalixcoyan»; 18.8100, 96.0600</td><td>Birmania (Myanmar), sin entidad</td><td>La cuenta en Birmania, no en México ni en Veracruz. Es la longitud sin signo que el Bloque 3 diagnostica (apartado 3.2).</td></tr>
+      <tr><td>MEX-PH-0041<br><i>Frijol tepari</i></td><td><code>ORIGCTY</code> = MX; sitio «Sonora, Álamos»</td><td>México, Sonora</td><td>La cuenta en México y en Sonora: el punto está bien, aunque el código de país esté mal escrito.</td></tr>
+    </tbody>
+  </table>
+  <p>La accesión sin coordenadas, MEX-ZM-0043 (<i>Maíz ancho de riego</i>, sitio «Por el rumbo de Guerrero»), no aparece en el mapa ni en las cuentas, aunque su sitio nombre un estado: el recuadro <span class="ui">Sin coordenadas</span> marca 1. Tampoco se dibujan los puntos (0, 0) ni las coordenadas fuera de rango (latitud de más de 90° o longitud de más de 180°).</p>
+  <figure>
+    <div class="marco"><img src="../img/b4-ajuste.png" alt="El mapa con el encuadre Ajustar a mis datos y la colección recién cargada: abarca de América al sudeste de Asia; los puntos de México, Guatemala, Colombia, Perú y Bolivia a la izquierda, uno en Etiopía, uno en la India y uno en Birmania; barra de escala de 2,000 km"></div>
+    <figcaption><b>Figura 4.2.</b> El encuadre automático con la colección recién cargada. El punto de la derecha, en Birmania, es el maíz de Veracruz con la longitud sin signo: estira el encuadre hasta el sudeste de Asia.</figcaption>
+  </figure>
+  <p>El mapa es la manera más rápida de ver un error de coordenadas: un maíz de la costa del golfo aparece al otro lado del mundo (figura 4.2). Corrígelo en el Bloque 3 —<span class="ui">Corregir</span> en la sección 2— y vuelve al Bloque 4: el punto queda en Veracruz, en 18.81, −96.06, la tabla por país pierde a Birmania y México sube de 36 a 37 accesiones, Veracruz sube de 6 a 7 accesiones y de 4 a 5 especies (se suma <i>Zea mays</i>), y el recuadro <span class="ui">Países</span> baja de 8 a 7. Lo que no cambia es el encuadre automático, que sigue abarcando de América a la India, porque esas accesiones sí son de Etiopía y la India.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Dos revisiones que se complementan</div>
+    <p>El Bloque 3 compara el punto con el rectángulo del país declarado, con un grado de margen; caza los errores de cientos o miles de kilómetros (apartado 3.2). El Bloque 4 asigna el punto al contorno de una entidad, y ahí se ve el error fino: un punto de un maíz «de Puebla» que cae en Tlaxcala, o uno «de Oaxaca» que cae en el mar, pasa la revisión del Bloque 3 y aquí se delata en la tabla por entidad o en la ficha del punto.</p>
+  </div>
+
+  <!-- 4.4 -->
+  <h2 id="b4-4"><span class="num">4.4</span>El encuadre: tus datos, México, el mundo o una entidad</h2>
+  <p>El menú <span class="ui">Encuadre</span> decide qué parte de la Tierra ocupa el lienzo. Los puntos que quedan fuera del encuadre no se dibujan, pero siguen contando en los recuadros, las tablas y el archivo de puntos (apartados 4.7 y 4.8).</p>
+  <table class="compacta">
+    <thead><tr><th style="width:1.45in">Opción</th><th>Qué muestra</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Ajustar a mis datos</span></td><td>La opción de fábrica. El rectángulo que contiene todos los puntos, con un 15 % de margen por lado (al menos 0.4°), y nunca menos de 1.5° de ancho o de alto, para que una colección de un solo municipio no quede como un acercamiento sin referencias. Con la colección de ejemplo va de −139.7 a 126.8 de longitud y de −22.7 a 36.4 de latitud (figura 4.2).</td></tr>
+      <tr><td><span class="ui">México completo</span></td><td>El rectángulo de México, de −118.5 a −86.6 y de 14.3 a 32.8: dibuja 38 de los 45 puntos (figura 4.1).</td></tr>
+      <tr><td><span class="ui">El mundo</span></td><td>De −180 a 180 de longitud y de −60 a 84 de latitud (figura 4.6).</td></tr>
+      <tr><td><span class="ui">Una entidad</span> (las 32, por nombre)</td><td>El rectángulo de la entidad, con un 8 % de margen. Se dibujan también las entidades vecinas y sus puntos; la elegida lleva el contorno grueso, en morado (figura 4.3).</td></tr>
+    </tbody>
+  </table>
+  <p>A una entidad también se llega sin el menú: <b>toca la entidad en el mapa</b> para acercarte a ella, y tócala otra vez para volver a México completo. Los botones con el nombre de cada entidad en la tabla por entidad hacen lo mismo (apartado 4.7).</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b4-entidad.png" alt="El encuadre en Puebla con los puntos coloreados por cultivo: Puebla con contorno morado grueso y alrededor Hidalgo, Tlaxcala, el Estado de México, la Ciudad de México, Morelos, Guerrero, Oaxaca y Veracruz; puntos de maíz, calabaza, amaranto y chayote; barra de 50 km; leyenda de Cultivo con Maíz (14), Calabaza (3), Chile (3), Chayote (3), Teocintle (2), Frijol (2), Amaranto (2), Frijol ayocote (1), Tomate de cáscara (1), Papa (1), Papa amarga (1) y los demás"></div>
+    <figcaption><b>Figura 4.3.</b> El encuadre en Puebla, con los puntos coloreados por cultivo. La barra baja a 50 km. Los puntos de Veracruz, Tlaxcala y Oaxaca que entran en el rectángulo también se dibujan.</figcaption>
+  </figure>
+  <h3>Cuándo se dibujan las entidades</h3>
+  <p>Las 32 entidades se dibujan sólo cuando el encuadre abarca <b>45° de longitud o menos</b> y toca el rectángulo de México. En un encuadre más ancho, México se dibuja como un país más, con el contorno de 1:110 millones, y las claves de entidad desaparecen. Por eso, con la colección de ejemplo, el encuadre automático no muestra entidades: las accesiones de Etiopía y la India lo hacen tan ancho como el mundo. Si tu colección es de México y de otros países, elige <span class="ui">México completo</span> para ver las entidades.</p>
+  <p>El botón <span class="ui">claves de entidad</span>, encendido de fábrica, rotula cada entidad con su clave de tres letras en el centro de su rectángulo, con un halo del color del fondo para que se lea encima de los puntos y las líneas; con una coropleta por entidad, la clave lleva además la cuenta entre paréntesis (figura 4.5). Apágalo cuando el mapa vaya a una publicación y los rótulos estorben. Ojo con dos claves: <i>MEX</i> es el Estado de México y <i>CMX</i> la Ciudad de México, no el país.</p>
+  <h3>Pasar el ratón y tocar un punto</h3>
+  <p>Al pasar el ratón sobre un punto, el punto crece y, bajo el mapa, una línea resume la accesión: número, nombre, taxón, sitio, la entidad donde cae el punto, la altitud y la ruta. Con MEX-ZM-0001 dice <i>MEX-ZM-0001 · Maíz azul de Apoala · Zea mays · Oaxaca, Santiago Apoala · Oaxaca · 1993 m · Banco de semillas</i>. Al <b>tocar</b> el punto se abre su ficha en el Bloque 2, para revisarla o corregirla. El pie de la tarjeta lo recuerda: <span class="ui">Toca un punto para abrir su ficha; toca una entidad para acercarte a ella.</span></p>
+
+  <!-- 4.5 -->
+  <h2 id="b4-5"><span class="num">4.5</span>El color, el tamaño y los filtros de los puntos</h2>
+  <p>El menú <span class="ui">Color de los puntos</span> elige qué variable del pasaporte colorea los puntos. Hay ocho, más <span class="ui">Un solo color</span>:</p>
+  <table class="compacta">
+    <caption><b>Tabla 4.1.</b> Las variables que colorean los puntos y su leyenda con la colección de ejemplo (45 puntos).</caption>
+    <thead><tr><th style="width:1.5in">Opción · descriptor</th><th style="width:0.75in">Tipo</th><th>Leyenda con la colección de ejemplo</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Ruta de conservación</span> · ruta activa</td><td>categórica</td><td>La opción de fábrica. Banco de semillas (27), banco de campo (8), cultivo in vitro (3), parcela (3), reserva genética (2), criopreservación (1) y <i>sin declarar</i> (1). La ruta es la declarada en <code>GP_CONS</code> o, si no la hay, la deducida de <code>STORAGE</code>, como en el capítulo 2.</td></tr>
+      <tr><td><span class="ui">Cultivo</span> · <code>CROPNAME</code></td><td>categórica</td><td>Maíz (14), Calabaza, Chile y Chayote (3 cada uno)…, y <i>los demás</i>.</td></tr>
+      <tr><td><span class="ui">Especie</span> · género y epíteto</td><td>categórica</td><td><i>Zea mays</i> (17), <i>Capsicum annuum</i> y <i>Sechium edule</i> (3)…, y <i>los demás</i>.</td></tr>
+      <tr><td><span class="ui">Estatus biológico</span> · <code>SAMPSTAT</code></td><td>categórica</td><td>Variedad tradicional o criolla (38), silvestre (4), natural (2), línea de mejorador (1).</td></tr>
+      <tr><td><span class="ui">País de origen</span> · <code>ORIGCTY</code></td><td>categórica</td><td>México (36), Guatemala y Perú (2), Bolivia, Etiopía, India, Colombia y <i>MX</i> (1). Aquí sí manda el texto del pasaporte, no el lugar del punto.</td></tr>
+      <tr><td><span class="ui">Fuente de colecta</span> · <code>COLLSRC</code></td><td>categórica</td><td>Parcela o campo (23), huerto familiar o solar (6), troje (5)… diez fuentes en total.</td></tr>
+      <tr><td><span class="ui">Altitud</span> · <code>ELEVATION</code></td><td>continua</td><td>De 20 a 25,000 m (figura 4.4).</td></tr>
+      <tr><td><span class="ui">Año de colecta</span> · año de <code>COLLDATE</code></td><td>continua</td><td>De 2014 a 2022.</td></tr>
+    </tbody>
+  </table>
+  <p>Con una variable <b>categórica</b>, la app cuenta cuántos puntos hay de cada valor y da un color de su paleta a los <b>once valores más frecuentes</b>; los demás van en gris, bajo la etiqueta <i>los demás</i>. La leyenda trae cada valor con su número de puntos entre paréntesis. Cultivo y Especie tienen más de once valores en la colección de ejemplo (23 cultivos escritos y 24 taxones), así que en esas dos el gris junta varios. Fíjate en que el cultivo cuenta lo escrito: <i>Maíz</i> (14) y <i>Maiz</i> sin acento, el del duplicado sembrado, son dos valores distintos mientras no resuelvas el duplicado en el Bloque 3.</p>
+  <p>Con una variable <b>continua</b>, el color sale de una rampa que va del crema al ocre y al morado, lineal entre el valor mínimo y el máximo de los puntos; los puntos sin valor van en gris. La leyenda muestra la rampa en seis pasos con el mínimo y el máximo en los extremos.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b4-altitud.png" alt="El mapa de México con los puntos coloreados por altitud: casi todos en crema pálido, apenas visibles, y uno solo en morado, en Sonora; leyenda Altitud de 20 a 25,000"></div>
+    <figcaption><b>Figura 4.4.</b> Los puntos coloreados por altitud con la colección recién cargada. La altitud de 25 000 m del frijol tepari de Sonora, un error sembrado, se queda con el morado y deja todas las demás en el extremo crema de la rampa.</figcaption>
+  </figure>
+  <p>La figura 4.4 enseña lo mismo que el histograma de altitud del Bloque 2 (figura 2.7): una rampa lineal entre el mínimo y el máximo se rinde ante un solo valor absurdo. Corrige la altitud de MEX-PH-0041 en su ficha —basta con tocar el punto morado— y la rampa se reparte entre 20 y 3 797 m como debe. Aun así, en una rampa que empieza en crema los puntos de menor altitud se distinguen poco del fondo; para una figura de altitudes, revisa los puntos más bajos o abre el mapa en el estudio de figuras (apartado 4.8) para cambiar la paleta.</p>
+  <h3>Tamaño por existencias</h3>
+  <p>El menú <span class="ui">Tamaño</span> tiene dos opciones. Con <span class="ui">tamaño fijo</span>, la de fábrica, todos los puntos miden 4 px de radio. Con <span class="ui">tamaño por existencias</span>, el radio crece con la raíz cuadrada de las existencias (<code>GP_STOCK</code>): r = 2.5 + 5.5 √(existencias / máximo). Con la raíz, el <b>área</b> del círculo, que es lo que el ojo compara, crece en proporción a las existencias. En la colección de ejemplo el máximo es de 3 200 semillas, y los radios van de 2.8 a 8 px. Es la manera de ver de un vistazo dónde está el material escaso, el que conviene regenerar (capítulo 8).</p>
+  <h3>Los filtros por cultivo y por ruta</h3>
+  <p>Los menús <span class="ui">Cultivo</span> y <span class="ui">Ruta</span> dejan en el mapa sólo un cultivo (de los escritos en <code>CROPNAME</code>, en orden alfabético) o sólo una ruta (de las que están en uso). A diferencia del encuadre, el filtro sí cambia todo lo demás: los recuadros, las tablas, la coropleta, la rejilla y el archivo de puntos cuentan sólo lo filtrado. Con el cultivo <i>Maíz</i> quedan 14 puntos; con la ruta <i>Banco de campo o colección viva</i>, 8. Para volver a todo, elige <span class="ui">todos los cultivos</span> y <span class="ui">todas las rutas</span>.</p>
+
+  <!-- 4.6 -->
+  <h2 id="b4-6"><span class="num">4.6</span>La coropleta y la rejilla</h2>
+  <p>Los puntos dicen dónde está cada accesión; cuando son muchos, se enciman y ya no dicen cuántas hay en cada lugar. Para eso son la coropleta, que pinta cada unidad según su cuenta, y la rejilla, que cuenta en celdas iguales.</p>
+  <h3>La coropleta</h3>
+  <p>El menú <span class="ui">Coropleta</span> tiene tres opciones, además de <span class="ui">sin coropleta</span>:</p>
+  <ul>
+    <li><span class="ui">accesiones por entidad</span>: cada entidad de México pintada según cuántos puntos caen en ella;</li>
+    <li><span class="ui">especies por entidad</span>: según cuántas especies distintas (género y epíteto) hay entre esos puntos;</li>
+    <li><span class="ui">accesiones por país</span>: cada país, según cuántos puntos caen en él. Si el mapa muestra las entidades, todas se pintan con el valor de México.</li>
+  </ul>
+  <p>El color sale de la misma rampa de los puntos, pero empieza en el 15 % para que la unidad con una sola accesión se distinga de la tierra vacía: la unidad con n accesiones se pinta con el tono 0.15 + 0.85 × n / máximo. Las unidades sin accesiones quedan en blanco. La leyenda sólo dice <i>pocas</i> y <i>muchas</i>; las cifras están en las claves del mapa y en las tablas (apartado 4.7).</p>
+  <figure style="width:80%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/b4-coropleta.png" alt="El mapa de México con la coropleta de accesiones por entidad: Oaxaca y Puebla en morado con 7, Veracruz en café rojizo con 6, Chiapas en naranja con 4, Michoacán con 3, Chihuahua, Jalisco, el Estado de México y Yucatán en ocre con 2 y Sonora en ocre claro con 1; las demás entidades en blanco; las claves con su cuenta entre paréntesis"></div>
+    <figcaption><b>Figura 4.5.</b> La coropleta de accesiones por entidad, con <span class="ui">Un solo color</span> en los puntos. Diez entidades tienen colectas; Oaxaca y Puebla, con 7 cada una, llevan el morado del máximo.</figcaption>
+  </figure>
+  <p>Con la colección de ejemplo, la coropleta de accesiones por entidad pinta diez entidades: Oaxaca y Puebla con 7, Veracruz con 6, Chiapas con 4, Michoacán con 3, Chihuahua, Yucatán, el Estado de México y Jalisco con 2 y Sonora con 1 (figura 4.5). La de especies cambia el orden: Puebla queda arriba con 5 especies, Veracruz y Chiapas con 4 y Oaxaca baja a 3, porque cuatro de sus siete accesiones son maíz. Las dos lecturas responden preguntas distintas: dónde se ha colectado más y dónde hay más diversidad colectada, la que mide en serio el Bloque 5.</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Una coropleta de cuentas favorece a las unidades grandes</div>
+    <p>Chihuahua, con dos accesiones del mismo sitio, se pinta igual de fuerte que Jalisco con dos de dos especies, y su área enorme llama la atención más que la de Tlaxcala. Una coropleta de cuentas absolutas no corrige por el tamaño de la unidad ni por el esfuerzo de colecta. Para comparar regiones, usa la rejilla, de celdas iguales, o los índices rarificados del Bloque 5 (capítulo 5).</p>
+  </div>
+  <figure>
+    <div class="marco"><img src="../img/b4-mundo.png" alt="El mapa del mundo con la coropleta de accesiones por país: México en morado; Guatemala, Colombia, Perú, Bolivia, Etiopía, la India y Birmania en ocre claro; barra de escala de 5,000 km; leyendas de la ruta de conservación y de accesiones por país"></div>
+    <figcaption><b>Figura 4.6.</b> El encuadre <span class="ui">El mundo</span> con la coropleta de accesiones por país y la colección recién cargada. Birmania aparece pintada por el maíz de Veracruz con la longitud sin signo.</figcaption>
+  </figure>
+  <p>La coropleta por país hace todavía más visible el error de la figura 4.2: un país entero pintado por un solo punto mal ubicado (figura 4.6). Con 36 accesiones frente a 2 como mucho en los demás, México se queda con el morado y todos los demás países con el tono más claro; en una colección así, la coropleta por país sólo distingue «México» de «el resto».</p>
+  <h3>La rejilla</h3>
+  <p>El menú <span class="ui">Rejilla</span> tiende sobre el mapa celdas cuadradas de <span class="ui">0.25°</span>, <span class="ui">0.5°</span>, <span class="ui">1°</span> o <span class="ui">2°</span> de lado, alineadas con los grados enteros: la celda de 1° que contiene el punto (λ, φ) va de ⌊λ⌋ a ⌊λ⌋ + 1 y de ⌊φ⌋ a ⌊φ⌋ + 1. Sólo se dibujan las celdas con al menos un punto, semitransparentes, con el tono de la rampa que corresponde a su cuenta (desde el 25 % de la rampa, para que la celda de un punto se vea). Al pasar el ratón sobre una celda, la app muestra su número de accesiones.</p>
+  <p>El tamaño de celda cambia la respuesta (tabla 4.2): con celdas pequeñas casi todo son celdas de un punto; con celdas grandes, sitios distintos se juntan. Corregir el maíz de Veracruz no cambia el número de celdas de 1°: su punto deja una celda en Birmania y ocupa otra en Veracruz. Una celda de 1° mide unos 111 km de norte a sur y, a la latitud del centro de México, unos 105 km de este a oeste; sus kilómetros cuadrados cambian con la latitud, cosa que conviene recordar al comparar celdas de Chihuahua y de Chiapas. La rejilla de este bloque es para mirar; el análisis por celdas se hace en los Bloques 5 y 6 (capítulos 5 y 6), con su propio tamaño de celda.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b4-rejilla.png" alt="El mapa de México con la rejilla de 1 grado: celdas ocres y café en Chihuahua, Jalisco, Michoacán, el centro, Veracruz, Oaxaca, Chiapas y Yucatán; la más oscura, en morado, sobre Puebla y el Estado de México"></div>
+    <figcaption><b>Figura 4.7.</b> La rejilla de 1° sobre el mapa de México. La celda morada, de −99° a −98° y de 19° a 20°, reúne las 6 accesiones de Cholula y Texcoco.</figcaption>
+  </figure>
+  <table class="compacta">
+    <caption><b>Tabla 4.2.</b> Las celdas ocupadas con cada tamaño, con los 45 puntos de la colección de ejemplo recién cargada.</caption>
+    <thead><tr><th class="c" style="width:0.8in">Celda</th><th class="c" style="width:0.85in">Ocupadas</th><th class="c" style="width:0.95in">Con un solo punto</th><th class="c" style="width:0.85in">Máximo</th><th>La celda más poblada</th></tr></thead>
+    <tbody>
+      <tr><td class="c">0.25°</td><td class="c">29</td><td class="c">18</td><td class="c">4</td><td>Empate: San Pablo Villa de Mitla, Oaxaca, y San Andrés Cholula, Puebla.</td></tr>
+      <tr><td class="c">0.5°</td><td class="c">26</td><td class="c">14</td><td class="c">4</td><td>Empate entre Mitla, Cholula y la de Coatepec y Huatusco, Veracruz.</td></tr>
+      <tr><td class="c">1°</td><td class="c">21</td><td class="c">9</td><td class="c">6</td><td>−99° a −98°, 19° a 20°: Cholula y Texcoco.</td></tr>
+      <tr><td class="c">2°</td><td class="c">18</td><td class="c">7</td><td class="c">7</td><td>−98° a −96°, 16° a 18°: los siete puntos de Oaxaca.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 4.7 -->
+  <h2 id="b4-7"><span class="num">4.7</span>Las cuentas por entidad y por país</h2>
+  <p>La sección <span class="ui">2 · Cuántas caen en cada entidad y en cada país</span> empieza con cinco recuadros y sigue con dos tablas. Todo se cuenta con los puntos que dejan los filtros de cultivo y ruta, sin importar el encuadre, y con el lugar donde cae cada punto (apartado 4.3).</p>
+  <table class="compacta">
+    <caption><b>Tabla 4.3.</b> Los cinco recuadros, antes y después de corregir la longitud de MEX-ZM-0039 en el Bloque 3.</caption>
+    <thead><tr><th style="width:1.5in">Recuadro</th><th class="c" style="width:0.6in">Antes</th><th class="c" style="width:0.65in">Después</th><th>Qué cuenta</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">En el mapa</span></td><td class="c">45</td><td class="c">45</td><td>Las accesiones con coordenadas utilizables, <i>de 46 accesiones</i>.</td></tr>
+      <tr><td><span class="ui">Sin coordenadas</span></td><td class="c">1</td><td class="c">1</td><td>Las que no se pueden mapear (MEX-ZM-0043). El recuadro va en ocre mientras haya alguna.</td></tr>
+      <tr><td><span class="ui">Entidades de México</span></td><td class="c">10</td><td class="c">10</td><td>Las entidades con al menos un punto. El maíz corregido cae en Veracruz, que ya tenía colectas.</td></tr>
+      <tr><td><span class="ui">Países</span></td><td class="c">8</td><td class="c">7</td><td>Los países <i>según dónde cae el punto</i>: Birmania sale al corregir.</td></tr>
+      <tr><td><span class="ui">Especies mapeadas</span></td><td class="c">24</td><td class="c">24</td><td>Los taxones (género y epíteto) con al menos un punto.</td></tr>
+    </tbody>
+  </table>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b4-tablas.png" alt="La sección 2: los recuadros En el mapa 45 de 46 accesiones, Sin coordenadas 1, Entidades de México 10, Países 8 y Especies mapeadas 24; la tabla México, por entidad con Oaxaca 7 accesiones y 3 especies, Puebla 7 y 5, Veracruz 6 y 4, Chiapas 4 y 4, con sus cultivos; y la tabla El mundo, por país con México 36 y 18, Guatemala 2 y 1, Perú 2 y 2, y Bolivia, Etiopía, India, Colombia y Birmania con 1"></div>
+    <figcaption><b>Figura 4.8.</b> Los recuadros y las tablas con la colección recién cargada. La tabla por entidad se desplaza para mostrar las seis entidades restantes.</figcaption>
+  </figure>
+  <p>La tabla <span class="ui">México, por entidad</span> da, para cada entidad con colectas, de la que más tiene a la que menos, el número de accesiones, de especies y hasta tres cultivos. El nombre de la entidad es un botón que acerca el mapa a ella. Con la colección de ejemplo, Oaxaca y Puebla encabezan con 7 accesiones; después de la corrección, Veracruz las alcanza con 7 y 5 especies (tabla 4.4). Si ninguna accesión cae en México, la tabla lo dice: <span class="ui">Ninguna accesión cae en México.</span></p>
+  <table class="compacta">
+    <caption><b>Tabla 4.4.</b> La tabla por entidad de la colección de ejemplo, después de corregir MEX-ZM-0039.</caption>
+    <thead><tr><th>Entidad</th><th class="c" style="width:0.85in">Accesiones</th><th class="c" style="width:0.75in">Especies</th><th>Cultivos (hasta tres)</th></tr></thead>
+    <tbody>
+      <tr><td>Oaxaca</td><td class="c">7</td><td class="c">3</td><td>Maíz, Frijol, Chile</td></tr>
+      <tr><td>Puebla</td><td class="c">7</td><td class="c">5</td><td>Maíz, Calabaza, Amaranto</td></tr>
+      <tr><td>Veracruz</td><td class="c">7 <span class="muted">(antes 6)</span></td><td class="c">5 <span class="muted">(antes 4)</span></td><td>Calabaza, Vainilla, Café</td></tr>
+      <tr><td>Chiapas</td><td class="c">4</td><td class="c">4</td><td>Maíz, Frijol ayocote, Cacao</td></tr>
+      <tr><td>Michoacán</td><td class="c">3</td><td class="c">3</td><td>Teocintle, Aguacate, Frijol</td></tr>
+      <tr><td>Chihuahua · Yucatán · México · Jalisco</td><td class="c">2 cada una</td><td class="c">1 · 2 · 2 · 2</td><td>Maíz · Maíz, Chile · Teocintle, Trigo · Chile, Agave</td></tr>
+      <tr><td>Sonora</td><td class="c">1</td><td class="c">1</td><td>Frijol tepari</td></tr>
+    </tbody>
+  </table>
+  <p>La tabla <span class="ui">El mundo, por país</span> da, para cada país, accesiones y especies, con el nombre del país en español. Antes de corregir: México 36 (18 especies), Guatemala 2, Perú 2, y Bolivia, Etiopía, la India, Colombia y Birmania con 1; después, México 37 y Birmania desaparece. El frijol tepari cuenta en México aunque su pasaporte diga <i>MX</i>, porque manda el punto. Si un punto no cae dentro de ningún país del mapa —en el mar, por ejemplo—, la app lo cuenta en el país que declara su pasaporte; si tampoco hay país declarado, queda fuera de la tabla y una nota debajo avisa cuántos son: <i>suelen ser puntos en el mar, es decir, coordenadas con algún error</i>.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Para qué sirven estas cuentas</div>
+    <p>Son el primer retrato geográfico de la colección: dónde se concentra el esfuerzo de colecta y qué entidades o países faltan. La tabla por entidad es el punto de partida del Bloque 5, que calcula la diversidad de cada entidad, y del Bloque 6, que busca las zonas sin colectar. Si una entidad aparece con menos accesiones de las que esperabas, revisa la ficha de sus puntos: es probable que alguno caiga en la entidad vecina.</p>
+  </div>
+
+  <!-- 4.8 -->
+  <h2 id="b4-8"><span class="num">4.8</span>Llevarte el mapa y los puntos</h2>
+  <p>El campo <span class="ui">Título del mapa (opcional)</span> escribe un título en la esquina superior izquierda del mapa, en negritas; se ve en pantalla y sale en las exportaciones. Debajo del mapa, tres botones guardan lo que ves:</p>
+  <table class="compacta">
+    <thead><tr><th style="width:1.85in">Botón · archivo</th><th>Qué guarda</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Exportar SVG</span><br><span class="ruta">mapa-colecta.svg</span></td><td>El mapa vectorial, de 900 × 560 unidades, con todo lo que se ve: encuadre, colores, coropleta, rejilla, claves, título, escala y norte. Se amplía sin perder nitidez y se edita en cualquier programa de dibujo vectorial. La leyenda no va dentro: está en la página, fuera del dibujo.</td></tr>
+      <tr><td><span class="ui">Exportar PNG (2×)</span><br><span class="ruta">mapa-colecta.png</span></td><td>El mismo mapa como imagen, al doble de resolución: 1 800 × 1 120 píxeles, con fondo. Si el navegador no logra convertirlo, la app avisa <i>No se pudo convertir a PNG; descarga el SVG.</i></td></tr>
+      <tr><td><span class="ui">Puntos en CSV (con entidad y celda)</span><br><span class="ruta">puntos-mapa.csv</span></td><td>Una fila por punto, con los filtros de cultivo y ruta aplicados pero sin importar el encuadre: con la colección de ejemplo, 45 filas más el encabezado.</td></tr>
+    </tbody>
+  </table>
+  <p>El SVG y el PNG se dibujan de nuevo para el archivo con los <b>colores fijos del tema claro</b>, aunque estés trabajando en el tema oscuro: en pantalla el mapa usa los colores del tema, que cambian solos con él, y un archivo tiene que verse igual en cualquier lado, sobre papel blanco o en una diapositiva. Por eso el SVG exportado no lleva ninguna variable de color, sólo valores literales.</p>
+  <table class="compacta csv">
+    <caption><b>Tabla 4.5.</b> Las doce columnas de <span class="ruta">puntos-mapa.csv</span> y tres filas de la colección de ejemplo recién cargada (el nombre de la accesión, omitido).</caption>
+    <thead><tr><th>ACCENUMB</th><th>TAXON</th><th>CROPNAME</th><th>DECLATITUDE</th><th>DECLONGITUDE</th><th>ELEVATION</th><th>ENTIDAD</th><th>PAIS_PUNTO</th><th>PAIS_PASAPORTE</th><th>CELDA_1G</th><th>RUTA</th></tr></thead>
+    <tbody>
+      <tr><td>MEX-ZM-0001</td><td>Zea mays</td><td>Maíz</td><td>17.6871</td><td>-97.2788</td><td>1993</td><td>Oaxaca</td><td>MEX</td><td>MEX</td><td>-98|17</td><td>seed</td></tr>
+      <tr><td>MEX-ZM-0039</td><td>Zea mays</td><td>Maíz</td><td>18.81</td><td>96.06</td><td>20</td><td></td><td>MMR</td><td>MEX</td><td>96|18</td><td>seed</td></tr>
+      <tr><td>MEX-PH-0041</td><td>Phaseolus acutifolius</td><td>Frijol tepari</td><td>27.028</td><td>-108.937</td><td>25000</td><td>Sonora</td><td>MEX</td><td>MX</td><td>-109|27</td><td>seed</td></tr>
+    </tbody>
+  </table>
+  <p>Las columnas que agrega el bloque son las que valen la pena: <code>ENTIDAD</code>, la entidad donde cae el punto (vacía fuera de México); <code>PAIS_PUNTO</code>, el país donde cae, en tres letras, junto a <code>PAIS_PASAPORTE</code>, el que declara <code>ORIGCTY</code>; <code>CELDA_1G</code>, la celda de 1° como «longitud|latitud» de su esquina suroeste (<i>-98|17</i> es la celda de −98° a −97° y de 17° a 18°), y <code>RUTA</code>, la ruta de conservación con su código interno (<i>seed</i>, <i>field</i>, <i>invitro</i>, <i>cryo</i>, <i>insitu</i>, <i>onfarm</i>). Ordenar el archivo por las dos columnas de país, o filtrar las filas donde difieren, es la manera más rápida de encontrar en una colección grande los puntos que no caen donde dice el pasaporte: en el ejemplo saltan justo las dos accesiones del apartado 4.3.</p>
+  <h3>El estudio de figuras</h3>
+  <p>Al pasar el ratón sobre el mapa aparece en su esquina el botón del estudio de figuras, el mismo de las gráficas del Bloque 2 (apartado I.6); el índice <span class="ui">En este bloque</span> también lo ofrece junto a la sección 1. El estudio abre el mapa en pantalla dividida para ajustar el tamaño del texto y el grosor de las líneas, cambiar la paleta y exportar a PNG, SVG, PDF o TIFF en milímetros o pulgadas, a 300, 600 o 1 200 ppp, que es lo que suele pedir una revista. Como el mapa en pantalla usa los colores del tema, el estudio puede exportarlo con los del tema claro aunque trabajes en oscuro.</p>
+
+  <h3>Cuando algo no sale</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:40%">Lo que ves</th><th>Por qué pasa y qué hacer</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Primero carga tus accesiones en el Bloque 2.</span></td><td>No hay pasaporte. Carga tu colección o la de ejemplo (capítulo 2).</td></tr>
+      <tr><td>Una accesión no aparece en el mapa</td><td>Le falta la latitud o la longitud decimal, son (0, 0) o están fuera de rango; o la dejó fuera un filtro de cultivo o de ruta. Si sólo tiene grados, minutos y segundos, el Bloque 3 propone convertirlos (apartado 3.4).</td></tr>
+      <tr><td>El mapa automático muestra medio mundo</td><td>Algún punto está lejos del resto: otro continente o un signo perdido. Mira dónde cae el punto aislado; si es un error, corrígelo en el Bloque 3. Si es real, elige <span class="ui">México completo</span> o una entidad.</td></tr>
+      <tr><td>No se ven las entidades ni sus claves</td><td>El encuadre abarca más de 45° de longitud o no toca México. Elige <span class="ui">México completo</span> o una entidad; revisa también que <span class="ui">claves de entidad</span> esté encendido.</td></tr>
+      <tr><td>Una accesión cuenta en otra entidad o en otro país</td><td>El punto cae ahí, aunque el pasaporte diga otra cosa. Toca el punto, revisa la coordenada en la ficha y compárala con el sitio de colecta.</td></tr>
+      <tr><td>Casi todos los puntos salen del mismo color pálido</td><td>Con una variable continua, un valor extremo acapara la rampa (figura 4.4). Corrige el valor o colorea por otra variable.</td></tr>
+      <tr><td>Un valor sale en gris como <i>los demás</i></td><td>Sólo los once valores más frecuentes tienen color propio. Filtra por cultivo o por ruta.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja regla">
+    <div class="caja-t"><span class="ico">✓</span>Regla de decisión · qué hacer en el Bloque 4</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:44%"><b>Si</b> acabas de cargar o corregir la colección</td><td><b>entonces</b> mira primero el encuadre automático: un punto aislado al otro lado del mapa casi siempre es un signo perdido.</td></tr>
+      <tr><td><b>Si</b> el punto cae en otra entidad o en otro país que el del pasaporte</td><td><b>entonces</b> tócalo, revisa la coordenada en su ficha y decide si el error está en la coordenada o en el texto.</td></tr>
+      <tr><td><b>Si</b> quieres ver dónde se concentra el esfuerzo de colecta</td><td><b>entonces</b> usa la rejilla, de celdas iguales, mejor que la coropleta de accesiones.</td></tr>
+      <tr><td><b>Si</b> buscas el material escaso</td><td><b>entonces</b> usa <span class="ui">tamaño por existencias</span> y filtra por la ruta que te interesa.</td></tr>
+      <tr><td><b>Si</b> el mapa va a una publicación</td><td><b>entonces</b> ponle título, decide si dejas las claves de entidad y expórtalo en SVG o desde el estudio de figuras; guarda también el CSV de los puntos.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">El mapa no modifica el pasaporte; los Bloques 5 y 6 usan los mismos puntos y entidades.</p>
+  </div>
+
+</section>
+
+</body>
+</html>
