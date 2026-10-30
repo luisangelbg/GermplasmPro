@@ -353,7 +353,7 @@
     a.fixes.forEach(f => rows.push({ tipo: 'correccion', nivel: 'fix', accesion: state.acc[f.i].ACCENUMB, campo: f.field, detalle: `${f.from} → ${f.to} · ${f.msg.es}` }));
     a.dup.pairs.forEach(p => rows.push({
       tipo: 'duplicado', nivel: String(Math.round(p.score)), accesion: `${state.acc[p.i].ACCENUMB} + ${state.acc[p.j].ACCENUMB}`,
-      campo: p.dist != null ? `${Math.round(p.dist * 10) / 10} km` : '', detalle: p.reasons.map(r => r.es).join('; '),
+      campo: p.dist != null ? QC.fmtDist(p.dist) : '', detalle: p.reasons.map(r => r.es).join('; '),
     }));
     (state.issues || []).forEach(p => rows.push({ tipo: 'pasaporte', nivel: p.level, accesion: state.acc[p.i].ACCENUMB, campo: p.field, detalle: p.msg.es }));
     download(IO.toCSV(rows, ['tipo', 'nivel', 'accesion', 'campo', 'detalle']), 'informe-calidad.csv', 'text/csv;charset=utf-8');

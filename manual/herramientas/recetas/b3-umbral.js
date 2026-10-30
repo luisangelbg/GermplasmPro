@@ -1,4 +1,4 @@
-/* Bloque 3: con el umbral en 35 puntos, el tercer chayote entra al grupo por transitividad (el umbral, la cabeza del grupo y la comparación) */
+/* Bloque 3: con el umbral en 35 puntos, el tercer chayote entra al grupo por transitividad (la cabeza del grupo y la comparación hasta la fecha de colecta) */
 (async () => {
   const W = ms => new Promise(r => setTimeout(r, ms));
   const top = n => n.getBoundingClientRect().top + window.scrollY;
@@ -17,6 +17,7 @@
   card.querySelector("[data-dupopen]").click(); await W(600);
   const c = document.querySelector(".dup-card.open");
   const ctrl = document.querySelector("#b3Dup .imp-row");
-  await irA(ctrl);
-  return caja([ctrl, c.querySelector(".dup-head"), c.querySelector(".dup-tbl")], 8);
+  await irA(c);
+  /* la cabeza del grupo y las filas hasta la fecha de colecta: ahí se ve que el erizo es otra colecta */
+  return caja([c.querySelector(".dup-head"), c.querySelectorAll(".dup-tbl tbody tr")[5]], 8);
 })()

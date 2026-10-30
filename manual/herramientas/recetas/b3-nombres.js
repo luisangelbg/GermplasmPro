@@ -14,7 +14,7 @@
   goStep(3); await W(3000);
   const R = n => state.acc.find(r => r.ACCENUMB === n);
   R("MEX-PH-0041").GENUS = "Phaseolous";
-  R("MEX-ZM-0001").SPECIES = "Mays";
+  R("MEX-ZM-0006").SPECIES = "Mays";
   R("MEX-ZM-0003").SPECIES = "mays L.";
   R("MEX-ZM-0004").CROPNAME = "Elote";
   R("MEX-ZM-0045").COLLSITE = "Oaxaca, San Pablo villa de Mitla";

@@ -151,8 +151,8 @@
   </table>
   <p>Al leer un archivo, la app adivina el separador —tabulador, punto y coma, coma o barra vertical— eligiendo el que parte todas las líneas en el mismo número de campos, no el que más abunda. Respeta las comillas, de modo que una coma dentro de <i>«Veracruz, Huatusco»</i> no parte la celda, y admite saltos de línea dentro de una celda entrecomillada. Quita la marca de orden de bytes que algunas hojas de cálculo ponen al principio y, si al leerlo como UTF-8 aparecen caracteres rotos, lo vuelve a leer como Windows-1252, la codificación que suelen usar las hojas de cálculo en Windows; así los acentos y las eñes llegan bien. Un encabezado vacío se llama <i>Columna A</i>, <i>Columna B</i>…, como en la hoja, y uno repetido se numera (<i>Sitio (2)</i>) para no perder la columna.</p>
   <div class="caja importante">
-    <div class="caja-t"><span class="ico">!</span>Tres botones reemplazan lo que hay sin preguntar</div>
-    <p><span class="ui">Abrir la colección de ejemplo</span>, <span class="ui">Empezar en blanco</span> y abrir un proyecto <span class="ruta">.json</span> sustituyen la colección actual sin pedir confirmación. Si tienes una colección propia cargada, guarda antes el proyecto (apartado 2.9). Al importar un archivo o un pegado, en cambio, eliges en el mapeo entre <span class="ui">Importar y reemplazar</span> y <span class="ui">Añadir a lo que ya hay</span>. Sólo <span class="ui">Vaciar</span> y el ✕ de cada fila piden confirmación.</p>
+    <div class="caja-t"><span class="ico">!</span>Antes de reemplazar la colección, la app pregunta</div>
+    <p><span class="ui">Abrir la colección de ejemplo</span>, <span class="ui">Empezar en blanco</span> y abrir un proyecto <span class="ruta">.json</span> sustituyen la colección entera. Si ya hay accesiones con algún dato, la app pide confirmación y dice cuánto se pierde: <i>Se perderán las 46 accesiones que hay ahora en la colección. ¿Seguir?</i> Si la colección está vacía o sólo tiene filas en blanco, no pregunta. Al importar un archivo o un pegado, en cambio, eliges en el mapeo entre <span class="ui">Importar y reemplazar</span> y <span class="ui">Añadir a lo que ya hay</span>. <span class="ui">Vaciar</span> y el ✕ de cada fila también piden confirmación. Si la colección que vas a reemplazar es tuya, guarda antes el proyecto (apartado 2.9).</p>
   </div>
   <div class="caja nota">
     <div class="caja-t"><span class="ico">i</span>Si usas la plantilla descargada</div>
@@ -215,12 +215,8 @@ CH-003        Sechium  edule    Chayote  MEX   Puebla, Cuetzalan   20,019   -97,
     </tbody>
   </table>
   <h3>La rejilla</h3>
-  <p>Cada columna marcada aparece en la rejilla con su nombre completo y su clave debajo, en el orden en que la marcaste. Se escribe en ella como en una hoja. Lo que la hace práctica es el pegado de columnas enteras: copia en tu hoja de cálculo una columna de valores —los números de accesión, por ejemplo—, haz clic en la primera celda de la columna correspondiente de la rejilla y pega. Los valores se reparten hacia abajo, uno por fila, y si son más que las filas, la rejilla crece hasta 500. Si lo que copiaste tiene varias columnas, se reparten también hacia la derecha, sobre las columnas que siguen.</p>
+  <p>Cada columna marcada aparece en la rejilla con su nombre completo y su clave debajo, en el orden en que la marcaste. Se escribe en ella como en una hoja. Lo que la hace práctica es el pegado de columnas enteras: copia en tu hoja de cálculo una columna de valores —los números de accesión, por ejemplo—, haz clic en la primera celda de la columna correspondiente de la rejilla y pega. Los valores se reparten hacia abajo, uno por fila, y si son más que las filas, la rejilla crece hasta 500. Si lo que copiaste tiene varias columnas, se reparten también hacia la derecha, sobre las columnas que siguen. Un valor suelto, sin tabuladores ni saltos de línea, se pega normalmente en la celda donde está el cursor, igual que en el buscador.</p>
   <p>Las filas vacías no cuentan: el botón principal dice cuántas filas tienen algo (<span class="ui">Leer 3 filas</span>). Al pulsarlo, la rejilla sigue el mismo camino que un pegado y llega al mapeo de columnas, donde las claves se reconocen todas a la primera.</p>
-  <div class="caja nota">
-    <div class="caja-t"><span class="ico">i</span>Un solo valor se escribe, no se pega</div>
-    <p>En la versión 1.0.0, pegar un valor suelto (sin saltos de línea ni tabuladores) dentro de una celda de la rejilla no lo deja en la celda: el diálogo lo toma como si fuera una tabla nueva y el botón queda en <span class="ui">Leer 0 filas</span>. Escribe los valores sueltos a mano; la siguiente tecla que escribas en la rejilla devuelve el botón a su cuenta. Pegar columnas o bloques de celdas funciona como se describe arriba.</p>
-  </div>
 
   <!-- 2.5 -->
   <h2 id="b2-5"><span class="num">2.5</span>¿Qué es cada columna?</h2>
@@ -231,10 +227,6 @@ CH-003        Sechium  edule    Chayote  MEX   Puebla, Cuetzalan   20,019   -97,
     <li><span class="ui">Clave</span>: la clave elegida, en verde si es del estándar y en otro color si es de la extensión <code>GP_</code>.</li>
     <li><span class="ui">Qué tal encaja</span>: qué pasaría si importaras la columna como ese descriptor (lo explica el recuadro de abajo).</li>
   </ul>
-  <figure style="width:82%;margin-left:auto;margin-right:auto">
-    <div class="marco"><img src="../img/b2-mapeo.png" alt="La tarjeta «¿Qué es cada columna?» después de leer el pegado de prueba: el aviso de que una columna es de caracterización (Peso del fruto), el aviso de que falta el Código del instituto que conserva y diez filas reconocidas; en Qué tal encaja, «3 bien» en todas salvo País (1 de 3 fallan, MX) y Fecha de colecta (1 de 3 fallan, 20230231)"></div>
-    <figcaption><b>Figura 2.3.</b> El mapeo del pegado de prueba. Las diez columnas de pasaporte quedaron reconocidas; <i>PESO_FRUTO</i> se apartó como caracterización. En <span class="ui">Qué tal encaja</span>, el país <i>MX</i> y el 31 de febrero ya se ven antes de importar. (En la app, la lista se desplaza dentro de su marco cuando hay muchas columnas.)</figcaption>
-  </figure>
   <h3>Cómo reconoce la app tus columnas</h3>
   <p>Los encabezados reales llegan en español, en inglés, con acentos, con puntos, con unidades o con la clave MCPD. Antes de compararlos, la app los normaliza: quita acentos, mayúsculas, espacios y signos, de modo que <i>No. accesión</i>, <i>no_accesion</i> y <i>NO ACCESIÓN</i> son lo mismo. Después busca en tres pasadas, y cada descriptor recibe una sola columna:</p>
   <ol class="pasos">
@@ -242,11 +234,15 @@ CH-003        Sechium  edule    Chayote  MEX   Puebla, Cuetzalan   20,019   -97,
     <li><b>Los sinónimos.</b> La app trae 224 nombres comunes de columna para los 49 descriptores: <i>número de accesión</i>, <i>accession number</i>, <i>clave</i>; <i>país</i>, <i>country</i>, <i>iso3</i>; <i>altitud</i>, <i>msnm</i>, <i>elevación</i>; <i>custodio</i>, <i>agricultor</i>, <i>comunidad</i> para <code>GP_KEEPER</code>; <i>existencias</i>, <i>inventario</i> para <code>GP_STOCK</code>, y así con los demás.</li>
     <li><b>Las coincidencias parciales.</b> Un encabezado que contiene un sinónimo de al menos cuatro letras se asigna al de la coincidencia más larga: <i>Altitud (msnm)</i> contiene <i>altitudmsnm</i> y va a <code>ELEVATION</code>; <i>Germinación %</i> va a <code>GP_GERMPCT</code>.</li>
   </ol>
+  <figure style="width:82%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/b2-mapeo.png" alt="La tarjeta «¿Qué es cada columna?» después de leer el pegado de prueba: el aviso de que una columna es de caracterización (Peso del fruto), el aviso de que falta el Código del instituto que conserva y diez filas reconocidas; en Qué tal encaja, «3 bien» en todas salvo País (1 de 3 falla, MX) y Fecha de colecta (1 de 3 falla, 20230231)"></div>
+    <figcaption><b>Figura 2.3.</b> El mapeo del pegado de prueba. Las diez columnas de pasaporte quedaron reconocidas; <i>PESO_FRUTO</i> se apartó como caracterización. En <span class="ui">Qué tal encaja</span>, el país <i>MX</i> y el 31 de febrero ya se ven antes de importar. (En la app, la lista se desplaza dentro de su marco cuando hay muchas columnas.)</figcaption>
+  </figure>
   <p>Las coordenadas tienen un paso más, porque el encabezado no basta: una columna <i>Latitud</i> puede traer <i>17.6423</i> o <i>173832N</i>. La app mira hasta diez valores y, si la mayoría tiene forma de grados-minutos-segundos, la manda a <code>LATITUDE</code>; si son decimales, a <code>DECLATITUDE</code> (y lo mismo con la longitud), intercambiando las dos columnas si hace falta. Si sólo vienen las coordenadas en grados-minutos-segundos, al importar se calculan las decimales, que son las que usan los mapas.</p>
   <p>Como cada descriptor recibe una sola columna, cuando dos columnas compiten gana la primera: en una hoja con <i>Estado</i>, <i>Municipio</i> y <i>Localidad</i>, sólo una llega a <code>COLLSITE</code> y las otras quedan en <i>— no importar —</i>. Si eliges a mano un descriptor que ya tenía otra columna, la otra se desmarca sola. <span class="ui">Reconocer otra vez</span> deshace tus cambios y vuelve a la propuesta de la app.</p>
   <div class="caja teoria">
     <div class="caja-t"><span class="ico">θ</span>Teoría en breve · «qué tal encaja»</div>
-    <p>Para cada columna asignada, la app valida todos sus valores no vacíos como si ya fueran de ese descriptor, con las mismas reglas del apartado 2.6. Si ninguno da error, escribe <span class="ui">3 bien</span> (con el número de valores); si alguno falla, <span class="ui">1 de 3 fallan</span> y, al lado, el primer valor que falla. Sólo cuentan los errores, no los avisos. Es la forma más rápida de descubrir una columna mal asignada: si la columna de altitud quedó como fecha de colecta, fallarán casi todas. Vale más verlo aquí que después, con los datos ya dentro.</p>
+    <p>Para cada columna asignada, la app valida todos sus valores no vacíos como si ya fueran de ese descriptor, con las mismas reglas del apartado 2.6. Si ninguno da error, escribe <span class="ui">3 bien</span> (con el número de valores); si alguno falla, <span class="ui">1 de 3 falla</span> (o <i>2 de 3 fallan</i>) y, al lado, el primer valor que falla. Sólo cuentan los errores, no los avisos. Es la forma más rápida de descubrir una columna mal asignada: si la columna de altitud quedó como fecha de colecta, fallarán casi todas. Vale más verlo aquí que después, con los datos ya dentro.</p>
   </div>
   <h3>Lo que queda fuera del pasaporte</h3>
   <p>Debajo de la línea de resumen pueden aparecer dos recuadros:</p>
@@ -254,11 +250,7 @@ CH-003        Sechium  edule    Chayote  MEX   Puebla, Cuetzalan   20,019   -97,
     <li><b>Las columnas de caracterización.</b> Si una columna se llama exactamente como una clave del catálogo de caracterización (<code>PESO_FRUTO</code>, <code>BRIX</code>, <code>DIAS_FLORACION</code>…), la app no le busca descriptor MCPD: la aparta, la nombra en el recuadro (<i>1 columna es de caracterización y no de pasaporte (Peso del fruto)</i>) y, al importar, la guarda en la caracterización del Bloque 7, unida a su accesión por el número. MCPD es un estándar de intercambio y no se le cuelgan campos. Una columna con otro nombre, como <i>Peso del fruto</i>, no se reconoce así: o la renombras con la clave, o la cargas en el Bloque 7.</li>
     <li><b>Los obligatorios sin columna.</b> <i>Sin columna todavía: Código del instituto que conserva.</i> Puedes importar igual y llenarlo después en la tabla; mientras tanto, cada accesión tendrá ese error.</li>
   </ul>
-  <p>Al final, cuatro botones: <span class="ui">Importar y reemplazar</span> sustituye la colección por lo leído; <span class="ui">Añadir a lo que ya hay</span> lo pone al final de la colección actual (sin buscar repetidos: eso lo hace el Bloque 3); <span class="ui">Reconocer otra vez</span> y <span class="ui">Cancelar</span>. Al importar, los valores numéricos y las coordenadas pasan de coma a punto decimal y los países, a mayúsculas.</p>
-  <div class="caja importante">
-    <div class="caja-t"><span class="ico">!</span>Después de importar, guarda o edita algo</div>
-    <p>En la versión 1.0.0 la colección recién importada desde un archivo o un pegado no se guarda sola en el navegador hasta el siguiente cambio: la hora junto al contador no aparece. Si intentas cerrar la ventana, el navegador avisa que hay cambios sin guardar. Pulsa <span class="ui">Guardar el proyecto (.json)</span> o corrige cualquier celda y el guardado automático se pone al día.</p>
-  </div>
+  <p>Al final, cuatro botones: <span class="ui">Importar y reemplazar</span> sustituye la colección por lo leído; <span class="ui">Añadir a lo que ya hay</span> lo pone al final de la colección actual (sin buscar repetidos: eso lo hace el Bloque 3); <span class="ui">Reconocer otra vez</span> y <span class="ui">Cancelar</span>. Al importar, los valores numéricos y las coordenadas pasan de coma a punto decimal y los países, a mayúsculas. La colección importada se guarda de inmediato en el navegador, y junto al contador aparece la hora del guardado (apartado 2.9).</p>
 
   <!-- 2.6 -->
   <h2 id="b2-6"><span class="num">2.6</span>La validación: errores y avisos</h2>
@@ -297,7 +289,7 @@ CH-003        Sechium  edule    Chayote  MEX   Puebla, Cuetzalan   20,019   -97,
 
   <h3>Lo que hay que revisar</h3>
   <p>La sección <span class="ui">Lo que hay que revisar</span> reúne los problemas de toda la colección, agrupados por descriptor y mensaje, que es como se corrigen: primero los errores y, dentro de cada nivel, los más frecuentes. Encima, tres datos: cuántos errores, cuántos avisos y en cuántas accesiones. El botón <span class="ui">ver</span> de cada fila activa el filtro <span class="ui">sólo las que tienen algo que revisar</span>, quita los demás filtros, añade a la tabla la columna del problema si no estaba y abre la ficha de la primera accesión afectada.</p>
-  <figure style="width:62%;margin-left:auto;margin-right:auto">
+  <figure style="width:56%;margin-left:auto;margin-right:auto">
     <div class="marco"><img src="../img/b2-validacion.png" alt="La sección «Lo que hay que revisar» con la colección de ejemplo: 3 errores, 26 avisos, en 21 accesiones de 46; tres errores (COLLDATE, ORIGCTY, STORAGE) y siete grupos de avisos, el mayor DUPLSITE con 20 accesiones"></div>
     <figcaption><b>Figura 2.4.</b> La validación de la colección de ejemplo recién cargada: 3 errores y 26 avisos en 21 de las 46 accesiones, en diez grupos.</figcaption>
   </figure>
@@ -312,8 +304,8 @@ CH-003        Sechium  edule    Chayote  MEX   Puebla, Cuetzalan   20,019   -97,
       <tr><td><b>MEX-ZM-0044 · Maíz reventador</b></td><td>dos avisos cruzados: estatus silvestre colectado en una troje y fecha de ingreso (<i>20190105</i>) anterior a la colecta.</td></tr>
       <tr><td><b>20 accesiones ex situ</b></td><td>aviso en <code>DUPLSITE</code>: sin duplicado de seguridad.</td></tr>
     </tbody></table>
-    <p>Suman 3 errores y 6 + 20 = 26 avisos, en 21 accesiones (las cinco de arriba, más dieciséis que sólo tienen el aviso del duplicado). Las 20 accesiones con duplicado lo tienen en otra institución (<code>NOR051</code>, <code>MEX008</code>, <code>BOL004</code> o <code>PER001</code>), así que ninguna recibe el aviso de la misma institución; la figura 2.6 lo provoca a propósito. Lo que el Bloque 2 <b>no</b> ve: la longitud sin signo de MEX-ZM-0039 es un número válido (sólo el Bloque 3 descubre que cae fuera de México) y los dos pares de duplicados accidentales son, cada uno por separado, accesiones correctas.</p>
   </div>
+  <p>Suman 3 errores y 6 + 20 = 26 avisos, en 21 accesiones (las cinco de arriba, más dieciséis que sólo tienen el aviso del duplicado). Las 20 accesiones con duplicado lo tienen en otra institución (<code>NOR051</code>, <code>MEX008</code>, <code>BOL004</code> o <code>PER001</code>), así que ninguna recibe el aviso de la misma institución; la figura 2.6 lo provoca a propósito. Lo que el Bloque 2 <b>no</b> ve: la longitud sin signo de MEX-ZM-0039 es un número válido (sólo el Bloque 3 descubre que cae fuera de México) y los dos pares de duplicados accidentales son, cada uno por separado, accesiones correctas.</p>
 
   <!-- 2.7 -->
   <h2 id="b2-7"><span class="num">2.7</span>La tabla y la ficha de cada accesión</h2>
@@ -353,7 +345,7 @@ CH-003        Sechium  edule    Chayote  MEX   Puebla, Cuetzalan   20,019   -97,
       <tr><td><span class="ui">Accesiones por especie</span></td><td>Las diez especies con más accesiones (género y epíteto): <i>Zea mays</i> con 18, <i>Capsicum annuum</i> y <i>Sechium edule</i> con 3. Las 24 están en el recuadro de taxones.</td></tr>
       <tr><td><span class="ui">Estatus biológico</span></td><td>Hasta ocho estatus: 39 variedades criollas, 4 silvestres, 2 naturales y 1 línea de mejorador.</td></tr>
       <tr><td><span class="ui">País de origen</span></td><td>Hasta ocho países: México con 37, Guatemala y Perú con 2, y uno cada uno Bolivia, Etiopía, India, Colombia y <i>MX</i>.</td></tr>
-      <tr><td><span class="ui">Altitud de los sitios de colecta (m)</span></td><td>Histograma en 12 clases de igual ancho entre la mínima y la máxima: aquí, de 20 a 25 000 m. Las altitudes vacías o iguales a cero no entran.</td></tr>
+      <tr><td><span class="ui">Altitud de los sitios de colecta (m)</span></td><td>Histograma en 12 clases de igual ancho entre la mínima y la máxima: aquí, de 20 a 25 000 m. Las altitudes vacías no entran; las de 0 m, al nivel del mar, sí.</td></tr>
       <tr><td><span class="ui">Año de colecta</span></td><td>Histograma en 10 clases con el año de <code>COLLDATE</code>: de 2014 a 2022, con la mayoría entre 2018 y 2020.</td></tr>
     </tbody>
   </table>
@@ -383,25 +375,25 @@ CH-003        Sechium  edule    Chayote  MEX   Puebla, Cuetzalan   20,019   -97,
     <tbody>
       <tr><td><span class="ui">Exportar MCPD (sólo el estándar)</span></td><td><span class="ruta">pasaporte-mcpd.csv</span></td><td>Los 42 descriptores del estándar, con sus claves oficiales como encabezados y en el orden de la tabla 2.2. Es el que se manda a Genesys, al SINAREFI o a cualquier otro sistema.</td></tr>
       <tr><td><span class="ui">Exportar todo (con la extensión)</span></td><td><span class="ruta">pasaporte-completo.csv</span></td><td>Los 49 campos: el estándar y, al final, los siete <code>GP_</code>, para no perder el manejo interno. Vuelve a entrar por <span class="ui">Abrir un archivo (CSV, TSV o proyecto)</span> con todas las columnas reconocidas por su clave.</td></tr>
-      <tr><td><span class="ui">Guardar el proyecto (.json)</span></td><td><span class="ruta">coleccion-germplasmpro.json</span></td><td>Las accesiones tal como están, con todos sus campos. Se abre con el mismo botón de arriba, sin pasar por el mapeo, en cualquier navegador o computadora.</td></tr>
+      <tr><td><span class="ui">Guardar el proyecto (.json)</span></td><td><span class="ruta">coleccion-germplasmpro.json</span></td><td>Las accesiones tal como están, con todos sus campos, y la caracterización del Bloque 7. Se abre con el mismo botón de arriba, sin pasar por el mapeo, en cualquier navegador o computadora.</td></tr>
     </tbody>
   </table>
-  <p>Los CSV salen separados por comas y en UTF-8, y sólo se entrecomillan las celdas que lo necesitan (las que llevan comas, comillas o saltos de línea). Los archivos se exportan con los valores tal como están, errores incluidos: corrige antes lo que la validación marca. El proyecto del Bloque 2 guarda el pasaporte; la caracterización del Bloque 7 y los registros del Bloque 8 no van en este archivo: se guardan aparte en el navegador y se manejan en sus bloques.</p>
+  <p>Los CSV salen separados por comas y en UTF-8, y sólo se entrecomillan las celdas que lo necesitan (las que llevan comas, comillas o saltos de línea). Los archivos se exportan con los valores tal como están, errores incluidos: corrige antes lo que la validación marca. El proyecto lleva el pasaporte y también la caracterización del Bloque 7; al abrirlo se restauran los dos. Un proyecto guardado con una versión anterior, que sólo traía el pasaporte, se abre igual y deja la caracterización que ya hubiera.</p>
   <h3>El guardado automático</h3>
-  <p>Cada cambio en la colección —una celda, la ficha, una accesión añadida o eliminada, la colección de ejemplo— se guarda solo en el almacenamiento local del navegador, un instante después, y junto al contador aparece <i>guardado en este navegador · </i> con la hora. Al volver a abrir la app en ese navegador, la colección sigue ahí. No es un respaldo: vive en una sola computadora, en un solo navegador, y se pierde si se borran los datos de navegación. El respaldo es el proyecto <span class="ruta">.json</span>; guárdalo al terminar cada sesión de trabajo y después de cada importación (apartado 2.5).</p>
+  <p>Cada cambio en la colección —una celda, la ficha, una accesión añadida o eliminada, la colección de ejemplo— se guarda solo en el almacenamiento local del navegador, un instante después, y junto al contador aparece <i>guardado en este navegador · </i> con la hora. Al volver a abrir la app en ese navegador, la colección sigue ahí. No es un respaldo: vive en una sola computadora, en un solo navegador, y se pierde si se borran los datos de navegación. El respaldo es el proyecto <span class="ruta">.json</span>; guárdalo al terminar cada sesión de trabajo.</p>
 
   <h3>Cuando algo no sale</h3>
   <table class="compacta">
     <thead><tr><th style="width:40%">Lo que ves</th><th>Por qué pasa y qué hacer</th></tr></thead>
     <tbody>
       <tr><td>Los acentos llegan rotos (<i>Ã©</i>, <i>�</i>)</td><td>La app ya prueba UTF-8 y Windows-1252; si aun así salen mal, guarda la hoja como «CSV UTF-8» o usa el pegado, que no depende de la codificación.</td></tr>
-      <tr><td><span class="ui">Leer 0 filas</span> o el botón desactivado</td><td>Copiaste sólo los encabezados, o la casilla de encabezados se comió la única fila (tabla 2.4). En la plantilla, ninguna fila tiene datos, o se pegó un valor suelto en una celda (apartado 2.4).</td></tr>
+      <tr><td><span class="ui">Leer 0 filas</span> o el botón desactivado</td><td>Copiaste sólo los encabezados, o la casilla de encabezados se comió la única fila (tabla 2.4). En la plantilla, ninguna fila tiene datos.</td></tr>
       <tr><td>En el mapeo, una columna quedó en <i>— no importar —</i></td><td>Su encabezado no se parece a ningún sinónimo, o su descriptor ya lo tomó otra columna. Elígelo a mano en el selector.</td></tr>
       <tr><td><span class="ui">Qué tal encaja</span> dice que fallan casi todos</td><td>La columna está asignada al descriptor equivocado. Cambia el selector antes de importar.</td></tr>
       <tr><td>Las coordenadas quedaron como texto o en otra columna</td><td>Venían en grados-minutos-segundos con otra forma, o con coma decimal y separador coma. Revisa el separador en el asistente y el selector de la columna en el mapeo.</td></tr>
       <tr><td>Todas las accesiones tienen <i>Falta un dato obligatorio.</i> en <code>INSTCODE</code></td><td>Tu archivo no traía el código del instituto. Agrega la columna en tu hoja y vuelve a importar, o escríbelo en la tabla.</td></tr>
       <tr><td>Una columna de caracterización entró al pasaporte</td><td>Sólo se aparta si su encabezado es una clave exacta del catálogo (<code>PESO_FRUTO</code>). Ponla en <i>— no importar —</i> y cárgala en el Bloque 7.</td></tr>
-      <tr><td>La colección desapareció al volver a abrir la app</td><td>Se abrió en otro navegador o con los datos de navegación borrados, o se importó y se cerró sin ningún cambio posterior. Abre el proyecto <span class="ruta">.json</span>.</td></tr>
+      <tr><td>La colección desapareció al volver a abrir la app</td><td>Se abrió en otro navegador o con los datos de navegación borrados. Abre el proyecto <span class="ruta">.json</span>.</td></tr>
     </tbody>
   </table>
 

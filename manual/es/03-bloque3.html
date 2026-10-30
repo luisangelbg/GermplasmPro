@@ -69,34 +69,34 @@
   <h2 id="b3-2"><span class="num">3.2</span>¿El punto cae donde dice? Coordenadas contra el país</h2>
   <p>Cada accesión declara su país de origen en <code>ORIGCTY</code> y su sitio en <code>DECLATITUDE</code> y <code>DECLONGITUDE</code>. Si las dos cosas no concuerdan, una de ellas está mal, y casi siempre por una de unas pocas equivocaciones mecánicas. La app compara cada coordenada con una <b>caja envolvente</b> del país: el rectángulo, en grados, que va de su latitud mínima a la máxima y de su longitud mínima a la máxima. Trae las cajas de <b>119 países</b> —todo el continente americano, Europa, buena parte de África y Asia, Australia, Nueva Zelanda, Papúa Nueva Guinea y Fiyi— y a cada una le da un grado de margen por lado, para no acusar a los sitios de la costa o la frontera.</p>
   <figure>
-    <div class="marco"><img src="../img/b3-geo.png" alt="La sección 2 del Bloque 3: la accesión MEX-ZM-0039, Tuxpeño de la costa, con país MEX y coordenadas 18.8100, 96.0600, el diagnóstico lonsign «La longitud perdió el signo negativo», los botones Corregir y Ficha, y la nota de que en 1 accesión no se pudo comparar la coordenada porque las cajas cubren 119 países"></div>
+    <div class="marco"><img src="../img/b3-geo.png" alt="La sección 2 del Bloque 3: la accesión MEX-ZM-0039, Tuxpeño de la costa, con país MEX y coordenadas 18.8100, 96.0600, el diagnóstico Signo de la longitud, «La longitud perdió el signo negativo», los botones Corregir y Ficha, y la nota de que en 1 accesión no se pudo comparar la coordenada porque las cajas cubren 119 países"></div>
     <figcaption><b>Figura 3.2.</b> La sección 2 con la colección de ejemplo: el maíz <i>Tuxpeño de la costa</i> declara México con una longitud positiva, que lo pondría en Birmania. Abajo, la nota de la accesión que no se pudo comparar.</figcaption>
   </figure>
   <h3>Las revisiones, en orden</h3>
   <p>La app no revisa una accesión a la que le falta la latitud o la longitud, o que las tiene escritas con algo que no es un número: de eso se encarga el Bloque 2. Con las dos coordenadas presentes, revisa en este orden:</p>
   <table class="compacta">
-    <thead><tr><th style="width:0.95in">Etiqueta</th><th style="width:0.7in">Nivel</th><th>Qué detecta y qué dice la app</th></tr></thead>
+    <thead><tr><th style="width:1.35in">Etiqueta</th><th style="width:0.6in">Nivel</th><th>Qué detecta y qué dice la app</th></tr></thead>
     <tbody>
-      <tr><td><code>zerozero</code></td><td>error</td><td>El punto (0, 0): <i>está en el golfo de Guinea: es un campo vacío escrito como cero.</i> No tiene corrección posible; hay que buscar la coordenada en la libreta.</td></tr>
-      <tr><td><code>lateqlon</code></td><td>aviso</td><td>Latitud y longitud idénticas: probablemente se copió una sobre la otra.</td></tr>
-      <tr><td><code>rounded</code></td><td>aviso</td><td>Las dos son números enteros: el sitio quedó redondeado a grados y carga más de 50 km de incertidumbre.</td></tr>
-      <tr><td><code>nobox</code></td><td>nota</td><td>El país no está entre los 119: la coordenada no se compara. No cuenta como problema; se resume en una nota bajo la tabla.</td></tr>
-      <tr><td><code>lonsign</code>, <code>latsign</code>, <code>swapped</code>, <code>swapsign</code></td><td>error</td><td>El punto cae fuera de la caja y una de las equivocaciones clásicas lo devuelve adentro (abajo). La app propone esa corrección.</td></tr>
-      <tr><td><code>outside</code></td><td>aviso</td><td>El punto cae fuera y ninguna corrección simple lo arregla: hay que revisar la coordenada o el país.</td></tr>
+      <tr><td><span class="ui">Punto (0, 0)</span></td><td>error</td><td>El punto (0, 0): <i>está en el golfo de Guinea: es un campo vacío escrito como cero.</i> No tiene corrección posible; hay que buscar la coordenada en la libreta.</td></tr>
+      <tr><td><span class="ui">Latitud = longitud</span></td><td>aviso</td><td>Latitud y longitud idénticas: probablemente se copió una sobre la otra.</td></tr>
+      <tr><td><span class="ui">Grados enteros</span></td><td>aviso</td><td>Las dos son números enteros: el sitio quedó redondeado a grados y carga más de 50 km de incertidumbre.</td></tr>
+      <tr><td><span class="ui">País sin contorno</span></td><td>nota</td><td>El país no está entre los 119: la coordenada no se compara. No cuenta como problema; se resume en una nota bajo la tabla.</td></tr>
+      <tr><td><span class="ui">Signo de la longitud</span>, <span class="ui">Signo de la latitud</span>, <span class="ui">Coordenadas intercambiadas</span>, <span class="ui">Intercambiadas y con signo</span></td><td>error</td><td>El punto cae fuera de la caja y una de las equivocaciones clásicas lo devuelve adentro (abajo). La app propone esa corrección.</td></tr>
+      <tr><td><span class="ui">Fuera del país</span></td><td>aviso</td><td>El punto cae fuera y ninguna corrección simple lo arregla: hay que revisar la coordenada o el país.</td></tr>
     </tbody>
   </table>
   <h3>Las equivocaciones clásicas y su diagnóstico</h3>
   <p>Cuando el punto se sale de la caja, la app prueba cuatro arreglos, uno tras otro, y se queda con el primero que lo devuelve al país:</p>
   <ol>
-    <li><b>La longitud perdió el signo</b> (<code>lonsign</code>): se cambia el signo de la longitud. Es la más común en América, donde todas las longitudes son negativas y el signo se pierde al pasar por una hoja de cálculo o al copiar de un GPS que escribe «W».</li>
-    <li><b>La latitud tiene el signo cambiado</b> (<code>latsign</code>): el error simétrico, típico de los países del hemisferio sur.</li>
-    <li><b>Latitud y longitud intercambiadas</b> (<code>swapped</code>): cada una quedó en la columna de la otra.</li>
-    <li><b>Intercambiadas y con el signo cambiado</b> (<code>swapsign</code>): las dos cosas a la vez.</li>
+    <li><b>La longitud perdió el signo</b> (<span class="ui">Signo de la longitud</span>): se cambia el signo de la longitud. Es la más común en América, donde todas las longitudes son negativas y el signo se pierde al pasar por una hoja de cálculo o al copiar de un GPS que escribe «W».</li>
+    <li><b>La latitud tiene el signo cambiado</b> (<span class="ui">Signo de la latitud</span>): el error simétrico, típico de los países del hemisferio sur.</li>
+    <li><b>Latitud y longitud intercambiadas</b> (<span class="ui">Coordenadas intercambiadas</span>): cada una quedó en la columna de la otra.</li>
+    <li><b>Intercambiadas y con el signo cambiado</b> (<span class="ui">Intercambiadas y con signo</span>): las dos cosas a la vez.</li>
   </ol>
-  <p>El orden importa sólo cuando dos arreglos funcionarían, cosa rara con cajas pequeñas. Cada fila de la tabla trae el número y el nombre de la accesión, el país, las coordenadas tal como están y el diagnóstico, con dos botones: <span class="ui">Corregir</span> aplica en el acto la corrección propuesta (y la etiqueta verde dice <i>Coordenada corregida.</i>), y <span class="ui">Ficha</span> abre la ficha de la accesión en el Bloque 2 para que la revises o la corrijas a mano.</p>
+  <p>El orden importa sólo cuando dos arreglos funcionarían, cosa rara con cajas pequeñas. Cada fila de la tabla trae el número y el nombre de la accesión, el país, las coordenadas tal como están y el diagnóstico —una etiqueta con el nombre del problema y la explicación—, con dos botones: <span class="ui">Corregir</span> aplica en el acto la corrección propuesta (y la etiqueta verde dice <i>Coordenada corregida.</i>), y <span class="ui">Ficha</span> abre la ficha de la accesión en el Bloque 2 para que la revises o la corrijas a mano.</p>
   <div class="caja ejemplo">
     <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · el maíz que cayó al otro lado del mundo</div>
-    <p>La caja de México va de 14.3 a 32.8 de latitud y de −118.5 a −86.6 de longitud; con el grado de margen, de 13.3 a 33.8 y de −119.5 a −85.6. <i>Tuxpeño de la costa</i> (MEX-ZM-0039) declara 18.8100, 96.0600: la latitud cae dentro, pero la longitud +96.06 está en el hemisferio oriental, en Birmania. La primera prueba, cambiar el signo de la longitud, da −96.06, que sí cae entre −119.5 y −85.6: diagnóstico <code>lonsign</code>, corrección <b>96.0600 → −96.06</b>. El punto corregido queda en la llanura costera del golfo, en Veracruz.</p>
+    <p>La caja de México va de 14.3 a 32.8 de latitud y de −118.5 a −86.6 de longitud; con el grado de margen, de 13.3 a 33.8 y de −119.5 a −85.6. <i>Tuxpeño de la costa</i> (MEX-ZM-0039) declara 18.8100, 96.0600: la latitud cae dentro, pero la longitud +96.06 está en el hemisferio oriental, en Birmania. La primera prueba, cambiar el signo de la longitud, da −96.06, que sí cae entre −119.5 y −85.6: diagnóstico <span class="ui">Signo de la longitud</span>, corrección <b>96.0600 → −96.06</b>. El punto corregido queda en la llanura costera del golfo, en Veracruz.</p>
   </div>
   <p>Debajo de la tabla, la nota <span class="ui">En 1 accesión no se pudo comparar la coordenada con el país porque la app no trae el contorno de ese país. Las cajas incluidas cubren 119 países.</span> se refiere al frijol tépari MEX-PH-0041, que declara su país como <i>MX</i>. No es que México falte: <i>MX</i> es el código de dos letras, y las cajas usan el de tres. En cuanto apliques la corrección <i>MX → MEX</i> (apartado 3.4), la coordenada se compara, cae dentro y la nota desaparece.</p>
   <div class="caja importante">
@@ -109,24 +109,24 @@
   <p>La sección <span class="ui">3 · Nombres y catálogos</span> busca lo que no es un error de formato, pero desordena la colección: cosas que el Bloque 2 no puede ver porque cada dato, por separado, está bien escrito. Antes de comparar, la app <b>normaliza</b> los textos: quita acentos y signos, pasa todo a minúsculas y junta los espacios. Por eso «Maiz» y «Maíz» cuentan como el mismo nombre de cultivo, y en la colección de ejemplo no salta ningún aviso aunque la accesión duplicada escriba «Maiz» sin acento.</p>
   <table class="compacta">
     <caption><b>Tabla 3.2.</b> Las revisiones de nombres y catálogos. Todas son avisos (etiqueta ocre), salvo el sitio con varias ortografías, que es una nota (etiqueta azul).</caption>
-    <thead><tr><th style="width:1.05in">Etiqueta</th><th>Qué busca</th></tr></thead>
+    <thead><tr><th style="width:1.45in">Etiqueta</th><th>Qué busca</th></tr></thead>
     <tbody>
-      <tr><td><code>genusCase</code></td><td>Un género que no va con mayúscula inicial y el resto en minúsculas (<i>zea</i>, <i>ZEA</i>).</td></tr>
-      <tr><td><code>speciesCase</code></td><td>Un epíteto con alguna mayúscula (<i>Mays</i>).</td></tr>
-      <tr><td><code>speciesAuthor</code></td><td>Un epíteto que trae algo más: un espacio o una inicial con punto, como <i>mays L.</i> La autoridad va en <code>SPAUTHOR</code> y el rango infraespecífico, en <code>SUBTAXA</code>.</td></tr>
-      <tr><td><code>genusTypo</code></td><td>Dos géneros de la colección que se parecen demasiado para ser distintos: a una <b>distancia de Levenshtein</b> de 1 o 2, con al menos cinco letras el más largo.</td></tr>
-      <tr><td><code>cropName</code></td><td>El mismo taxón con varios nombres de cultivo. El taxón incluye la subespecie o la variedad: el teocintle (<i>Zea mays</i> subsp. <i>parviglumis</i>) no cuenta como otro nombre del maíz.</td></tr>
-      <tr><td><code>siteSpelling</code></td><td>El mismo sitio escrito de varias maneras: iguales después de normalizar, distintos tal como están.</td></tr>
-      <tr><td><code>sameCoords</code></td><td>Accesiones con exactamente las mismas coordenadas (a cuatro decimales) que declaran sitios distintos: casi siempre, una coordenada copiada de la fila de arriba.</td></tr>
+      <tr><td><span class="ui">Mayúsculas del género</span></td><td>Un género que no va con mayúscula inicial y el resto en minúsculas (<i>zea</i>, <i>ZEA</i>).</td></tr>
+      <tr><td><span class="ui">Mayúsculas del epíteto</span></td><td>Un epíteto con alguna mayúscula (<i>Mays</i>).</td></tr>
+      <tr><td><span class="ui">Autoridad en el epíteto</span></td><td>Un epíteto que trae algo más: un espacio o una inicial con punto, como <i>mays L.</i> La autoridad va en <code>SPAUTHOR</code> y el rango infraespecífico, en <code>SUBTAXA</code>.</td></tr>
+      <tr><td><span class="ui">Género mal escrito</span></td><td>Dos géneros de la colección que se parecen demasiado para ser distintos: a una <b>distancia de Levenshtein</b> de 1 o 2, con al menos cinco letras el más largo.</td></tr>
+      <tr><td><span class="ui">Nombres de cultivo</span></td><td>El mismo taxón con varios nombres de cultivo. El taxón incluye la subespecie o la variedad: el teocintle (<i>Zea mays</i> subsp. <i>parviglumis</i>) no cuenta como otro nombre del maíz.</td></tr>
+      <tr><td><span class="ui">Ortografía del sitio</span></td><td>El mismo sitio escrito de varias maneras: iguales después de normalizar, distintos tal como están.</td></tr>
+      <tr><td><span class="ui">Coordenadas repetidas</span></td><td>Accesiones con exactamente las mismas coordenadas (a cuatro decimales) que declaran sitios distintos: casi siempre, una coordenada copiada de la fila de arriba.</td></tr>
     </tbody>
   </table>
   <p>La distancia de Levenshtein es el número mínimo de letras que hay que insertar, borrar o cambiar para pasar de una palabra a otra. De <i>Phaseolus</i> a <i>Phaseolous</i> hay una (sobra la segunda <i>o</i>); de <i>Capsicum</i> a <i>Capcisum</i>, dos (dos letras cambiadas de lugar cuestan dos cambios). El mínimo de cinco letras evita que dos géneros cortos y distintos, que pueden diferir en una o dos letras, se acusen entre sí.</p>
   <p>La colección de ejemplo pasa limpia: la sección dice <span class="ui">Los nombres científicos, los de cultivo y los sitios están escritos de manera uniforme.</span> y el recuadro de avisos marca 0. Para la figura 3.3 se alteraron a mano seis valores, como podrías hacerlo en la ficha del Bloque 2, para que aparezca cada tipo de aviso.</p>
   <figure style="width:80%;margin-left:auto;margin-right:auto">
-    <div class="marco"><img src="../img/b3-nombres.png" alt="La sección 3 con seis avisos: speciesCase en 2 accesiones, speciesAuthor en 1, genusTypo «Phaseolus» y «Phaseolous» en 4, cropName de zea mays con dos nombres de cultivo, maiz y elote, en 15, siteSpelling de Oaxaca, San Pablo Villa de Mitla en 4 y sameCoords en 2; abajo, el detalle del primero con los botones MEX-ZM-0001 y MEX-ZM-0003"></div>
-    <figcaption><b>Figura 3.3.</b> La sección 3 con seis valores de la colección de ejemplo alterados para la figura: el género de MEX-PH-0041 escrito <i>Phaseolous</i>; el epíteto de MEX-ZM-0001 como <i>Mays</i> y el de MEX-ZM-0003 como <i>mays L.</i>; el cultivo de MEX-ZM-0004 como <i>Elote</i>; el sitio de MEX-ZM-0045 con <i>villa</i> en minúscula, y la coordenada de MEX-SE-0019 copiada en MEX-CH-0042. Abajo, el detalle que abre <span class="ui">ver</span>.</figcaption>
+    <div class="marco"><img src="../img/b3-nombres.png" alt="La sección 3 con seis avisos: Mayúsculas del epíteto en 2 accesiones, Autoridad en el epíteto en 1, Género mal escrito, «Phaseolus» y «Phaseolous», en 4, Nombres de cultivo de Zea mays, «Maíz» y «Elote», en 15, Ortografía del sitio de Oaxaca, San Pablo Villa de Mitla en 4 y Coordenadas repetidas en 2; abajo, el detalle del primero con los botones MEX-ZM-0003 y MEX-ZM-0006"></div>
+    <figcaption><b>Figura 3.3.</b> La sección 3 con seis valores de la colección de ejemplo alterados para la figura: el género de MEX-PH-0041 escrito <i>Phaseolous</i>; el epíteto de MEX-ZM-0006 como <i>Mays</i> y el de MEX-ZM-0003 como <i>mays L.</i>; el cultivo de MEX-ZM-0004 como <i>Elote</i>; el sitio de MEX-ZM-0045 con <i>villa</i> en minúscula, y la coordenada de MEX-SE-0019 copiada en MEX-CH-0042. Abajo, el detalle que abre <span class="ui">ver</span>.</figcaption>
   </figure>
-  <p>Cada fila da el tipo, el hallazgo y cuántas accesiones toca. El botón <span class="ui">ver</span> despliega debajo la lista de esas accesiones —hasta 40— como botones; cada uno abre su ficha en el Bloque 2. Fíjate en que <i>mays L.</i> salta dos veces: como epíteto con mayúscula y como epíteto con autoridad. Y en el aviso del cultivo, el taxón y los nombres aparecen ya normalizados (<i>zea mays</i>, <i>maiz</i>, <i>elote</i>): así los comparó la app.</p>
+  <p>Cada fila da el tipo, el hallazgo y cuántas accesiones toca. El botón <span class="ui">ver</span> despliega debajo la lista de esas accesiones —hasta 40— como botones; cada uno abre su ficha en el Bloque 2. Fíjate en que <i>mays L.</i> salta dos veces: como epíteto con mayúscula y como epíteto con autoridad. En el aviso del cultivo, el taxón y los nombres aparecen como están escritos en el pasaporte, aunque la app los haya comparado ya normalizados.</p>
   <div class="caja nota">
     <div class="caja-t"><span class="ico">i</span>Avisar no es corregir</div>
     <p>De todos estos avisos, sólo las mayúsculas del género y del epíteto tienen corrección automática (apartado 3.4). Los demás piden juicio: cuál de los dos géneros es el bueno, si «Elote» es un error o el nombre local que quieres conservar, cuál de las dos accesiones con la misma coordenada la tiene bien. La app te lleva a la ficha; la decisión, y la corrección, se hacen en el Bloque 2.</p>
@@ -136,25 +136,26 @@
   <h2 id="b3-4"><span class="num">3.4</span>Las correcciones, siempre con tu visto bueno</h2>
   <p>La sección <span class="ui">1 · Correcciones que la app puede hacer por ti</span> reúne los arreglos que tienen una sola respuesta razonable. Ninguno se aplica solo: cada uno se muestra con el valor original tachado y el propuesto en verde, y se aplica cuando tú lo dices.</p>
   <figure>
-    <div class="marco"><img src="../img/b3-correcciones.png" alt="La sección 1 con cuatro correcciones: DECLONGITUDE, la longitud perdió el signo, 96.0600 a -96.06; ORIGCTY, MX a MEX; ACCENAME, todo en mayúsculas, BOLITA AMARILLO a Bolita Amarillo; ACCENAME, espacios de más, Chayote verde liso; cada una con 1 caso y su botón Aplicar, y abajo el botón Aplicar todas las correcciones (4)"></div>
-    <figcaption><b>Figura 3.4.</b> Las cuatro correcciones que la app propone para la colección de ejemplo, agrupadas por tipo y descriptor.</figcaption>
+    <div class="marco"><img src="../img/b3-correcciones.png" alt="La sección 1 con cuatro correcciones: Longitud decimal, Signo de la longitud, 96.0600 a -96.06; País de origen, País en dos letras, MX a MEX; Nombre de la accesión, Todo en mayúsculas, BOLITA AMARILLO a Bolita amarillo; Nombre de la accesión, Espacios de más, Chayote verde liso; cada una con 1 caso y su botón Aplicar, y abajo el botón Aplicar todas las correcciones (4)"></div>
+    <figcaption><b>Figura 3.4.</b> Las cuatro correcciones que la app propone para la colección de ejemplo, agrupadas por tipo y descriptor: a la izquierda, el nombre del descriptor; en medio, la etiqueta de la corrección y su motivo.</figcaption>
   </figure>
   <table class="compacta">
-    <caption><b>Tabla 3.3.</b> Las correcciones que la app sabe proponer.</caption>
-    <thead><tr><th style="width:1.15in">Descriptor</th><th>Cuándo se propone y qué hace</th></tr></thead>
+    <caption><b>Tabla 3.3.</b> Las correcciones que la app sabe proponer: la etiqueta que muestra en la columna <span class="ui">Qué se propone</span> y los descriptores que toca.</caption>
+    <thead><tr><th style="width:1.9in">Corrección · descriptor</th><th>Cuándo se propone y qué hace</th></tr></thead>
     <tbody>
-      <tr><td><code>DECLATITUDE</code>, <code>DECLONGITUDE</code></td><td>Cuando la revisión del apartado 3.2 encontró una de las equivocaciones clásicas: el cambio de signo o el intercambio que devuelve el punto al país.</td></tr>
-      <tr><td><code>ORIGCTY</code></td><td>Cuando el país viene en dos letras y la app lo conoce: lo cambia por el código de tres letras que pide el estándar. La tabla de la app tiene 56 códigos de uso común (<i>MX</i>, <i>GT</i>, <i>PE</i>, <i>US</i>, <i>ES</i>…, y también <i>UK</i> para el Reino Unido).</td></tr>
-      <tr><td><code>ACCENAME</code>, <code>COLLSITE</code>, <code>CROPNAME</code></td><td>Espacios de más al principio, al final o entre palabras; o un texto escrito todo en mayúsculas, que pasa a formato de nombre —mayúscula al principio de cada palabra— y de paso pierde los espacios sobrantes.</td></tr>
-      <tr><td><code>GENUS</code>, <code>SPECIES</code></td><td>El género con mayúscula inicial; el epíteto en minúsculas (sólo si no trae autoridad, que hay que mover a mano).</td></tr>
-      <tr><td><code>GP_CONS</code></td><td>La ruta de conservación vacía cuando se puede deducir del tipo de almacenamiento (<code>STORAGE</code>).</td></tr>
-      <tr><td><code>DECLATITUDE</code>, <code>DECLONGITUDE</code></td><td>La coordenada decimal vacía cuando hay una en grados, minutos y segundos (<code>LATITUDE</code>, <code>LONGITUDE</code>): la calcula, con seis decimales.</td></tr>
+      <tr><td>Las cuatro del apartado 3.2 (<span class="ui">Signo de la longitud</span>…) · latitud y longitud decimales</td><td>Cuando la revisión del apartado 3.2 encontró una de las equivocaciones clásicas: el cambio de signo o el intercambio que devuelve el punto al país.</td></tr>
+      <tr><td><span class="ui">País en dos letras</span> · país de origen</td><td>Cuando el país viene en dos letras y la app lo conoce: lo cambia por el código de tres letras que pide el estándar. La tabla de la app tiene 56 códigos de uso común (<i>MX</i>, <i>GT</i>, <i>PE</i>, <i>US</i>, <i>ES</i>…, y también <i>UK</i> para el Reino Unido).</td></tr>
+      <tr><td><span class="ui">Espacios de más</span> · nombre de la accesión, sitio de colecta, nombre común del cultivo</td><td>Espacios de más al principio, al final o entre palabras.</td></tr>
+      <tr><td><span class="ui">Todo en mayúsculas</span> · los mismos tres</td><td>Sólo un texto escrito <b>todo</b> en mayúsculas (con alguna palabra de cuatro letras o más). El nombre de la accesión y el del cultivo pasan a forma de oración: <i>BOLITA  AMARILLO</i> → <i>Bolita amarillo</i>. El sitio pasa a nombre de lugar, con mayúscula en cada palabra salvo <i>de</i>, <i>la</i>, <i>del</i> y las demás palabras menores: <i>SAN PABLO VILLA DE MITLA, OAXACA</i> → <i>San Pablo Villa de Mitla, Oaxaca</i>. De paso quita los espacios sobrantes.</td></tr>
+      <tr><td><span class="ui">Mayúsculas del género</span>, <span class="ui">Mayúsculas del epíteto</span> · género, epíteto específico</td><td>El género con mayúscula inicial; el epíteto en minúsculas (sólo si no trae autoridad, que hay que mover a mano).</td></tr>
+      <tr><td><span class="ui">Ruta deducida</span> · ruta de conservación activa</td><td>La ruta de conservación vacía cuando se puede deducir del tipo de almacenamiento (<code>STORAGE</code>).</td></tr>
+      <tr><td><span class="ui">Grados, minutos y segundos</span> · latitud y longitud decimales</td><td>La coordenada decimal vacía cuando hay una en grados, minutos y segundos (<code>LATITUDE</code>, <code>LONGITUDE</code>): la calcula, con seis decimales.</td></tr>
     </tbody>
   </table>
-  <p>Las propuestas se agrupan por tipo y descriptor; cada grupo muestra su primer caso como ejemplo y cuántos casos tiene. El botón <span class="ui">Aplicar</span> de una fila aplica todo ese grupo; <span class="ui">Aplicar todas las correcciones (4)</span>, todas a la vez. Al aplicar, el pasaporte se guarda, la validación del Bloque 2 se rehace y la revisión del Bloque 3 vuelve a correr. Con la colección de ejemplo, después de aplicar las cuatro, los recuadros marcan 0 problemas de ubicación y 0 correcciones, y la nota del país sin caja desaparece; los dos grupos de duplicados siguen ahí, porque corregir un nombre no los separa.</p>
+  <p>Las propuestas se agrupan por tipo y descriptor; cada grupo muestra su primer caso como ejemplo y cuántos casos tiene. El botón <span class="ui">Aplicar</span> de una fila aplica todo ese grupo (la etiqueta verde dice, por ejemplo, <i>1 corrección aplicada en Longitud decimal.</i>); <span class="ui">Aplicar todas las correcciones (4)</span>, todas a la vez. Al aplicar, el pasaporte se guarda, la validación del Bloque 2 se rehace y la revisión del Bloque 3 vuelve a correr. Con la colección de ejemplo, después de aplicar las cuatro, los recuadros marcan 0 problemas de ubicación y 0 correcciones, y la nota del país sin caja desaparece; los dos grupos de duplicados siguen ahí, porque corregir un nombre no los separa.</p>
   <div class="caja importante">
     <div class="caja-t"><span class="ico">!</span>Antes de aplicar todo de un golpe</div>
-    <p>El formato de nombre pone mayúscula a cada palabra: <i>BOLITA AMARILLO</i> pasa a <i>Bolita Amarillo</i>, no a <i>Bolita amarillo</i>, y un sitio como <i>SAN PABLO VILLA DE MITLA</i> quedaría <i>San Pablo Villa De Mitla</i>. No hay botón para deshacer: la propia app lo recuerda, <span class="ui">Puedes deshacerlas editando la accesión en el Bloque 2.</span> Con una colección grande, aplica por grupos, revisa los ejemplos y, si dudas, exporta antes el pasaporte (capítulo 2).</p>
+    <p>La forma de oración deja en minúscula todo lo que sigue a la primera palabra, también un nombre propio: <i>TUXPEÑO DE VERACRUZ</i> quedaría <i>Tuxpeño de veracruz</i>. Lo que ya mezcla mayúsculas y minúsculas no se toca, así que esto sólo pasa con nombres capturados todo en mayúsculas. No hay botón para deshacer: la propia app lo recuerda, <span class="ui">Puedes deshacerlas editando la accesión en el Bloque 2.</span> Con una colección grande, aplica por grupos, revisa los ejemplos y, si dudas, exporta antes el pasaporte (capítulo 2).</p>
   </div>
 
   <!-- 3.5 -->
@@ -200,13 +201,11 @@
   <div class="caja ejemplo">
     <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · MARTHA y MARHTA</div>
     <table class="compacta cuenta"><tbody>
-      <tr><td colspan="2">|a| = |b| = 6 · ventana = ⌊6/2⌋ − 1 = 2 posiciones</td></tr>
-      <tr><td colspan="2">M-A-R se emparejan en su lugar; T (posición 4 de a) encuentra la T de b en la posición 5; H (5) encuentra la H de b en la 4; A con A  →  m = 6</td></tr>
-      <tr><td colspan="2">en orden, a da M A R T H A y b da M A R H T A: dos letras fuera de orden  →  t = 2/2 = 1</td></tr>
+      <tr><td colspan="2">ventana = ⌊6/2⌋ − 1 = 2 · las seis letras se emparejan (T y H, a una posición)  →  m = 6</td></tr>
+      <tr><td colspan="2">M A R T H A frente a M A R H T A: dos letras fuera de orden  →  t = 2/2 = 1</td></tr>
       <tr><td style="width:50%">J = (6/6 + 6/6 + 5/6) / 3 = 0.9444</td><td>prefijo común M-A-R  →  ℓ = 3</td></tr>
-      <tr><td colspan="2">JW = 0.9444 + 3 × 0.1 × (1 − 0.9444) = 0.9444 + 0.0167 = 0.9611</td></tr>
+      <tr><td colspan="2">JW = 0.9444 + 3 × 0.1 × (1 − 0.9444) = 0.9611, como en la app</td></tr>
     </tbody></table>
-    <p>La función de la app da 0.9611. Si fueran dos nombres de accesión, el par sumaría los 25 puntos de <i>nombres casi idénticos (96 %)</i>. Con las mismas reglas, <i>bolita amarillo</i> y <i>bolita amarilla</i> dan 0.973, y <i>Chayote verde liso</i> y <i>Chayote erizo (cuspidatum)</i>, 0.87: nombres parecidos, 12 puntos.</p>
   </div>
   <h3>La distancia entre los dos sitios</h3>
   <div class="caja teoria">
@@ -224,7 +223,7 @@
       <tr><td>sin²(Δλ/2) = 8.9595 × 10<sup>−8</sup></td><td>a = 1.5490 × 10<sup>−7</sup> + 0.91497 × 8.9595 × 10<sup>−8</sup> = 2.3687 × 10<sup>−7</sup></td></tr>
       <tr><td colspan="2">d = 2 × 6 371.0088 × arcsen(4.8670 × 10<sup>−4</sup>) = 2 × 6 371.0088 × 4.8670 × 10<sup>−4</sup> = 6.2015 km</td></tr>
     </tbody></table>
-    <p>La app escribe <i>6.20 km</i> en la cabecera del par y suma 5 puntos, porque la distancia queda entre 5 y 25 km.</p>
+    <p>La app escribe <i>6.2 km</i>, igual en la cabecera del par que en la razón, y suma 5 puntos, porque la distancia queda entre 5 y 25 km.</p>
   </div>
 
   <!-- 3.6 -->
@@ -236,12 +235,12 @@
   </figure>
   <p>Cada grupo es una tarjeta con el puntaje más alto de sus pares, los números de sus accesiones en el orden del pasaporte, el nombre de la primera y el botón <span class="ui">comparar</span>. Con la colección de ejemplo y el umbral de fábrica salen <b>2 grupos y 2 pares</b>, los dos duplicados sembrados, ambos con 100 puntos. El del maíz suma exactamente 100: el mismo taxón (+10), el mismo número de colecta LAB-2019-101 (+40), nombres casi idénticos (+25: después de normalizar, <i>BOLITA  AMARILLO</i> y <i>Bolita amarillo</i> son iguales), 6.2 km (+5), la misma fecha (+15) y la misma misión (+5). El del chayote suma 102 —el mismo taxón, número de colecta LAB-2018-102, nombre, 1.97 km (+12) y fecha— y se recorta a 100.</p>
   <h3>La comparación lado a lado</h3>
-  <p><span class="ui">comparar</span> abre la tarjeta (y <span class="ui">ocultar</span> la cierra). Arriba, una tabla pone las accesiones en columnas, con la primera marcada como <span class="ui">maestra</span>, y en filas hasta quince descriptores: número y nombre de la accesión, género, epíteto, número, fecha y sitio de colecta, latitud, longitud, altitud, instituto que conserva, ruta de conservación, existencias, otros números y número del donante. Las filas vacías en todas las accesiones se omiten; las que <b>difieren</b> se resaltan en rosa con el nombre en negritas, para que veas de un vistazo en qué no coinciden.</p>
+  <p><span class="ui">comparar</span> abre la tarjeta (y <span class="ui">ocultar</span> la cierra). Arriba, una tabla pone las accesiones en columnas, con la primera marcada como <span class="ui">maestra</span>, y en filas hasta quince descriptores: número y nombre de la accesión, género, epíteto, número, fecha y sitio de colecta, latitud, longitud, altitud, instituto que conserva, ruta de conservación (con su nombre: <i>Banco de semillas</i>, <i>Banco de campo o colección viva</i>…), existencias, otros números y número del donante. Las filas vacías en todas las accesiones se omiten; las que <b>difieren</b> se resaltan en rosa con el nombre en negritas, para que veas de un vistazo en qué no coinciden.</p>
   <figure style="width:76%;margin-left:auto;margin-right:auto">
-    <div class="marco"><img src="../img/b3-comparar.png" alt="El grupo de MEX-ZM-0002 y MEX-ZM-0045 abierto: la tabla con la maestra MEX-ZM-0002, las filas resaltadas del número, el nombre, la latitud, la longitud, la altitud y las existencias, 1930 contra 1400; debajo, el par con 100 puntos y 6.20 km, sus seis razones con los puntos de cada una y los botones Fusionar en la primera, Anotar como duplicado sin fusionar y No son duplicados"></div>
+    <div class="marco"><img src="../img/b3-comparar.png" alt="El grupo de MEX-ZM-0002 y MEX-ZM-0045 abierto: la tabla con la maestra MEX-ZM-0002, las filas resaltadas del número, el nombre, la latitud, la longitud, la altitud y las existencias, 1930 contra 1400; debajo, el par con 100 puntos y 6.2 km, sus seis razones con los puntos de cada una y los botones Fusionar en la primera, Anotar como duplicado sin fusionar y No son duplicados"></div>
     <figcaption><b>Figura 3.6.</b> La comparación del primer grupo. Difieren el número, la forma del nombre, la coordenada, la altitud (1 696 y 1 691 m) y las existencias; coinciden el número y la fecha de colecta, el sitio y el instituto.</figcaption>
   </figure>
-  <p>Debajo van los <b>pares</b> del grupo, uno por recuadro: los dos números, el puntaje, la distancia y la lista de razones, cada una con sus puntos entre paréntesis. Cada par lleva sus tres botones de decisión (apartado 3.7). La razón de la distancia redondea según su tramo —<i>a 6 km una de otra</i>— mientras la cabecera da la distancia con dos decimales.</p>
+  <p>Debajo van los <b>pares</b> del grupo, uno por recuadro: los dos números, el puntaje, la distancia y la lista de razones, cada una con sus puntos entre paréntesis. Cada par lleva sus tres botones de decisión (apartado 3.7). La distancia se escribe igual en la cabecera y en la razón: en metros por debajo de 1 km, con un decimal hasta 10 km (<i>a 6.2 km una de otra</i>) y en kilómetros enteros desde ahí.</p>
   <h3>El umbral</h3>
   <p>El deslizador <span class="ui">Umbral para proponer un duplicado</span> va de 25 a 95 puntos, de 5 en 5, y empieza en 50. Al soltarlo, la revisión vuelve a correr; el valor se guarda en el navegador para la próxima vez. La propia app resume el compromiso: <span class="ui">Bajar el umbral propone más pares y acierta menos; subirlo, al revés.</span></p>
   <table class="compacta">
@@ -249,16 +248,17 @@
     <thead><tr><th style="width:0.9in" class="c">Umbral</th><th class="c" style="width:0.6in">Pares</th><th class="c" style="width:0.65in">Grupos</th><th>Qué entra</th></tr></thead>
     <tbody>
       <tr><td class="c">40 a 95</td><td class="c">2</td><td class="c">2</td><td>Sólo los dos duplicados sembrados (100 puntos).</td></tr>
-      <tr><td class="c">35</td><td class="c">4</td><td class="c">2</td><td>El tercer chayote de Huatusco, MEX-SE-0030, con 39 puntos frente a cada uno de los otros dos: se une a su grupo.</td></tr>
-      <tr><td class="c">30</td><td class="c">5</td><td class="c">3</td><td>Además, dos maíces de la misma misión con nombres parecidos (32 puntos).</td></tr>
-      <tr><td class="c">25</td><td class="c">8</td><td class="c">5</td><td>Tres pares más, de 25 a 27 puntos: mismo taxón con nombre parecido o cercanía.</td></tr>
+      <tr><td class="c">35</td><td class="c">4</td><td class="c">2</td><td>El chayote erizo MEX-SE-0030 (39 puntos con cada uno) se une al grupo del chayote.</td></tr>
+      <tr><td class="c">30</td><td class="c">5</td><td class="c">3</td><td>Además, dos maíces de la misma misión con nombres parecidos (32).</td></tr>
+      <tr><td class="c">25</td><td class="c">8</td><td class="c">5</td><td>Tres pares más, de 25 a 27 puntos (taxón, nombre parecido, cercanía).</td></tr>
     </tbody>
   </table>
   <figure style="width:76%;margin-left:auto;margin-right:auto">
-    <div class="marco"><img src="../img/b3-umbral.png" alt="La sección 4 con el umbral en 35 puntos: el grupo del maíz cerrado y el del chayote abierto con tres accesiones, MEX-SE-0029, MEX-SE-0030 y MEX-SE-0046; la tabla muestra que MEX-SE-0030, Chayote erizo (cuspidatum), tiene otro número de colecta, LAB-2018-103, otra fecha, 20180616, y 28 plantas"></div>
-    <figcaption><b>Figura 3.7.</b> Con el umbral en 35, el chayote erizo MEX-SE-0030 entra por transitividad al grupo del chayote verde liso. La comparación delata que es otra colecta: otro número, otro día y otro nombre.</figcaption>
+    <div class="marco"><img src="../img/b3-umbral.png" alt="Con el umbral en 35 puntos, el grupo del chayote abierto con tres accesiones, MEX-SE-0029, MEX-SE-0030 y MEX-SE-0046; las primeras filas de la comparación muestran que MEX-SE-0030, Chayote erizo (cuspidatum), tiene otro número de colecta, LAB-2018-103, y otra fecha, 20180616"></div>
+    <figcaption><b>Figura 3.7.</b> Con el umbral en 35, el chayote erizo MEX-SE-0030 entra por transitividad al grupo del chayote verde liso. Las primeras filas de la comparación delatan que es otra colecta: otro nombre, otro número y otro día.</figcaption>
   </figure>
-  <p>La figura 3.7 muestra el riesgo de la transitividad con un umbral bajo. El chayote erizo suma 39 puntos con cada chayote verde liso —el mismo taxón (+10), nombres parecidos al 87 % (+12), a 3.4 y 2.3 km (+12) y el mismo año (+5)— y queda en el grupo, aunque es otra colecta, de otro día, y en su pasaporte es otra variedad (<code>SUBTAXA</code> <i>var. nigrum spinosum</i>, un descriptor que el puntaje no mira). Por eso la decisión se toma <b>par por par</b>: aquí se descartarían los dos pares de 39 puntos con <span class="ui">No son duplicados</span> y se resolvería sólo el de 100.</p>
+  <p>La figura 3.7 muestra el riesgo de la transitividad con un umbral bajo. El chayote erizo suma 39 puntos con cada chayote verde liso —el mismo taxón (+10), nombres parecidos al 87 % (+12), a 3.4 y 2.3 km (+12) y el mismo año (+5)— y queda en el grupo, aunque es otra colecta, de otro día, y en su pasaporte es otra variedad (<code>SUBTAXA</code> <i>var. nigrum spinosum</i>).</p>
+  <p>La resta por subtaxones distintos no lo frena, porque los chayotes verdes lisos no declaran variedad: la app sólo resta los 15 puntos cuando los dos lados declaran un subtaxón y no coincide. Por eso la decisión se toma <b>par por par</b>: aquí se descartarían los dos pares de 39 puntos con <span class="ui">No son duplicados</span> y se resolvería sólo el de 100.</p>
 
   <!-- 3.7 -->
   <h2 id="b3-7"><span class="num">3.7</span>Fusionar, anotar o descartar</h2>
@@ -282,7 +282,7 @@
   <h3>Anotar como duplicado sin fusionar</h3>
   <p><span class="ui">Anotar como duplicado sin fusionar</span> deja las dos accesiones en el catálogo, pero hace constar el vínculo en ambas: cada una recibe el número de la otra en <code>OTHERNUMB</code> y una frase en <code>REMARKS</code> —en el ejemplo, <i>Duplicado declarado de MEX-SE-0046.</i> y <i>Duplicado declarado de MEX-SE-0029.</i>—. Es la salida para la misma colecta conservada en dos instituciones, o para dos lotes que decides mantener separados. El par deja de proponerse.</p>
   <h3>No son duplicados</h3>
-  <p><span class="ui">No son duplicados</span> descarta el par sin tocar el pasaporte. El descarte —igual que el de un par anotado— se guarda en el navegador y sobrevive a cerrar la app, así que el par no vuelve a molestar. El botón <span class="ui">Volver a proponer los descartados</span> lleva entre paréntesis cuántos hay y los devuelve todos a la vez. Con la colección de ejemplo, después de fusionar el maíz y anotar el chayote, el recuadro de grupos marca 0 y el botón dice <i>(1)</i>. Ojo: la app recuerda cada descarte por la posición de las dos accesiones en el pasaporte; si cargas otra colección o borras accesiones en el Bloque 2, un descarte viejo puede caer sobre otro par, así que al cambiar de colección conviene pulsar ese botón.</p>
+  <p><span class="ui">No son duplicados</span> descarta el par sin tocar el pasaporte. El descarte —igual que el de un par anotado— se guarda en el navegador y sobrevive a cerrar la app, así que el par no vuelve a molestar. Cada descarte se recuerda por la <b>identidad</b> de las dos accesiones —el código del instituto y el número de accesión de cada una—, no por su lugar en la tabla, así que sigue valiendo aunque fusiones, reordenes o importes más accesiones. El botón <span class="ui">Volver a proponer los descartados</span> lleva entre paréntesis cuántos descartes corresponden a un par de la colección actual y los devuelve todos a la vez. Con la colección de ejemplo, después de fusionar el maíz y anotar el chayote, el recuadro de grupos marca 0 y el botón dice <i>(1)</i>.</p>
   <!-- 3.8 -->
   <h2 id="b3-8"><span class="num">3.8</span>El informe de calidad</h2>
   <p><span class="ui">Descargar el informe de calidad</span> guarda <span class="ruta">informe-calidad.csv</span>, en UTF-8, con una fila por hallazgo y cinco columnas: <code>tipo</code>, <code>nivel</code>, <code>accesion</code>, <code>campo</code> y <code>detalle</code>. Reúne lo que encontró el Bloque 3 y, al final, lo que encontró la validación del Bloque 2, así que es la lista completa de pendientes de la colección en un solo archivo, para trabajarla en una hoja de cálculo o adjuntarla a un informe.</p>
@@ -291,7 +291,7 @@
     <thead><tr><th style="width:1in">tipo</th><th class="c" style="width:0.55in">Filas</th><th>nivel · accesion · campo</th></tr></thead>
     <tbody>
       <tr><td><code>geografia</code></td><td class="c">2</td><td><code>error</code>, <code>warn</code> o <code>info</code> · la accesión · el descriptor revisado (apartado 3.2).</td></tr>
-      <tr><td><code>consistencia</code></td><td class="c">0</td><td><code>warn</code> o <code>info</code> · todas las accesiones del hallazgo, separadas por espacios · la etiqueta del aviso (apartado 3.3).</td></tr>
+      <tr><td><code>consistencia</code></td><td class="c">0</td><td><code>warn</code> o <code>info</code> · todas las accesiones del hallazgo, separadas por espacios · el nombre del aviso, como en pantalla (apartado 3.3).</td></tr>
       <tr><td><code>correccion</code></td><td class="c">4</td><td><code>fix</code> · la accesión · el descriptor; el detalle trae «antes → después» y el motivo (apartado 3.4).</td></tr>
       <tr><td><code>duplicado</code></td><td class="c">2</td><td>el puntaje · las dos accesiones unidas con «+» · la distancia en km, con un decimal; el detalle, las razones (apartado 3.5).</td></tr>
       <tr><td><code>pasaporte</code></td><td class="c">29</td><td><code>error</code> o <code>warn</code> · la accesión · el descriptor: los 3 errores y 26 avisos de la validación del Bloque 2 (capítulo 2).</td></tr>
@@ -305,7 +305,7 @@
       <tr><td>geografia</td><td>info</td><td>MEX-PH-0041</td><td>ORIGCTY</td><td>La app no trae el contorno de MX…</td></tr>
       <tr><td>correccion</td><td>fix</td><td>MEX-PH-0041</td><td>ORIGCTY</td><td>MX → MEX · «MX» es el código de dos letras…</td></tr>
       <tr><td>duplicado</td><td>100</td><td>MEX-ZM-0002 + MEX-ZM-0045</td><td>6.2 km</td><td>el mismo taxón; el mismo número de colecta (LAB-2019-101); …</td></tr>
-      <tr><td>duplicado</td><td>100</td><td>MEX-SE-0029 + MEX-SE-0046</td><td>2 km</td><td>el mismo taxón; el mismo número de colecta (LAB-2018-102); …</td></tr>
+      <tr><td>duplicado</td><td>100</td><td>MEX-SE-0029 + MEX-SE-0046</td><td>2.0 km</td><td>el mismo taxón; el mismo número de colecta (LAB-2018-102); …</td></tr>
       <tr><td>pasaporte</td><td>warn</td><td>MEX-ZM-0001</td><td>DUPLSITE</td><td>Sin duplicado de seguridad: la accesión depende de una sola instalación.</td></tr>
     </tbody>
   </table>
@@ -321,7 +321,7 @@
       <tr><td>Un punto obviamente mal ubicado no sale como problema</td><td>Cae dentro de la caja del país, aunque sea en el estado equivocado: las cajas son rectángulos con un grado de margen. Revísalo en el Bloque 4.</td></tr>
       <tr><td>Un duplicado que conoces no aparece</td><td>No comparte ninguna clave de bloqueo, no llega al umbral o lo descartaste antes. Baja el umbral o pulsa <span class="ui">Volver a proponer los descartados</span>.</td></tr>
       <tr><td>Un grupo reúne accesiones que no son la misma</td><td>Entraron por transitividad. Abre el grupo y descarta, par por par, los que no lo son.</td></tr>
-      <tr><td>Desapareció un par que no habías resuelto</td><td>Un descarte guardado de otra colección cayó sobre él (apartado 3.7). Pulsa <span class="ui">Volver a proponer los descartados</span>.</td></tr>
+      <tr><td>Desapareció un par que no habías resuelto</td><td>Lo descartaste o lo anotaste antes, quizá en otra sesión: el descarte se guarda con los números de las dos accesiones (apartado 3.7). Pulsa <span class="ui">Volver a proponer los descartados</span>.</td></tr>
       <tr><td>Fusionaste el par equivocado</td><td>No hay deshacer. Recupera la accesión del pasaporte que exportaste antes, o vuelve a capturarla en el Bloque 2 con el número que quedó en <code>OTHERNUMB</code> de la maestra.</td></tr>
     </tbody>
   </table>
@@ -330,7 +330,7 @@
     <div class="caja-t"><span class="ico">✓</span>Regla de decisión · qué hacer en el Bloque 3</div>
     <table class="compacta"><tbody>
       <tr><td style="width:44%"><b>Si</b> un punto tiene diagnóstico de signo o de intercambio</td><td><b>entonces</b> acepta la corrección si el sitio corregido concuerda con <code>COLLSITE</code>; si no, abre la ficha y busca la coordenada en la libreta.</td></tr>
-      <tr><td><b>Si</b> una corrección es de forma (país en dos letras, espacios, mayúsculas)</td><td><b>entonces</b> aplícala por grupo después de mirar el ejemplo; cuida los nombres que deben conservar minúsculas.</td></tr>
+      <tr><td><b>Si</b> una corrección es de forma (país en dos letras, espacios, mayúsculas)</td><td><b>entonces</b> aplícala por grupo después de mirar el ejemplo; cuida los nombres propios dentro de un nombre escrito todo en mayúsculas.</td></tr>
       <tr><td><b>Si</b> aparece un aviso de nombres o de sitio</td><td><b>entonces</b> decide cuál forma es la buena y corrígela en la ficha del Bloque 2.</td></tr>
       <tr><td><b>Si</b> un par coincide en número de colecta, fecha y taxón</td><td><b>entonces</b> es la misma colecta: fusiónala si está en tu banco dos veces; anótala si está en dos bancos.</td></tr>
       <tr><td><b>Si</b> un par sólo se parece en nombre, cercanía o año</td><td><b>entonces</b> compáralo con calma y, si el número o la fecha de colecta difieren, márcalo como <span class="ui">No son duplicados</span>.</td></tr>
