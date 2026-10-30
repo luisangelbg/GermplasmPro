@@ -116,7 +116,8 @@
     { c: 'onfarm', es: 'Conservación en la parcela (on-farm)', en: 'On-farm conservation', kind: 'in situ' },
   ];
 
-  /* países de uso frecuente, en ISO 3166-1 alfa-3 (lista parcial a propósito) */
+  /* países en ISO 3166-1 alfa-3: primero los de uso frecuente y, detrás, los demás que dibuja
+     el mapa mundial (data/world.js), para que todo punto en tierra tenga nombre de país */
   const COUNTRIES = [
     { c: 'MEX', es: 'México', en: 'Mexico' }, { c: 'GTM', es: 'Guatemala', en: 'Guatemala' },
     { c: 'BLZ', es: 'Belice', en: 'Belize' }, { c: 'HND', es: 'Honduras', en: 'Honduras' },
@@ -178,6 +179,34 @@
     { c: 'MNG', es: 'Mongolia', en: 'Mongolia' }, { c: 'AFG', es: 'Afganistán', en: 'Afghanistan' },
     { c: 'AUS', es: 'Australia', en: 'Australia' }, { c: 'NZL', es: 'Nueva Zelanda', en: 'New Zealand' },
     { c: 'PNG', es: 'Papúa Nueva Guinea', en: 'Papua New Guinea' }, { c: 'FJI', es: 'Fiyi', en: 'Fiji' },
+    { c: 'ARE', es: 'Emiratos Árabes Unidos', en: 'United Arab Emirates' }, { c: 'ALB', es: 'Albania', en: 'Albania' },
+    { c: 'BIH', es: 'Bosnia y Herzegovina', en: 'Bosnia and Herzegovina' }, { c: 'BEN', es: 'Benín', en: 'Benin' },
+    { c: 'BRN', es: 'Brunéi', en: 'Brunei Darussalam' }, { c: 'BHS', es: 'Bahamas', en: 'Bahamas' },
+    { c: 'BTN', es: 'Bután', en: 'Bhutan' }, { c: 'BWA', es: 'Botsuana', en: 'Botswana' },
+    { c: 'BLR', es: 'Bielorrusia', en: 'Belarus' }, { c: 'CAF', es: 'República Centroafricana', en: 'Central African Republic' },
+    { c: 'COG', es: 'Congo', en: 'Congo' }, { c: 'CYP', es: 'Chipre', en: 'Cyprus' },
+    { c: 'DJI', es: 'Yibuti', en: 'Djibouti' }, { c: 'EST', es: 'Estonia', en: 'Estonia' },
+    { c: 'ESH', es: 'Sahara Occidental', en: 'Western Sahara' }, { c: 'FLK', es: 'Islas Malvinas', en: 'Falkland Islands (Malvinas)' },
+    { c: 'GAB', es: 'Gabón', en: 'Gabon' }, { c: 'GRL', es: 'Groenlandia', en: 'Greenland' },
+    { c: 'GMB', es: 'Gambia', en: 'Gambia' }, { c: 'GIN', es: 'Guinea', en: 'Guinea' },
+    { c: 'GNQ', es: 'Guinea Ecuatorial', en: 'Equatorial Guinea' }, { c: 'GNB', es: 'Guinea-Bisáu', en: 'Guinea-Bissau' },
+    { c: 'HRV', es: 'Croacia', en: 'Croatia' }, { c: 'ISL', es: 'Islandia', en: 'Iceland' },
+    { c: 'KGZ', es: 'Kirguistán', en: 'Kyrgyzstan' }, { c: 'KWT', es: 'Kuwait', en: 'Kuwait' },
+    { c: 'LBR', es: 'Liberia', en: 'Liberia' }, { c: 'LSO', es: 'Lesoto', en: 'Lesotho' },
+    { c: 'LTU', es: 'Lituania', en: 'Lithuania' }, { c: 'LUX', es: 'Luxemburgo', en: 'Luxembourg' },
+    { c: 'LVA', es: 'Letonia', en: 'Latvia' }, { c: 'MDA', es: 'Moldavia', en: 'Republic of Moldova' },
+    { c: 'MNE', es: 'Montenegro', en: 'Montenegro' }, { c: 'MKD', es: 'Macedonia del Norte', en: 'North Macedonia' },
+    { c: 'MRT', es: 'Mauritania', en: 'Mauritania' }, { c: 'NAM', es: 'Namibia', en: 'Namibia' },
+    { c: 'NCL', es: 'Nueva Caledonia', en: 'New Caledonia' }, { c: 'OMN', es: 'Omán', en: 'Oman' },
+    { c: 'PSE', es: 'Palestina', en: 'Palestine' }, { c: 'QAT', es: 'Catar', en: 'Qatar' },
+    { c: 'SRB', es: 'Serbia', en: 'Serbia' }, { c: 'SLB', es: 'Islas Salomón', en: 'Solomon Islands' },
+    { c: 'SVN', es: 'Eslovenia', en: 'Slovenia' }, { c: 'SVK', es: 'Eslovaquia', en: 'Slovakia' },
+    { c: 'SLE', es: 'Sierra Leona', en: 'Sierra Leone' }, { c: 'SOM', es: 'Somalia', en: 'Somalia' },
+    { c: 'SSD', es: 'Sudán del Sur', en: 'South Sudan' }, { c: 'SWZ', es: 'Esuatini', en: 'Eswatini' },
+    { c: 'ATF', es: 'Territorios Australes Franceses', en: 'French Southern Territories' }, { c: 'TGO', es: 'Togo', en: 'Togo' },
+    { c: 'TLS', es: 'Timor Oriental', en: 'Timor-Leste' }, { c: 'TKM', es: 'Turkmenistán', en: 'Turkmenistan' },
+    { c: 'TWN', es: 'Taiwán', en: 'Taiwan' }, { c: 'VUT', es: 'Vanuatu', en: 'Vanuatu' },
+    { c: 'XKX', es: 'Kosovo', en: 'Kosovo' },
   ];
   const COUNTRY_MAP = Object.fromEntries(COUNTRIES.map(c => [c.c, c]));
 

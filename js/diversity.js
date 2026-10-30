@@ -53,7 +53,8 @@
       N, S, H,
       simpson: 1 - D,
       invSimpson: D > 0 ? 1 / D : 0,
-      pielou: S > 1 ? H / Math.log(S) : (S === 1 ? 1 : 0),
+      /* con un solo tipo J′ = 0/0: no hay reparto que medir y queda indefinida, no 1 */
+      pielou: S > 1 ? H / Math.log(S) : NaN,
       q0: S, q1: Math.exp(H), q2: D > 0 ? 1 / D : 0,
       f1, f2,
       coverage: N > 0 ? 1 - f1 / N : NaN,
@@ -278,7 +279,7 @@
     const o = Object.assign({ grid: 1, band: 500 }, opts || {});
     const map = new Map();
     points.forEach(p => {
-      let key = '', label = '', lat = p.lat, lon = p.lon;
+      let key = '', label = '', lat = p.lat, lon = p.lon, center = NaN;
       if (unitMode === 'state') {
         const s = GEO.stateOf(p.lon, p.lat);
         if (!s) return;
@@ -298,13 +299,16 @@
         label = `${fmt((b[1] + b[3]) / 2, 2)}, ${fmt((b[0] + b[2]) / 2, 2)}`;
         lat = (b[1] + b[3]) / 2; lon = (b[0] + b[2]) / 2;
       } else {              /* franja altitudinal */
-        const e = Number(p.row.ELEVATION);
-        if (!isFinite(e)) return;
+        /* sin altitud (campo vacío) o con una imposible (fuera de −500 a 7000 m) no entra en ninguna franja */
+        const e = GEO.elevOf(p.row);
+        if (!GEO.elevPlausible(e)) return;
         const band = Math.floor(e / o.band) * o.band;
         key = String(band);
         label = `${fmtInt(band)}–${fmtInt(band + o.band)} m`;
+        /* una franja no tiene un lugar en el mapa: su posición es la altitud de su centro */
+        lat = NaN; lon = NaN; center = band + o.band / 2;
       }
-      if (!map.has(key)) map.set(key, { key, label, lat, lon, items: [], counts: {}, set: new Set() });
+      if (!map.has(key)) map.set(key, { key, label, lat, lon, center, items: [], counts: {}, set: new Set() });
       const u = map.get(key);
       u.items.push(p);
       const cls = classOf(p.row, classMode);
@@ -315,7 +319,7 @@
     units.forEach(u => {
       u.abund = Object.values(u.counts);
       Object.assign(u, indices(u.abund));
-      u.elev = u.items.map(p => Number(p.row.ELEVATION)).filter(v => isFinite(v));
+      u.elev = u.items.map(p => GEO.elevOf(p.row)).filter(v => GEO.elevPlausible(v));
       u.meanElev = u.elev.length ? mean(u.elev) : NaN;
     });
     if (unitMode === 'band') units.sort((a, b) => Number(a.key) - Number(b.key));
@@ -338,12 +342,40 @@
     return out;
   }
 
+  /* el gradiente altitudinal completo: las franjas desde la más baja hasta la más alta con datos,
+     incluidas las vacías (con cero), que son justo los ambientes que la colección no representa.
+     Cuenta aparte las accesiones sin altitud y las que traen una imposible. */
+  function bandSeries(points, classMode, band) {
+    const b = band || 500;
+    let sinDato = 0, fuera = 0;
+    const ok = points.filter(p => {
+      const e = GEO.elevOf(p.row);
+      if (!isFinite(e)) { sinDato++; return false; }
+      if (!GEO.elevPlausible(e)) { fuera++; return false; }
+      return true;
+    });
+    const units = buildUnits(ok, 'band', classMode, { band: b });
+    const out = [];
+    if (units.length) {
+      const byKey = new Map(units.map(u => [Number(u.key), u]));
+      const lo = Number(units[0].key), hi = Number(units[units.length - 1].key);
+      for (let k = lo; k <= hi; k += b) {
+        out.push(byKey.get(k) || { key: String(k), label: `${fmtInt(k)}–${fmtInt(k + b)} m`, center: k + b / 2, N: 0, S: 0, items: [], empty: true });
+      }
+    }
+    return { bands: out, used: ok.length, sinDato, fuera };
+  }
+
   /* el retrato completo que consume el Bloque 5 */
   function analyse(points, unitMode, classMode, opts) {
     const o = Object.assign({ grid: 1, band: 500, dist: 'jaccard', perms: 999 }, opts || {});
     const units = buildUnits(points, unitMode, classMode, o);
+    /* todos los totales (gamma, alfa media, beta, estimadores, curva) salen del MISMO conjunto:
+       las accesiones que quedaron dentro de alguna unidad. Antes la gamma y Chao1 usaban todas
+       las mapeadas y la alfa sólo las de las unidades, y la beta salía inflada. */
+    const inUnits = [].concat(...units.map(u => u.items));
     const all = {};
-    points.forEach(p => { const c = classOf(p.row, classMode); all[c] = (all[c] || 0) + 1; });
+    inUnits.forEach(p => { const c = classOf(p.row, classMode); all[c] = (all[c] || 0) + 1; });
     const total = indices(Object.values(all));
     const inc = incidenceEstimators(units.map(u => u.set));
     const ch1 = chao1(Object.values(all));
@@ -361,15 +393,32 @@
 
     /* composición entre las unidades con suficientes accesiones */
     const big = units.filter(u => u.N >= 2);
-    let D = null, tree = null, order = null, mant = null;
+    let D = null, tree = null, order = null, mant = null, mantelWhy = '';
+    /* con franjas de altitud, la «distancia» entre unidades es la diferencia de altitud entre los
+       centros de las franjas (m), no los kilómetros entre dos accesiones cualesquiera */
+    const mantelDist = unitMode === 'band' ? 'elev' : 'km';
     if (big.length >= 3) {
       D = distanceMatrix(big, o.dist);
       tree = upgma(D, big.map(u => u.label));
       order = leafOrder(tree);
-      const geoOK = big.every(u => isFinite(u.lat) && isFinite(u.lon));
-      if (geoOK && big.length >= 4) {
-        const G = big.map(a => big.map(b => haversine(a.lat, a.lon, b.lat, b.lon)));
+    }
+    if (big.length < 4) mantelWhy = 'few';
+    else {
+      const geoOK = mantelDist === 'elev' ? big.every(u => isFinite(u.center)) : big.every(u => isFinite(u.lat) && isFinite(u.lon));
+      if (!geoOK) mantelWhy = 'nogeo';
+      else {
+        const G = mantelDist === 'elev'
+          ? big.map(a => big.map(b => Math.abs(a.center - b.center)))
+          : big.map(a => big.map(b => haversine(a.lat, a.lon, b.lat, b.lon)));
         mant = mantel(G, D, o.perms);
+        mant.dist = mantelDist;
+        mant.G = G;
+        /* r indefinida: una de las dos matrices no varía (p. ej., ningún par comparte tipos y todas
+           las disimilitudes valen 1, o todas las unidades están en el mismo sitio) */
+        if (!isFinite(mant.r)) {
+          const sd = v => { const m = mean(v); return Math.sqrt(mean(v.map(x => (x - m) ** 2))); };
+          mantelWhy = sd(lowerTriangle(D)) === 0 ? 'flatD' : (sd(lowerTriangle(G)) === 0 ? 'flatG' : 'flat');
+        }
       }
     }
 
@@ -377,9 +426,14 @@
     const alphaBar = units.length ? mean(units.map(u => u.S)) : 0;
     const beta = alphaBar > 0 ? total.S / alphaBar - 1 : 0;
 
+    /* cuántas accesiones entran en los totales y por qué faltan las demás */
+    let fuera = 0, sinDato = 0;
+    if (unitMode === 'band') points.forEach(p => { const e = GEO.elevOf(p.row); if (!isFinite(e)) sinDato++; else if (!GEO.elevPlausible(e)) fuera++; });
+
     return {
-      units, total, inc, chao1: ch1, nCommon, big, D, tree, order, mantel: mant,
+      units, total, inc, chao1: ch1, nCommon, big, D, tree, order, mantel: mant, mantelWhy, mantelDist,
       beta, alphaBar, classMode, unitMode, opts: o,
+      nIn: inUnits.length, nPoints: points.length, nOut: points.length - inUnits.length, elevMissing: sinDato, elevOdd: fuera,
       curve: accumulationCurve(Object.values(all)),
       exclusives: excl,
     };
@@ -389,6 +443,6 @@
     lgamma, lchoose, indices, rarefy, rarefyVar, accumulationCurve,
     chao1, incidenceEstimators, jaccard, sorensen, brayCurtis, distanceMatrix,
     upgma, leafOrder, pearson, lowerTriangle, mantel,
-    classOf, buildUnits, exclusives, analyse,
+    classOf, buildUnits, exclusives, bandSeries, analyse,
   };
 })();

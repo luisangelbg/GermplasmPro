@@ -492,8 +492,8 @@
           'Accumulation curve of types against the number of accessions.')) : ''}
         ${A.chao1 && A.chao1.reliable === false ? `<p class="rnote">${L('El estimador Chao1 se apoya en el número de tipos vistos dos veces, y aquí hay muy pocos: tómese como una cota grosera y préstese más atención a Chao2 y a la navaja.',
           'The Chao1 estimator leans on the number of types seen twice, and here there are very few: treat it as a rough bound and give more weight to Chao2 and the jackknife.')}</p>` : ''}
-        ${A.mantel ? `<p>${L(`Prueba de Mantel entre composición y distancia geográfica: r = ${fmt(A.mantel.r, 3)}, p = ${fmt(A.mantel.p, 3)} con ${fmtInt(A.mantel.perms)} permutaciones sobre ${fmtInt(A.mantel.n)} unidades.`,
-          `Mantel test between composition and geographic distance: r = ${fmt(A.mantel.r, 3)}, p = ${fmt(A.mantel.p, 3)} with ${fmtInt(A.mantel.perms)} permutations over ${fmtInt(A.mantel.n)} units.`)}</p>` : ''}`,
+        ${A.mantel && isFinite(A.mantel.r) ? `<p>${L(`Prueba de Mantel entre composición y ${A.mantel.dist === 'elev' ? 'diferencia de altitud entre franjas' : 'distancia geográfica'}: r = ${fmt(A.mantel.r, 3)}, p = ${fmt(A.mantel.p, 3)} con ${fmtInt(A.mantel.perms)} permutaciones sobre ${fmtInt(A.mantel.n)} unidades.`,
+          `Mantel test between composition and ${A.mantel.dist === 'elev' ? 'elevation difference between belts' : 'geographic distance'}: r = ${fmt(A.mantel.r, 3)}, p = ${fmt(A.mantel.p, 3)} with ${fmtInt(A.mantel.perms)} permutations over ${fmtInt(A.mantel.n)} units.`)}</p>` : ''}`,
       });
     }
 

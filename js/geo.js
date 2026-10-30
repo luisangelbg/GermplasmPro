@@ -39,6 +39,15 @@
     IND: 'IN', PAK: 'PK', BGD: 'BD', NPL: 'NP', LKA: 'LK', MMR: 'MM', THA: 'TH', VNM: 'VN',
     LAO: 'LA', KHM: 'KH', MYS: 'MY', IDN: 'ID', PHL: 'PH', CHN: 'CN', JPN: 'JP', KOR: 'KR',
     PRK: 'KP', MNG: 'MN', AFG: 'AF', AUS: 'AU', NZL: 'NZ', PNG: 'PG', FJI: 'FJ',
+    /* el resto de los países que dibuja data/world.js: sin ellos, un punto que caía en
+       Botsuana o en Croacia se quedaba sin país y no contaba en la tabla ni en la coropleta */
+    ARE: 'AE', ALB: 'AL', BIH: 'BA', BEN: 'BJ', BRN: 'BN', BHS: 'BS', BTN: 'BT', BWA: 'BW',
+    BLR: 'BY', CAF: 'CF', COG: 'CG', CYP: 'CY', DJI: 'DJ', EST: 'EE', ESH: 'EH', FLK: 'FK',
+    GAB: 'GA', GRL: 'GL', GMB: 'GM', GIN: 'GN', GNQ: 'GQ', GNB: 'GW', HRV: 'HR', ISL: 'IS',
+    KGZ: 'KG', KWT: 'KW', LBR: 'LR', LSO: 'LS', LTU: 'LT', LUX: 'LU', LVA: 'LV', MDA: 'MD',
+    MNE: 'ME', MKD: 'MK', MRT: 'MR', NAM: 'NA', NCL: 'NC', OMN: 'OM', PSE: 'PS', QAT: 'QA',
+    SRB: 'RS', SLB: 'SB', SVN: 'SI', SVK: 'SK', SLE: 'SL', SOM: 'SO', SSD: 'SS', SWZ: 'SZ',
+    ATF: 'TF', TGO: 'TG', TLS: 'TL', TKM: 'TM', TWN: 'TW', VUT: 'VU', XKX: 'XK',
   };
   const A2_TO_A3 = Object.fromEntries(Object.entries(A3_TO_A2).map(([a3, a2]) => [a2, a3]));
 
@@ -228,7 +237,8 @@
     const m = new Map();
     points.forEach(p => {
       const c = countryOf(p.lon, p.lat);
-      const a3 = c ? (c.a3 || '') : String(p.row.ORIGCTY || '').toUpperCase();
+      /* un país del mapa sin equivalencia de tres letras cuenta con su código de dos, no se pierde */
+      const a3 = c ? (c.a3 || c.a2) : String(p.row.ORIGCTY || '').toUpperCase();
       if (!a3) return;
       if (!m.has(a3)) m.set(a3, { a3, a2: A3_TO_A2[a3] || '', n: 0, items: [] });
       const e = m.get(a3);
@@ -238,11 +248,85 @@
     return m;
   }
 
+  /* ---------- la altitud del pasaporte ----------
+     Un campo vacío no es «0 m»: Number('') da 0 y pintaba la accesión al nivel
+     del mar. Y una altitud fuera de lo posible en tierra (25 000 m es un error
+     de captura) no debe estirar ninguna escala. */
+  const ELEV_MIN = -500, ELEV_MAX = 7000;
+  function elevOf(row) {
+    const s = String(row && row.ELEVATION != null ? row.ELEVATION : '').trim();
+    if (!s) return NaN;
+    const v = Number(s.replace(',', '.'));
+    return isFinite(v) ? v : NaN;
+  }
+  function elevPlausible(v) { return isFinite(v) && v >= ELEV_MIN && v <= ELEV_MAX; }
+
+  /* ---------- dónde poner el nombre de un polígono ----------
+     El centro de la caja envolvente puede caer en el mar (Colima, con sus islas
+     Revillagigedo, o cualquier entidad en forma de media luna). Se usa el polo de
+     inaccesibilidad del anillo más grande: el punto interior más alejado de la
+     orilla (el algoritmo de celdas de Mapbox «polylabel», escrito de nuevo). */
+  function ringArea(r) {
+    let a = 0;
+    for (let i = 0, n = r.length / 2, j = n - 1; i < n; j = i++) a += (r[2 * j] - r[2 * i]) * (r[2 * j + 1] + r[2 * i + 1]);
+    return Math.abs(a / 2);
+  }
+  function distToRing(r, x, y) {
+    let best = Infinity;
+    for (let i = 0, n = r.length / 2, j = n - 1; i < n; j = i++) {
+      const ax = r[2 * j], ay = r[2 * j + 1], bx = r[2 * i], by = r[2 * i + 1];
+      const dx = bx - ax, dy = by - ay, L = dx * dx + dy * dy;
+      const t = L ? clamp01(((x - ax) * dx + (y - ay) * dy) / L) : 0;
+      const ex = ax + t * dx - x, ey = ay + t * dy - y;
+      const d = ex * ex + ey * ey;
+      if (d < best) best = d;
+    }
+    return Math.sqrt(best);
+  }
+  function clamp01(t) { return t < 0 ? 0 : (t > 1 ? 1 : t); }
+  function labelPoint(rings, precision) {
+    if (!rings || !rings.length) return null;
+    let big = rings[0], aBig = -1;
+    for (const r of rings) { const a = ringArea(r); if (a > aBig) { aBig = a; big = r; } }
+    const [x0, y0, x1, y1] = ringsBBox([big]);
+    const size = Math.min(x1 - x0, y1 - y0);
+    const prec = precision || Math.max(1e-4, size / 200);
+    if (!(size > 0)) return [(x0 + x1) / 2, (y0 + y1) / 2];
+    const cell = (x, y, h) => {
+      const d = (pointInRing(big, x, y) ? 1 : -1) * distToRing(big, x, y);
+      return { x, y, h, d, max: d + h * Math.SQRT2 };
+    };
+    const queue = [];
+    for (let x = x0; x < x1; x += size) for (let y = y0; y < y1; y += size) queue.push(cell(x + size / 2, y + size / 2, size / 2));
+    /* primera apuesta: el centroide del anillo, que casi siempre es bueno */
+    let A = 0, cx = 0, cy = 0;
+    for (let i = 0, n = big.length / 2, j = n - 1; i < n; j = i++) {
+      const f = big[2 * i] * big[2 * j + 1] - big[2 * j] * big[2 * i + 1];
+      cx += (big[2 * i] + big[2 * j]) * f; cy += (big[2 * i + 1] + big[2 * j + 1]) * f; A += f * 3;
+    }
+    let best = A ? cell(cx / A, cy / A, 0) : cell((x0 + x1) / 2, (y0 + y1) / 2, 0);
+    const mid = cell((x0 + x1) / 2, (y0 + y1) / 2, 0);
+    if (mid.d > best.d) best = mid;
+    let guard = 0;
+    while (queue.length && guard++ < 4000) {
+      /* la celda más prometedora primero */
+      let k = 0;
+      for (let i = 1; i < queue.length; i++) if (queue[i].max > queue[k].max) k = i;
+      const c = queue.splice(k, 1)[0];
+      if (c.d > best.d) best = c;
+      if (c.max - best.d <= prec) continue;
+      const h = c.h / 2;
+      queue.push(cell(c.x - h, c.y - h, h), cell(c.x + h, c.y - h, h), cell(c.x - h, c.y + h, h), cell(c.x + h, c.y + h, h));
+    }
+    return [best.x, best.y];
+  }
+
   window.GEO = {
     A3_TO_A2, A2_TO_A3, MX, MX_BY_CODE, WORLD, WORLD_BY_A2,
     ringsBBox, pointInRing, pointInRings, inBBox, stateOf, countryOf,
     projection, bboxOfPoints, unionBBox, ringsToPath,
     cellKey, cellBBox, gridCount, scaleBar, pointsOf, countByState, countByCountry,
+    ELEV_MIN, ELEV_MAX, elevOf, elevPlausible, ringArea, labelPoint,
     MX_BBOX: [-118.5, 14.3, -86.6, 32.8],
     WORLD_BBOX: [-180, -60, 180, 84],
   };

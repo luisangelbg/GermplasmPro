@@ -72,8 +72,10 @@
     const m = s.match(/[\d.]+/g);
     return m ? m.slice(0, 3).map(Number) : [136, 136, 136];
   }
-  /* rampa secuencial de la app: crema → ocre → morado */
-  const RAMP = ['--bg-soft', '--gold', '--accent', '--primary'];
+  /* rampa secuencial de la app: oro pálido → oro → ocre → morado. Empezaba en --bg-soft, que es
+     el color del mar: los valores bajos se perdían en el fondo. --ramp0 contrasta con el mar y con
+     la tierra sin dato en los dos temas. */
+  const RAMP = ['--ramp0', '--gold', '--accent', '--primary'];
   function ramp(t) {
     const x = clamp(t, 0, 1) * (RAMP.length - 1);
     const i = Math.min(RAMP.length - 2, Math.floor(x)), f = x - i;
@@ -97,7 +99,8 @@
     const r = p.row;
     if (k === 'TAXON') return [r.GENUS, r.SPECIES].filter(Boolean).join(' ');
     if (k === 'YEAR') return Number(String(r.COLLDATE || '').slice(0, 4)) || NaN;
-    if (k === 'ELEVATION') return Number(r.ELEVATION);
+    /* vacía es «sin dato», no 0 m; y una altitud imposible (25 000 m) tampoco entra en la escala */
+    if (k === 'ELEVATION') { const v = GEO.elevOf(r); return GEO.elevPlausible(v) ? v : NaN; }
     return String(r[k] ?? '').trim();
   }
   function labelOf(k, v) {
@@ -176,7 +179,7 @@
     }
     g.push(`<g>${worldPaths.join('')}</g>`);
 
-    const statePaths = [], stateLabels = [];
+    const statePaths = [], stateLabels = [], labelCands = [];
     const mb = GEO.MX_BBOX;
     const tocaMexico = !(bbox[2] < mb[0] || bbox[0] > mb[2] || bbox[3] < mb[1] || bbox[1] > mb[3]);
     const showStates = !wide && tocaMexico;
@@ -197,12 +200,14 @@
         const sel = view.scope === s.code;
         statePaths.push(`<path d="${d}" fill="${fill}" stroke="${sel ? paint('--primary') : cLine}" stroke-width="${sel ? 1.8 : 0.7}" fill-rule="evenodd" data-state="${s.code}"><title>${esc(s.name)}</title></path>`);
         if (view.labels && !wide) {
-          const cx = proj.X((s.bbox[0] + s.bbox[2]) / 2), cy = proj.Y((s.bbox[1] + s.bbox[3]) / 2);
+          /* el punto interior del polígono mayor, no el centro de la caja (que en Colima cae en el mar) */
+          if (!s.lab) s.lab = GEO.labelPoint(s.rings) || [(s.bbox[0] + s.bbox[2]) / 2, (s.bbox[1] + s.bbox[3]) / 2];
           const e = choroS && choroS.get(s.code);
           const n = e ? (view.choro === 'spState' ? speciesIn(e.items) : e.n) : 0;
-          stateLabels.push(`<text x="${cx.toFixed(1)}" y="${cy.toFixed(1)}" text-anchor="middle" font-size="8.5" fill="${cMuted}" paint-order="stroke" stroke="${cBg}" stroke-width="2.5">${esc(s.code)}${n ? ` (${n})` : ''}</text>`);
+          labelCands.push({ x: proj.X(s.lab[0]), y: proj.Y(s.lab[1]), text: s.code + (n ? ` (${n})` : ''), n, area: s.area || (s.area = Math.max(...s.rings.map(GEO.ringArea))) });
         }
       }
+      placeLabels(labelCands, W, H).forEach(l => stateLabels.push(`<text x="${l.x.toFixed(1)}" y="${l.y.toFixed(1)}" text-anchor="middle" font-size="8.5" fill="${cMuted}" paint-order="stroke" stroke="${cBg}" stroke-width="2.5">${esc(l.text)}</text>`));
     }
     g.push(`<g>${statePaths.join('')}</g>`);
 
@@ -221,6 +226,7 @@
     /* los puntos */
     const cinfo = colorInfo();
     const rMax = Math.max(1, ...pts.map(p => Number(p.row.GP_STOCK) || 0));
+    const over = view.choro !== 'none' || !!view.grid;
     const circles = pts.map((p, idx) => {
       const x = proj.X(p.lon), y = proj.Y(p.lat);
       if (x < -20 || x > W + 20 || y < -20 || y > H + 20) return '';
@@ -231,7 +237,11 @@
         r = 2.5 + 5.5 * Math.sqrt(v / rMax || 0);
       }
       const on = view.hover === p.i;
-      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(on ? r + 2.5 : r).toFixed(1)}" fill="${col}" fill-opacity="${on ? 1 : 0.85}" stroke="${on ? cText : paint('--card-bg')}" stroke-width="${on ? 1.8 : 0.9}" data-pt="${p.i}"><title>${esc((p.row.ACCENUMB || '') + ' · ' + (p.row.ACCENAME || ''))}</title></circle>`;
+      const rr = on ? r + 2.5 : r;
+      /* sobre una coropleta o una rejilla el punto puede ser del mismo color que el fondo (el morado
+         del máximo): se le da borde blanco grueso y un aro oscuro fino, que se ven sobre cualquier color */
+      const ring = over ? `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(rr + 1.7).toFixed(1)}" fill="none" stroke="${cText}" stroke-width="0.8" stroke-opacity="0.7" pointer-events="none"/>` : '';
+      return `${ring}<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rr.toFixed(1)}" fill="${col}" fill-opacity="${on || over ? 1 : 0.85}" stroke="${on ? cText : paint('--card-bg')}" stroke-width="${on ? 1.8 : (over ? 1.6 : 0.9)}" data-pt="${p.i}"><title>${esc((p.row.ACCENUMB || '') + ' · ' + (p.row.ACCENAME || ''))}</title></circle>`;
     }).join('');
     g.push(`<g>${circles}</g>`);
     g.push(`<g>${stateLabels.join('')}</g>`);
@@ -262,6 +272,30 @@
     return new Set(items.map(p => [p.row.GENUS, p.row.SPECIES].filter(Boolean).join(' ')).filter(Boolean)).size;
   }
 
+  /* claves de entidad sin encimarse: primero las que llevan cuenta y las de entidades grandes;
+     cada una prueba su sitio y, si choca, unos cuantos desplazamientos cortos. Una clave sin
+     cuenta que no cabe en ninguno se omite (la entidad sigue teniendo su nombre al pasar el ratón). */
+  function placeLabels(cands, W, H) {
+    const boxes = [], out = [];
+    const hit = b => boxes.some(o => b.x0 < o.x1 && b.x1 > o.x0 && b.y0 < o.y1 && b.y1 > o.y0);
+    cands.slice().sort((a, b) => (b.n > 0) - (a.n > 0) || b.area - a.area).forEach(c => {
+      const w = c.text.length * 5 + 4, h = 10;
+      const tries = [[0, 0], [0, -10], [0, 10], [w * 0.6, 0], [-w * 0.6, 0], [0, -19], [0, 19], [w * 0.6, -10], [-w * 0.6, 10]];
+      let pos = null;
+      for (const [dx, dy] of tries) {
+        const x = c.x + dx, y = c.y + dy;
+        const b = { x0: x - w / 2, x1: x + w / 2, y0: y - 8, y1: y - 8 + h };
+        if (b.x0 < 2 || b.x1 > W - 2 || b.y0 < 2 || b.y1 > H - 2) continue;
+        if (!hit(b)) { pos = { x, y, b }; break; }
+      }
+      if (!pos && c.n > 0) pos = { x: c.x, y: c.y, b: { x0: c.x - w / 2, x1: c.x + w / 2, y0: c.y - 8, y1: c.y + 2 } };
+      if (!pos) return;
+      boxes.push(pos.b);
+      out.push({ x: pos.x, y: pos.y, text: c.text });
+    });
+    return out;
+  }
+
   /* la función de color y su leyenda */
   function colorInfo() {
     const def = COLOR_BY.find(c => c.k === view.color) || COLOR_BY[0];
@@ -271,8 +305,12 @@
     if (def.kind === 'num') {
       const vals = pts.map(p => valueOf(p, def.k)).filter(v => isFinite(v));
       const lo = vals.length ? Math.min(...vals) : 0, hi = vals.length ? Math.max(...vals) : 1;
+      /* las que no tienen dato van en gris y fuera de la escala; para la altitud, se cuentan aparte
+         las que sí traen un número pero imposible */
+      const nNA = pts.length - vals.length;
+      const nOdd = def.k === 'ELEVATION' ? pts.filter(p => isFinite(GEO.elevOf(p.row)) && !GEO.elevPlausible(GEO.elevOf(p.row))).length : 0;
       return {
-        def, lo, hi,
+        def, lo, hi, nNA, nOdd,
         colorOf: p => {
           const v = valueOf(p, def.k);
           return isFinite(v) ? ramp(hi > lo ? (v - lo) / (hi - lo) : 0.5) : paint('--border-strong');
@@ -302,9 +340,14 @@
     if (cinfo.legend === 'ramp') {
       const steps = 6;
       const cells = [...Array(steps)].map((_, i) => `<i style="background:${ramp(i / (steps - 1))}"></i>`).join('');
+      /* un año se escribe sin separador de miles: 2014, no 2,014 */
+      const num = v => cinfo.def.k === 'YEAR' ? String(Math.round(v)) : fmtInt(v);
+      const na = cinfo.nNA ? `<span class="lg-item"><i style="background:${paint('--border-strong')}"></i>${cinfo.nOdd
+        ? T(`sin dato o fuera de ${fmtInt(GEO.ELEV_MIN).replace("-", "−")} a ${fmtInt(GEO.ELEV_MAX)} m`, `no data or outside ${fmtInt(GEO.ELEV_MIN).replace("-", "−")} to ${fmtInt(GEO.ELEV_MAX)} m`)
+        : T('sin dato', 'no data')} <span class="muted">(${cinfo.nNA})</span></span>` : '';
       return `<div class="map-legend"><b>${esc(T(cinfo.def.es, cinfo.def.en))}</b>
-        <div class="legend-ramp">${cells}</div>
-        <div class="legend-ends"><span>${fmtInt(cinfo.lo)}</span><span>${fmtInt(cinfo.hi)}</span></div></div>`;
+        <div class="legend-scale"><div class="legend-ramp">${cells}</div>
+        <div class="legend-ends"><span>${num(cinfo.lo)}</span><span>${num(cinfo.hi)}</span></div></div>${na}</div>`;
     }
     if (cinfo.legend === 'cat') {
       return `<div class="map-legend"><b>${esc(T(cinfo.def.es, cinfo.def.en))}</b>
@@ -323,8 +366,8 @@
       accCountry: T('Accesiones por país', 'Accessions per country'),
     }[view.choro];
     const cells = [...Array(6)].map((_, i) => `<i style="background:${ramp(0.15 + 0.85 * i / 5)}"></i>`).join('');
-    return `<div class="map-legend"><b>${esc(label)}</b><div class="legend-ramp">${cells}</div>
-      <div class="legend-ends"><span>${T('pocas', 'few')}</span><span>${T('muchas', 'many')}</span></div></div>`;
+    return `<div class="map-legend"><b>${esc(label)}</b><div class="legend-scale"><div class="legend-ramp">${cells}</div>
+      <div class="legend-ends"><span>${T('pocas', 'few')}</span><span>${T('muchas', 'many')}</span></div></div></div>`;
   }
 
   /* ============ tablas de apoyo ============ */
@@ -546,5 +589,5 @@
   document.addEventListener('langchange', () => { if (el('panel-4')) { syncControls(); render(); } });
   document.addEventListener('themechange', () => { cssCache = {}; cssTheme = ''; if (el('panel-4')) render(); });
 
-  window.B4 = { render, view, drawMap, colorInfo, exportSVG, exportPNG, cssVar, paint, forFile, ramp, speciesIn, points: () => pts };
+  window.B4 = { render, view, drawMap, colorInfo, legendHTML, placeLabels, valueOf, exportSVG, exportPNG, cssVar, paint, forFile, ramp, speciesIn, points: () => pts };
 })();

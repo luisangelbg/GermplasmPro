@@ -880,6 +880,65 @@ ok(/^color-mix\(in srgb, var\(--[\w-]+\) [\d.]+%, var\(--[\w-]+\)\)$/.test(B4.ra
   if (th0 === null) raiz.removeAttribute('data-theme'); else raiz.setAttribute('data-theme', th0);
 }
 ok(B4.speciesIn(ptsEx) >= 12, 'el contador de especies del mapa funciona');
+
+/* correcciones del 30 oct: todo país del mapa cuenta, la altitud vacía no es 0 m, años sin separador */
+ok(GEO.WORLD.every(c => c.a3), 'todos los países que dibuja el mapa tienen su código de tres letras'
+  + (GEO.WORLD.some(c => !c.a3) ? ': faltan ' + GEO.WORLD.filter(c => !c.a3).map(c => c.a2).join(' ') : ''));
+ok(Object.keys(GEO.A3_TO_A2).every(a3 => MCPD.COUNTRY_MAP[a3]), 'y cada código tiene nombre de país en los dos idiomas');
+{
+  const mk = (lon, lat, row) => ({ i: 0, lon, lat, row: Object.assign({ ORIGCTY: '' }, row || {}) });
+  /* Gaborone, Zagreb, Reikiavik, Doha y Taipéi: países que antes no estaban en la tabla de códigos */
+  const otros = [mk(25.91, -24.65), mk(15.98, 45.81), mk(-21.9, 64.1), mk(51.53, 25.29), mk(121.56, 25.03), mk(-99.13, 19.43)];
+  const cuenta = GEO.countByCountry(otros);
+  ok([...cuenta.values()].reduce((a, e) => a + e.n, 0) === otros.length, `ningún punto en tierra se pierde en el conteo por país (${[...cuenta.keys()].join(', ')})`);
+  ok(['BWA', 'HRV', 'ISL', 'QAT', 'TWN', 'MEX'].every(k => cuenta.has(k)), 'Botsuana, Croacia, Islandia, Catar y Taiwán cuentan con su código');
+  const enMar = GEO.countByCountry([mk(-140, 0, { ORIGCTY: 'per' })]);
+  ok(enMar.has('PER') && enMar.get('PER').n === 1, 'un punto en el mar cuenta con el país de su pasaporte');
+}
+{
+  const fila = e => ({ p: { row: { ELEVATION: e } } });
+  ok(isNaN(B4.valueOf(fila('').p, 'ELEVATION')), 'la altitud vacía es «sin dato», no 0 m');
+  ok(isNaN(B4.valueOf(fila(null).p, 'ELEVATION')), 'tampoco cuenta como 0 un campo nulo');
+  ok(isNaN(B4.valueOf(fila('25000').p, 'ELEVATION')), 'una altitud imposible (25 000 m) no entra en la escala de color');
+  ok(B4.valueOf(fila('0').p, 'ELEVATION') === 0 && B4.valueOf(fila('2240').p, 'ELEVATION') === 2240, 'pero 0 m escrito y 2240 m sí son altitudes');
+  ok(GEO.elevPlausible(-400) && GEO.elevPlausible(6900) && !GEO.elevPlausible(7200) && !GEO.elevPlausible(-600), 'el intervalo aceptado va de −500 a 7000 m');
+  const filas = [
+    { ACCENUMB: 'a', DECLATITUDE: 19.4, DECLONGITUDE: -99.1, ELEVATION: '', COLLDATE: '20140310' },
+    { ACCENUMB: 'b', DECLATITUDE: 17.1, DECLONGITUDE: -96.7, ELEVATION: '1500', COLLDATE: '20180501' },
+    { ACCENUMB: 'c', DECLATITUDE: 20.6, DECLONGITUDE: -103.3, ELEVATION: '2400', COLLDATE: '20221120' },
+  ];
+  state.acc = filas;
+  B4.view.scope = 'mx'; B4.view.choro = 'none'; B4.view.grid = 0; B4.view.crop = ''; B4.view.route = '';
+  B4.view.color = 'ELEVATION';
+  B4.drawMap(900, 560);
+  const ci = B4.colorInfo();
+  ok(ci.lo === 1500 && ci.hi === 2400 && ci.nNA === 1, `la escala de altitud empieza en el menor dato real (${ci.lo} m) y aparta la vacía (${ci.nNA})`);
+  ok(ci.colorOf(B4.points().find(p => p.row.ACCENUMB === 'a')) === B4.paint('--border-strong'), 'la accesión sin altitud se pinta en gris');
+  ok(B4.legendHTML(ci).includes('sin dato'), 'y la leyenda dice «sin dato»');
+  B4.view.color = 'YEAR';
+  B4.drawMap(900, 560);
+  const lgA = B4.legendHTML(B4.colorInfo());
+  ok(lgA.includes('>2014<') && lgA.includes('>2022<') && !/2[,  ]0(14|22)/.test(lgA), 'la leyenda de años dice 2014 – 2022, sin separador de miles');
+  ok(lgA.includes('legend-scale'), 'la barra y sus rótulos van juntos, alineados con los extremos');
+  B4.view.color = 'GP_CONS';
+  B4.view.choro = 'accState';
+  const conCoro = B4.drawMap(900, 560).svg;
+  ok(/pointer-events="none"/.test(conCoro) && /stroke-width="1.6" data-pt=/.test(conCoro), 'sobre la coropleta, los puntos llevan borde blanco grueso y aro oscuro');
+  B4.view.choro = 'none';
+  state.acc = [];
+}
+ok(B4.ramp(0).includes('--ramp0') && !B4.ramp(0).includes('--bg-soft'), 'la rampa ya no empieza con el color del mar');
+{
+  /* claves de entidad: dentro de su entidad (Colima ya no cae en el mar) */
+  const fueraDeSu = GEO.MX.filter(s => { const p = GEO.labelPoint(s.rings); const t = p && GEO.stateOf(p[0], p[1]); return !t || t.code !== s.code; }).map(s => s.code);
+  ok(fueraDeSu.length === 0, 'la clave de cada una de las 32 entidades cae dentro de la entidad' + (fueraDeSu.length ? ': no ' + fueraDeSu.join(' ') : ''));
+  const col = GEO.MX_BY_CODE.COL, pc = GEO.labelPoint(col.rings);
+  ok(pc[0] > -105 && pc[0] < -103 && pc[1] > 18.6 && pc[1] < 19.6, `la de Colima queda en tierra firme (${pc[0].toFixed(2)}, ${pc[1].toFixed(2)}), no en las Revillagigedo ni en el mar`);
+  const puestas = B4.placeLabels([{ x: 100, y: 100, text: 'CMX (3)', n: 3, area: 1 }, { x: 104, y: 101, text: 'MEX (5)', n: 5, area: 2 }, { x: 98, y: 99, text: 'MOR', n: 0, area: 0.5 }], 900, 560);
+  const cajas = puestas.map(l => ({ x0: l.x - (l.text.length * 5 + 4) / 2, x1: l.x + (l.text.length * 5 + 4) / 2, y0: l.y - 8, y1: l.y + 2 }));
+  const choque = cajas.some((a, i) => cajas.some((b, j) => i < j && a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0));
+  ok(!choque && puestas.length >= 2, `las claves que se encimaban se separan (${puestas.length} puestas sin chocar)`);
+}
 state.acc = [];
 
 /* ============ 17. índices de diversidad ============
@@ -1006,6 +1065,68 @@ ok(!!parseSVG(B5.scatter(400, 300, [{ x: 1, y: 2 }, { x: 3, y: 4 }], 'x', 'y', {
 ok(B5.scatter(400, 300, [{ x: 1, y: 2 }], 'x', 'y').includes('sim-empty'), 'con un solo punto avisa en vez de dibujar');
 ok(B5.UNITS.every(u => u.es && u.en) && B5.CLASSES.every(c => c.es && c.en) && B5.INDICES.every(i => i.es && i.en && i.d.es && i.d.en), 'los controles del bloque están en dos idiomas');
 state.acc = [];
+
+/* correcciones del 30 oct: todos los totales sobre el mismo conjunto de accesiones */
+{
+  const sumaN = an.units.reduce((a, u) => a + u.N, 0);
+  ok(an.total.N === sumaN && an.nIn === sumaN, `gamma, Chao1 y la curva usan las mismas ${sumaN} accesiones que las unidades (antes, las ${ptsDiv.length} mapeadas)`);
+  ok(an.nPoints === ptsDiv.length && an.nOut === ptsDiv.length - sumaN, 'y se sabe cuántas quedan fuera');
+  const union = new Set(); an.units.forEach(u => u.set.forEach(t => union.add(t)));
+  ok(an.total.S === union.size && an.inc.S === union.size, `la riqueza gamma es la unión de las unidades (${union.size}) y coincide con la de Chao2 y el jackknife`);
+  near(an.beta, an.total.S / an.alphaBar - 1, 1e-12, 'la beta de Whittaker sale de esa gamma y esa alfa');
+  near(an.chao1.S, an.total.S, 0, 'Chao1 parte de la misma riqueza observada');
+  ok(an.curve[an.curve.length - 1].n === sumaN, 'la curva de acumulación termina en esas mismas accesiones');
+}
+/* Mantel con franjas de altitud: diferencia entre centros de franja, no la coordenada de una accesión */
+{
+  const mk = (lon, lat, e, sp) => ({ i: 0, lon, lat, row: { ELEVATION: String(e), GENUS: 'G', SPECIES: sp } });
+  const pB = [mk(-99, 19, 100, 'a'), mk(-90, 15, 120, 'a'), mk(-99, 19, 600, 'a'), mk(-110, 30, 650, 'b'),
+    mk(-99, 19, 1100, 'b'), mk(-99, 19, 1150, 'c'), mk(-99, 19, 1600, 'c'), mk(-99, 19, 1700, 'd')];
+  const aB = DIV.analyse(pB, 'band', 'species', { band: 500, perms: 0 });
+  ok(aB.mantelDist === 'elev' && !!aB.mantel, 'con franjas de altitud la prueba de Mantel usa la altitud');
+  ok(aB.units.every(u => isNaN(u.lat) && u.center === Number(u.key) + 250), 'cada franja se sitúa en la altitud de su centro, no en la coordenada de su primera accesión');
+  ok(aB.mantel.G[0][3] === 1500 && aB.mantel.G[1][2] === 500, 'la distancia entre franjas es la diferencia de altitud entre centros (m)');
+  ok(isFinite(aB.mantel.r), `y la correlación sale definida (r = ${fmt(aB.mantel.r, 3)})`);
+  const aS = DIV.analyse(ptsDiv, 'state', 'species', { perms: 0 });
+  ok(aS.mantelDist === 'km', 'con entidades sigue siendo la distancia en kilómetros');
+  /* cuatro unidades sin ningún tipo en común: todas las disimilitudes valen 1 y r es indefinida */
+  const pF = [mk(-99.5, 19.5, 1, 'a'), mk(-99.5, 19.5, 1, 'a'), mk(-95.5, 17.5, 1, 'b'), mk(-95.5, 17.5, 1, 'b'),
+    mk(-103.5, 20.5, 1, 'c'), mk(-103.5, 20.5, 1, 'c'), mk(-90.5, 18.5, 1, 'd'), mk(-90.5, 18.5, 1, 'd')];
+  const aF = DIV.analyse(pF, 'grid', 'species', { grid: 1, perms: 0 });
+  ok(aF.big.length === 4 && !isFinite(aF.mantel.r) && aF.mantelWhy === 'flatD', 'si Mantel no se puede calcular por falta de variación, se sabe la causa (no «faltan unidades»)');
+  const aP = DIV.analyse(ptsDiv, 'country', 'species', { perms: 0 });
+  ok(aP.mantelWhy === 'few' && aP.big.length < 4, `con pocas unidades de dos accesiones o más la causa es esa (${aP.big.length})`);
+  state.acc = EXAMPLES.build();
+  B5.view.unit = 'country'; B5.run();
+  const txtP = B5.mantelText();
+  ok(txtP.includes(`sólo hay ${aP.big.length}`) && txtP.includes('dos accesiones o más'), 'y el mensaje dice cuántas unidades útiles hay en realidad');
+  B5.view.unit = 'state'; B5.run();
+  state.acc = [];
+}
+/* el gradiente altitudinal: franjas vacías con cero y altitudes imposibles fuera */
+{
+  const mk = (e, sp) => ({ i: 0, lon: -99, lat: 19, row: { ELEVATION: e, GENUS: 'G', SPECIES: sp } });
+  const s = DIV.bandSeries([mk('100', 'a'), mk('150', 'b'), mk('1200', 'a'), mk('', 'c'), mk('25000', 'd')], 'species', 500);
+  ok(s.bands.map(b => b.key).join(',') === '0,500,1000', 'el gradiente muestra todas las franjas del intervalo, también la vacía');
+  ok(s.bands[1].N === 0 && s.bands[1].S === 0 && s.bands[1].empty, 'la franja vacía lleva cero accesiones y cero tipos');
+  ok(s.used === 3 && s.sinDato === 1 && s.fuera === 1, 'la altitud vacía y la de 25 000 m quedan fuera y se cuentan aparte');
+  ok(s.bands.every(b => b.N === 0 || Number(b.key) < 7000), 'ninguna franja se arma con una altitud imposible');
+  const aBx = DIV.analyse([mk('100', 'a'), mk('25000', 'b'), mk('', 'c')], 'band', 'species', { band: 500, perms: 0 });
+  ok(aBx.units.length === 1 && aBx.elevOdd === 1 && aBx.elevMissing === 1 && aBx.nIn === 1, 'como unidad, la franja tampoco acepta altitudes imposibles ni vacías');
+  ok(aBx.units[0].meanElev === 100, 'y la altitud media de una unidad no promedia vacíos como 0 m');
+}
+/* orden de la tabla: las celdas sin valor al final en los dos sentidos */
+{
+  const us = [{ label: 'A', rare: 2 }, { label: 'B', rare: NaN }, { label: 'C', rare: 5 }, { label: 'D', rare: NaN }, { label: 'E', rare: 1 }];
+  ok(B5.sortUnits(us, 'rare', -1).map(u => u.label).join('') === 'CAEBD', 'de mayor a menor, las vacías quedan al final');
+  ok(B5.sortUnits(us, 'rare', 1).map(u => u.label).join('') === 'EACBD', 'y de menor a mayor también');
+  ok(B5.sortUnits(us, 'label', -1)[0].label === 'E', 'el nombre se ordena como texto');
+}
+/* J′ con un solo tipo, marcas de los ejes */
+ok(isNaN(DIV.indices([10]).pielou), 'con un solo tipo la equitatividad J′ es indefinida, no 1');
+ok(isNaN(DIV.indices([1]).pielou) && DIV.indices([3, 1]).pielou > 0, 'con dos tipos ya se define');
+ok(B5.tickDecimals([0, 0.25, 0.5, 0.75]) === 2 && B5.tickDecimals([0, 0.5, 1]) === 1 && B5.tickDecimals([0, 500, 1000]) === 0,
+  'las marcas del eje llevan los decimales que necesitan (0.25, no 0.3)');
 
 /* ============ 19. vacíos de colecta ============ */
 const rejilla = GAPS.areaGrid(2, 'mx');

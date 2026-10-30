@@ -16,6 +16,8 @@
   --accent-rgb: 197, 118, 28;
   --accent: #c5761c;
   --gold: #d3a01c;
+  /* primer color de las rampas de los mapas: oro palido, distinto del mar (--bg-soft) y de la tierra sin dato (--card-bg) */
+  --ramp0: #f0d77e;
   --squash-rgb: 95, 158, 74;
   --squash: #5f9e4a;
   --earth: #8a6a45;
@@ -40,6 +42,7 @@
     --primary-rgb: 190, 152, 226; --primary: #be98e2; --primary-dark: #d2b4ef;
     --accent-rgb: 240, 164, 78; --accent: #f0a44e;
     --gold: #f0c94e; --squash-rgb: 124, 196, 100; --squash: #7cc464; --earth: #c0a179; --sky: #74b8ea;
+    --ramp0: #7d6526;
     --mzBlanco: #f2e7cc; --mzAmarillo: #f0c44e; --mzRojo: #e0685c; --mzAzul: #8a7fd4;
     --mzMorado: #b573b8; --mzPinto: #e0a970; --mzOlote: #d4806c;
     --stOk: #5cc27a; --stWarn: #f0b24a; --stBad: #f07166; --stDup: #e08ac0; --stNew: #74b8ea;
@@ -55,6 +58,7 @@
   --primary-rgb: 190, 152, 226; --primary: #be98e2; --primary-dark: #d2b4ef;
   --accent-rgb: 240, 164, 78; --accent: #f0a44e;
   --gold: #f0c94e; --squash-rgb: 124, 196, 100; --squash: #7cc464; --earth: #c0a179; --sky: #74b8ea;
+  --ramp0: #7d6526;
   --mzBlanco: #f2e7cc; --mzAmarillo: #f0c44e; --mzRojo: #e0685c; --mzAzul: #8a7fd4;
   --mzMorado: #b573b8; --mzPinto: #e0a970; --mzOlote: #d4806c;
   --stOk: #5cc27a; --stWarn: #f0b24a; --stBad: #f07166; --stDup: #e08ac0; --stNew: #74b8ea;
@@ -185,6 +189,14 @@ table.tbl th { text-align: left; padding: 7px 12px; border-bottom: 2px solid var
 table.tbl td { padding: 7px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
 table.tbl tr:hover td { background: var(--bg-soft); }
 table.tbl td.num, table.tbl th.num { text-align: right; font-family: var(--mono); font-size: .84rem; }
+/* encabezados que ordenan la tabla: se ven como encabezado, no como boton gris */
+table.tbl:not(.tbl-edit) .th-btn { font: inherit; font-size: inherit; font-weight: 700; text-transform: inherit; letter-spacing: inherit; color: inherit; background: transparent; border: 0; padding: 0; margin: 0; cursor: pointer; white-space: nowrap; text-align: inherit; display: inline-flex; align-items: center; gap: 4px; }
+table.tbl:not(.tbl-edit) .th-btn::after { content: '\2195'; font-size: .9em; opacity: .35; }
+table.tbl:not(.tbl-edit) .th-btn.on::after { content: none; }
+table.tbl:not(.tbl-edit) .th-btn:hover, table.tbl:not(.tbl-edit) .th-btn.on { color: var(--primary-text); }
+table.tbl:not(.tbl-edit) .th-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 3px; }
+/* letras que no deben pasar a mayusculas (la beta griega se volveria una B, la q de Hill una Q) */
+.nt { text-transform: none; }
 
 /* ---------- etiquetas de estado ---------- */
 .tag { display: inline-flex; align-items: center; gap: 5px; font-size: .74rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; border: 1px solid; }
@@ -277,6 +289,10 @@ table.dup-tbl tr.dup-differ td:first-child { font-weight: 700; }
 .legend-ramp i:first-child { border-radius: 3px 0 0 3px; border-left: 1px solid var(--border); }
 .legend-ramp i:last-child { border-radius: 0 3px 3px 0; }
 .legend-ends { display: flex; justify-content: space-between; width: 156px; font-size: .7rem; }
+/* la barra y sus rotulos van juntos en una columna: los rotulos ocupan justo el ancho de la barra
+   (con los bordes de las celdas incluidos) y quedan alineados con sus extremos */
+.legend-scale { display: inline-flex; flex-direction: column; gap: 2px; }
+.legend-scale .legend-ends { width: auto; gap: 12px; line-height: 1.2; }
 
 /* ---------- referencias y pie ---------- */
 .refs { font-size: .84rem; color: var(--text-muted); max-width: 900px; }

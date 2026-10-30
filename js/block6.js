@@ -168,8 +168,8 @@
         <div class="map-legends"><div class="map-legend">
           <span class="lg-item"><i style="background:${cv('--s3')}"></i>${T('celda con colectas', 'cell with collections')}</span>
           <span class="lg-item"><i style="background:${cv('--accent')}"></i>${T('prioridad numerada', 'numbered priority')}</span>
-          <div class="legend-ramp">${[...Array(6)].map((_, i) => `<i style="background:${ramp(0.1 + 0.9 * i / 5)}"></i>`).join('')}</div>
-          <div class="legend-ends"><span>${T('menos', 'less')}</span><span>${T('más', 'more')}</span></div>
+          <div class="legend-scale"><div class="legend-ramp">${[...Array(6)].map((_, i) => `<i style="background:${ramp(0.1 + 0.9 * i / 5)}"></i>`).join('')}</div>
+          <div class="legend-ends"><span>${T('menos', 'less')}</span><span>${T('más', 'more')}</span></div></div>
         </div></div>
       </div>
 
