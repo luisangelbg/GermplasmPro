@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · Manual de usuario · Capítulo 7</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- reparte el contenido en hojas tamaño carta, con encabezados, números de página e índice -->
+<script src="../paginar.js"></script>
+<style>
+  .formula { font-family: var(--mono); font-size: 9pt; background: var(--marino-suave); border-radius: 5px; padding: 0.07in 0.12in; margin: 0.08in 0; }
+  .cuenta td { font-family: var(--mono); font-size: 8.6pt; }
+  .csv td { font-family: var(--mono); font-size: 7.6pt; }
+  figure.reducida { width: 74%; margin-left: auto; margin-right: auto; }
+  figure.mediana { width: 86%; margin-left: auto; margin-right: auto; }
+  figure.chica { width: 62%; margin-left: auto; margin-right: auto; }
+  figure.angosta { width: 50%; margin-left: auto; margin-right: auto; }
+  .lado { display: flex; gap: 0.22in; align-items: center; margin: 0.1in 0; }
+  .lado > figure { flex: 0 0 46%; margin: 0; }
+  .lado > div { flex: 1 1 0; }
+</style>
+</head>
+<body>
+
+<section class="capitulo" id="cap-b7" data-pestana="7" data-orden="7" style="--acento: var(--b7)">
+  <div class="cap-apertura">
+    <div class="cap-num">7</div>
+    <div class="cap-etiqueta">Capítulo siete · Bloque 7 · Caracterización y núcleo</div>
+    <h1 data-corto="Caracterización y núcleo">Caracterización y colección núcleo</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">El pasaporte dice quién es cada accesión y de dónde viene; la caracterización dice cómo es. El Bloque 7 recibe lo que mediste en campo y en laboratorio —números, escalas, colores y celdas vacías, todo junto—, describe la variación carácter por carácter, mide qué tanto se parecen las accesiones con la distancia de Gower, las ordena en un mapa de parecido y en un árbol y, con eso, arma una colección núcleo: el subconjunto pequeño que puedes caracterizar a fondo o evaluar en campo sin mover todo el banco. Al final comprueba, con los criterios de Hu <i>et al.</i>, que ese núcleo de verdad representa a la colección.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>7.1</b>Traer la caracterización y unirla con la colección</li>
+      <li><b>7.2</b>Los caracteres: tipo, peso y variación</li>
+      <li><b>7.3</b>La distancia de Gower</li>
+      <li><b>7.4</b>El mapa de parecido: coordenadas principales</li>
+      <li><b>7.5</b>El agrupamiento y la silueta</li>
+      <li><b>7.6</b>La colección núcleo: estratos, reparto y elección</li>
+      <li><b>7.7</b>¿Representa bien? Los criterios de Hu <i>et al.</i></li>
+      <li><b>7.8</b>Exportar, y cómo cambia el núcleo con las opciones</li>
+    </ul>
+  </div>
+
+  <!-- 7.1 -->
+  <h2 id="b7-1"><span class="num">7.1</span>Traer la caracterización y unirla con la colección</h2>
+  <p class="lead">El Bloque 7 trabaja con dos tablas: el pasaporte del Bloque 2 (capítulo 2) y una tabla de caracterización con <b>una fila por accesión y una columna por descriptor</b>. Las dos se unen por el número de accesión, <code>ACCENUMB</code>, que es la llave de toda la app. Si no hay pasaporte, el bloque dice <span class="ui">Primero carga tus accesiones en el Bloque 2.</span>; si hay pasaporte pero no caracterización, <span class="ui">Todavía no hay datos de caracterización: cárgalos o abre los del ejemplo con el botón de arriba.</span></p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b7-cargar.png" alt="La cabecera del Bloque 7: el título Bloque 7 · Caracterización y colección núcleo, el párrafo de presentación, los botones Cargar mi caracterización (CSV), Pegar desde una hoja de cálculo, Usar la caracterización de ejemplo, Descargar la plantilla y Quitar la caracterización, la nota sobre la columna ACCENUMB y seis recuadros: 46 accesiones caracterizadas de 46 en la colección con 12 caracteres, 4 grupos con silueta media 0.14, núcleo de 5 accesiones (10.9 % de las caracterizadas), MD% 0.0, CR% 75.2 y VR% 91.4"></div>
+    <figcaption><b>Figura 7.1.</b> La cabecera del bloque con la colección de ejemplo, la caracterización de ejemplo y los valores de fábrica. El color del número en cada recuadro es su semáforo: verde si la cifra está en lo bueno, ocre o rojo si conviene revisarla.</figcaption>
+  </figure>
+  <table class="compacta">
+    <caption><b>Tabla 7.1.</b> Los cinco botones de la cabecera.</caption>
+    <thead><tr><th style="width:1.9in">Botón</th><th>Qué hace</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Cargar mi caracterización (CSV)</span></td><td>Lee un archivo <span class="ruta">.csv</span>, <span class="ruta">.tsv</span> o <span class="ruta">.txt</span> delimitado y abre la tarjeta de confirmación (figura 7.2).</td></tr>
+      <tr><td><span class="ui">Pegar desde una hoja de cálculo</span></td><td>Abre la misma ventana de pegado del Bloque 2 (apartado 2.3), con el título <span class="ui">Pega tu caracterización</span>. Copia el bloque de celdas con su fila de encabezados y pégalo; también termina en la tarjeta de confirmación.</td></tr>
+      <tr><td><span class="ui">Usar la caracterización de ejemplo</span></td><td>Genera la caracterización de ejemplo para las accesiones cargadas y calcula todo el bloque de inmediato, con la espera animada <i>Calculando la caracterización y el núcleo</i>.</td></tr>
+      <tr><td><span class="ui">Descargar la plantilla</span></td><td>Guarda <span class="ruta">plantilla-caracterizacion.csv</span>: la columna <code>ACCENUMB</code> ya llena con tus accesiones (hasta las primeras 200) y seis columnas vacías de muestra, <code>dias_floracion</code>, <code>altura_planta_cm</code>, <code>largo_fruto_cm</code>, <code>color_principal</code>, <code>forma</code> y <code>habito</code>. Cámbialas, quita las que no midas y añade las tuyas.</td></tr>
+      <tr><td><span class="ui">Quitar la caracterización</span></td><td>Borra la caracterización guardada y deja el bloque vacío. No pregunta antes: si la cargaste de un archivo, el archivo sigue intacto y basta con volver a cargarlo.</td></tr>
+    </tbody>
+  </table>
+  <p>La caracterización se guarda en el almacenamiento local del navegador, junto al pasaporte: si cierras la app y la vuelves a abrir, sigue ahí. No sale de tu computadora.</p>
+  <div class="caja dato">
+    <div class="caja-t">La caracterización de ejemplo</div>
+    <p>Doce descriptores para las 46 accesiones de la colección de ejemplo, <b>generados por la app con datos sintéticos</b>: seis cuantitativos (<code>dias_floracion</code>, <code>altura_planta_cm</code>, <code>largo_fruto_cm</code>, <code>diametro_fruto_cm</code>, <code>peso_100_semillas_g</code>, <code>rendimiento_planta_g</code>), cuatro cualitativos (<code>color_principal</code>, <code>forma</code>, <code>habito</code>, <code>textura</code>) y dos escalas de 1 a 5 (<code>tolerancia_sequia</code>, <code>vigor</code>). Los cuantitativos salen de una distribución normal con media propia de cada género —un agave tarda años en florecer y un encino mide metros—; el hábito sigue al género (los árboles son arbóreos, la vainilla y el chayote trepadores), y color, forma, textura y las dos escalas se sortean. Alrededor de 8&nbsp;% de las celdas quedan vacías a propósito. Siempre salen los mismos valores para la misma colección, así que puedes reproducir cada cifra de este capítulo.</p>
+  </div>
+
+  <h3>La tarjeta «¿Cómo se une esto con tu colección?»</h3>
+  <p>Al cargar o pegar una tabla, la app no la acepta todavía: antes enseña lo único que de verdad importa, cuántas de sus filas encuentran su accesión. La columna llave se elige sola —la primera cuyo encabezado se parezca a <code>ACCENUMB</code>, <i>accesión</i> o <i>accession</i>; si ninguna, la primera columna— y se cambia en el selector <span class="ui">Columna con el número de accesión</span>; la cuenta se rehace al instante.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b7-unir.png" alt="La tarjeta ¿Cómo se une esto con tu colección?: se leyeron 14 filas y 13 columnas de mi-caracterizacion.csv y la colección tiene 46 accesiones; la columna llave es ACCENUMB; 12 filas se unen con una accesión, 1 no encuentra accesión y 34 accesiones se quedan sin datos; dos avisos sobre la fila MEX-ZM-9999 y una fila repetida; la tabla de los doce descriptores con su tipo propuesto, cuántas celdas tienen dato y valores de muestra; los botones Usar esta caracterización y Cancelar"></div>
+    <figcaption><b>Figura 7.2.</b> La tarjeta de confirmación con un archivo de prueba: las 12 primeras filas de la caracterización de ejemplo, una fila con un número que no existe (MEX-ZM-9999) y una fila repetida. La tabla de descriptores se muestra desplegada; en la app se desplaza dentro de su caja.</figcaption>
+  </figure>
+  <p>Los tres recuadros dicen cuántas filas <span class="ui">se unen con una accesión</span>, cuántas <span class="ui">no encuentran accesión</span> y cuántas accesiones de la colección <span class="ui">se quedan sin datos</span>. Si ninguna fila se une, el aviso rojo dice que casi seguro la columna llave no es ésa. Las filas huérfanas se importan igual, pero no entran al análisis hasta que su número coincida; si un número se repite, se queda la última fila. La tabla de abajo propone el tipo de cada descriptor (apartado 7.2) y muestra cuántas celdas tienen dato y hasta cuatro valores distintos de muestra. <span class="ui">Usar esta caracterización</span> la acepta y calcula el bloque; <span class="ui">Cancelar</span> la descarta.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Una accesión sin caracterizar no estorba</div>
+    <p>Sólo entran al Bloque 7 las accesiones que tienen fila en la caracterización: el recuadro <span class="ui">Accesiones caracterizadas</span> dice cuántas son, «de 46 en la colección». La distancia, el árbol, el núcleo y su validación se calculan sobre ellas. Si caracterizaste la mitad del banco, el núcleo representa a esa mitad, no al banco entero.</p>
+  </div>
+
+  <!-- 7.2 -->
+  <h2 id="b7-2"><span class="num">7.2</span>Los caracteres: tipo, peso y variación</h2>
+  <p>La sección <span class="ui">1 · Los caracteres</span> tiene una fila por columna de la caracterización. En cada una decides tres cosas: si el carácter entra (la casilla junto a su nombre), qué tipo es y cuánto pesa.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b7-caracteres.png" alt="La sección 1 · Los caracteres con la caracterización de ejemplo: doce filas con casilla, selector de tipo, peso 1, n, faltan y resumen; por ejemplo dias_floracion cuantitativo con 43 datos, 3 faltantes, media 304.05 ± 631.49, CV 207.7 % y rango 43.00–2,597.00; color_principal cualitativo con 41 datos, 8 clases, H′ = 2.03 y equitatividad 0.98; vigor ordinal con 45 datos, media 3.04 ± 1.45 y CV 47.5 %"></div>
+    <figcaption><b>Figura 7.3.</b> La tabla de los caracteres con la caracterización de ejemplo. Los millares van con coma, como los escribe la app: <i>2,597.00</i> son 2 597 días.</figcaption>
+  </figure>
+  <p><b>El tipo.</b> La app lo propone mirando los valores de la columna: si más del 90&nbsp;% de los valores no vacíos son números (con punto o coma decimal) y hay más de seis valores distintos, es <span class="ui">cuantitativo</span>; si son números pero seis o menos distintos, <span class="ui">ordinal</span>; en cualquier otro caso, <span class="ui">cualitativo</span>. Corrígelo cuando la propuesta no cuadre: una escala de 1 a 9 con todos sus valores presentes sale cuantitativa, y un código de color numérico (1 = blanco, 2 = amarillo…) sale ordinal o cuantitativo cuando en realidad es cualitativo. Una columna sin ningún dato queda apagada.</p>
+  <p><b>La casilla.</b> Quitarla saca al carácter de todo el bloque: de la distancia, del núcleo y de su validación. Úsala para columnas que no son descriptores, como un folio de laboratorio o una fecha de toma.</p>
+  <p><b>El peso.</b> Va de 0 a 5, de medio en medio, y vale 1 de fábrica. Sólo entra en la distancia de Gower (apartado 7.3): un carácter con peso 2 cuenta como dos. Si dos caracteres miden casi lo mismo —largo y peso del fruto, por ejemplo—, bajarle el peso a uno evita contar dos veces la misma diferencia. Con peso 0 el carácter deja de influir en la distancia, pero sigue en la validación del núcleo.</p>
+  <p><b>El resumen.</b> Las columnas <span class="ui">n</span> y <span class="ui">Faltan</span> cuentan celdas con dato y vacías. En los cuantitativos y ordinales, el resumen da la media ± la desviación estándar, el coeficiente de variación y el rango; en los cualitativos, el número de clases, la diversidad de Shannon H′, la equitatividad y las tres clases más frecuentes con sus accesiones.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · la variación de un descriptor</div>
+    <p>Para un carácter cuantitativo con <i>n</i> valores, la desviación estándar es la muestral (divide entre <i>n</i> − 1) y el coeficiente de variación la expresa como porcentaje de la media:</p>
+    <div class="formula">s = √[ Σ (x<sub>i</sub> − x̄)² / (n − 1) ]  ·  CV = 100 · s / |x̄|</div>
+    <p>Para uno cualitativo con <i>k</i> clases, sea <i>p<sub>j</sub></i> la proporción de accesiones en la clase <i>j</i>. La diversidad fenotípica se mide, como en el Bloque 5, con el índice de Shannon en logaritmo natural, y la equitatividad lo divide entre su máximo posible:</p>
+    <div class="formula">H′ = −Σ p<sub>j</sub> ln p<sub>j</sub>  ·  equitatividad = H′ / ln k</div>
+    <p>La equitatividad vale 1 cuando todas las clases tienen las mismas accesiones; con una sola clase la app escribe 1. Un descriptor con H′ alto y equitatividad cercana a 1 discrimina bien; uno con una clase que acapara casi todo aporta poco a la distancia.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · lo que dice la tabla del ejemplo</div>
+    <p>Las 46 accesiones del ejemplo son de 18 géneros, y se nota: los días a floración van de 43 a 2 597 (CV 207.7&nbsp;%) porque junto a un frijol hay un agave, un aguacate y un encino; el rendimiento por planta, de 36 a 32 441 g (CV 328.1&nbsp;%). El peso de 100 semillas es el más incompleto, con 15 celdas vacías, porque el ejemplo no le da peso de semilla a ocho géneros (papa, oca, yuca, agave, vainilla, aguacate, cacao y chayote). En los cualitativos, <code>color_principal</code> reparte 41 accesiones en 8 clases casi parejas: ln 8 = 2.079 y H′ = 2.03, de modo que la equitatividad es 2.03/2.079 = 0.98. <code>habito</code> tiene 5 clases, pero 26 de 43 accesiones son erectas: H′ = 1.16 y equitatividad 1.16/ln 5 = 1.16/1.609 = 0.72.</p>
+  </div>
+  <p>Los seis recuadros de la cabecera resumen el resultado de todo el bloque; cada uno se explica en su apartado.</p>
+  <table class="compacta">
+    <caption><b>Tabla 7.2.</b> Los recuadros del resumen con el ejemplo y los valores de fábrica.</caption>
+    <thead><tr><th style="width:1.75in">Recuadro</th><th class="c" style="width:0.6in">Ejemplo</th><th>Qué dice</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Accesiones caracterizadas</span></td><td class="c">46</td><td>Las accesiones con fila en la caracterización; debajo, de cuántas en la colección y cuántos caracteres entran (12).</td></tr>
+      <tr><td><span class="ui">Grupos</span></td><td class="c">4</td><td>Los grupos del corte del árbol; debajo, la silueta media (0.14). Verde si pasa de 0.25 (apartado 7.5).</td></tr>
+      <tr><td><span class="ui">Núcleo</span></td><td class="c">5</td><td>Las accesiones del núcleo y qué porcentaje son de las caracterizadas (10.9&nbsp;%).</td></tr>
+      <tr><td><span class="ui">MD%</span></td><td class="c">0.0</td><td>Medias que difieren entre núcleo y colección; bueno por debajo de 20 (apartado 7.7).</td></tr>
+      <tr><td><span class="ui">CR%</span></td><td class="c">75.2</td><td>Rango conservado; bueno por encima de 80.</td></tr>
+      <tr><td><span class="ui">VR%</span></td><td class="c">91.4</td><td>Variación relativa conservada; el letrero pide ≥ 100, pero el semáforo se pone verde desde 95.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 7.3 -->
+  <h2 id="b7-3"><span class="num">7.3</span>La distancia de Gower</h2>
+  <p>Para decir que dos accesiones se parecen hay que juntar en un solo número diferencias de cosas distintas: días, centímetros, colores y escalas. La distancia euclidiana no sirve —sólo acepta números, y el carácter con las cifras más grandes lo decidiría todo— y casi ninguna admite celdas vacías. La <b>distancia de Gower</b> (1971) resuelve las dos cosas: cada carácter aporta una diferencia entre 0 y 1, y se promedia sólo sobre los caracteres que las dos accesiones tienen medidos.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · la distancia de Gower</div>
+    <p>Entre las accesiones <i>i</i> y <i>j</i>, cada carácter <i>k</i> aporta una diferencia parcial <i>d<sub>ijk</sub></i>:</p>
+    <div class="formula">cuantitativo u ordinal:  d<sub>ijk</sub> = |x<sub>ik</sub> − x<sub>jk</sub>| / R<sub>k</sub><br>cualitativo:  d<sub>ijk</sub> = 0 si son la misma clase, 1 si no</div>
+    <p>donde <i>R<sub>k</sub></i> es el rango del carácter (máximo − mínimo) entre todas las accesiones caracterizadas; si el rango es 0, se toma 1. Las clases se comparan sin distinguir mayúsculas. La distancia es el promedio ponderado por los pesos <i>w<sub>k</sub></i>, tomado sólo sobre los caracteres que ambas tienen medidos (δ<sub>ijk</sub> = 1) y con peso mayor que 0:</p>
+    <div class="formula">d<sub>ij</sub> = Σ<sub>k</sub> w<sub>k</sub> δ<sub>ijk</sub> d<sub>ijk</sub>  /  Σ<sub>k</sub> w<sub>k</sub> δ<sub>ijk</sub></div>
+    <p>Vale 0 si las dos accesiones son idénticas en todo lo que comparten y 1 si son opuestas en todo. Los ordinales se tratan como cuantitativos: de 1 a 3 hay el doble de distancia que de 1 a 2.</p>
+  </div>
+  <p>La app no muestra la matriz en pantalla —con 46 accesiones son 1 035 pares—, pero la exporta completa con el botón <span class="ui">Matriz de distancias</span> (apartado 7.8). En el ejemplo, las distancias van de 0.0086 a 0.8752, con media 0.393. Si dos accesiones no comparten ningún carácter medido, su distancia queda vacía y, en las coordenadas principales, cuenta como 0.</p>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · dos maíces del ejemplo, MEX-ZM-0001 y MEX-ZM-0002</div>
+    <p>A MEX-ZM-0001 le falta la altura; a MEX-ZM-0002, el peso de 100 semillas y la tolerancia a la sequía. Esos tres caracteres no entran; quedan nueve. Los rangos son los de las 46 accesiones.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td style="width:36%">dias_floracion   84 y 63</td><td>21 / 2554 = 0.00822</td></tr>
+      <tr><td>largo_fruto_cm   20.6 y 15.7</td><td>4.9 / 76.4 = 0.06414</td></tr>
+      <tr><td>diametro_fruto_cm   4.5 y 4.9</td><td>0.4 / 19.4 = 0.02062</td></tr>
+      <tr><td>rendimiento_planta_g   96 y 120</td><td>24 / 32405 = 0.00074</td></tr>
+      <tr><td>vigor   2 y 3</td><td>1 / 4 = 0.25000</td></tr>
+      <tr><td>color · forma · textura</td><td>azul/verde, aplanada/cónica, lisa/pubescente: 1 + 1 + 1</td></tr>
+      <tr><td>habito</td><td>erecto/erecto: 0</td></tr>
+      <tr><td colspan="2">d = (0.00822 + 0.06414 + 0.02062 + 0.00074 + 0.25 + 3 + 0) / 9 = 3.34372 / 9 = 0.3715  →  la matriz exportada dice 0.3715</td></tr>
+    </tbody></table>
+    <p>Fíjate en el tamaño de cada sumando: 21 días de diferencia en floración pesan 0.008, porque el rango lo estira el encino, con 2 597 días; tres colores, formas y texturas distintos pesan 3. En esta colección, la distancia la deciden los cualitativos. Por eso MEX-ZM-0002 queda más cerca de un frijol (MEX-SE-0013, d = 0.3674) que de otro maíz (0.3715), y el agave MEX-AG-0024 queda a 0.7502 de MEX-ZM-0001.</p>
+  </div>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Un valor extremo aplasta a los demás</div>
+    <p>Como cada carácter cuantitativo se divide entre su rango, una sola accesión muy distinta —o un error de captura, como una altura de 25 000 cm— comprime las diferencias de todas las demás hacia cero y deja la distancia en manos de los cualitativos. Si tu colección mezcla especies muy distintas, caracteriza y arma el núcleo por especie o por cultivo (estratos del apartado 7.6), o transforma antes los caracteres muy sesgados, como el rendimiento, a logaritmo en tu hoja de cálculo. Revisa siempre el rango del resumen antes de leer el árbol.</p>
+  </div>
+
+  <!-- 7.4 -->
+  <h2 id="b7-4"><span class="num">7.4</span>El mapa de parecido: coordenadas principales</h2>
+  <p>La sección <span class="ui">2 · El mapa de parecido</span> pone la matriz de distancias en dos dibujos: a la izquierda, las <b>coordenadas principales</b> (PCoA), un plano donde las accesiones que se parecen quedan cerca; a la derecha, el <b>árbol</b> del agrupamiento (apartado 7.5). Tres selectores los gobiernan.</p>
+  <table class="compacta">
+    <caption><b>Tabla 7.3.</b> Los selectores de la sección 2 (en negritas, el de fábrica).</caption>
+    <thead><tr><th style="width:1.3in">Selector</th><th>Opciones y qué hacen</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Árbol</span></td><td><b><span class="ui">Ward.D2</span></b> o <span class="ui">UPGMA</span> (apartado 7.5). Cambia el árbol, los grupos y, si el núcleo se estratifica por grupos, el núcleo.</td></tr>
+      <tr><td><span class="ui">Grupos</span></td><td>De 2 a 8; de fábrica, <b>4</b>. Dónde se corta el árbol.</td></tr>
+      <tr><td><span class="ui">Colorear por</span></td><td><b><span class="ui">grupo</span></b>, <span class="ui">cultivo</span>, <span class="ui">especie</span> o <span class="ui">núcleo</span>. Sólo cambia los colores de la gráfica de la izquierda; el árbol siempre va por grupo. La paleta tiene ocho colores: con más de ocho cultivos o especies, los colores se repiten.</td></tr>
+    </tbody>
+  </table>
+  <figure>
+    <div class="marco"><img src="../img/b7-mapa.png" alt="La sección 2 · El mapa de parecido: los selectores Árbol en Ward.D2, Grupos en 4 y Colorear por grupo, la nota El eje 1 explica 17.9 % y el eje 2 13.2 % de la variación; a la izquierda la gráfica de coordenadas principales con los puntos coloreados por grupo G1 a G4 y cinco puntos grandes con borde que son el núcleo; a la derecha el dendrograma de Ward con las 46 accesiones, cada etiqueta en el color de su grupo"></div>
+    <figcaption><b>Figura 7.4.</b> El mapa de parecido con los valores de fábrica. El árbol se muestra desplegado; en la app se desplaza dentro de su caja, que muestra unas 40 hojas a la vez.</figcaption>
+  </figure>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · el análisis de coordenadas principales</div>
+    <p>El análisis de coordenadas principales (Gower 1966) busca puntos en un plano cuyas distancias se parezcan lo más posible a las de la matriz. Con <i>D</i> la matriz de distancias de <i>n</i> accesiones, se forma <i>A</i> con <i>a<sub>ij</sub></i> = −½ <i>d<sub>ij</sub></i>² y se centra por filas y por columnas:</p>
+    <div class="formula">b<sub>ij</sub> = a<sub>ij</sub> − ā<sub>i·</sub> − ā<sub>·j</sub> + ā<sub>··</sub><br>B = Σ λ<sub>m</sub> u<sub>m</sub> u<sub>m</sub>ᵀ<br>coordenada<sub>im</sub> = u<sub>im</sub> √λ<sub>m</sub></div>
+    <p>Los valores propios λ<sub>m</sub> de <i>B</i> (la app los obtiene por el método de Jacobi) miden cuánta variación recoge cada eje. El porcentaje que la app escribe en cada eje es λ<sub>m</sub> dividido entre la suma de los valores propios <b>positivos</b>. Gower con datos faltantes no es una distancia euclidiana, así que algunos valores propios salen negativos; la app los deja fuera de la suma y no aplica ninguna corrección.</p>
+  </div>
+  <p>En el ejemplo, la suma de los valores propios positivos es 5.518 y el primero vale 0.987, así que el eje 1 explica 0.987/5.518 = 17.9&nbsp;%; el segundo, 0.726/5.518 = 13.2&nbsp;%. Entre los dos, el plano recoge el 31&nbsp;% de la variación: es un retrato aproximado. De los 46 valores propios, 24 son negativos. Con caracteres mixtos y muchas especies esto es lo normal; si los dos primeros ejes juntaran más de la mitad, el plano sería un retrato fiel.</p>
+  <p><b>Cómo se lee.</b> Cada punto es una accesión; pasa el puntero sobre él para ver su número. Los ejes no tienen unidades: importa la distancia entre puntos, no su posición absoluta. Los puntos grandes con borde oscuro son el núcleo (apartado 7.6). En la figura 7.4, los dos puntos verdes de la izquierda son el encino y el agave (G3), y el azul grande, el cacao (G4); los grupos G1 y G2, los más numerosos, se mezclan en el centro, que es lo que la silueta baja anuncia.</p>
+
+  <!-- 7.5 -->
+  <h2 id="b7-5"><span class="num">7.5</span>El agrupamiento y la silueta</h2>
+  <p>El árbol de la derecha agrupa las accesiones con la misma matriz de Gower. Cada hoja es una accesión, escrita en el color de su grupo; cuanto más a la izquierda se unen dos ramas, más distintas son. La app corta el árbol en el número de grupos elegido y llama G1, G2… a los grupos que resultan. El árbol no trae escala de altura ni se exporta aparte; para un dendrograma con escala, exporta la matriz y dibújalo en otro programa.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · Ward.D2 y UPGMA</div>
+    <p><b>UPGMA</b> une en cada paso los dos grupos con la menor distancia media entre sus miembros. <b>Ward.D2</b> (Murtagh y Legendre 2014) une el par cuya fusión menos aumenta la suma de cuadrados dentro de los grupos; trabaja con las distancias al cuadrado y actualiza con la fórmula de Lance-Williams, el mismo criterio que <code>hclust(…, method = "ward.D2")</code> de R. Ward tiende a dar grupos de tamaño parecido; UPGMA respeta mejor las distancias, pero deja aislados a los raros y junta a los demás en un grupo enorme. El corte en <i>k</i> grupos parte, una y otra vez, el nodo más alto que queda.</p>
+  </div>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · la silueta</div>
+    <p>La <b>silueta</b> (Rousseeuw 1987) dice si cada accesión está bien en su grupo. Con <i>a</i>(<i>i</i>) la distancia media de <i>i</i> a los demás de su grupo y <i>b</i>(<i>i</i>) la distancia media al grupo vecino más cercano:</p>
+    <div class="formula">s(i) = [ b(i) − a(i) ] / max{ a(i), b(i) }<br>silueta media = Σ s(i) / n</div>
+    <p><i>s</i> va de −1 a 1: cerca de 1, la accesión está mucho más cerca de su grupo que de cualquier otro; cerca de 0, está en la frontera; negativa, estaría mejor en otro grupo. Una accesión sola en su grupo vale 0. Por encima de 0.25 hay estructura; por debajo, el corte es casi arbitrario.</p>
+  </div>
+  <p>Con el ejemplo, Ward en 4 grupos da G1 con 23 accesiones (doce de <i>Zea mays</i>, dos de ellas teocintle, las dos papas, el trigo, la cebada, la yuca…), G2 con 17 (otros maíces, frijoles, el chayote, la vainilla, la oca…), G3 con 2 (el agave y el encino) y G4 con 4 (aguacate, cacao, café y un chayote). La silueta media es 0.14: G3 tiene 0.26 y los otros tres entre 0.13 y 0.14, y dos accesiones tienen silueta negativa. Los grupos no son de especies: como los colores y las texturas del ejemplo se sortearon, mezclan especies. La tabla 7.4 muestra qué pasa con otros cortes.</p>
+  <table class="compacta">
+    <caption><b>Tabla 7.4.</b> Silueta media y tamaño de los grupos según el árbol y el número de grupos, con la caracterización de ejemplo.</caption>
+    <thead><tr><th class="c" style="width:0.55in">Grupos</th><th class="c" style="width:0.75in">Ward.D2</th><th style="width:1.6in">Tamaños</th><th class="c" style="width:0.75in">UPGMA</th><th>Tamaños</th></tr></thead>
+    <tbody>
+      <tr><td class="c">2</td><td class="c"><b>0.298</b></td><td>6 · 40</td><td class="c"><b>0.394</b></td><td>2 · 44</td></tr>
+      <tr><td class="c">3</td><td class="c">0.116</td><td>6 · 17 · 23</td><td class="c">0.272</td><td>2 · 1 · 43</td></tr>
+      <tr><td class="c">4</td><td class="c">0.140</td><td>23 · 17 · 2 · 4</td><td class="c">0.161</td><td>2 · 1 · 1 · 42</td></tr>
+      <tr><td class="c">5</td><td class="c">0.121</td><td>17 · 4 · 2 · 9 · 14</td><td class="c">0.148</td><td>2 · 1 · 1 · 3 · 39</td></tr>
+      <tr><td class="c">6</td><td class="c">0.133</td><td>14 · 9 · 4 · 2 · 7 · 10</td><td class="c">0.137</td><td>39 · 3 · 1 · 1 · 1 · 1</td></tr>
+      <tr><td class="c">8</td><td class="c">0.142</td><td>9 · 4 · 7 · 2 · 6 · 4 · 4 · 10</td><td class="c">0.020</td><td>3 · 1 · 1 · 1 · 1 · 1 · 1 · 37</td></tr>
+    </tbody>
+  </table>
+  <p><b>Cómo se lee para decidir.</b> La silueta más alta del ejemplo no es la mejor partición útil: UPGMA con 2 grupos da 0.394 porque separa al agave y al encino de las otras 44 accesiones, y eso no organiza nada. Ward con 2 grupos (0.298) separa del resto a seis perennes —el agave, el encino, el aguacate, el cacao, el café y un chayote—: es la única estructura clara de esta colección. Para armar el núcleo por grupos, más vale un corte con grupos de tamaño razonable, aunque la silueta sea modesta, que uno con grupos de una sola accesión. Busca el número de grupos donde la silueta tiene un pico local y los grupos tienen sentido biológico.</p>
+
+  <!-- 7.6 -->
+  <h2 id="b7-6"><span class="num">7.6</span>La colección núcleo: estratos, reparto y elección</h2>
+  <p>Una <b>colección núcleo</b> (Frankel y Brown 1984) es un subconjunto pequeño que guarda, con el mínimo de repeticiones, la mayor parte de la diversidad de la colección entera. Sirve para caracterizar a fondo, para evaluar en campo o para atender pedidos sin tocar todo el banco. La sección <span class="ui">3 · La colección núcleo</span> la arma en tres decisiones: cuántas accesiones, en qué estratos se reparten y cuáles se eligen dentro de cada estrato.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b7-nucleo.png" alt="La sección 3 · La colección núcleo con los valores de fábrica: los selectores Tamaño en 10 %, Método por estratos, Estratos en grupos del agrupamiento, Reparto en Logarítmica y Dentro del estrato las más distintas, el botón otra selección al azar; el aviso El núcleo es demasiado pequeño para juzgarlo con estas cifras con 5 accesiones; la tabla de criterios de Hu et al. con MD% 0.0 bien, VD% 62.5 revisar, CR% 75.2 revisar, VR% 91.4 revisar y clases cualitativas capturadas 54.5 % revisar; y el reparto por estrato G1 23 a 2, G2 17 a 1, G3 2 a 1 y G4 4 a 1"></div>
+    <figcaption><b>Figura 7.5.</b> El núcleo de fábrica: 10&nbsp;%, estratificado por los grupos de Ward, reparto logarítmico y las accesiones más distintas dentro de cada estrato. Con 5 accesiones, la app avisa que el núcleo es demasiado pequeño para juzgarlo.</figcaption>
+  </figure>
+  <p>La tabla <span class="ui">Reparto por estrato</span> dice, para cada estrato, cuántas accesiones <span class="ui">Tiene</span>, cuántas van <span class="ui">Al núcleo</span> y qué porcentaje es. Con el método M, en su lugar aparece una frase con cuántas accesiones se eligieron y cuántas clases quedaron fuera. Debajo, la lista del núcleo (figura 7.8) da el número, el nombre, la especie, el grupo y el estrato de cada accesión elegida.</p>
+  <table class="compacta">
+    <caption><b>Tabla 7.5.</b> Los controles del núcleo (en negritas, el de fábrica).</caption>
+    <thead><tr><th style="width:1.3in">Control</th><th>Opciones y qué hacen</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Tamaño</span></td><td>5, <b>10</b>, 15, 20, 25 o 30&nbsp;% de las accesiones caracterizadas, redondeado al entero más cercano (10&nbsp;% de 46 = 4.6 → 5). Es un objetivo: con más estratos que accesiones pedidas, el núcleo sale más grande (véase la caja de abajo).</td></tr>
+      <tr><td><span class="ui">Método</span></td><td><b><span class="ui">por estratos</span></b>: reparte y elige como se explica en este apartado. <span class="ui">método M (máximas clases)</span>: no estratifica; va tomando la accesión que más clases nuevas aporta. Con el método M, los selectores de estratos, reparto y elección no hacen nada.</td></tr>
+      <tr><td><span class="ui">Estratos</span></td><td><b><span class="ui">grupos del agrupamiento</span></b> (los G de la sección 2), <span class="ui">entidad o país</span> (la entidad de México donde cae el punto, o si no cae en ninguna, el código <code>ORIGCTY</code>), <span class="ui">cultivo</span> (<code>CROPNAME</code>), <span class="ui">especie</span> (género + epíteto) o <span class="ui">sin estratificar</span>.</td></tr>
+      <tr><td><span class="ui">Reparto</span></td><td>Cuántas accesiones toca a cada estrato: <span class="ui">Constante</span>, <span class="ui">Proporcional</span>, <b><span class="ui">Logarítmica</span></b> o <span class="ui">Raíz cuadrada</span>.</td></tr>
+      <tr><td><span class="ui">Dentro del estrato</span></td><td><b><span class="ui">las más distintas</span></b> o <span class="ui">al azar</span>. El botón <span class="ui">otra selección al azar ↻</span> cambia la semilla del sorteo; sólo tiene efecto con <span class="ui">al azar</span>.</td></tr>
+    </tbody>
+  </table>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · las cuatro reglas de reparto y la elección por máxima distancia</div>
+    <p>Con un tamaño objetivo <i>T</i> y estratos de tamaños <i>n<sub>1</sub></i>, …, <i>n<sub>g</sub></i>, a cada estrato le toca <i>T</i> · <i>w<sub>h</sub></i> / Σ <i>w</i>, redondeado, con al menos una accesión y nunca más de las que tiene. El peso <i>w<sub>h</sub></i> depende de la regla (Brown 1989):</p>
+    <div class="formula">Constante: w = 1  ·  Proporcional: w = n<sub>h</sub><br>Logarítmica: w = ln(n<sub>h</sub> + 1)  ·  Raíz cuadrada: w = √n<sub>h</sub></div>
+    <p>La constante da lo mismo a cada estrato y favorece a los pequeños; la proporcional reproduce el desequilibrio de la colección; la logarítmica y la raíz cuadrada quedan en medio, y la logarítmica es la recomendada cuando los estratos son muy desiguales. Si la suma redondeada no cuadra con <i>T</i>, la app quita una accesión al estrato con la mayor fracción tomada (o se la da al de la menor) hasta cuadrar, sin bajar a ningún estrato de una.</p>
+    <p><b>Las más distintas</b>: dentro del estrato, la app empieza por el par más alejado en la distancia de Gower y añade, una por una, la accesión cuya distancia a la más cercana de las ya elegidas es la mayor (criterio maximín). Si al estrato le toca una sola, se queda con una de las dos del par más alejado. <b>Al azar</b>: sorteo sin reemplazo con una semilla fija, para que se pueda repetir.</p>
+    <p><b>Método M</b> (Schoen y Brown 1993): se cuentan todas las clases de los caracteres cualitativos y ordinales («habito = trepador», «vigor = 4»…); en cada paso entra la accesión que aporta más clases todavía no cubiertas. Cuando ya no queda ninguna clase nueva, completa el tamaño con las accesiones que más clases tienen.</p>
+  </div>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Con muchos estratos, el núcleo crece más de lo pedido</div>
+    <p>Cada estrato recibe al menos una accesión, aunque eso rebase el tamaño elegido, y la app no lo advierte. Con el ejemplo y el tamaño en 20&nbsp;% (objetivo: 9), estratificar por especie da un núcleo de <b>24</b> accesiones —una por cada una de las 24 especies—, por cultivo 23 y por entidad o país 16. Incluso por grupos, el 5&nbsp;% (objetivo: 2) da 4, uno por grupo. Mira siempre el recuadro <span class="ui">Núcleo</span> y la tabla de reparto: si el porcentaje real es mucho mayor que el pedido, usa estratos más gruesos (grupos o sin estratificar) o acepta que tu núcleo será una accesión por estrato.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · el reparto logarítmico del núcleo de fábrica</div>
+    <p>T = 10&nbsp;% de 46 = 4.6 → 5. Los grupos de Ward tienen 23, 17, 2 y 4 accesiones.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">w = ln 24, ln 18, ln 3, ln 5 = 3.178, 2.890, 1.099, 1.609  ·  Σ w = 8.776</td></tr>
+      <tr><td colspan="2">5 · w / Σ w = 1.81, 1.65, 0.63, 0.92  →  redondeado: 2, 2, 1, 1 = 6, uno de más</td></tr>
+      <tr><td colspan="2">fracción tomada: G1 2/23 = 0.087, G2 2/17 = 0.118  →  G2 baja a 1</td></tr>
+      <tr><td colspan="2">reparto final: G1 2, G2 1, G3 1, G4 1 = 5  →  como la tabla <span class="ui">Reparto por estrato</span></td></tr>
+    </tbody></table>
+    <p>Dentro de G1 entran el maíz MEX-ZM-0043 y la calabaza MEX-CU-0040; de G2, el chile MEX-CH-0042; de G3, el agave MEX-AG-0024, y de G4, el cacao MEX-TC-0027. El grupo de dos accesiones aporta la mitad de las suyas; el de 23, menos de una de cada diez. Eso es justo lo que se busca: lo raro pesa más que lo abundante.</p>
+  </div>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Los estratos por entidad y los puntos fuera de México</div>
+    <p>Con <span class="ui">entidad o país</span>, las accesiones que no caen en ninguna entidad de México toman su código de país, <code>ORIGCTY</code>. Una accesión mexicana sin coordenadas, o con la longitud sin signo, toma así el código <code>MEX</code>, que es también la clave del Estado de México: en el ejemplo, el estrato «MEX» junta el teocintle y el trigo del Estado de México con el maíz sin coordenadas (MEX-ZM-0043) y el de la longitud sin signo (MEX-ZM-0039). Corrige antes las coordenadas en los Bloques 2 y 3.</p>
+  </div>
+
+  <!-- 7.7 -->
+  <h2 id="b7-7"><span class="num">7.7</span>¿Representa bien? Los criterios de Hu <i>et al.</i></h2>
+  <p>Un núcleo se juzga comparándolo con la colección de la que salió. El recuadro <span class="ui">¿Representa bien? Criterios de Hu et al. (2000)</span> da cinco cifras, cada una con su semáforo <span class="ui">bien</span> o <span class="ui">revisar</span>. Las cuatro primeras usan los caracteres cuantitativos y ordinales con al menos tres datos en la colección y dos en el núcleo (los <i>caracteres utilizables</i>, ocho en el ejemplo); la quinta, los cualitativos.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · MD% y VD%</div>
+    <p>Para cada carácter utilizable se compara el núcleo con la colección entera (de la que el núcleo forma parte). Con <i>m</i> caracteres utilizables:</p>
+    <div class="formula">MD% = 100 · (caracteres con medias distintas) / m<br>VD% = 100 · (caracteres con varianzas distintas) / m</div>
+    <p>Las medias se comparan con la prueba <i>t</i> de Welch (grados de libertad de Welch-Satterthwaite) y las varianzas con la prueba <i>F</i> de dos colas, ambas al 5&nbsp;%:</p>
+    <div class="formula">t = (x̄<sub>N</sub> − x̄<sub>C</sub>) / √(s<sub>N</sub>²/n<sub>N</sub> + s<sub>C</sub>²/n<sub>C</sub>)<br>F = s²<sub>mayor</sub> / s²<sub>menor</sub></div>
+  </div>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · CR%, VR% y las clases capturadas</div>
+    <p>El rango y el coeficiente de variación se promedian sobre los <i>m</i> caracteres (N = núcleo, C = colección; R = máximo − mínimo):</p>
+    <div class="formula">CR% = media de 100 · R<sub>N</sub> / R<sub>C</sub><br>VR% = media de 100 · CV<sub>N</sub> / CV<sub>C</sub></div>
+    <div class="formula">clases capturadas = 100 · Σ clases en el núcleo / Σ clases en la colección<br>(sólo los caracteres cualitativos)</div>
+    <p>Un buen núcleo tiene MD% &lt; 20 y CR% &gt; 80 (Hu <i>et al.</i> 2000), y VR% cercano a 100 o mayor: el núcleo debe conservar las medias, casi todo el rango y al menos la misma variación relativa. La app pone en verde VD% &lt; 20, VR% ≥ 95 y las clases capturadas por encima de 80&nbsp;%.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · el vigor y las clases en el núcleo de fábrica</div>
+    <p>Las cinco accesiones del núcleo tienen vigor 3, 1, 1, 4 y 5; las 45 de la colección con dato, media 3.04 y desviación 1.45.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">núcleo: x̄ = 14/5 = 2.8  ·  s = √[(0.04 + 3.24 + 3.24 + 1.44 + 4.84)/4] = √3.2 = 1.789  ·  CV = 63.9&nbsp;%</td></tr>
+      <tr><td colspan="2">colección: CV = 100 · 1.445/3.044 = 47.5&nbsp;%   →   VR del vigor = 100 · 63.9/47.5 = 134.6</td></tr>
+      <tr><td colspan="2">rango: núcleo 1–5, colección 1–5   →   CR del vigor = 100  ·  t = −0.30, p = 0.78: la media no difiere</td></tr>
+      <tr><td colspan="2">clases: color 4 de 8, forma 3 de 5, hábito 3 de 5, textura 2 de 4   →   12/22 = 54.5&nbsp;%</td></tr>
+    </tbody></table>
+    <p>La app promedia lo mismo en los ocho caracteres utilizables. El rango sale mal en dos: la altura (CR = 9.5) y el peso de 100 semillas (2.4), porque ninguna de las cinco accesiones tiene un valor extremo de esos caracteres —el encino de 329 g por 100 semillas, por ejemplo, no entró—; por eso CR% queda en 75.2. La app no muestra estas cifras carácter por carácter, sólo su promedio.</p>
+  </div>
+  <p>El aviso amarillo de la figura 7.5, <span class="ui">El núcleo es demasiado pequeño…</span>, aparece siempre que el núcleo tiene menos de 10 accesiones, porque con tan pocas las pruebas <i>t</i> y <i>F</i> casi no tienen potencia. Sube el tamaño. Con 25&nbsp;% el núcleo tiene 12 accesiones y todo cambia (figura 7.6).</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b7-nucleo25.png" alt="La validación con el tamaño en 25 %: MD% 0.0 bien, VD% 62.5 revisar, CR% 99.2 bien, VR% 99.3 bien y clases cualitativas capturadas 86.4 % bien; la nota Sobre el VD% alto de este núcleo; y el reparto G1 23 a 4, G2 17 a 4, G3 2 a 2 y G4 4 a 2"></div>
+    <figcaption><b>Figura 7.6.</b> La validación y el reparto con el tamaño en 25&nbsp;% (12 accesiones). Ya no aparece el aviso de núcleo pequeño, y sí la nota que explica el VD% alto.</figcaption>
+  </figure>
+  <div class="lado">
+  <figure>
+    <div class="marco"><img src="../img/b7-pcoa-nucleo.png" alt="La gráfica de coordenadas principales coloreada por núcleo con el tamaño en 25 %: doce puntos morados grandes con borde, repartidos por todo el plano y en los extremos, y el resto de las accesiones en ocre"></div>
+    <figcaption><b>Figura 7.7.</b> Las coordenadas principales con <span class="ui">Colorear por</span> en <span class="ui">núcleo</span> y el núcleo del 25&nbsp;%: las doce accesiones elegidas cubren los extremos del plano.</figcaption>
+  </figure>
+  <div><p>Con 12 accesiones, el núcleo conserva el 99.2&nbsp;% del rango, el 99.3&nbsp;% de la variación relativa y el 86.4&nbsp;% de las clases cualitativas (19 de 22: faltan tres colores), sin cambiar ninguna media. VD% sigue en 62.5: cinco de ocho caracteres tienen una varianza distinta de la colección. Como explica la nota bajo la tabla de criterios, eso no es un defecto: al elegir las accesiones más distintas entre sí, el núcleo sale más variable que la colección y la prueba <i>F</i> lo detecta. VD% alto sólo preocupa cuando viene con VR% bajo. La nota aparece cuando VD% pasa de 20 con VR% ≥ 95 y CR% &gt; 80.</p>
+<p>La figura 7.7 es la mejor prueba visual: un núcleo bien armado cubre todo el plano y sus orillas, sin amontonarse en el centro. Si los puntos grandes se concentran en una zona, al núcleo le falta una parte de la diversidad aunque las cifras salgan bien.</p></div>
+  </div>
+
+  <!-- 7.8 -->
+  <h2 id="b7-8"><span class="num">7.8</span>Exportar, y cómo cambia el núcleo con las opciones</h2>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b7-lista.png" alt="La lista del núcleo del 25 % con doce accesiones: número, nombre, especie, grupo y estrato, entre ellas MEX-ZM-0001 Maíz azul de Apoala, MEX-AG-0024 Agave espadín, MEX-TC-0027 Cacao criollo de Ocosingo, MEX-SE-0029 y MEX-SE-0046 Chayote verde liso; debajo los botones Exportar el núcleo en CSV, Caracterización + grupo + núcleo, Matriz de distancias y PCoA en SVG"></div>
+    <figcaption><b>Figura 7.8.</b> La lista del núcleo del 25&nbsp;% y los cuatro botones de exportación. La lista se muestra desplegada; en la app se desplaza dentro de su caja. El nombre se corta a 30 caracteres (<i>Maíz arrocillo, parcela comuni</i>).</figcaption>
+  </figure>
+  <p>Mira la lista con cuidado: el núcleo del 25&nbsp;% trae dos veces el <i>Chayote verde liso</i>, MEX-SE-0029 y MEX-SE-0046. Son uno de los pares de duplicados sembrados en la colección de ejemplo (apartados 3.5 a 3.7): la app no los distingue porque la caracterización los trata como accesiones distintas. Fusiona los duplicados en el Bloque 3 antes de armar el núcleo, o gastarás un lugar en repetir una accesión.</p>
+  <p>Al final de la sección van cuatro botones:</p>
+  <ul>
+    <li><span class="ui">Exportar el núcleo en CSV</span> guarda <span class="ruta">coleccion-nucleo.csv</span>, una fila por accesión del núcleo con las columnas <code>ACCENUMB</code>, <code>ACCENAME</code>, <code>TAXON</code>, <code>CROPNAME</code>, <code>grupo</code>, <code>estrato</code>, <code>nucleo</code> (<i>sí</i>) y sus dos coordenadas principales, <code>pcoa1</code> y <code>pcoa2</code>, con cuatro decimales.</li>
+    <li><span class="ui">Caracterización + grupo + núcleo</span> guarda <span class="ruta">caracterizacion-completa.csv</span>: las mismas columnas para <b>todas</b> las accesiones caracterizadas (<code>nucleo</code> en <i>sí</i> o <i>no</i>) más los valores de los caracteres que entran al análisis.</li>
+    <li><span class="ui">Matriz de distancias</span> guarda <span class="ruta">distancias-gower.csv</span>, la matriz cuadrada de Gower con cuatro decimales y el número de accesión en la primera columna y en el encabezado.</li>
+    <li><span class="ui">PCoA en SVG</span> guarda <span class="ruta">pcoa-gower.svg</span>, la gráfica de coordenadas principales con los colores del tema claro.</li>
+  </ul>
+  <p>Los CSV van en UTF-8. Ninguno guarda la configuración: anota el árbol, los grupos, el tamaño, los estratos, el reparto y la elección que usaste.</p>
+
+  <h3>El mismo ejemplo, otras opciones</h3>
+  <p>El núcleo no mejora siempre con el tamaño, ni hay una regla de reparto que gane siempre. Con la caracterización de ejemplo, estratificado por los grupos de Ward y con las más distintas:</p>
+  <table class="compacta">
+    <caption><b>Tabla 7.6.</b> La validación según el tamaño (reparto logarítmico, cuatro grupos de Ward, las más distintas).</caption>
+    <thead><tr><th class="c" style="width:0.6in">Tamaño</th><th class="c" style="width:0.6in">Núcleo</th><th class="c">MD%</th><th class="c">VD%</th><th class="c">CR%</th><th class="c">VR%</th><th class="c">Clases</th></tr></thead>
+    <tbody>
+      <tr><td class="c">5&nbsp;%</td><td class="c">4</td><td class="c">0.0</td><td class="c">50.0</td><td class="c">72.1</td><td class="c">90.3</td><td class="c">50.0&nbsp;%</td></tr>
+      <tr><td class="c">10&nbsp;%</td><td class="c">5</td><td class="c">0.0</td><td class="c">62.5</td><td class="c">75.2</td><td class="c">91.4</td><td class="c">54.5&nbsp;%</td></tr>
+      <tr><td class="c">15&nbsp;%</td><td class="c">7</td><td class="c">0.0</td><td class="c">50.0</td><td class="c">78.8</td><td class="c">92.5</td><td class="c">77.3&nbsp;%</td></tr>
+      <tr><td class="c">20&nbsp;%</td><td class="c">9</td><td class="c">0.0</td><td class="c">37.5</td><td class="c">78.8</td><td class="c">86.8</td><td class="c">81.8&nbsp;%</td></tr>
+      <tr><td class="c">25&nbsp;%</td><td class="c">12</td><td class="c">0.0</td><td class="c">62.5</td><td class="c"><b>99.2</b></td><td class="c"><b>99.3</b></td><td class="c">86.4&nbsp;%</td></tr>
+      <tr><td class="c">30&nbsp;%</td><td class="c">14</td><td class="c">0.0</td><td class="c">25.0</td><td class="c">79.3</td><td class="c">85.9</td><td class="c">95.5&nbsp;%</td></tr>
+    </tbody>
+  </table>
+  <p>El 25&nbsp;% es el único tamaño que pasa los tres criterios principales. Con 30&nbsp;%, el reparto logarítmico le quita una accesión al grupo del agave y el encino (G3 pasa de 2 a 1), el encino sale y con él se van los extremos de altura y de peso de semilla: CR% cae a 79.3. En una colección tan heterogénea, una sola accesión rara mueve las cifras.</p>
+  <table class="compacta">
+    <caption><b>Tabla 7.7.</b> Otras opciones con el tamaño en 20&nbsp;% (objetivo: 9 accesiones); lo demás, de fábrica.</caption>
+    <thead><tr><th style="width:1.75in">Opción</th><th class="c" style="width:0.55in">Núcleo</th><th class="c">MD%</th><th class="c">VD%</th><th class="c">CR%</th><th class="c">VR%</th><th class="c">Clases</th></tr></thead>
+    <tbody>
+      <tr><td>Reparto constante (3 · 2 · 2 · 2)</td><td class="c">9</td><td class="c">0.0</td><td class="c">75.0</td><td class="c">99.2</td><td class="c">99.9</td><td class="c">77.3&nbsp;%</td></tr>
+      <tr><td>Proporcional o raíz cuadrada (4 · 3 · 1 · 1)</td><td class="c">9</td><td class="c">0.0</td><td class="c">37.5</td><td class="c">78.8</td><td class="c">91.4</td><td class="c">86.4&nbsp;%</td></tr>
+      <tr><td>Logarítmico (3 · 3 · 1 · 2)</td><td class="c">9</td><td class="c">0.0</td><td class="c">37.5</td><td class="c">78.8</td><td class="c">86.8</td><td class="c">81.8&nbsp;%</td></tr>
+      <tr><td>Logarítmico, al azar</td><td class="c">9</td><td class="c">0.0</td><td class="c">37.5</td><td class="c">73.0</td><td class="c">87.2</td><td class="c">63.6&nbsp;%</td></tr>
+      <tr><td>Sin estratificar, las más distintas</td><td class="c">9</td><td class="c">0.0</td><td class="c">75.0</td><td class="c">98.6</td><td class="c">96.6</td><td class="c">86.4&nbsp;%</td></tr>
+      <tr><td>Método M</td><td class="c">9</td><td class="c">0.0</td><td class="c">62.5</td><td class="c">91.4</td><td class="c">96.6</td><td class="c">100&nbsp;%</td></tr>
+      <tr><td>Estratos por entidad o país</td><td class="c">16</td><td class="c">0.0</td><td class="c">25.0</td><td class="c">60.6</td><td class="c">84.5</td><td class="c">90.9&nbsp;%</td></tr>
+      <tr><td>Estratos por cultivo</td><td class="c">23</td><td class="c">0.0</td><td class="c">0.0</td><td class="c">92.6</td><td class="c">101.1</td><td class="c">100&nbsp;%</td></tr>
+      <tr><td>Estratos por especie</td><td class="c">24</td><td class="c">0.0</td><td class="c">0.0</td><td class="c">100</td><td class="c">107.7</td><td class="c">100&nbsp;%</td></tr>
+    </tbody>
+  </table>
+  <p>Tres lecciones salen de la tabla. Primera: elegir las más distintas gana al azar con el mismo reparto (CR% 78.8 contra 73.0, clases 81.8&nbsp;% contra 63.6&nbsp;%). Segunda: el método M captura todas las clases —para eso está hecho— y, de paso, conserva bien rango y variación; con el 10&nbsp;% deja fuera 8 de las 32 clases y su CR% cae a 30.8. Tercera: los estratos por especie, cultivo o entidad dan cifras excelentes porque el núcleo ya no es del 20&nbsp;%, sino del 35 al 52&nbsp;% (apartado 7.6). En un banco de muchos cultivos, estratifica por cultivo y arma un núcleo por cultivo; en uno de un solo cultivo, los grupos del agrupamiento o la región son los estratos naturales.</p>
+
+  <h3>Cuando algo no sale</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:40%">Lo que ves</th><th>Por qué pasa y qué hacer</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Primero carga tus accesiones en el Bloque 2.</span></td><td>No hay pasaporte. Carga tu colección o la de ejemplo (capítulo 2).</td></tr>
+      <tr><td><span class="ui">Todavía no hay datos de caracterización…</span></td><td>Hay pasaporte, pero no caracterización, o ninguna de sus filas se une. Cárgala, pégala o usa la de ejemplo.</td></tr>
+      <tr><td><span class="ui">Ninguna fila encuentra su accesión.</span></td><td>La columna llave no es la del número de accesión, o los números no se escriben igual que en el pasaporte (espacios, ceros, guiones). Cambia la columna en la tarjeta o corrige los números en tu hoja.</td></tr>
+      <tr><td>Un carácter numérico aparece como cualitativo</td><td>Más del 10&nbsp;% de sus valores no son números (un «s/d», un «&gt;100», unidades escritas en la celda). Límpialos o cambia el tipo en la tabla.</td></tr>
+      <tr><td>La silueta media es muy baja con cualquier número de grupos</td><td>La colección no tiene grupos claros con estos caracteres, o un valor extremo aplasta las diferencias (apartado 7.3). Revisa los rangos, baja el peso de los caracteres sorteados o poco confiables, o trabaja por especie.</td></tr>
+      <tr><td><span class="ui">El núcleo es demasiado pequeño para juzgarlo con estas cifras.</span></td><td>El núcleo tiene menos de 10 accesiones. Sube el tamaño.</td></tr>
+      <tr><td>El recuadro <span class="ui">Núcleo</span> da un porcentaje mucho mayor que el pedido</td><td>Hay más estratos que accesiones pedidas y cada estrato recibe al menos una. Usa estratos más gruesos o acéptalo.</td></tr>
+      <tr><td>El núcleo trae dos veces la misma accesión con números distintos</td><td>Duplicados sin fusionar. Resuélvelos en el Bloque 3 (capítulo 3).</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja regla">
+    <div class="caja-t"><span class="ico">✓</span>Regla de decisión · qué hacer en el Bloque 7</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:44%"><b>Si</b> vas a cargar tu caracterización</td><td><b>entonces</b> usa los mismos números de accesión del pasaporte y revisa en la tarjeta que casi todas las filas se unan; fusiona antes los duplicados del Bloque 3.</td></tr>
+      <tr><td><b>Si</b> dos caracteres miden casi lo mismo</td><td><b>entonces</b> baja el peso de uno a 0.5, o quita la casilla de uno.</td></tr>
+      <tr><td><b>Si</b> el rango de un carácter lo estira una sola accesión</td><td><b>entonces</b> comprueba que no sea un error; si es real, trabaja por especie o transforma el carácter antes de cargarlo.</td></tr>
+      <tr><td><b>Si</b> la silueta media pasa de 0.25</td><td><b>entonces</b> los grupos son reales: estratifica el núcleo por grupos; si es baja, estratifica por cultivo, especie o región, o usa el método M.</td></tr>
+      <tr><td><b>Si</b> aparece el aviso de núcleo pequeño</td><td><b>entonces</b> sube el tamaño a 20 o 25&nbsp;% antes de leer las cifras.</td></tr>
+      <tr><td><b>Si</b> MD% &lt; 20, CR% &gt; 80 y VR% ≥ 95</td><td><b>entonces</b> el núcleo representa bien a la colección; un VD% alto con esas cifras es señal de que eligió bien a los extremos.</td></tr>
+      <tr><td><b>Si</b> CR% queda corto</td><td><b>entonces</b> faltan los extremos: usa <span class="ui">las más distintas</span>, el reparto constante o un tamaño mayor, y mira en la PCoA qué orilla quedó sin puntos grandes.</td></tr>
+      <tr><td><b>Si</b> faltan clases cualitativas raras</td><td><b>entonces</b> prueba el método M, que las persigue una por una.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">El Bloque 7 no cambia el pasaporte ni la caracterización: sólo los mide y propone. El núcleo que exportes es una lista para trabajar; las accesiones siguen todas en el banco, y el Bloque 8 se encarga de mantenerlas vivas.</p>
+  </div>
+
+</section>
+
+</body>
+</html>
