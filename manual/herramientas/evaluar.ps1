@@ -36,7 +36,8 @@ try {
   $ws.ConnectAsync([Uri]$target.webSocketDebuggerUrl, [Threading.CancellationToken]::None).Wait()
   [void](Invoke-Cdp $ws 'Emulation.setDeviceMetricsOverride' @{ width = $Width; height = $Height; deviceScaleFactor = 1; mobile = $false })
   [void](Invoke-Cdp $ws 'Page.enable' @{})
-  $pre = "try{localStorage.setItem('germplasmpro:lang','$Lang');localStorage.setItem('germplasmpro:theme','light');}catch(e){}"
+  # sin ventana, un confirm() nativo deja la página colgada (la app pregunta antes de reemplazar la colección): se acepta solo
+  $pre = "try{localStorage.setItem('germplasmpro:lang','$Lang');localStorage.setItem('germplasmpro:theme','light');}catch(e){};window.confirm=function(){return true;};"
   [void](Invoke-Cdp $ws 'Page.addScriptToEvaluateOnNewDocument' @{ source = $pre })
   [void](Invoke-Cdp $ws 'Page.navigate' @{ url = $url })
   Start-Sleep -Milliseconds $Wait

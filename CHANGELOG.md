@@ -2,6 +2,42 @@
 
 ## Después de la 1.0.0 — 2026-10-30
 
+- **Pasaporte (Bloque 2):**
+  - Después de «Importar y reemplazar» o «Añadir a lo que ya hay», la colección queda guardada en el navegador en ese
+    momento, con la hora de guardado (antes sólo se guardaba con la siguiente edición).
+  - En la plantilla guiada, pegar un valor suelto en una celda o en el buscador de columnas ya entra en ese campo; el
+    diálogo lo interceptaba y lo mandaba a la caja principal. Un pegado con tabuladores o saltos de línea en una celda
+    se sigue repartiendo en la rejilla.
+  - «Reconocer otra vez» sólo mira las columnas de pasaporte: las de caracterización que se habían apartado ya no
+    reciben descriptor (SEMILLAS_FRUTO terminaba en GP_STOCK), y el contador de columnas reconocidas no las cuenta.
+  - «Empezar en blanco», «Abrir la colección de ejemplo» y abrir un proyecto .json preguntan antes de reemplazar una
+    colección con datos, diciendo cuántas accesiones se perderán.
+  - El histograma de altitud del retrato incluye los sitios a 0 m (`MCPD.summarize` descartaba el cero junto con las
+    celdas vacías); siguen fuera las vacías y las que no son número.
+  - El proyecto .json guarda también la caracterización del Bloque 7 y la restaura al abrirlo; los proyectos viejos,
+    que no la traen, se abren igual y dejan la caracterización que ya había.
+- **Calidad y duplicados (Bloque 3):**
+  - Los pares descartados («No son duplicados» o anotados sin fusionar) se recuerdan por la identidad de las dos
+    accesiones (instituto + número, `QC.pairKey`), no por su fila: ya no se pierden ni pasan a otro par al fusionar,
+    ordenar o importar. Los descartes viejos, guardados por fila, se tiran, y uno que ya no corresponde a ningún par
+    no cuenta en «Volver a proponer los descartados».
+  - En pantalla ya no aparecen los códigos internos (`lonsign`, `speciesCase`, `cropName`…): cada uno tiene su nombre
+    en español y en inglés (`QC.CODES`), y la tabla de correcciones nombra el descriptor por su nombre. El aviso de
+    nombres de cultivo enseña el taxón y los nombres como están escritos en los datos («Zea mays», «Maíz», «Elote»),
+    no su forma normalizada.
+  - El puntaje de duplicados resta 15 puntos cuando las dos accesiones declaran `SUBTAXA` y no es la misma (los
+    géneros distintos siguen restando 35); queda descrito en la pantalla, en el README y en la tabla 3.4 del manual.
+  - La corrección de nombres TODO EN MAYÚSCULAS deja el nombre de la accesión y el del cultivo en forma de oración
+    («BOLITA  AMARILLO» → «Bolita amarillo») y el sitio como nombre de lugar, sin mayúscula en las palabras menores
+    del español («VILLA DE MITLA» → «Villa de Mitla»); lo que no viene todo en mayúsculas sólo pierde los espacios de
+    más.
+  - La comparación lado a lado muestra la ruta de conservación por su nombre («Banco de semillas», no «seed»), y la
+    distancia del par se escribe igual en la cabecera y en la razón (antes «6.20 km» y «a 6 km»).
+  - Plurales con 1: «1 corrección aplicada», «1 par por encima del umbral», «1 error», «1 aviso», «1 accesión en la
+    colección», «1 taxón», «1 de 5 falla»…
+- **Herramientas del manual:** `evaluar.ps1` y `shot.ps1` aceptan solos los `confirm()`, que sin ventana dejan la
+  página colgada. 977 pruebas, todas en verde.
+
 - **Simulador del Bloque 1:**
   - Las constantes de viabilidad (K_E y C_W) ya no pasan de una especie a otra: al cambiar de especie o de escenario
     se toman las de la nueva (antes, al pasar del café al trigo se quedaba K_E = 5.2 y la semilla parecía durar 47

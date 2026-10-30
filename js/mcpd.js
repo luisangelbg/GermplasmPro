@@ -687,7 +687,9 @@
       sources: count(r => r.COLLSRC),
       withCoords: withCoords.length,
       withDupl: rows.filter(hasSafetyDup).length,
-      elevations: rows.map(r => Number(r.ELEVATION)).filter(v => isFinite(v) && v !== 0),
+      /* 0 m (al nivel del mar) es una altitud válida; lo que no cuenta es la celda vacía
+         (Number('') también da 0) ni lo que no es un número */
+      elevations: rows.map(r => String(r.ELEVATION ?? '').trim()).filter(v => v !== '').map(Number).filter(v => isFinite(v)),
       years: rows.map(r => Number(String(r.COLLDATE || '').slice(0, 4))).filter(y => y >= 1700),
     };
   }

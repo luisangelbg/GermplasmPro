@@ -141,7 +141,7 @@ Lo que sólo se ve mirando la colección entera:
   nombre, taxón y fecha, o la misma celda de medio grado), de modo que una colección grande no necesita comparar
   todos los pares: en 600 accesiones se evalúan unos cientos, no 180 000. Cada coincidencia suma puntos —el mismo
   número de colecta pesa 40, el nombre casi idéntico 25 (Jaro-Winkler), estar a menos de 1 km 20, la misma fecha
-  15— y dos géneros distintos restan 35. Los pares encadenados se agrupan, se comparan campo por campo lado a lado
+  15— y dos géneros distintos restan 35 (15 si sólo difiere el subtaxón declarado en las dos). Los pares encadenados se agrupan, se comparan campo por campo lado a lado
   con las diferencias resaltadas, y se pueden **fusionar** (la maestra manda, se rescata lo que sólo tenía la otra,
   se suman las existencias y el número absorbido queda en `OTHERNUMB`), anotar como duplicado sin fusionar, o
   descartar. El umbral es ajustable.

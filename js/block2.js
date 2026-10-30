@@ -24,14 +24,30 @@
 
   /* ============ guardado local ============ */
   let saveTimer = null;
+  function saveNow() {
+    clearTimeout(saveTimer);
+    Prefs.set('acc', state.acc);
+    Prefs.set('savedAt', Date.now());
+    const el2 = el('b2Saved');
+    if (el2) el2.textContent = T('guardado en este navegador · ', 'saved in this browser · ') + new Date().toLocaleTimeString();
+  }
+  /* tras una edición se espera un momento, por si vienen más cambios seguidos */
   function save() {
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => {
-      Prefs.set('acc', state.acc);
-      Prefs.set('savedAt', Date.now());
-      const el2 = el('b2Saved');
-      if (el2) el2.textContent = T('guardado en este navegador · ', 'saved in this browser · ') + new Date().toLocaleTimeString();
-    }, 400);
+    saveTimer = setTimeout(saveNow, 400);
+  }
+
+  /* cuántas accesiones tienen algo escrito (una fila en blanco no se pierde) */
+  function nConDatos() {
+    return (state.acc || []).filter(r => Object.values(r).some(v => String(v ?? '').trim() !== '')).length;
+  }
+  /* antes de reemplazar la colección entera se pregunta, diciendo cuánto se pierde */
+  function confirmReplace() {
+    const n = nConDatos();
+    if (!n) return true;
+    return confirm(T(
+      `Se perderán ${n === 1 ? 'la accesión que hay' : `las ${n} accesiones que hay`} ahora en la colección. ¿Seguir?`,
+      `The ${n === 1 ? 'accession' : `${n} accessions`} now in the collection will be lost. Continue?`));
   }
   function restore() {
     const rows = Prefs.get('acc', null);
@@ -78,6 +94,14 @@
     el('b2MapCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  /* «Reconocer otra vez»: sólo las columnas de pasaporte; las de
+     caracterización que se apartaron no reciben descriptor MCPD */
+  function remap() {
+    if (!pending) return null;
+    pending.map = MCPD.guessMapping(pending.mcpdHeaders, pending.parsed.rows.slice(0, 20));
+    return pending.map;
+  }
+
   /* Qué pasaría con esta columna si se importara como ese descriptor: cuántos
      de sus valores no pasarían la validación, y cuál es el primero que falla.
      Vale más enseñarlo aquí que después, cuando ya está dentro. */
@@ -96,7 +120,7 @@
     if (!p.n) return `<span class="muted">${T('vacía', 'empty')}</span>`;
     if (!p.malos) return `<span class="tag ok">${T(`${p.n} bien`, `${p.n} ok`)}</span>`;
     return `<span class="tag bad" title="${esc(T('primero que falla', 'first one that fails'))}: ${esc(p.primero)}">${
-      T(`${p.malos} de ${p.n} fallan`, `${p.malos} of ${p.n} fail`)}</span> <span class="hint">${esc(p.primero.slice(0, 18))}</span>`;
+      T(`${p.malos} de ${p.n} ${p.malos === 1 ? 'falla' : 'fallan'}`, `${p.malos} of ${p.n} ${p.malos === 1 ? 'fails' : 'fail'}`)}</span> <span class="hint">${esc(p.primero.slice(0, 18))}</span>`;
   }
   /* descriptores obligatorios que ninguna columna está alimentando */
   function missingRequired(map) {
@@ -126,7 +150,8 @@
         <td>${p ? previewTag(p) : '<span class="muted">—</span>'}</td>
       </tr>`;
     }).join('');
-    const detected = Object.values(pending.map).filter(Boolean).length;
+    /* sólo cuentan las columnas de pasaporte: las de caracterización van aparte */
+    const detected = pending.mcpdHeaders.filter(h => map[h]).length;
     const faltan = missingRequired(map);
     const nf = parsed.rows.length, nc = parsed.headers.length;
     el('b2MapInfo').innerHTML = T(
@@ -174,6 +199,7 @@
     if (el('b2MapCard')) el('b2MapCard').style.display = 'none';
     view.page = 0;
     refresh();
+    saveNow();                 /* lo importado queda guardado de inmediato, con su hora */
     if (el('b2Table')) el('b2Table').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -340,10 +366,11 @@
     });
     const list = [...groups.values()].sort((a, b) => (a.level === b.level ? b.rows.length - a.rows.length : a.level === 'error' ? -1 : 1));
 
+    const nAfect = new Set(issues.map(p => p.i)).size;
     el('b2IssueHead').innerHTML = `
-      <span class="tag ${errs.length ? 'bad' : 'ok'}">${errs.length} ${T('errores', 'errors')}</span>
-      <span class="tag ${warns.length ? 'warn' : 'ok'}">${warns.length} ${T('avisos', 'warnings')}</span>
-      <span class="hint">${T('en', 'across')} ${new Set(issues.map(p => p.i)).size} ${T('accesiones de', 'of')} ${state.acc.length}</span>`;
+      <span class="tag ${errs.length ? 'bad' : 'ok'}">${errs.length} ${errs.length === 1 ? T('error', 'error') : T('errores', 'errors')}</span>
+      <span class="tag ${warns.length ? 'warn' : 'ok'}">${warns.length} ${warns.length === 1 ? T('aviso', 'warning') : T('avisos', 'warnings')}</span>
+      <span class="hint">${T('en', 'across')} ${nAfect} ${nAfect === 1 ? T('accesión de', 'accession of') : T('accesiones de', 'of')} ${state.acc.length}</span>`;
 
     box.innerHTML = list.length ? `<div class="table-wrap"><table class="tbl"><thead><tr>
         <th>${T('Descriptor', 'Descriptor')}</th><th>${T('Qué pasa', 'What is wrong')}</th><th class="num">${T('Accesiones', 'Accessions')}</th><th></th>
@@ -419,8 +446,10 @@
     const cty = c => { const h = MCPD.COUNTRY_MAP[c]; return h ? T(h.es, h.en) : c; };
 
     const stats = [
-      { k: T('Accesiones', 'Accessions'), v: fmtInt(s.n), d: T(`${s.taxa.length} taxones · ${s.crops.length} cultivos`, `${s.taxa.length} taxa · ${s.crops.length} crops`), c: 'var(--s1)' },
-      { k: T('Con coordenadas', 'With coordinates'), v: fmt(100 * s.withCoords / s.n, 0) + ' %', d: T(`${s.withCoords} de ${s.n} se pueden mapear`, `${s.withCoords} of ${s.n} can be mapped`), c: 'var(--s4)' },
+      { k: T('Accesiones', 'Accessions'), v: fmtInt(s.n), d: T(
+        `${s.taxa.length} ${s.taxa.length === 1 ? 'taxón' : 'taxones'} · ${s.crops.length} ${s.crops.length === 1 ? 'cultivo' : 'cultivos'}`,
+        `${s.taxa.length} ${s.taxa.length === 1 ? 'taxon' : 'taxa'} · ${s.crops.length} ${s.crops.length === 1 ? 'crop' : 'crops'}`), c: 'var(--s1)' },
+      { k: T('Con coordenadas', 'With coordinates'), v: fmt(100 * s.withCoords / s.n, 0) + ' %', d: T(`${s.withCoords} de ${s.n} ${s.withCoords === 1 ? 'se puede' : 'se pueden'} mapear`, `${s.withCoords} of ${s.n} can be mapped`), c: 'var(--s4)' },
       { k: T('Con duplicado de seguridad', 'With safety duplicate'), v: fmt(100 * s.withDupl / s.n, 0) + ' %', d: T('el resto depende de una sola instalación', 'the rest depend on a single facility'), c: s.withDupl / s.n < 0.8 ? 'var(--danger)' : 'var(--s3)', },
       { k: T('Países', 'Countries'), v: fmtInt(s.countries.length), d: s.countries.slice(0, 3).map(c => c[0]).join(', '), c: 'var(--s6)' },
       { k: T('Rutas en uso', 'Routes in use'), v: fmtInt(s.routes.length), d: s.routes.slice(0, 3).map(r => routeName(r[0])).join(', '), c: 'var(--s2)' },
@@ -470,20 +499,34 @@
     const example = {}; MCPD.FIELDS.forEach(f => example[f.k] = f.ex || '');
     download(IO.toCSV([example], cols), 'plantilla-pasaporte.csv', 'text/csv;charset=utf-8');
   }
-  function exportProject() {
-    download(JSON.stringify({ app: 'GermplasmPro', version: 1, saved: new Date().toISOString(), acc: state.acc }, null, 1),
-      'coleccion-germplasmpro.json', 'application/json');
+  /* el proyecto lleva el pasaporte y la caracterización del Bloque 7 */
+  function projectJSON() {
+    return JSON.stringify({ app: 'GermplasmPro', version: 1, saved: new Date().toISOString(), acc: state.acc, traits: state.traits || [] }, null, 1);
   }
+  function exportProject() {
+    download(projectJSON(), 'coleccion-germplasmpro.json', 'application/json');
+  }
+  /* abre un proyecto .json. Devuelve true si lo abrió; false si no era un
+     proyecto o si se canceló el reemplazo. Los proyectos viejos no traen
+     «traits»: entonces la caracterización que ya había se queda como está. */
   function importProject(text) {
-    try {
-      const o = JSON.parse(text);
-      if (!o || !Array.isArray(o.acc)) throw new Error('bad');
-      state.acc = o.acc.map(r => Object.assign(MCPD.emptyRow(), r));
-      refresh(); save();
-    } catch (e) {
+    let o = null;
+    try { o = JSON.parse(text); } catch (e) { o = null; }
+    if (!o || !Array.isArray(o.acc)) {
       if (window.gpWorkFail) gpWorkFail();
       alert(T('Ese archivo no es un proyecto de GermplasmPro.', 'That file is not a GermplasmPro project.'));
+      return false;
     }
+    if (!confirmReplace()) return false;
+    state.acc = o.acc.map(r => Object.assign(MCPD.emptyRow(), r));
+    if (Array.isArray(o.traits)) {
+      state.traits = o.traits.filter(t => t && typeof t === 'object');
+      Prefs.set('traits', state.traits);
+    }
+    view.page = 0;
+    refresh(); saveNow();
+    if (window.B7) B7.run();
+    return true;
   }
 
   /* ============ filtros y refresco ============ */
@@ -525,7 +568,10 @@
     renderSummary();
     renderCompleteness();
     const c = el('b2Count');
-    if (c) c.textContent = state.acc.length ? T(`${state.acc.length} accesiones en la colección`, `${state.acc.length} accessions in the collection`) : T('la colección está vacía', 'the collection is empty');
+    const n = state.acc.length;
+    if (c) c.textContent = n
+      ? T(`${n} ${n === 1 ? 'accesión' : 'accesiones'} en la colección`, `${n} ${n === 1 ? 'accession' : 'accessions'} in the collection`)
+      : T('la colección está vacía', 'the collection is empty');
   }
 
   /* ============ arranque del bloque ============ */
@@ -546,14 +592,18 @@
       ayuda: ["Copia en tu hoja de cálculo el rango con sus encabezados y pégalo aquí.", "Copy the range with its headers in your spreadsheet and paste it here."],
       onLeer: (texto, o) => startImport(texto, T("texto pegado", "pasted text"), o),
     }));
-    el('b2Example').addEventListener('click', () => gpAfterPaint(() => {
-      state.acc = EXAMPLES.build();
-      view.page = 0; refresh(); save();
-      el('b2Table').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, gpWork('Cargando la colección de ejemplo', 'Loading the example collection')));
+    el('b2Example').addEventListener('click', () => {
+      if (!confirmReplace()) return;
+      gpAfterPaint(() => {
+        state.acc = EXAMPLES.build();
+        view.page = 0; refresh(); saveNow();
+        el('b2Table').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, gpWork('Cargando la colección de ejemplo', 'Loading the example collection'));
+    });
     el('b2Blank').addEventListener('click', () => {
+      if (!confirmReplace()) return;
       state.acc = [MCPD.emptyRow()];
-      refresh(); save(); openFicha(0);
+      view.page = 0; refresh(); saveNow(); openFicha(0);
     });
     el('b2Add').addEventListener('click', () => {
       state.acc.push(MCPD.emptyRow());
@@ -568,7 +618,7 @@
     el('b2MapApply').addEventListener('click', () => gpAfterPaint(() => applyImport('replace'), gpWork('Importando las accesiones', 'Importing the accessions')));
     el('b2MapAppend').addEventListener('click', () => gpAfterPaint(() => applyImport('append'), gpWork('Importando las accesiones', 'Importing the accessions')));
     el('b2MapCancel').addEventListener('click', () => { pending = null; el('b2MapCard').style.display = 'none'; });
-    el('b2MapAuto').addEventListener('click', () => { if (pending) { pending.map = MCPD.guessMapping(pending.parsed.headers, pending.parsed.rows.slice(0, 20)); renderMapping(); } });
+    el('b2MapAuto').addEventListener('click', () => { if (pending) { remap(); renderMapping(); } });
 
     el('b2Q').addEventListener('input', () => { view.q = el('b2Q').value; view.page = 0; renderTable(); });
     el('b2FRoute').addEventListener('change', () => { view.route = el('b2FRoute').value; view.page = 0; renderTable(); });
@@ -591,5 +641,9 @@
   document.addEventListener('DOMContentLoaded', init);
   document.addEventListener('langchange', () => { if (el('panel-2') && state.acc) refresh(); });
 
-  window.B2 = { refresh, barPlot, histPlot, view, exportCSV, startImport, applyImport, openFicha, revalidate, pending: () => pending, issues: () => issues };
+  window.B2 = {
+    refresh, barPlot, histPlot, view, exportCSV, startImport, applyImport, openFicha, revalidate,
+    remap, projectJSON, importProject, confirmReplace, save, saveNow,
+    pending: () => pending, issues: () => issues,
+  };
 })();

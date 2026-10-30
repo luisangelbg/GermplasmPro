@@ -73,7 +73,8 @@
       <tbody>${d.muestra.map(r => `<tr>${cols.map(h =>
         `<td>${esc(String(r[h] ?? '').slice(0, 30))}</td>`).join('')}${sobran > 0 ? '<td class="mas">…</td>' : ''}</tr>`).join('')}</tbody></table>
       ${d.filas > d.muestra.length ? `<p class="hint" style="margin:6px 0 0">${T(
-        `y ${fmtInt(d.filas - d.muestra.length)} filas más`, `and ${fmtInt(d.filas - d.muestra.length)} more rows`)}</p>` : ''}` : '';
+        `y ${fmtInt(d.filas - d.muestra.length)} ${d.filas - d.muestra.length === 1 ? 'fila' : 'filas'} más`,
+        `and ${fmtInt(d.filas - d.muestra.length)} more ${d.filas - d.muestra.length === 1 ? 'row' : 'rows'}`)}</p>` : ''}` : '';
 
     const bloqueado = d.avisos.some(a => a.nivel === 'error') || !d.filas;
     go.disabled = bloqueado;
@@ -281,6 +282,16 @@
     download(IO.toCSV(cuerpo, cols), 'plantilla-germplasmpro.csv', 'text/csv;charset=utf-8');
   }
 
+  /* ¿es un lugar donde se escribe texto? (no una casilla ni un botón) */
+  function campoEditable(n) {
+    if (!n || n.nodeType !== 1) return false;
+    if (n.isContentEditable) return true;
+    if (n.tagName === 'TEXTAREA') return !n.readOnly && !n.disabled;
+    if (n.tagName !== 'INPUT') return false;
+    if (n.readOnly || n.disabled) return false;
+    return !/^(checkbox|radio|button|submit|reset|file|range|color|image|hidden)$/i.test(n.type || 'text');
+  }
+
   function init() {
     if (!el('pasteDlg')) return;
     els('[data-ptab]', el('pasteTabs')).forEach(b => b.addEventListener('click', () => verPestana(b.dataset.ptab)));
@@ -290,8 +301,13 @@
     el('tplRows').addEventListener('change', renderRejilla);
     el('tplCsv').addEventListener('click', descargarPlantilla);
 
-    /* pegar en cualquier punto del diálogo, no sólo dentro del recuadro */
+    /* pegar en cualquier punto del diálogo, no sólo dentro del recuadro. Dentro
+       de un campo donde se escribe (una celda de la plantilla, el buscador de
+       columnas…) el pegado es el normal: el valor entra en ese campo. Las celdas
+       de la rejilla reparten antes, en su propio manejador, lo que trae
+       tabuladores o saltos de línea. */
     el('pasteDlg').addEventListener('paste', e => {
+      if (campoEditable(e.target) && e.target !== el('pasteArea')) return;
       const t = (e.clipboardData || window.clipboardData).getData('text');
       if (!t) return;
       e.preventDefault();
@@ -329,5 +345,5 @@
     if (el('pasteDlg') && el('pasteDlg').open) { ponerTextos(); render(); }
   });
 
-  window.PASTE = { open, diagnostico, estado: () => estado };
+  window.PASTE = { open, diagnostico, campoEditable, estado: () => estado };
 })();

@@ -595,8 +595,56 @@ ok(nombresDup.some(s => s.includes('chayote verde liso')), 'y el chayote repetid
 ok(found.comparisons < exd.length * (exd.length - 1) / 2, `el bloqueo evita comparar todos los pares (${found.comparisons} en vez de ${exd.length * (exd.length - 1) / 2})`);
 const altoUmbral = QC.findDuplicates(exd, { threshold: 95 });
 ok(altoUmbral.pairs.length <= found.pairs.length, 'subir el umbral no puede proponer más pares');
-const conDescarte = QC.findDuplicates(exd, { threshold: 50, dismissed: [[found.pairs[0].i, found.pairs[0].j]] });
+const claveDesc = QC.pairKey(exd[found.pairs[0].i], exd[found.pairs[0].j]);
+const conDescarte = QC.findDuplicates(exd, { threshold: 50, dismissed: [claveDesc] });
 ok(conDescarte.pairs.length === found.pairs.length - 1, 'un par descartado deja de proponerse');
+ok(conDescarte.dismissedUsed === 1, 'y se cuenta como un descarte en uso');
+ok(QC.pairKey(exd[found.pairs[0].i], exd[found.pairs[0].j]) === QC.pairKey(exd[found.pairs[0].j], exd[found.pairs[0].i]),
+  'la clave del par no depende del orden de las dos accesiones');
+/* el descarte va por identidad: si las filas cambian de lugar, sigue siendo el mismo par */
+const parD = [exd[found.pairs[0].i], exd[found.pairs[0].j]];
+const revuelta = exd.slice().reverse();
+const conDescRev = QC.findDuplicates(revuelta, { threshold: 50, dismissed: [claveDesc] });
+ok(conDescRev.pairs.length === found.pairs.length - 1
+  && !conDescRev.pairs.some(p => [revuelta[p.i], revuelta[p.j]].every(r => parD.includes(r))),
+  'con las filas en otro orden, el par descartado sigue sin proponerse');
+/* quitar una fila de en medio (como al fusionar) no desplaza el descarte a otro par */
+const quitarK = [...exd.keys()].find(k => !parD.includes(exd[k]) && k < Math.max(found.pairs[0].i, found.pairs[0].j));
+const sinUna = exd.filter((r, k) => k !== quitarK);
+const esParD = (rows, p) => [rows[p.i], rows[p.j]].every(r => parD.includes(r));
+const conDescSin = QC.findDuplicates(sinUna, { threshold: 50, dismissed: [claveDesc] });
+ok(QC.findDuplicates(sinUna, { threshold: 50 }).pairs.some(p => esParD(sinUna, p)) && !conDescSin.pairs.some(p => esParD(sinUna, p))
+  && conDescSin.dismissedUsed === 1, 'quitar una fila de en medio (como al fusionar) no le cambia el par al descarte');
+/* un descarte que ya no corresponde a ningún par, y los viejos por posición, se ignoran */
+const conHuerfano = QC.findDuplicates(exd, { threshold: 50, dismissed: ['XXX|NO-EXISTE <> XXX|TAMPOCO', [found.pairs[0].i, found.pairs[0].j]] });
+ok(conHuerfano.pairs.length === found.pairs.length && conHuerfano.dismissedUsed === 0,
+  'un descarte huérfano o guardado por posición (formato viejo) no quita ningún par');
+ok(QC.rowId({ INSTCODE: 'MEX008', ACCENUMB: 'A-1' }) === 'MEX008|A-1', 'la identidad es instituto + número de accesión');
+ok(QC.rowId({ INSTCODE: 'MEX008', ACCENUMB: 'A-1' }) !== QC.rowId({ INSTCODE: 'MEX029', ACCENUMB: 'A-1' }), 'el mismo número en otro instituto es otra accesión');
+ok(QC.rowId({ ACCENUMB: '', ACCENAME: 'X', GENUS: 'Zea' }).startsWith('sin-numero|'), 'sin número, la identidad es una huella de la accesión');
+
+/* SUBTAXA distinta resta, pero menos que un género distinto */
+const subA = Object.assign({}, dupA, { SUBTAXA: 'subsp. mexicana' });
+const subB = Object.assign({}, dupB, { SUBTAXA: 'subsp. parviglumis' });
+const scSub = QC.scorePair(subA, subB);
+const crudo = r => r.reasons.reduce((s, x) => s + x.pts, 0);
+/* sin número de colecta el par no llega al tope de 100 y la resta se ve en el puntaje */
+const scMedio = QC.scorePair(Object.assign({}, dupA, { COLLNUMB: '' }), Object.assign({}, dupB, { COLLNUMB: '' }));
+const scMedioSub = QC.scorePair(Object.assign({}, subA, { COLLNUMB: '' }), Object.assign({}, subB, { COLLNUMB: '' }));
+ok(scMedio.score < 100 && scMedioSub.score === scMedio.score + QC.DEFAULT_W.subtaxaPenalty,
+  `dos subtaxones distintos restan ${-QC.DEFAULT_W.subtaxaPenalty} puntos (${scMedio.score} → ${scMedioSub.score})`);
+ok(crudo(scSub) === crudo(sc) + QC.DEFAULT_W.subtaxaPenalty, 'sin el recorte a 100, la diferencia es exactamente la penalización');
+ok(scSub.reasons.some(r => r.k === 'subtaxa' && r.pts < 0 && r.es.includes('parviglumis')), 'y queda dicho que los subtaxones no coinciden');
+ok(QC.DEFAULT_W.subtaxaPenalty < 0 && QC.DEFAULT_W.subtaxaPenalty > QC.DEFAULT_W.genusPenalty, 'la penalización es menor que la del género');
+ok(!QC.scorePair(subA, Object.assign({}, dupB, { SUBTAXA: '' })).reasons.some(r => r.k === 'subtaxa'), 'si sólo una declara subtaxón, no se penaliza');
+ok(!QC.scorePair(subA, Object.assign({}, dupB, { SUBTAXA: 'SUBSP.  MEXICANA' })).reasons.some(r => r.k === 'subtaxa'), 'el mismo subtaxón escrito distinto no se penaliza');
+ok(!QC.scorePair(subA, Object.assign({}, subB, { GENUS: 'Phaseolus' })).reasons.some(r => r.k === 'subtaxa'), 'con géneros distintos no se resta dos veces');
+
+/* la distancia se escribe igual en la razón del par y en su cabecera */
+ok(QC.fmtDist(6.2) === '6.2 km' && QC.fmtDist(12.4) === '12 km' && QC.fmtDist(0.25) === '250 m', 'fmtDist: 6.2 km, 12 km y 250 m');
+const lejos6 = QC.scorePair(dupA, Object.assign({}, dupB, { DECLATITUDE: '16.9787', DECLONGITUDE: '-96.3597' }));
+const razonLejos = lejos6.reasons.find(r => r.k === 'near');
+ok(razonLejos && razonLejos.es === `a ${QC.fmtDist(lejos6.dist)} una de otra`, `la razón usa el mismo formato que la cabecera (${razonLejos ? razonLejos.es : '—'})`);
 /* número de accesión repetido: eso no es candidato, es error */
 const conRepe = exd.concat([Object.assign({}, exd[0])]);
 ok(QC.findDuplicates(conRepe, { threshold: 50 }).sameNumber.length === 1, 'un número de accesión repetido se reporta aparte');
@@ -664,7 +712,7 @@ const fcodes = fixes.map(f => f.code);
 ok(fcodes.includes('alpha2') && fixes.find(f => f.code === 'alpha2').to === 'MEX', 'propone pasar MX a MEX');
 ok(fcodes.includes('genusCase') && fcodes.includes('speciesCase'), 'propone arreglar género y epíteto');
 ok(fcodes.includes('upper'), 'propone quitar las mayúsculas gritadas');
-ok(fixes.find(f => f.code === 'upper').to === 'Maiz Azul', 'y de paso los espacios de más');
+ok(fixes.find(f => f.code === 'upper').to === 'Maiz azul', 'y de paso los espacios de más (en forma de oración)');
 ok(fcodes.includes('route') && fixes.find(f => f.code === 'route').to === 'seed', 'propone deducir la ruta de conservación del almacenamiento');
 ok(fixes.filter(f => f.code === 'fromDms').length === 2, 'propone calcular las dos coordenadas decimales desde los GMS');
 const n = QC.applyFixes(fixRows, fixes);
@@ -678,6 +726,43 @@ const aud = QC.audit(EXAMPLES.build(), { threshold: 50 });
 ok(aud.geo && aud.consistency && aud.fixes && aud.dup, 'la auditoría devuelve las cuatro partes');
 ok(aud.geo.some(p => p.code === 'lonsign'), 'y encuentra la longitud sin signo del ejemplo');
 ok(aud.fixes.some(f => f.code === 'alpha2'), 'y el país de dos letras');
+
+/* formato de los nombres: forma de oración para el nombre y el cultivo; para el
+   sitio, mayúscula en cada palabra menos las menores del español */
+ok(QC.nameCase('BOLITA  AMARILLO', 'sentence') === 'Bolita amarillo', '«BOLITA  AMARILLO» queda «Bolita amarillo»');
+ok(QC.nameCase('VILLA DE MITLA', 'place') === 'Villa de Mitla', '«VILLA DE MITLA» queda «Villa de Mitla», con «de» en minúscula');
+ok(QC.nameCase('SAN PABLO VILLA DE MITLA, OAXACA', 'place') === 'San Pablo Villa de Mitla, Oaxaca', 'en un lugar, después de la coma vuelve la mayúscula');
+ok(QC.nameCase('EL TULE Y LA LAGUNA DEL CARMEN', 'place') === 'El Tule y la Laguna del Carmen', 'las palabras menores sólo van con mayúscula al inicio');
+ok(QC.nameCase('Visto en McAllen', 'place') === 'Visto en McAllen', 'una palabra con mayúsculas y minúsculas mezcladas no se toca');
+const fixNombres = QC.proposeFixes([
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'N1', ACCENAME: 'BOLITA  AMARILLO', COLLSITE: 'VILLA DE MITLA', CROPNAME: 'MAIZ' }),
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'N2', ACCENAME: 'Tuxpeño  de la Costa', COLLSITE: 'Rancho McAllen' }),
+]);
+const fxN = (i, k) => fixNombres.find(f => f.i === i && f.field === k);
+ok(fxN(0, 'ACCENAME').to === 'Bolita amarillo' && fxN(0, 'ACCENAME').code === 'upper', 'la corrección del nombre gritado es en forma de oración');
+ok(fxN(0, 'COLLSITE').to === 'Villa de Mitla', 'y la del sitio gritado, como nombre de lugar');
+ok(fxN(1, 'ACCENAME').to === 'Tuxpeño de la Costa' && fxN(1, 'ACCENAME').code === 'spaces', 'lo que no viene todo en mayúsculas sólo pierde los espacios de más');
+ok(!fxN(1, 'COLLSITE'), 'y lo que ya está bien escrito no se propone');
+
+/* las etiquetas de los códigos: ningún código interno llega solo a la pantalla */
+const codigosVistos = new Set([].concat(aud.geo.map(p => p.code), aud.consistency.map(c => c.code), aud.fixes.map(f => f.code), cons.map(c => c.code), fixes.map(f => f.code)));
+ok([...codigosVistos].every(c => QC.CODES[c] && QC.CODES[c].es && QC.CODES[c].en), `cada código tiene etiqueta en los dos idiomas (${[...codigosVistos].filter(c => !QC.CODES[c]).join(', ') || 'todos'})`);
+ok(['zerozero', 'lateqlon', 'rounded', 'nobox', 'lonsign', 'latsign', 'swapped', 'swapsign', 'outside', 'genusCase', 'speciesCase', 'speciesAuthor',
+  'genusTypo', 'cropName', 'siteSpelling', 'sameCoords', 'alpha2', 'upper', 'spaces', 'route', 'fromDms'].every(c => QC.codeLabel(c).es !== c),
+  'los 21 códigos de la revisión tienen nombre legible');
+ok(QC.codeLabel('lonsign').es === 'Signo de la longitud' && QC.codeLabel('cropName').en === 'Crop names', 'por ejemplo, lonsign y cropName');
+ok(QC.codeLabel('desconocido').es === 'desconocido', 'un código sin etiqueta se muestra tal cual, sin romper nada');
+
+/* el aviso de nombres de cultivo enseña lo que está escrito, no la forma normalizada */
+const consCult = QC.consistency([
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'K1', GENUS: 'Zea', SPECIES: 'mays', CROPNAME: 'Maíz' }),
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'K2', GENUS: 'Zea', SPECIES: 'mays', CROPNAME: 'maiz' }),
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'K3', GENUS: 'Zea', SPECIES: 'mays', CROPNAME: 'Maíz,  elote' }),
+]).find(c => c.code === 'cropName');
+ok(consCult && consCult.msg.es.includes('(Zea mays)'), 'el taxón va como está escrito: «Zea mays», no «zea mays»');
+ok(consCult && consCult.msg.es.includes('«Maíz»') && consCult.msg.es.includes('«Maíz, elote»') && !consCult.msg.es.includes('maiz'),
+  'y cada nombre de cultivo, en la primera forma en que aparece');
+ok(consCult && consCult.items.length === 3, 'sin perder ninguna de las tres accesiones');
 
 /* ============ 16. geometría y mapa ============ */
 ok(GEO.MX.length === 32, 'están las 32 entidades federativas de México');
@@ -1700,9 +1785,13 @@ ok(TRAITS.has('BRIX') && TRAITS.has('PESO_FRUTO') && !TRAITS.has('ACCENUMB'),
 /* ---------- el reparto al importar ---------- */
 /* Una tabla con las dos cosas mezcladas: el pasaporte va a la colección y la
    caracterización al Bloque 7, unida por el número de accesión. */
+/* importar ahora guarda en el navegador: lo que hubiera guardado de la app se
+   aparta aquí y se devuelve al terminar estas pruebas */
+const PREF_KEYS = ['acc', 'savedAt', 'traits', 'dismissed'];
+const prefsAntes = Object.fromEntries(PREF_KEYS.map(k => { try { return [k, localStorage.getItem('germplasmpro:' + k)]; } catch (e) { return [k, null]; } }));
 state.acc = [];
 state.traits = [];
-const mezclada = 'ACCENUMB\tACCENAME\tGENUS\tSPECIES\tPESO_FRUTO\tBRIX\tDIAS_FLORACION\n'
+const mezclada ='ACCENUMB\tACCENAME\tGENUS\tSPECIES\tPESO_FRUTO\tBRIX\tDIAS_FLORACION\n'
   + 'MEX-01\tMaíz azul\tZea\tmays\t318.5\t11.8\t96\n'
   + 'MEX-02\tChayote\tSechium\tedule\t402.1\t5.2\t120\n'
   + 'MEX-03\tFrijol\tPhaseolus\tvulgaris\t0.9\t3.1\t45';
@@ -1729,8 +1818,94 @@ const t1 = state.traits.find(t => t.ACCENUMB === 'MEX-01');
 ok(t1 && t1.ALTURA_PLANTA === '212' && t1.BRIX === '11.8',
   'una segunda tabla añade su descriptor sin borrar los que ya tenía la accesión');
 
+/* importar deja la colección guardada en el navegador de inmediato, con su hora */
+try { localStorage.removeItem('germplasmpro:acc'); localStorage.removeItem('germplasmpro:savedAt'); } catch (e) { /* sin almacenamiento */ }
+const antesDeImportar = Date.now();
+B2.startImport('ACCENUMB\tGENUS\tSPECIES\nG-1\tZea\tmays\nG-2\tSechium\tedule', 'guardar');
+B2.applyImport('replace');
+const accGuardada = Prefs.get('acc', null);
+ok(Array.isArray(accGuardada) && accGuardada.length === 2 && accGuardada[1].ACCENUMB === 'G-2', 'tras «Importar y reemplazar» la colección ya está guardada, sin esperar');
+ok(Prefs.get('savedAt', 0) >= antesDeImportar, 'y con la hora de guardado');
+B2.startImport('ACCENUMB\tGENUS\nG-3\tPhaseolus', 'añadir');
+B2.applyImport('append');
+ok((Prefs.get('acc', []) || []).length === 3, 'y lo mismo tras «Añadir a lo que ya hay»');
+
+/* «Reconocer otra vez» sólo mira las columnas de pasaporte */
+B2.startImport('ACCENUMB\tACCENAME\tSEMILLAS_FRUTO\tBRIX\nR-1\tCriollo\t240\t9.5', 'reconocer');
+const pendR = B2.pending();
+ok(pendR.traitCols.includes('SEMILLAS_FRUTO') && pendR.traitCols.includes('BRIX'), 'SEMILLAS_FRUTO y BRIX se apartan como caracterización');
+const mapR = B2.remap();
+ok(!('SEMILLAS_FRUTO' in mapR) && !('BRIX' in mapR), 'al reconocer otra vez, las columnas apartadas no reciben descriptor');
+ok(!Object.values(mapR).includes('GP_STOCK'), 'SEMILLAS_FRUTO ya no termina en GP_STOCK');
+ok(mapR.ACCENUMB === 'ACCENUMB' && mapR.ACCENAME === 'ACCENAME', 'y las de pasaporte se reconocen igual');
+ok(Object.keys(mapR).every(h => pendR.mcpdHeaders.includes(h)), 'el mapa sólo trae columnas de pasaporte (el contador no cuenta las apartadas)');
+
+/* confirmar antes de reemplazar la colección */
+const confirmOrig = window.confirm;
+let preguntas = [];
+window.confirm = m => { preguntas.push(m); return false; };
+state.acc = [MCPD.emptyRow()];
+ok(B2.confirmReplace() === true && preguntas.length === 0, 'una colección con sólo una fila en blanco se reemplaza sin preguntar');
+state.acc = EXAMPLES.build();
+ok(B2.confirmReplace() === false && preguntas.length === 1, 'con accesiones, se pregunta antes de reemplazar');
+ok(preguntas[0].includes(`las ${state.acc.length} accesiones`), `y se dice cuántas se perderán (${state.acc.length})`);
+state.acc = [Object.assign(MCPD.emptyRow(), { ACCENUMB: 'U-1' })];
+preguntas = [];
+B2.confirmReplace();
+ok(preguntas[0] && preguntas[0].includes('la accesión que hay'), 'con una sola, en singular');
+
+/* el proyecto .json guarda y devuelve también la caracterización */
+state.acc = [Object.assign(MCPD.emptyRow(), { ACCENUMB: 'P-1', GENUS: 'Zea' }), Object.assign(MCPD.emptyRow(), { ACCENUMB: 'P-2', GENUS: 'Zea' })];
+state.traits = [{ ACCENUMB: 'P-1', BRIX: '10.2' }, { ACCENUMB: 'P-2', BRIX: '8.7' }];
+const proyecto = B2.projectJSON();
+const proyObj = JSON.parse(proyecto);
+ok(proyObj.acc.length === 2 && Array.isArray(proyObj.traits) && proyObj.traits.length === 2, 'el proyecto lleva las accesiones y la caracterización');
+preguntas = [];
+ok(B2.importProject(proyecto) === false && preguntas.length === 1 && state.acc.length === 2, 'abrir un proyecto sobre una colección con datos pide confirmación; al cancelar no cambia nada');
+window.confirm = m => { preguntas.push(m); return true; };
+state.acc = []; state.traits = [];
+ok(B2.importProject(proyecto) === true, 'sobre una colección vacía, el proyecto se abre');
+ok(state.acc.length === 2 && state.acc[1].ACCENUMB === 'P-2', 'con sus accesiones');
+ok(state.traits.length === 2 && state.traits[0].BRIX === '10.2', 'y su caracterización restaurada');
+ok((Prefs.get('traits', []) || []).length === 2 && (Prefs.get('acc', []) || []).length === 2, 'y las dos cosas quedan guardadas en el navegador');
+const traitsPrevios = [{ ACCENUMB: 'P-1', BRIX: '1.0' }];
+state.traits = traitsPrevios.slice();
+const viejo = JSON.stringify({ app: 'GermplasmPro', version: 1, acc: [{ ACCENUMB: 'V-1', GENUS: 'Zea' }] });
+ok(B2.importProject(viejo) === true && state.acc.length === 1 && state.acc[0].ACCENUMB === 'V-1', 'un proyecto viejo, sin caracterización, se sigue abriendo');
+ok(state.traits.length === 1 && state.traits[0].BRIX === '1.0', 'y no borra la caracterización que ya había');
+const alertOrig = window.alert;
+window.alert = () => {};
+ok(B2.importProject('{"no": "es un proyecto"}') === false, 'un .json que no es proyecto se rechaza');
+window.alert = alertOrig;
+window.confirm = confirmOrig;
+
+/* pegar en la plantilla: un campo donde se escribe se queda con su pegado */
+const inpT = document.createElement('input');
+const chkT = document.createElement('input'); chkT.type = 'checkbox';
+const srchT = document.createElement('input'); srchT.type = 'search';
+ok(PASTE.campoEditable(inpT) && PASTE.campoEditable(srchT) && PASTE.campoEditable(document.createElement('textarea')),
+  'una celda, el buscador o un cuadro de texto son campos donde se pega normal');
+ok(!PASTE.campoEditable(chkT) && !PASTE.campoEditable(document.createElement('div')), 'una casilla o un bloque no lo son: ahí el pegado va a la caja principal');
+
+/* el retrato: 0 m es una altitud; lo vacío o no numérico, no */
+const sumAlt = MCPD.summarize([
+  Object.assign(MCPD.emptyRow(), { ELEVATION: '0' }), Object.assign(MCPD.emptyRow(), { ELEVATION: '2100' }),
+  Object.assign(MCPD.emptyRow(), { ELEVATION: '' }), Object.assign(MCPD.emptyRow(), { ELEVATION: '  ' }),
+  Object.assign(MCPD.emptyRow(), { ELEVATION: 'n/d' }), Object.assign(MCPD.emptyRow(), { ELEVATION: '-12' }),
+  Object.assign(MCPD.emptyRow(), { ELEVATION: null }),
+]);
+ok(sumAlt.elevations.length === 3 && sumAlt.elevations.includes(0), `los sitios a 0 m entran en el histograma de altitud (${sumAlt.elevations.join(', ')})`);
+ok(sumAlt.elevations.includes(-12) && !sumAlt.elevations.some(v => !isFinite(v)), 'también los que están bajo el nivel del mar; los vacíos y los no numéricos, no');
+
 state.acc = [];
 state.traits = [];
+/* se devuelve lo que la app tenía guardado antes de estas pruebas */
+PREF_KEYS.forEach(k => {
+  try {
+    if (prefsAntes[k] == null) localStorage.removeItem('germplasmpro:' + k);
+    else localStorage.setItem('germplasmpro:' + k, prefsAntes[k]);
+  } catch (e) { /* sin almacenamiento */ }
+});
 
 /* ============ 29. códigos QR ============ */
 /* La aritmética del campo de Galois: sin esto, la corrección de errores no

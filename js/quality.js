@@ -229,7 +229,30 @@
     year: 5,          /* mismo año de colecta */
     mission: 5,       /* misma misión de colecta */
     genusPenalty: -35,/* géneros distintos: casi seguro no son la misma cosa */
+    subtaxaPenalty: -15, /* mismo género pero los dos declaran SUBTAXA y es distinta
+                            (subsp. mexicana frente a subsp. parviglumis): pesa menos
+                            que el género, porque el subtaxón a veces se escribe con
+                            otra ortografía o se reclasifica, pero contradice el duplicado */
   };
+
+  /* la distancia, escrita igual en la razón del par y en su cabecera */
+  function fmtDist(km) {
+    if (km == null || !isFinite(km)) return '';
+    if (km < 1) return `${fmt(km * 1000, 0)} m`;
+    return `${fmt(km, km < 10 ? 1 : 0)} km`;
+  }
+
+  /* identidad estable de una accesión: instituto + número de accesión. Sin
+     número, una huella de lo que la describe. Sirve para recordar los pares
+     descartados aunque las filas cambien de lugar (al fusionar, ordenar o
+     importar más). */
+  function rowId(r) {
+    const num = String(r.ACCENUMB ?? '').trim();
+    if (num) return String(r.INSTCODE ?? '').trim().toUpperCase() + '|' + num;
+    return 'sin-numero|' + ['ACCENAME', 'GENUS', 'SPECIES', 'COLLNUMB', 'COLLDATE', 'DECLATITUDE', 'DECLONGITUDE']
+      .map(k => normStr(r[k])).join('|');
+  }
+  function pairKey(a, b) { return [rowId(a), rowId(b)].sort().join(' <> '); }
 
   function ids(row) {
     const raw = [row.OTHERNUMB, row.DONORNUMB, row.COLLNUMB].join(';');
@@ -273,6 +296,12 @@
       score += W.taxon;
       reasons.push({ k: 'taxon', pts: W.taxon, es: 'el mismo taxón', en: 'the same taxon' });
     }
+    /* el mismo género, pero con subtaxones declarados y distintos */
+    const sa = normStr(a.SUBTAXA), sb = normStr(b.SUBTAXA);
+    if (!(ga && gb && ga !== gb) && sa && sb && sa !== sb) {
+      score += W.subtaxaPenalty;
+      reasons.push({ k: 'subtaxa', pts: W.subtaxaPenalty, es: `subtaxones distintos (${a.SUBTAXA} / ${b.SUBTAXA})`, en: `different subtaxa (${a.SUBTAXA} / ${b.SUBTAXA})` });
+    }
 
     const cna = normStr(a.COLLNUMB).replace(/\s+/g, ''), cnb = normStr(b.COLLNUMB).replace(/\s+/g, '');
     if (cna && cna === cnb) {
@@ -300,9 +329,9 @@
     let dist = null;
     if (ca && cb) {
       dist = haversine(ca[0], ca[1], cb[0], cb[1]);
-      if (dist <= 1) { score += W.near1; reasons.push({ k: 'near', pts: W.near1, es: `a ${fmt(dist * 1000, 0)} m una de otra`, en: `${fmt(dist * 1000, 0)} m apart` }); }
-      else if (dist <= 5) { score += W.near5; reasons.push({ k: 'near', pts: W.near5, es: `a ${fmt(dist, 1)} km una de otra`, en: `${fmt(dist, 1)} km apart` }); }
-      else if (dist <= 25) { score += W.near25; reasons.push({ k: 'near', pts: W.near25, es: `a ${fmt(dist, 0)} km una de otra`, en: `${fmt(dist, 0)} km apart` }); }
+      const d = fmtDist(dist);
+      const pts = dist <= 1 ? W.near1 : dist <= 5 ? W.near5 : dist <= 25 ? W.near25 : 0;
+      if (pts) { score += pts; reasons.push({ k: 'near', pts, es: `a ${d} una de otra`, en: `${d} apart` }); }
     }
 
     const da = String(a.COLLDATE || ''), db = String(b.COLLDATE || '');
@@ -326,7 +355,11 @@
   /* encuentra los pares candidatos y los agrupa */
   function findDuplicates(rows, opts) {
     const o = Object.assign({ threshold: 50, weights: null, dismissed: [] }, opts || {});
-    const dismissed = new Set((o.dismissed || []).map(p => p.join('|')));
+    /* los descartes se guardan por identidad (pairKey), no por fila; los
+       viejos, guardados como [i, j], no sirven ya y se ignoran. Un descarte
+       que no corresponde a ningún par de la colección actual tampoco hace nada. */
+    const dismissed = new Set((o.dismissed || []).filter(p => typeof p === 'string'));
+    const dismissedHit = new Set();
 
     /* accesiones con el mismo número: eso no es un candidato, es un error */
     const byAcc = new Map();
@@ -356,8 +389,11 @@
 
     const pairs = [];
     for (const key of candidates) {
-      if (dismissed.has(key)) continue;
       const [i, j] = key.split('|').map(Number);
+      if (dismissed.size) {
+        const pk = pairKey(rows[i], rows[j]);
+        if (dismissed.has(pk)) { dismissedHit.add(pk); continue; }
+      }
       const s = scorePair(rows[i], rows[j], o.weights);
       if (s.score >= o.threshold) pairs.push(Object.assign({ i, j }, s));
     }
@@ -380,7 +416,7 @@
       return { members, pairs: inner, score: Math.max(...inner.map(p => p.score)) };
     }).sort((a, b) => b.score - a.score);
 
-    return { pairs, groups, sameNumber, candidates: candidates.size, comparisons: candidates.size };
+    return { pairs, groups, sameNumber, candidates: candidates.size, comparisons: candidates.size, dismissedUsed: dismissedHit.size };
   }
 
   /* fusión: la accesión maestra manda; de la otra se toma lo que falte */
@@ -434,22 +470,29 @@
 
     /* un mismo taxón con nombres de cultivo distintos (con la subespecie o la variedad: el
        teocintle, Zea mays subsp. parviglumis, no es otro nombre del maíz) */
+    /* Se agrupa por la forma normalizada, pero en pantalla va lo que está
+       escrito en los datos: la primera forma que aparece de cada uno. */
     const cropByTaxon = new Map();
+    const taxonEscrito = new Map();
     rows.forEach((r, i) => {
       const t = [taxonOf(r), normStr(r.SUBTAXA)].filter(Boolean).join(' '), c = normStr(r.CROPNAME);
       if (!t || !c) return;
-      if (!cropByTaxon.has(t)) cropByTaxon.set(t, new Map());
+      if (!cropByTaxon.has(t)) {
+        cropByTaxon.set(t, new Map());
+        taxonEscrito.set(t, [r.GENUS, r.SPECIES, r.SUBTAXA].map(s => String(s ?? '').trim()).filter(Boolean).join(' '));
+      }
       const m = cropByTaxon.get(t);
-      if (!m.has(c)) m.set(c, []);
-      m.get(c).push(i);
+      if (!m.has(c)) m.set(c, { escrito: String(r.CROPNAME).trim().replace(/\s+/g, ' '), rows: [] });
+      m.get(c).rows.push(i);
     });
     for (const [t, m] of cropByTaxon) {
       if (m.size > 1) {
-        const names = [...m.keys()];
+        const names = [...m.values()].map(v => v.escrito);
+        const tx = taxonEscrito.get(t) || t;
         add('cropName', 'warn',
-          `El mismo taxón (${t}) aparece con ${m.size} nombres de cultivo distintos: ${names.join(', ')}.`,
-          `The same taxon (${t}) appears under ${m.size} different crop names: ${names.join(', ')}.`,
-          [].concat(...m.values()));
+          `El mismo taxón (${tx}) aparece con ${m.size} nombres de cultivo distintos: ${names.map(n => `«${n}»`).join(', ')}.`,
+          `The same taxon (${tx}) appears under ${m.size} different crop names: ${names.map(n => `"${n}"`).join(', ')}.`,
+          [].concat(...[...m.values()].map(v => v.rows)));
       }
     }
 
@@ -492,6 +535,48 @@
     return out;
   }
 
+  /* ---------- formato de los nombres ----------
+     Sólo se toca lo que viene TODO EN MAYÚSCULAS (con alguna palabra de cuatro
+     letras o más; «INIFAP 2» o «QPM» no cuentan como gritar). Lo demás se deja
+     como está, salvo los espacios de más: quien escribió «McAllen» o «Tuxpeño
+     de Guerrero» lo escribió así a propósito.
+       · 'sentence' (nombre de la accesión, nombre del cultivo): forma de oración,
+         «BOLITA  AMARILLO» → «Bolita amarillo».
+       · 'place' (sitio de colecta): cada palabra con mayúscula, menos las
+         palabras menores del español fuera del inicio y después de una coma:
+         «VILLA DE MITLA, OAXACA» → «Villa de Mitla, Oaxaca».
+     En los dos, una palabra que ya mezcla mayúsculas y minúsculas no se cambia. */
+  const MENORES = new Set(['de', 'del', 'la', 'las', 'los', 'el', 'y', 'e', 'o', 'u', 'en', 'a', 'al',
+    'con', 'por', 'para', 'sin', 'sobre', 'entre', 'hacia', 'hasta', 'desde', 'un', 'una', 'unos', 'unas', 'lo']);
+  function esGritado(t) {
+    return t.length > 3 && t === t.toUpperCase() && /\p{Lu}{4,}/u.test(t);
+  }
+  function nameCase(s, mode) {
+    const t = String(s ?? '').replace(/\s+/g, ' ').trim();
+    if (!t) return t;
+    const mezclada = w => /\p{Ll}/u.test(w) && /\p{Lu}/u.test(w.slice(1));
+    const cap = w => w.charAt(0).toUpperCase() + w.slice(1);
+    let inicio = true;                       /* inicio del texto (y, en un lugar, después de una coma o un punto) */
+    return t.split(' ').map(w => {
+      const lead = w.match(/^[^\p{L}\p{N}]*/u)[0];
+      const core = w.slice(lead.length);
+      let out;
+      if (!core) out = w;
+      else if (mezclada(core)) out = w;
+      else {
+        const low = core.toLowerCase();
+        /* las partes de una palabra compuesta («SAN-JUAN») también llevan mayúscula en un lugar */
+        if (mode === 'place') {
+          out = lead + ((!inicio && MENORES.has(low)) ? low : low.split('-').map(cap).join('-'));
+        } else {
+          out = lead + (inicio ? cap(low) : low);
+        }
+      }
+      if (core) inicio = mode === 'place' ? /[,.;:)]$/.test(w) : /[.!?]$/.test(w);
+      return out;
+    }).join(' ');
+  }
+
   /* ---------- 5. correcciones que la app puede proponer ---------- */
   function proposeFixes(rows) {
     const fixes = [];
@@ -508,12 +593,14 @@
         const v = String(r[k] ?? '');
         let t = v.replace(/\s+/g, ' ').trim();
         if (!t) return;
-        const gritado = t.length > 3 && t === t.toUpperCase() && /\p{Lu}{4,}/u.test(t);
-        if (gritado) t = t.toLowerCase().replace(/(^|\s)(\p{L})/gu, (m0, s, c) => s + c.toUpperCase());
+        const gritado = esGritado(t);
+        if (gritado) t = nameCase(t, k === 'COLLSITE' ? 'place' : 'sentence');
         if (t === v) return;
         fixes.push({ i, code: gritado ? 'upper' : 'spaces', field: k, from: v, to: t,
           msg: gritado
-            ? { es: 'Todo en mayúsculas: se propone dejarlo en formato de nombre (y de paso quitar los espacios de más).', en: 'All caps: proposed as normal name case (extra spaces removed too).' }
+            ? (k === 'COLLSITE'
+              ? { es: 'Todo en mayúsculas: se propone escribirlo como nombre de lugar, con «de», «la», «del»… en minúsculas (y de paso quitar los espacios de más).', en: 'All caps: proposed as a place name, with Spanish minor words such as «de», «la», «del» in lower case (extra spaces removed too).' }
+              : { es: 'Todo en mayúsculas: se propone dejarlo en forma de oración (y de paso quitar los espacios de más).', en: 'All caps: proposed in sentence case (extra spaces removed too).' })
             : { es: 'Espacios de más al principio, al final o entre palabras.', en: 'Extra spaces at the start, at the end or between words.' } });
       });
       /* género y epíteto */
@@ -574,9 +661,38 @@
     return { geo, consistency: cons, fixes, dup };
   }
 
+  /* ---------- el nombre legible de cada código ----------
+     Los códigos (lonsign, cropName…) son internos: sirven para agrupar y para
+     las pruebas. En pantalla va siempre su nombre en el idioma de la app. */
+  const CODES = {
+    zerozero: { es: 'Punto (0, 0)', en: 'Point (0, 0)' },
+    lateqlon: { es: 'Latitud = longitud', en: 'Latitude = longitude' },
+    rounded: { es: 'Grados enteros', en: 'Whole degrees' },
+    nobox: { es: 'País sin contorno', en: 'Country without outline' },
+    lonsign: { es: 'Signo de la longitud', en: 'Longitude sign' },
+    latsign: { es: 'Signo de la latitud', en: 'Latitude sign' },
+    swapped: { es: 'Coordenadas intercambiadas', en: 'Swapped coordinates' },
+    swapsign: { es: 'Intercambiadas y con signo', en: 'Swapped and sign-flipped' },
+    outside: { es: 'Fuera del país', en: 'Outside the country' },
+    genusCase: { es: 'Mayúsculas del género', en: 'Genus capitalization' },
+    speciesCase: { es: 'Mayúsculas del epíteto', en: 'Epithet capitalization' },
+    speciesAuthor: { es: 'Autoridad en el epíteto', en: 'Authority in the epithet' },
+    genusTypo: { es: 'Género mal escrito', en: 'Misspelled genus' },
+    cropName: { es: 'Nombres de cultivo', en: 'Crop names' },
+    siteSpelling: { es: 'Ortografía del sitio', en: 'Site spelling' },
+    sameCoords: { es: 'Coordenadas repetidas', en: 'Repeated coordinates' },
+    alpha2: { es: 'País en dos letras', en: 'Two-letter country' },
+    upper: { es: 'Todo en mayúsculas', en: 'All caps' },
+    spaces: { es: 'Espacios de más', en: 'Extra spaces' },
+    route: { es: 'Ruta deducida', en: 'Inferred route' },
+    fromDms: { es: 'Grados, minutos y segundos', en: 'Degrees, minutes, seconds' },
+  };
+  function codeLabel(code) { return CODES[code] || { es: String(code ?? ''), en: String(code ?? '') }; }
+
   window.QC = {
     BBOX, ALPHA2, inBox, geoCheck, normStr, levenshtein, jaro, jaroWinkler, nameSim,
     DEFAULT_W, ids, blockKeys, scorePair, findDuplicates, mergeRows, consistency,
     proposeFixes, applyFixes, audit, coordsOf, taxonOf,
+    CODES, codeLabel, nameCase, esGritado, fmtDist, rowId, pairKey,
   };
 })();

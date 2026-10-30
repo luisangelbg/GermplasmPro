@@ -27,8 +27,22 @@
     Prefs.set('dupThreshold', ui.threshold);
   }
   function loadState() {
-    ui.dismissed = Prefs.get('dismissed', []) || [];
+    /* los descartes son claves de identidad (QC.pairKey). Los de antes se
+       guardaban como [fila, fila] y ya no dicen a qué par se referían (las
+       filas se mueven al fusionar o importar): se tiran sin preguntar. */
+    const saved = Prefs.get('dismissed', []);
+    ui.dismissed = Array.isArray(saved) ? saved.filter(p => typeof p === 'string') : [];
+    if (!Array.isArray(saved) || ui.dismissed.length !== saved.length) Prefs.set('dismissed', ui.dismissed);
     ui.threshold = Prefs.get('dupThreshold', 50);
+  }
+  /* descartar un par (o anotarlo como duplicado), recordado por identidad */
+  function dismissPair(i, j) {
+    const A = state.acc[i], B = state.acc[j];
+    if (!A || !B) return null;
+    const k = QC.pairKey(A, B);
+    if (!ui.dismissed.includes(k)) ui.dismissed.push(k);
+    saveState();
+    return k;
   }
 
   /* ============ recálculo ============ */
@@ -60,10 +74,14 @@
   function renderStats(a) {
     const geoErr = a.geo.filter(p => p.level === 'error').length;
     const stats = [
-      { k: T('Accesiones revisadas', 'Accessions checked'), v: fmtInt(state.acc.length), d: T(`${a.dup.comparisons} pares comparados`, `${a.dup.comparisons} pairs compared`), c: 'var(--s1)' },
+      { k: T('Accesiones revisadas', 'Accessions checked'), v: fmtInt(state.acc.length), d: T(
+        `${a.dup.comparisons} ${a.dup.comparisons === 1 ? 'par comparado' : 'pares comparados'}`,
+        `${a.dup.comparisons} ${a.dup.comparisons === 1 ? 'pair' : 'pairs'} compared`), c: 'var(--s1)' },
       { k: T('Problemas de ubicación', 'Location problems'), v: fmtInt(a.geo.filter(p => p.level !== 'info').length), d: T(`${geoErr} con diagnóstico claro`, `${geoErr} with a clear diagnosis`), c: geoErr ? 'var(--danger)' : 'var(--s3)' },
       { k: T('Correcciones propuestas', 'Proposed fixes'), v: fmtInt(a.fixes.length), d: T('ninguna se aplica sin tu visto bueno', 'none is applied without your approval'), c: 'var(--s2)' },
-      { k: T('Grupos de duplicados', 'Duplicate groups'), v: fmtInt(a.dup.groups.length), d: T(`${a.dup.pairs.length} pares por encima del umbral`, `${a.dup.pairs.length} pairs above the threshold`), c: a.dup.groups.length ? 'var(--stDup)' : 'var(--s3)' },
+      { k: T('Grupos de duplicados', 'Duplicate groups'), v: fmtInt(a.dup.groups.length), d: T(
+        `${a.dup.pairs.length} ${a.dup.pairs.length === 1 ? 'par por encima' : 'pares por encima'} del umbral`,
+        `${a.dup.pairs.length} ${a.dup.pairs.length === 1 ? 'pair' : 'pairs'} above the threshold`), c: a.dup.groups.length ? 'var(--stDup)' : 'var(--s3)' },
       { k: T('Avisos de consistencia', 'Consistency warnings'), v: fmtInt(a.consistency.length), d: T('nombres y catálogos', 'names and catalogues'), c: 'var(--s6)' },
     ];
     el('b3Stats').innerHTML = stats.map(x =>
@@ -96,9 +114,10 @@
       </tr></thead><tbody>
       ${list.map((g, gi) => {
         const ex = g.items[0];
+        const fd = MCPD.FIELD_MAP[g.field];
         return `<tr>
-          <td><span class="tag ok">${g.field}</span></td>
-          <td>${esc(T(g.msg.es, g.msg.en))}</td>
+          <td><span class="tag ok" title="${esc(g.field)}">${esc(fd ? T(fd.es, fd.en) : g.field)}</span></td>
+          <td><b>${esc(T(QC.codeLabel(g.code).es, QC.codeLabel(g.code).en))}.</b> ${esc(T(g.msg.es, g.msg.en))}</td>
           <td class="qc-diff"><span class="qc-from">${esc(String(ex.from || '—').slice(0, 30))}</span> → <span class="qc-to">${esc(String(ex.to).slice(0, 30))}</span></td>
           <td class="num">${g.items.length}</td>
           <td><button class="btn btn-secondary btn-sm" data-fixgroup="${gi}">${T('Aplicar', 'Apply')}</button></td>
@@ -119,13 +138,15 @@
 
     els('[data-fixgroup]', sec).forEach(b => b.addEventListener('click', () => {
       const g = list[Number(b.dataset.fixgroup)];
-      QC.applyFixes(state.acc, g.items);
-      afterChange(T(`${g.items.length} correcciones aplicadas en ${g.field}.`, `${g.items.length} fixes applied to ${g.field}.`));
+      const n = QC.applyFixes(state.acc, g.items);
+      const fd = MCPD.FIELD_MAP[g.field];
+      const campo = fd ? T(fd.es, fd.en) : g.field;
+      afterChange(T(`${n} ${n === 1 ? 'corrección aplicada' : 'correcciones aplicadas'} en ${campo}.`, `${n} ${n === 1 ? 'fix' : 'fixes'} applied to ${campo}.`));
     }));
     const all = el('b3FixAll');
     if (all) all.addEventListener('click', () => {
       const n = QC.applyFixes(state.acc, a.fixes);
-      afterChange(T(`${n} correcciones aplicadas.`, `${n} fixes applied.`));
+      afterChange(T(`${n} ${n === 1 ? 'corrección aplicada' : 'correcciones aplicadas'}.`, `${n} ${n === 1 ? 'fix' : 'fixes'} applied.`));
     });
   }
 
@@ -144,7 +165,7 @@
           <td><b>${esc(r.ACCENUMB || '—')}</b><div class="hint">${esc(String(r.ACCENAME || '').slice(0, 28))}</div></td>
           <td>${esc(r.ORIGCTY || '—')}</td>
           <td class="mono">${esc(r.DECLATITUDE)}, ${esc(r.DECLONGITUDE)}</td>
-          <td><span class="tag ${p.level === 'error' ? 'bad' : 'warn'}">${p.code}</span> ${esc(T(p.msg.es, p.msg.en))}</td>
+          <td><span class="tag ${p.level === 'error' ? 'bad' : 'warn'}">${esc(T(QC.codeLabel(p.code).es, QC.codeLabel(p.code).en))}</span> ${esc(T(p.msg.es, p.msg.en))}</td>
           <td class="qc-act">
             ${p.fix ? `<button class="btn btn-secondary btn-sm" data-geofix="${pi}">${T('Corregir', 'Fix')}</button>` : ''}
             <button class="btn btn-ghost btn-sm" data-geoficha="${p.i}">${T('Ficha', 'Record')}</button>
@@ -181,7 +202,7 @@
         <th>${T('Tipo', 'Type')}</th><th>${T('Hallazgo', 'Finding')}</th><th class="num">${T('Accesiones', 'Accessions')}</th><th></th>
       </tr></thead><tbody>
       ${a.consistency.map((c, ci) => `<tr>
-        <td><span class="tag ${c.level === 'warn' ? 'warn' : 'new'}">${c.code}</span></td>
+        <td><span class="tag ${c.level === 'warn' ? 'warn' : 'new'}">${esc(T(QC.codeLabel(c.code).es, QC.codeLabel(c.code).en))}</span></td>
         <td>${esc(T(c.msg.es, c.msg.en))}</td>
         <td class="num">${c.items.length}</td>
         <td><button class="btn btn-ghost btn-sm" data-consshow="${ci}">${T('ver', 'show')}</button></td>
@@ -208,6 +229,14 @@
   }
 
   /* ============ 4. duplicados ============ */
+  /* en la comparación lado a lado, la ruta va con su nombre y no con su código */
+  function cmpValue(f, v) {
+    if (f === 'GP_CONS' && v) {
+      const h = MCPD.GPCONS.find(x => x.c === v);
+      return h ? T(h.es, h.en) : v;
+    }
+    return v;
+  }
   const CMP_FIELDS = ['ACCENUMB', 'ACCENAME', 'GENUS', 'SPECIES', 'COLLNUMB', 'COLLDATE', 'COLLSITE', 'DECLATITUDE', 'DECLONGITUDE', 'ELEVATION', 'INSTCODE', 'GP_CONS', 'GP_STOCK', 'OTHERNUMB', 'DONORNUMB'];
 
   function renderDuplicates(a) {
@@ -221,7 +250,7 @@
         <span>${T('Umbral para proponer un duplicado', 'Threshold to propose a duplicate')}: <b id="b3ThVal">${ui.threshold}</b> ${T('puntos', 'points')}</span>
         <input type="range" id="b3Th" min="25" max="95" step="5" value="${ui.threshold}">
       </label>
-      <button class="btn btn-ghost btn-sm" id="b3Reset">${T('Volver a proponer los descartados', 'Bring dismissed pairs back')} (${ui.dismissed.length})</button>
+      <button class="btn btn-ghost btn-sm" id="b3Reset">${T('Volver a proponer los descartados', 'Bring dismissed pairs back')} (${d.dismissedUsed || 0})</button>
       <span class="hint">${T('Bajar el umbral propone más pares y acierta menos; subirlo, al revés.', 'Lowering the threshold proposes more pairs and gets more of them wrong; raising it does the opposite.')}</span>
     </div>`;
 
@@ -243,13 +272,13 @@
           const differ = new Set(vals.filter(Boolean)).size > 1;
           if (!vals.some(Boolean)) return '';
           return `<tr class="${differ ? 'dup-differ' : ''}"><td>${esc(T(MCPD.FIELD_MAP[f].es, MCPD.FIELD_MAP[f].en))}</td>
-            ${vals.map(v => `<td>${esc(v || '—')}</td>`).join('')}</tr>`;
+            ${vals.map(v => `<td${f === 'GP_CONS' && v ? ` title="${esc(v)}"` : ''}>${esc(cmpValue(f, v) || '—')}</td>`).join('')}</tr>`;
         }).join('')}
       </tbody></table></div>`;
 
       const why = g.pairs.map(p => `<div class="dup-why">
         <b>${esc(state.acc[p.i].ACCENUMB)} ↔ ${esc(state.acc[p.j].ACCENUMB)}</b> · ${fmt(p.score, 0)} ${T('pts', 'pts')}
-        ${p.dist != null ? ` · ${fmt(p.dist, p.dist < 10 ? 2 : 0)} km` : ''}
+        ${p.dist != null ? ` · ${QC.fmtDist(p.dist)}` : ''}
         <ul>${p.reasons.map(r => `<li>${esc(T(r.es, r.en))} <span class="muted">(${r.pts > 0 ? '+' : ''}${r.pts})</span></li>`).join('')}</ul>
         <div class="imp-row">
           <button class="btn btn-secondary btn-sm" data-merge="${p.i}|${p.j}">${T('Fusionar en la primera', 'Merge into the first')}</button>
@@ -267,8 +296,8 @@
 
     const sec = section(
       T('4 · ¿Es la misma colecta dos veces?', '4 · Is it the same collection twice?'),
-      T('Se comparan sólo los pares que comparten algo —número de colecta, número de donante, nombre parecido, taxón y fecha, o la misma celda de medio grado—, y cada coincidencia suma puntos: el mismo número de colecta pesa más que estar cerca, y dos géneros distintos restan. Los grupos reúnen a las accesiones encadenadas: si A es duplicada de B y B de C, las tres son el mismo material.',
-        'Only pairs that share something are compared —collecting number, donor number, similar name, taxon and date, or the same half-degree cell—, and each match adds points: the same collecting number weighs more than mere proximity, and two different genera subtract. Groups gather chained accessions: if A duplicates B and B duplicates C, all three are the same material.'),
+      T('Se comparan sólo los pares que comparten algo —número de colecta, número de donante, nombre parecido, taxón y fecha, o la misma celda de medio grado—, y cada coincidencia suma puntos: el mismo número de colecta pesa más que estar cerca; dos géneros distintos restan 35 y, si los dos declaran subtaxón (subespecie o variedad) y no es el mismo, se restan 15. Los grupos reúnen a las accesiones encadenadas: si A es duplicada de B y B de C, las tres son el mismo material.',
+        'Only pairs that share something are compared —collecting number, donor number, similar name, taxon and date, or the same half-degree cell—, and each match adds points: the same collecting number weighs more than mere proximity; two different genera subtract 35 and, when both declare a subtaxon (subspecies or variety) and it differs, 15 more are subtracted. Groups gather chained accessions: if A duplicates B and B duplicates C, all three are the same material.'),
       inner, 'b3Dup');
 
     const th = el('b3Th');
@@ -291,7 +320,7 @@
         `${state.acc[j].ACCENUMB} will be merged into ${state.acc[i].ACCENUMB} and the second will disappear from the catalogue. Continue?`))) return;
       state.acc[i] = merged;
       state.acc.splice(j, 1);
-      ui.dismissed = ui.dismissed.filter(p => !p.includes(j)).map(p => p.map(x => (x > j ? x - 1 : x)));
+      /* los descartes van por identidad: no hay que renumerarlos */
       ui.open = {};
       afterChange(T('Accesiones fusionadas.', 'Accessions merged.'));
     }));
@@ -305,14 +334,12 @@
         const note = T(`Duplicado declarado de ${y.ACCENUMB}.`, `Declared duplicate of ${y.ACCENUMB}.`);
         if (!String(x.REMARKS || '').includes(note)) x.REMARKS = [String(x.REMARKS || '').trim(), note].filter(Boolean).join(' ');
       });
-      ui.dismissed.push([i, j]);
-      saveState();
+      dismissPair(i, j);
       afterChange(T('Anotado en las dos accesiones.', 'Noted in both accessions.'));
     }));
     els('[data-dismiss]', sec).forEach(b => b.addEventListener('click', () => {
       const [i, j] = b.dataset.dismiss.split('|').map(Number);
-      ui.dismissed.push([i, j]);
-      saveState();
+      dismissPair(i, j);
       run();
     }));
   }
@@ -322,7 +349,7 @@
     const a = ui.lastAudit || QC.audit(state.acc, { threshold: ui.threshold, dismissed: ui.dismissed });
     const rows = [];
     a.geo.forEach(p => rows.push({ tipo: 'geografia', nivel: p.level, accesion: state.acc[p.i].ACCENUMB, campo: p.field, detalle: p.msg.es }));
-    a.consistency.forEach(c => rows.push({ tipo: 'consistencia', nivel: c.level, accesion: c.items.map(i => state.acc[i].ACCENUMB).join(' '), campo: c.code, detalle: c.msg.es }));
+    a.consistency.forEach(c => rows.push({ tipo: 'consistencia', nivel: c.level, accesion: c.items.map(i => state.acc[i].ACCENUMB).join(' '), campo: QC.codeLabel(c.code).es, detalle: c.msg.es }));
     a.fixes.forEach(f => rows.push({ tipo: 'correccion', nivel: 'fix', accesion: state.acc[f.i].ACCENUMB, campo: f.field, detalle: `${f.from} → ${f.to} · ${f.msg.es}` }));
     a.dup.pairs.forEach(p => rows.push({
       tipo: 'duplicado', nivel: String(Math.round(p.score)), accesion: `${state.acc[p.i].ACCENUMB} + ${state.acc[p.j].ACCENUMB}`,
@@ -363,5 +390,5 @@
   document.addEventListener('stepchange', e => { if (e.detail.step === 3) runUI(); });
   document.addEventListener('langchange', () => { if (el('panel-3') && ui.lastAudit) render(); });
 
-  window.B3 = { run, report, ui, render };
+  window.B3 = { run, report, ui, render, loadState, dismissPair, cmpValue };
 })();
