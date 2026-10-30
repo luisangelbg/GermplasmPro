@@ -1,0 +1,13 @@
+Cada receta es una expresión JS que captura.ps1 evalúa dentro de la app abierta por file://. Puede devolver
+una promesa; si deja en window.__recorte una cadena "x,y,ancho,alto" (píxeles de pantalla) y la devuelve,
+captura.ps1 la usa como recorte. Este es el bloque que comparten las recetas que necesitan la colección de
+ejemplo del manual (46 accesiones, botón «Abrir la colección de ejemplo» del Bloque 2):
+
+  const W = ms => new Promise(r => setTimeout(r, ms));
+  const top = n => n.getBoundingClientRect().top + window.scrollY;
+  const irA = n => window.scrollTo({ top: top(n) - 96, behavior: "instant" });
+  const caja = (nodos, p) => { const rs = nodos.filter(Boolean).map(n => n.getBoundingClientRect()); const x = Math.min(...rs.map(r => r.left)) - p, y = Math.min(...rs.map(r => r.top)) - p; window.__recorte = [x, y, Math.max(...rs.map(r => r.right)) + p - x, Math.max(...rs.map(r => r.bottom)) + p - y].map(Math.round).join(","); return window.__recorte; };
+  const carga = async () => { goStep(2); await W(400); document.getElementById("b2Example").click(); await W(2500); };
+
+Con -Puerto se elige el puerto de depuración (y el perfil) del navegador sin ventana, para que dos capturas
+puedan correr a la vez.

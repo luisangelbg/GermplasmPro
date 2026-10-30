@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · Manual de usuario · Preliminares e introducción</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- reparte el contenido en hojas tamaño carta, con encabezados, números de página e índice -->
+<script src="../paginar.js"></script>
+<style>
+  figure.reducida { width: 78%; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<!-- ====================================================================== CRÉDITOS -->
+<section class="preliminares creditos" id="creditos">
+  <div class="cred-titulo">GermplasmPro</div>
+  <div class="cred-sub">Manual de usuario · El banco de germoplasma, accesión por accesión</div>
+
+  <dl>
+    <dt>Autor</dt><dd><b>Luis Ángel Barrera-Guzmán</b><br><span class="small">ORCID 0000-0001-8057-2583</span></dd>
+    <dt>Programa</dt><dd>GermplasmPro, versión 1.0.0 (1 de octubre de 2026)</dd>
+    <dt>Manual</dt><dd>Primera edición en español, 2026. Describe la versión 1.0.0 del programa.</dd>
+    <dt>Licencia del programa</dt><dd>Licencia Pública General de GNU, versión 3 o posterior (GPL-3.0-or-later).</dd>
+    <dt>Derechos del manual</dt><dd>© 2026 Luis Ángel Barrera-Guzmán. Todos los derechos reservados.</dd>
+    <dt>Idioma de la interfaz</dt><dd>Español o inglés, con el botón <span class="ui">ES</span> · <span class="ui">EN</span> de la barra superior. En este manual los nombres de botones, campos y menús se escriben como aparecen en pantalla en español, por ejemplo <span class="ui">Abrir la colección de ejemplo</span>.</dd>
+  </dl>
+
+  <h4>Cómo citar el programa</h4>
+  <div class="cita">Barrera-Guzmán, L.Á. (2026). GermplasmPro: el banco de germoplasma, accesión por accesión (versión 1.0.0) [software]. https://github.com/luisangelbg/GermplasmPro</div>
+  <h4>Cómo citar este manual</h4>
+  <div class="cita">Barrera-Guzmán, L. Á. (2026). <i>GermplasmPro. Manual de usuario</i> (1.ª ed.). Distribuido con GermplasmPro, versión 1.0.0. https://github.com/luisangelbg/GermplasmPro</div>
+  <p class="small">La cita del programa es la misma que da el botón <span class="ui">Cómo citar</span> de la portada de la app. El programa también puede usarse en línea, sin instalar nada, en https://luisangelbg.github.io/GermplasmPro/.</p>
+
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Privacidad</div>
+    <p>GermplasmPro funciona por completo dentro de tu navegador. El pasaporte, la caracterización y los registros de manejo que cargas se leen en tu computadora y <b>nunca se envían a ningún servidor</b>; la colección se guarda en el almacenamiento local de ese mismo navegador para que no se pierda al cerrar la ventana. Puedes trabajar con coordenadas de poblaciones sensibles o con datos de familias custodias sin que nada salga de tu equipo, y sin internet: los mapas usan geometrías incluidas en el programa.</p>
+  </div>
+
+  <p class="small" style="margin-top:0.12in;color:var(--gris)">Las ilustraciones, los diagramas y las capturas de este manual son originales: se generaron con el propio programa o con código escrito para el manual. La <b>colección de ejemplo</b> es <b>ficticia</b>: los sitios son localidades reales con coordenadas aproximadas, pero las accesiones, las personas, las existencias y las fechas son inventadas, y la caracterización de ejemplo se genera al azar con semilla fija. Las constantes de viabilidad incluidas son las publicadas para <i>Zea mays</i>; en otras especies son un punto de partida editable. Los contornos de los mapas son de <b>Natural Earth</b> (dominio público).</p>
+</section>
+
+<!-- ====================================================================== ÍNDICE -->
+<section class="preliminares indice" id="indice" data-nueva-hoja>
+  <h1>Índice</h1>
+  <div class="indice-sub">Contenido general del manual</div>
+
+  <ol class="toc">
+    <li>
+      <div class="toc-cap"><span class="chip k0">P</span><a href="#como-leer">Cómo leer este manual</a><a class="pag" href="#como-leer"></a></div>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k0">In</span><a href="#cap-intro">Introducción a GermplasmPro</a><a class="pag" href="#cap-intro"></a></div>
+      <ul>
+        <li><span class="n">I.1</span><a href="#si-1"><span class="t">¿Qué es GermplasmPro?</span></a></li>
+        <li><span class="n">I.2</span><a href="#si-2"><span class="t">Preguntas que responde</span></a></li>
+        <li><span class="n">I.3</span><a href="#si-3"><span class="t">Cinco ideas que sostienen el manual</span></a></li>
+        <li><span class="n">I.4</span><a href="#si-4"><span class="t">Datos que acepta y qué entrega</span></a></li>
+        <li><span class="n">I.5</span><a href="#si-5"><span class="t">Qué necesitas y cómo abrirlo</span></a></li>
+        <li><span class="n">I.6</span><a href="#si-6"><span class="t">Recorrido por la interfaz</span></a></li>
+        <li><span class="n">I.7</span><a href="#si-7"><span class="t">La colección de ejemplo</span></a></li>
+        <li><span class="n">I.8</span><a href="#si-8"><span class="t">Cómo se recorre un trabajo</span></a></li>
+        <li><span class="n">I.9</span><a href="#si-9"><span class="t">Lo que el programa no hace</span></a></li>
+      </ul>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k1">1</span><a href="#cap-b1">Inicio: tipos de banco y la vida de una accesión</a><a class="pag" href="#cap-b1"></a></div>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k2">2</span><a href="#cap-b2">El pasaporte de las accesiones</a><a class="pag" href="#cap-b2"></a></div>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k3">3</span><a href="#cap-b3">Calidad de los datos y duplicados</a><a class="pag" href="#cap-b3"></a></div>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k4">4</span><a href="#cap-b4">El mapa de colecta</a><a class="pag" href="#cap-b4"></a></div>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k5">5</span><a href="#cap-b5">Diversidad geográfica</a><a class="pag" href="#cap-b5"></a></div>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k6">6</span><a href="#cap-b6">Vacíos de colecta</a><a class="pag" href="#cap-b6"></a></div>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k7">7</span><a href="#cap-b7">Caracterización y colección núcleo</a><a class="pag" href="#cap-b7"></a></div>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k8">8</span><a href="#cap-b8">Manejo del banco</a><a class="pag" href="#cap-b8"></a></div>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k9">9</span><a href="#cap-b9">Etiquetas y registro</a><a class="pag" href="#cap-b9"></a></div>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k10">10</span><a href="#cap-b10">El informe</a><a class="pag" href="#cap-b10"></a></div>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip kx">Ap</span><a href="#apendices">Apéndices</a><a class="pag" href="#apendices"></a></div>
+    </li>
+  </ol>
+</section>
+
+<!-- ====================================================================== CÓMO LEER -->
+<section class="preliminares" id="como-leer" data-nueva-hoja style="--acento: var(--b0)">
+  <h2 style="margin-top:0.2in">Cómo leer este manual</h2>
+  <p class="lead">El manual sigue el mismo orden que la app: diez bloques numerados que aparecen, de arriba abajo, en la barra lateral de la izquierda. Cada capítulo explica un bloque y lleva su mismo número —el capítulo 6 es el Bloque 6, y sus secciones, figuras y tablas se numeran 6.1, 6.2…—. Cada uno empieza con la idea de manejo de recursos fitogenéticos que el bloque necesita, sigue con lo que la pantalla calcula y cómo se lee, y termina con lo que conviene revisar antes de seguir. Esta introducción no lleva número: sus secciones van como I.1, I.2…</p>
+
+  <h3>Un color para cada bloque</h3>
+  <p>El color del bloque aparece en la apertura de su capítulo, en el número de cada sección, en la pestaña del borde de la hoja y en el índice, y es el mismo de la franja de la portada. Así sabes de un vistazo en qué parte de la app estás.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:0.6in">Bloque</th><th style="width:1.6in">Nombre en la app</th><th>Qué hace</th></tr></thead>
+    <tbody>
+      <tr><td><span class="chip k1">1</span></td><td><span class="ui">Inicio</span></td><td>Portada, los cinco tipos de banco, el comportamiento de la semilla y el simulador «la vida de una accesión», que sigue al material y su diversidad durante décadas</td></tr>
+      <tr><td><span class="chip k2">2</span></td><td><span class="ui">Pasaporte</span></td><td>Traer la lista de accesiones (archivo, pegado o plantilla), reconocer las columnas como descriptores MCPD v2.1, validarlas, editarlas, retratar la colección y exportarla</td></tr>
+      <tr><td><span class="chip k3">3</span></td><td><span class="ui">Calidad y duplicados</span></td><td>Coordenadas que no caen en el país declarado, nombres y catálogos desordenados, correcciones propuestas con tu visto bueno y la misma colecta entrada dos veces</td></tr>
+      <tr><td><span class="chip k4">4</span></td><td><span class="ui">Mapa de colecta</span></td><td>Las accesiones en el mapa, sin internet, coloreadas por especie, altitud, año o ruta; cuántas caen en cada entidad y en cada país</td></tr>
+      <tr><td><span class="chip k5">5</span></td><td><span class="ui">Diversidad geográfica</span></td><td>Riqueza, índices de diversidad y números de Hill por unidad geográfica, rarefacción, estimadores de riqueza, semejanza entre regiones, prueba de Mantel y gradiente altitudinal</td></tr>
+      <tr><td><span class="chip k6">6</span></td><td><span class="ui">Vacíos de colecta</span></td><td>La rejilla de lo que falta, un índice de prioridad transparente, la ruta para la próxima colecta, los riesgos de lo que ya tienes y el conjunto mínimo por complementariedad</td></tr>
+      <tr><td><span class="chip k7">7</span></td><td><span class="ui">Caracterización y núcleo</span></td><td>Descriptores morfológicos mixtos, distancia de Gower, coordenadas principales, agrupamiento y una colección núcleo validada</td></tr>
+      <tr><td><span class="chip k8">8</span></td><td><span class="ui">Manejo del banco</span></td><td>Viabilidad por lote con la ecuación de Ellis y Roberts, qué hay que hacer y cuándo en cada ruta, cuántas plantas y semillas regenerar, y la carga de trabajo de los próximos 25 años</td></tr>
+      <tr><td><span class="chip k9">9</span></td><td><span class="ui">Etiquetas y registro</span></td><td>Etiquetas con código de barras Code 128 y QR, en formatos medidos en milímetros; listas de siembra, vales de distribución y el libro de registro</td></tr>
+      <tr><td><span class="chip k10">10</span></td><td><span class="ui">Informe</span></td><td>El informe del estado de la colección, con los métodos redactados, para imprimir o guardar en PDF; el paquete .zip y el pasaporte en MCPD y en Darwin Core</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tipos de recuadros</h3>
+  <div class="dos">
+    <div class="caja nota" style="margin:0"><div class="caja-t"><span class="ico">i</span>Nota</div><p>Aclaraciones y consejos prácticos que ahorran tiempo.</p></div>
+    <div class="caja importante" style="margin:0"><div class="caja-t"><span class="ico">!</span>Importante</div><p>Lo que puede cambiar tus decisiones si se pasa por alto.</p></div>
+    <div class="caja teoria" style="margin:0"><div class="caja-t"><span class="ico">θ</span>Teoría en breve</div><p>La idea detrás de un cálculo, sin fórmulas innecesarias.</p></div>
+    <div class="caja ejemplo" style="margin:0"><div class="caja-t"><span class="ico">▸</span>Ejemplo</div><p>Un caso con la colección de ejemplo del programa, paso a paso.</p></div>
+  </div>
+  <div class="caja regla" style="margin-top:0.18in">
+    <div class="caja-t"><span class="ico">✓</span>Regla de decisión</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:40%"><b>Si</b> el resultado cae en este caso…</td><td><b>entonces</b> esta es la lectura recomendada.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">Son guías para interpretar, no leyes: lo que sabes de tu especie, de tu banco y de tus sitios siempre manda.</p>
+  </div>
+  <div class="caja dato">
+    <div class="dato-cifra">42</div>
+    <div class="dato-txt"><div class="caja-t">Dato clave</div>Una cifra o un hecho que conviene recordar; por ejemplo, los descriptores de pasaporte multicultivo de FAO/Bioversity (MCPD v2.1) que la app reconoce, a los que suma siete campos propios para el manejo y la conservación in situ.</div>
+  </div>
+
+  <h3>Convenciones de escritura</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:38%">Así se escribe</th><th>Significa</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Abrir la colección de ejemplo</span></td><td>Un botón, casilla o menú de la app, con su texto tal como aparece en pantalla en español.</td></tr>
+      <tr><td><span class="ruta">Bloque 3<span class="sep">›</span>¿Es la misma colecta dos veces?</span></td><td>Una ruta: abre lo primero y dentro busca lo segundo.</td></tr>
+      <tr><td><code>ACCENUMB</code>, <code>GP_CONS</code>, <code>.csv</code></td><td>Una clave de descriptor, un nombre de archivo o un valor que se escribe tal cual. Las claves que empiezan con <code>GP_</code> son la extensión de GermplasmPro, que no forma parte de MCPD.</td></tr>
+      <tr><td>MEX-ZM-0039 · Tuxpeño de la costa</td><td>Una accesión de la colección de ejemplo, con su número y su nombre como aparecen en la tabla del Bloque 2.</td></tr>
+      <tr><td>25 000 m · 98 % · 0.14</td><td>Millares separados con espacio y decimales con punto, como en la app.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Las cifras de este manual</div>
+    <p>Los resultados del texto salen de correr la app con la <b>colección de ejemplo</b> del Bloque 2 (46 accesiones, con sus errores sembrados) y, en el Bloque 7, con la <b>caracterización de ejemplo</b> de 12 descriptores. Los ejemplos tienen semilla fija y los cálculos son deterministas: con esos datos verás los mismos números. Si un capítulo parte de otro estado, como la colección ya corregida, lo dice antes de dar la cifra.</p>
+  </div>
+</section>
+
+<!-- ====================================================================== INTRODUCCIÓN -->
+<section class="capitulo" id="cap-intro" data-pestana="In" data-orden="0" style="--acento: var(--b0)">
+  <div class="cap-apertura">
+    <div class="cap-num">In</div>
+    <div class="cap-etiqueta">Introducción · Antes de los bloques</div>
+    <h1 data-corto="Introducción">Introducción a GermplasmPro</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">Qué es el programa, qué preguntas del trabajo diario de un banco de germoplasma responde, qué datos acepta y cómo se recorre de principio a fin. Incluye las cinco ideas que sostienen todo lo demás —la accesión y su pasaporte, la ruta que le toca a cada especie, el duplicado de seguridad, los dos relojes de la conservación y lo que tienes frente a lo que te falta— y una lista honesta de lo que el programa no hace.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>I.1</b>¿Qué es GermplasmPro?</li>
+      <li><b>I.2</b>Preguntas que responde</li>
+      <li><b>I.3</b>Cinco ideas que sostienen el manual</li>
+      <li><b>I.4</b>Datos que acepta y qué entrega</li>
+      <li><b>I.5</b>Qué necesitas y cómo abrirlo</li>
+      <li><b>I.6</b>Recorrido por la interfaz</li>
+      <li><b>I.7</b>La colección de ejemplo</li>
+      <li><b>I.8</b>Cómo se recorre un trabajo</li>
+      <li><b>I.9</b>Lo que el programa no hace</li>
+    </ul>
+  </div>
+
+  <!-- I.1 -->
+  <h2 id="si-1"><span class="num">I.1</span>¿Qué es GermplasmPro?</h2>
+  <p class="lead">GermplasmPro es una plataforma para el trabajo diario de una colección de recursos fitogenéticos <b>de la libreta de campo al informe</b>: ordena el pasaporte de cada accesión con los descriptores multicultivo de FAO/Bioversity, encuentra los errores y los duplicados, dibuja el mapa de colecta, mide la diversidad geográfica, señala dónde falta colectar, arma una colección núcleo a partir de la caracterización, proyecta la viabilidad de cada lote y avisa qué hay que regenerar, imprime etiquetas con código de barras y redacta un informe con los métodos escritos.</p>
+  <p>Sirve para <b>cualquier especie</b> y para <b>todos los tipos de banco</b>. Ex situ: el banco de semillas, el banco de campo o colección viva, el cultivo in vitro de crecimiento lento y la criopreservación; el banco de ADN se registra en el pasaporte. In situ: la reserva genética de parientes silvestres y la conservación en la parcela de quien siembra. Una colección real casi siempre combina varias de esas rutas, y la app las maneja a la vez. El maíz y el chayote aparecen a menudo en las pantallas y en este manual porque son buenos ejemplos de dos mundos —una semilla ortodoxa que se guarda en frasco y un cultivo que sólo se conserva vivo—, no porque el programa sea para ellos.</p>
+  <p>Todo ocurre dentro del navegador. No hay que instalar nada, no se necesita saber programar y los datos no salen de la computadora. Está escrito para curadores de bancos, técnicos de campo, tesistas y responsables de colecciones institucionales o comunitarias: sabe que un pasaporte llega casi siempre de una hoja de cálculo con encabezados a la mano, que la misma colecta suele estar dos veces con el nombre escrito distinto, que una longitud pierde el signo al pasar de un programa a otro, que un lote que lleva años sin prueba de germinación es un riesgo invisible y que una parcela in situ que nadie visita también se pierde.</p>
+
+  <!-- I.2 -->
+  <h2 id="si-2"><span class="num">I.2</span>Preguntas que responde</h2>
+  <p>Cada bloque de la app contesta una pregunta que quien maneja una colección se hace de verdad. Estas son, en el orden en que se recorren:</p>
+  <table>
+    <thead><tr><th style="width:0.55in">Bloque</th><th style="width:2.6in">La pregunta</th><th>Con qué la contesta</th></tr></thead>
+    <tbody>
+      <tr><td><span class="chip k1">1</span></td><td>¿Qué tipo de banco le conviene a mi especie? ¿Qué le pasa a una accesión con los años?</td><td>Los cinco tipos de banco, el comportamiento de la semilla y un simulador de la viabilidad y de la diversidad a lo largo de décadas</td></tr>
+      <tr><td><span class="chip k2">2</span></td><td>¿Qué tengo, de dónde vino y cómo se conserva? ¿Está completo mi pasaporte?</td><td>Lectura de la lista, reconocimiento de columnas, validación campo por campo y entre campos, retrato de la colección y completitud por descriptor</td></tr>
+      <tr><td><span class="chip k3">3</span></td><td>¿Mis datos son confiables? ¿Tengo la misma colecta dos veces?</td><td>Coordenadas contra el país, nombres y catálogos, correcciones propuestas y pares de posibles duplicados con su puntuación</td></tr>
+      <tr><td><span class="chip k4">4</span></td><td>¿Dónde colecté? ¿Cuántas accesiones hay por entidad y por país?</td><td>El mapa de colecta sin internet, con color por especie, altitud, año o ruta, y las tablas por entidad y por país</td></tr>
+      <tr><td><span class="chip k5">5</span></td><td>¿Dónde está la diversidad de mi colección? ¿Cuánta me falta por ver?</td><td>Riqueza e índices por unidad geográfica, rarefacción, estimadores de riqueza, semejanza entre regiones y gradiente altitudinal</td></tr>
+      <tr><td><span class="chip k6">6</span></td><td>¿A dónde voy en la próxima colecta? ¿Qué puedo perder de lo que ya tengo?</td><td>La rejilla de vacíos, el índice de prioridad, la ruta de colecta, los riesgos de la colección y el conjunto mínimo</td></tr>
+      <tr><td><span class="chip k7">7</span></td><td>¿Qué accesiones se parecen? ¿Con cuáles me quedo si no puedo evaluarlas todas?</td><td>Distancia de Gower con datos mixtos, coordenadas principales, grupos y una colección núcleo con su validación</td></tr>
+      <tr><td><span class="chip k8">8</span></td><td>¿Qué lote hay que probar o regenerar, y cuándo? ¿Cuántas plantas siembro?</td><td>Viabilidad proyectada por lote, alertas y plan de trabajo por ruta, cálculo de plantas y semillas, y carga de trabajo a 25 años</td></tr>
+      <tr><td><span class="chip k9">9</span></td><td>¿Cómo identifico cada sobre, frasco, maceta o criotubo? ¿Cómo registro lo que sale?</td><td>Etiquetas con Code 128 y QR, listas de siembra, vales de distribución y el libro de registro</td></tr>
+      <tr><td><span class="chip k10">10</span></td><td>¿Cómo informo del estado de la colección? ¿Cómo comparto el pasaporte?</td><td>Informe con métodos redactados y referencias, paquete .zip, pasaporte en MCPD y en Darwin Core</td></tr>
+    </tbody>
+  </table>
+
+  <!-- I.3 -->
+  <h2 id="si-3"><span class="num">I.3</span>Cinco ideas que sostienen el manual</h2>
+  <p>No hace falta ser curador de un banco para usar la app, pero hay cinco ideas que vuelven una y otra vez. Entenderlas hace que los resultados dejen de ser tablas y se vuelvan decisiones.</p>
+
+  <h3>1. La accesión es la unidad, y su pasaporte es su identidad</h3>
+  <p>Una <b>accesión</b> es una muestra distinta de una especie que el banco conserva y maneja como unidad: una colecta de maíz en una comunidad, un clon de papa, una población silvestre en su reserva. Lo que la hace útil no es el material, sino lo que se sabe de él: quién es, de dónde vino, quién y cuándo la colectó, qué tipo de material es y cómo se conserva. Eso es el <b>pasaporte</b>, y los descriptores multicultivo de FAO/Bioversity (MCPD v2.1) son la forma de escribirlo que entienden todos los bancos y sistemas de información. La app reconoce sus 42 descriptores y les suma siete campos propios, los que empiezan con <code>GP_</code>, para la ruta de conservación activa, el sitio y el custodio in situ, las existencias, la última germinación y la última regeneración. Todos los bloques leen de ese pasaporte; por eso el Bloque 2 es la puerta de entrada.</p>
+
+  <h3>2. Cada especie tiene su ruta de conservación</h3>
+  <p>Un banco de semillas sólo sirve para la semilla <b>ortodoxa</b>, que tolera secarse y congelarse. La <b>intermedia</b> no tolera el frío profundo, la <b>recalcitrante</b> no tolera ni secarse ni congelarse, y en los cultivos de <b>propagación vegetativa</b> la semilla no reproduce el clon. Para ellos están el campo, el frasco in vitro y el nitrógeno líquido, y nada sustituye a la conservación <b>in situ</b>, donde la población sigue evolucionando. La app maneja las cinco rutas y adapta a cada una alertas, plazos y etiquetas.</p>
+
+  <h3>3. Una accesión sin duplicado de seguridad depende de una sola instalación</h3>
+  <p>El <b>duplicado de seguridad</b> es una muestra de la misma accesión guardada en otra institución, para que un incendio, un corte de luz largo o una plaga no se lleven el único ejemplar. El pasaporte lo registra en <code>DUPLSITE</code>, y la app cuenta qué parte de la colección lo tiene. El otro duplicado, el <b>accidental</b> —la misma colecta entrada dos veces al catálogo, con el nombre escrito distinto—, es lo contrario: no protege nada, infla la colección y desordena los análisis. Distinguir uno de otro, y encontrar el segundo antes de medir la diversidad, es parte del trabajo del Bloque 3.</p>
+
+  <h3>4. Una accesión tiene dos relojes</h3>
+  <p>El primero es el del <b>material</b>: la semilla envejece en la cámara a un ritmo que depende de su contenido de humedad y de la temperatura, y que la ecuación de viabilidad de Ellis y Roberts permite proyectar; las plantas del campo mueren, los frascos se contaminan, los explantes congelados se recuperan sólo en parte. El segundo es el de la <b>integridad genética</b>: cada regeneración, cada subcultivo y cada generación en la parcela es un cuello de botella que vuelve a sortear las frecuencias de los alelos, y los raros son los primeros en perderse. De ahí la regla del banco: regenerar pocas veces y con muchos individuos. El simulador del Bloque 1 muestra los dos relojes lado a lado; el Bloque 8 los lleva a cada lote de tu colección.</p>
+
+  <h3>5. Lo que tienes y lo que te falta</h3>
+  <p>Una colección vale por la diversidad que representa, y esa diversidad tiene geografía: está repartida entre regiones, altitudes y sitios. El Bloque 5 mide cuánta hay donde ya colectaste y cuánta te falta por ver con el mismo esfuerzo; el Bloque 6 dibuja la rejilla de lo que nunca se ha colectado y propone a dónde ir, con un índice de prioridad cuyos componentes se ven y se pueden mover. En los dos casos el análisis es <b>geográfico y de colección</b>: cuenta accesiones, especies y sitios, no clima ni suelo.</p>
+
+  <!-- I.4 -->
+  <h2 id="si-4"><span class="num">I.4</span>Datos que acepta y qué entrega</h2>
+  <h4>Lo que entra</h4>
+  <ul>
+    <li><b>El pasaporte</b>: una tabla con una fila por accesión, que se abre desde un archivo <code>.csv</code>, <code>.tsv</code> o <code>.txt</code>, se pega directamente desde una hoja de cálculo, se escribe en la plantilla guiada del diálogo de pegado o se empieza en blanco. Los encabezados pueden venir en español, en inglés o con la clave MCPD: la app propone qué descriptor es cada columna y tú lo confirmas.</li>
+    <li><b>La caracterización</b>, en el Bloque 7: otra tabla, una fila por accesión y una columna por descriptor morfológico —números, categorías y escalas mezclados, con celdas vacías—, que se une al pasaporte por el número de accesión.</li>
+    <li><b>Los registros de manejo</b>, en el Bloque 8: las pruebas de germinación, las regeneraciones y los subcultivos que vas haciendo, y las constantes de viabilidad de tus especies si las tienes.</li>
+    <li><b>Un proyecto</b> guardado antes en <code>.json</code>, que devuelve la colección tal como estaba.</li>
+  </ul>
+  <h4>Lo que sale</h4>
+  <ul>
+    <li><b>El pasaporte limpio</b> en <code>.csv</code>, en dos versiones: sólo con los descriptores MCPD, para enviarlo a cualquier sistema, o completo, con la extensión <code>GP_</code>, para no perder el manejo interno. Y el proyecto en <code>.json</code>.</li>
+    <li><b>El informe de calidad</b> del Bloque 3 y las tablas en <code>.csv</code> de cada bloque: los puntos del mapa con su entidad y su celda, los índices de diversidad, la ruta de colecta, el plan de trabajo del banco.</li>
+    <li><b>Figuras</b> en SVG o en PNG al doble de resolución: el mapa de colecta, la curva de acumulación, el mapa de calor de semejanza, el mapa de vacíos.</li>
+    <li><b>Etiquetas</b> listas para imprimir, con código de barras y QR generados en el propio navegador.</li>
+    <li><b>El informe</b>: un archivo <code>.html</code> que se abre en cualquier navegador y se imprime o guarda en PDF, con una sección por análisis, los métodos redactados a partir de lo que de verdad se corrió y sus referencias; y un <code>.zip</code> con todo, que incluye el pasaporte en MCPD y en Darwin Core.</li>
+  </ul>
+
+  <!-- I.5 -->
+  <h2 id="si-5"><span class="num">I.5</span>Qué necesitas y cómo abrirlo</h2>
+  <p>Una computadora con un navegador reciente —Edge, Chrome, Firefox o Safari de los últimos dos o tres años— y la carpeta del programa. No hay instalación: se copia la carpeta y se abre <span class="ruta">index.html</span> con doble clic. También funciona desde una memoria USB y en una computadora sin internet, y en línea en https://luisangelbg.github.io/GermplasmPro/.</p>
+  <ol class="pasos">
+    <li>Copia la carpeta <span class="ruta">GermplasmPro</span> completa a tu computadora (o descárgala y descomprímela). Dentro debe haber <span class="ruta">index.html</span> y las carpetas <span class="ruta">js</span>, <span class="ruta">css</span>, <span class="ruta">data</span> —donde van los contornos de los mapas— y <span class="ruta">tests</span>.</li>
+    <li>Abre <span class="ruta">index.html</span> con doble clic. Si tu institución bloquea las páginas locales, usa <span class="ruta">Open GermplasmPro.bat</span> en Windows. La primera pantalla es el Bloque 1, la portada.</li>
+    <li>Elige el idioma con <span class="ui">ES</span> · <span class="ui">EN</span> y el tema claro u oscuro con el botón del sol. Ambos se recuerdan para la próxima vez.</li>
+    <li>Si quieres comprobar que los cálculos salen bien en tu navegador, abre <span class="ruta">tests/index.html</span>: son las pruebas del programa; todas deben salir en verde.</li>
+  </ol>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>La app recuerda la colección</div>
+    <p>Las accesiones se guardan solas en el navegador de esa computadora (en su <i>almacenamiento local</i>); junto al contador del Bloque 2 aparece la hora del último guardado, y al volver a abrir la app la colección sigue ahí. Es sólo una comodidad: el respaldo de verdad es el proyecto <code>.json</code> que se descarga con <span class="ui">Guardar el proyecto (.json)</span>, que se abre en cualquier otra máquina con <span class="ui">Abrir un archivo (CSV, TSV o proyecto)</span>. El botón <span class="ui">Vaciar</span> de la tabla borra lo guardado, después de pedir confirmación.</p>
+  </div>
+
+  <!-- I.6 -->
+  <h2 id="si-6"><span class="num">I.6</span>Recorrido por la interfaz</h2>
+  <figure style="width:86%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/inicio.png" alt="La pantalla inicial de GermplasmPro: la barra superior con la marca y sus botones; a la izquierda la barra de los diez bloques; en el centro la portada del Bloque 1 con su ilustración de las cinco rutas; a la derecha el índice de secciones del bloque"></div>
+    <figcaption><b>Figura I.1.</b> La pantalla inicial. Arriba, la barra fija con la marca, el enlace al portal de la suite, el idioma, el tema, las animaciones, el aviso de problemas y los atajos de teclado. A la izquierda, la barra de los diez bloques; en el centro, la portada del Bloque 1; a la derecha, el índice <span class="ui">En este bloque</span>, que sigue la lectura.</figcaption>
+  </figure>
+  <table class="compacta">
+    <thead><tr><th style="width:1.7in">Elemento</th><th>Para qué sirve</th></tr></thead>
+    <tbody>
+      <tr><td><b>La barra de bloques</b></td><td>A la izquierda, los diez bloques numerados, siempre visibles. El activo va resaltado en oro; el contador de arriba (<i>1/10</i>, <i>2/10</i>…) y la palomita junto a cada número dicen cuántos llevas. Ningún bloque está cerrado: se puede saltar a cualquiera en cualquier momento. La barra se contrae con su botón o con la tecla <code>[</code>.</td></tr>
+      <tr><td><b>La ruta y los modos de lectura</b></td><td>Sobre el contenido, la ruta <i>GermplasmPro › bloque › sección</i> dice dónde estás. <span class="ui">Documento</span> muestra todas las secciones del bloque una tras otra; <span class="ui">Enfocado</span>, una a la vez, con Anterior y Siguiente (o Alt+← y Alt+→).</td></tr>
+      <tr><td><b><span class="ui">En este bloque</span></b></td><td>El índice de la derecha: las secciones del bloque, con la actual marcada. Un clic lleva a cada una. En las secciones que tienen figuras aparece además el botón para abrirlas en el estudio de figuras.</td></tr>
+      <tr><td><b><span class="ui">Buscar</span> · Ctrl K</b></td><td>Una paleta que encuentra bloques, secciones, controles y figuras por su nombre, con los recientes primero.</td></tr>
+      <tr><td><b>Las tarjetas</b></td><td>Cada bloque se divide en secciones numeradas —«1 · Correcciones que la app puede hacer por ti», «2 · ¿El punto cae donde dice?»…— que se leen de arriba abajo. Las primeras suelen ser los datos y supuestos; las siguientes, los resultados.</td></tr>
+      <tr><td><b>Los recuadros de resultados</b></td><td>Una fila de cifras grandes con su etiqueta y una línea de contexto debajo, como las del retrato de la colección (figura I.3). Son el resumen de la sección: lo que se diría en una frase.</td></tr>
+      <tr><td><b>Los botones de exportar</b></td><td>Junto a cada mapa, gráfica o tabla: <span class="ui">Exportar SVG</span>, <span class="ui">Exportar PNG (2×)</span>, <span class="ui">Tabla en CSV</span>… Lo que descargan es lo que se ve.</td></tr>
+      <tr><td><b>Anterior · Siguiente</b></td><td>Al pie de cada bloque, los botones que llevan al bloque de antes y al de después, con su número y su nombre.</td></tr>
+      <tr><td><b>Ayuda y atajos</b></td><td>El botón <span class="ui">Ayuda</span> de la barra lateral y el signo de interrogación de la barra superior muestran los atajos de teclado; <span class="ui">Modo enfocado</span> cambia el modo de lectura desde la misma barra.</td></tr>
+    </tbody>
+  </table>
+  <figure style="width:62%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/intro-b2.png" alt="El Bloque 2 con la colección de ejemplo cargada: los botones para traer los datos, el contador de 46 accesiones guardadas en el navegador, los filtros, las columnas visibles y las primeras filas de la tabla de accesiones"></div>
+    <figcaption><b>Figura I.2.</b> Un bloque en uso: el Bloque 2 con la colección de ejemplo. La barra lateral ya marca <i>1/10</i>; bajo los botones, el contador y la hora del último guardado; luego los filtros, las columnas visibles y la tabla.</figcaption>
+  </figure>
+
+  <!-- I.7 -->
+  <h2 id="si-7"><span class="num">I.7</span>La colección de ejemplo</h2>
+  <p>El botón <span class="ui">Abrir la colección de ejemplo</span> del Bloque 2 carga un banco pequeño pero realista, el mismo con el que se ilustra todo este manual. Es <b>ficticio</b>: los sitios de colecta son localidades reales con coordenadas aproximadas, pero las accesiones, los números, los custodios, las existencias y las fechas son inventados. Sirve para aprender la app, para ver qué hace cada bloque antes de cargar tu colección y para reproducir las cifras del manual.</p>
+  <figure>
+    <div class="marco"><img src="../img/intro-retrato.png" alt="Los cinco recuadros del retrato de la colección de ejemplo: 46 accesiones con 24 taxones y 23 cultivos; 98 % con coordenadas; 43 % con duplicado de seguridad; 8 países; 6 rutas en uso"></div>
+    <figcaption><b>Figura I.3.</b> El retrato de la colección de ejemplo, en el Bloque 2. Los ocho «países» incluyen el código <code>MX</code> mal escrito a propósito, y las seis «rutas» cuentan por separado la reserva genética y la parcela, que son las dos caras de la conservación in situ.</figcaption>
+  </figure>
+  <table class="compacta">
+    <thead><tr><th style="width:1.75in">Qué trae</th><th>Cuánto</th></tr></thead>
+    <tbody>
+      <tr><td><b>Accesiones</b></td><td>46, de 24 taxones y 18 géneros: maíces criollos y sus parientes silvestres (18 accesiones de <i>Zea mays</i>), frijoles, calabazas, chiles, amarantos, tomate de cáscara, papas, oca, yuca, agave, vainilla, aguacate, cacao, café, chayote, encino, trigo y cebada.</td></tr>
+      <tr><td><b>Países de origen</b></td><td>7: México (37 accesiones), Guatemala, Perú, Bolivia, Colombia, Etiopía e India; más una accesión con el país escrito <code>MX</code>.</td></tr>
+      <tr><td><b>Rutas de conservación</b></td><td>Las cinco: banco de semillas (28), banco de campo o colección viva (8), cultivo in vitro (3), criopreservación (1) e in situ, con 2 accesiones en reserva genética y 3 en la parcela de familias custodias. Una accesión queda sin ruta, porque su único código de almacenamiento no existe.</td></tr>
+      <tr><td><b>Coordenadas</b></td><td>45 de las 46 accesiones se pueden mapear (98 %).</td></tr>
+      <tr><td><b>Duplicado de seguridad</b></td><td>20 de las 46 lo declaran (43 %).</td></tr>
+      <tr><td><b>Caracterización</b> (Bloque 7)</td><td>Con <span class="ui">Usar la caracterización de ejemplo</span>: 12 descriptores para las 46 accesiones —seis cuantitativos, cuatro cualitativos y dos ordinales—, con alrededor de un 8 % de celdas vacías, como en una libreta de campo real.</td></tr>
+    </tbody>
+  </table>
+  <h4>Los errores sembrados</h4>
+  <p>La colección trae a propósito los errores típicos de un archivo real, para que los Bloques 2 y 3 tengan qué encontrar:</p>
+  <ul>
+    <li>una longitud que perdió el signo negativo, de modo que el punto de un maíz de Veracruz cae fuera de México (MEX-ZM-0039, Tuxpeño de la costa);</li>
+    <li>un 30 de febrero como fecha de colecta;</li>
+    <li>un país escrito con dos letras (<code>MX</code>) y una altitud de 25 000 m en la misma accesión;</li>
+    <li>un código de almacenamiento inventado (15, que no existe en MCPD);</li>
+    <li>una accesión sin coordenadas, con el sitio «descrito de memoria»;</li>
+    <li>un maíz con estatus silvestre colectado en una troje, que además entró al banco antes de ser colectado;</li>
+    <li>dos pares de duplicados accidentales: la misma colecta entrada dos veces, con el nombre en mayúsculas o con espacios de más y el número de colecta repetido.</li>
+  </ul>
+  <p>Con la colección recién cargada, la validación del Bloque 2 informa <b>3 errores y 28 avisos en 23 de las 46 accesiones</b>; el Bloque 3 encuentra el punto fuera de su país, propone 4 correcciones y reúne los dos grupos de duplicados.</p>
+
+  <!-- I.8 -->
+  <h2 id="si-8"><span class="num">I.8</span>Cómo se recorre un trabajo</h2>
+  <p>El orden de los bloques es el orden en que de verdad ocurre el trabajo de una colección: primero el pasaporte, después la limpieza, luego el análisis de lo que tienes y de lo que te falta, y al final el manejo del material vivo y el papeleo. No es obligatorio recorrerlo completo: un inventario termina en el Bloque 3; un plan de colecta necesita los Bloques 2 a 6; el trabajo de la cámara fría, los Bloques 2, 8 y 9. Todos los bloques leen la misma colección, así que lo que se corrige en uno lo ven los demás.</p>
+
+  <figure>
+    <svg viewBox="0 0 700 322" xmlns="http://www.w3.org/2000/svg" font-family="Jost, sans-serif" role="img"
+         aria-label="El camino de un trabajo a través de los diez bloques de GermplasmPro: el pasaporte del Bloque 2 pasa por la calidad del Bloque 3; de ahí salen tres ramas: la geográfica (mapa, diversidad y vacíos), la caracterización y núcleo, y el manejo del banco con sus etiquetas; todas desembocan en el informe del Bloque 10. El Bloque 1 está aparte, para entender los tipos de banco antes de empezar.">
+      <defs>
+        <marker id="fi" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#5f5a6e"/></marker>
+        <marker id="fiv" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#b5352b"/></marker>
+      </defs>
+
+      <g font-size="10" text-anchor="middle">
+        <!-- 1 · inicio -->
+        <rect x="10" y="30" width="96" height="58" rx="9" fill="#f3eff8" stroke="#6b4a8f" stroke-dasharray="5 3"/>
+        <text x="58" y="51" font-weight="600" fill="#4e3a75" font-size="11.5">Inicio</text>
+        <text x="58" y="66" fill="#4d4459">tipos de banco,</text><text x="58" y="78" fill="#4d4459">simulador</text>
+
+        <!-- 2 · pasaporte -->
+        <rect x="10" y="120" width="96" height="58" rx="9" fill="#eaf3f9" stroke="#2f7fb4"/>
+        <text x="58" y="141" font-weight="600" fill="#1f5a80" font-size="11.5">Pasaporte</text>
+        <text x="58" y="156" fill="#34495a">MCPD v2.1 + GP_,</text><text x="58" y="168" fill="#34495a">validación</text>
+
+        <!-- 3 · calidad -->
+        <rect x="126" y="120" width="96" height="58" rx="9" fill="#f8ebea" stroke="#b5352b"/>
+        <text x="174" y="141" font-weight="600" fill="#8a2820" font-size="11.5">Calidad</text>
+        <text x="174" y="156" fill="#5a3936">coordenadas,</text><text x="174" y="168" fill="#5a3936">duplicados</text>
+
+        <!-- 4 · mapa -->
+        <rect x="242" y="30" width="96" height="58" rx="9" fill="#f4efe8" stroke="#8a6a45"/>
+        <text x="290" y="51" font-weight="600" fill="#634a2e" font-size="11.5">Mapa</text>
+        <text x="290" y="66" fill="#4f4436">puntos, entidades,</text><text x="290" y="78" fill="#4f4436">países</text>
+
+        <!-- 5 · diversidad -->
+        <rect x="358" y="30" width="96" height="58" rx="9" fill="#ebf5ed" stroke="#3d8f4f"/>
+        <text x="406" y="51" font-weight="600" fill="#2a6638" font-size="11.5">Diversidad</text>
+        <text x="406" y="66" fill="#38503d">índices, rarefacción,</text><text x="406" y="78" fill="#38503d">Mantel, altitud</text>
+
+        <!-- 6 · vacíos -->
+        <rect x="474" y="30" width="96" height="58" rx="9" fill="#fbf1e5" stroke="#c5761c"/>
+        <text x="522" y="51" font-weight="600" fill="#8a5210" font-size="11.5">Vacíos</text>
+        <text x="522" y="66" fill="#5a4630">prioridad, ruta,</text><text x="522" y="78" fill="#5a4630">conjunto mínimo</text>
+
+        <!-- 7 · caracterización -->
+        <rect x="242" y="120" width="96" height="58" rx="9" fill="#f7ebf2" stroke="#a8437e"/>
+        <text x="290" y="141" font-weight="600" fill="#7a2f5b" font-size="11.5">Núcleo</text>
+        <text x="290" y="156" fill="#563a4a">Gower, grupos,</text><text x="290" y="168" fill="#563a4a">colección núcleo</text>
+
+        <!-- 8 · manejo -->
+        <rect x="242" y="210" width="96" height="58" rx="9" fill="#eef5ea" stroke="#4f8a3c"/>
+        <text x="290" y="231" font-weight="600" fill="#36622a" font-size="11.5">Manejo</text>
+        <text x="290" y="246" fill="#3d5236">viabilidad, alertas,</text><text x="290" y="258" fill="#3d5236">regeneración</text>
+
+        <!-- 9 · etiquetas -->
+        <rect x="358" y="210" width="96" height="58" rx="9" fill="#f7f1e2" stroke="#9a7414"/>
+        <text x="406" y="231" font-weight="600" fill="#6e530e" font-size="11.5">Etiquetas</text>
+        <text x="406" y="246" fill="#544a30">Code 128 y QR,</text><text x="406" y="258" fill="#544a30">vales, registro</text>
+
+        <!-- 10 · informe -->
+        <rect x="590" y="104" width="100" height="90" rx="9" fill="#eeedf6" stroke="#4e4382"/>
+        <text x="640" y="128" font-weight="600" fill="#3a3164" font-size="11.5">Informe</text>
+        <text x="640" y="145" fill="#3f3b55">métodos redactados,</text><text x="640" y="157" fill="#3f3b55">PDF, paquete .zip,</text><text x="640" y="169" fill="#3f3b55">MCPD y</text><text x="640" y="181" fill="#3f3b55">Darwin Core</text>
+      </g>
+
+      <!-- la tabla de caracterización entra por su cuenta al Bloque 7 -->
+      <g font-size="9" fill="#7a2f5b" text-anchor="middle">
+        <text x="406" y="143">tabla de</text><text x="406" y="154">caracterización</text>
+      </g>
+      <path d="M 366 160 L 340 155" fill="none" stroke="#a8437e" stroke-width="1.2" stroke-dasharray="3 2" marker-end="url(#fi)"/>
+
+      <!-- corregir vuelve al pasaporte -->
+      <path d="M 174 118 C 174 96 70 96 62 116" fill="none" stroke="#b5352b" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#fiv)"/>
+      <text x="118" y="115" text-anchor="middle" font-size="9.5" fill="#b5352b" font-weight="500">corregir</text>
+
+      <g fill="none" stroke="#5f5a6e" stroke-width="1.4" marker-end="url(#fi)">
+        <path d="M106 149 L 124 149"/>
+        <path d="M222 136 L 240 70"/>
+        <path d="M222 149 L 240 149"/>
+        <path d="M222 162 L 240 228"/>
+        <path d="M338 59 L 356 59"/>
+        <path d="M454 59 L 472 59"/>
+        <path d="M338 239 L 356 239"/>
+        <path d="M570 74 L 588 112"/>
+        <path d="M454 239 C 540 239 560 210 588 182"/>
+        <path d="M338 128 C 400 112 520 120 588 136"/>
+        <path d="M332 268 C 345 326 590 326 630 196"/>
+      </g>
+      <g font-size="9" fill="#5f5a6e" text-anchor="middle">
+        <text x="58" y="20">Bloque 1</text><text x="58" y="192">Bloque 2</text><text x="174" y="192">Bloque 3</text>
+        <text x="290" y="20">Bloque 4</text><text x="406" y="20">Bloque 5</text><text x="522" y="20">Bloque 6</text>
+        <text x="290" y="192">Bloque 7</text><text x="290" y="282">Bloque 8</text><text x="406" y="282">Bloque 9</text><text x="640" y="97">Bloque 10</text>
+      </g>
+    </svg>
+    <figcaption><b>Figura I.4.</b> El camino de un trabajo a través de los bloques. El pasaporte del Bloque 2 pasa por la revisión del Bloque 3, y lo que ahí se corrige vuelve al pasaporte. De la colección limpia salen tres ramas: la geográfica (mapa, diversidad y vacíos), la de caracterización, que además necesita su propia tabla, y la del manejo del material vivo con sus etiquetas. Todas desembocan en el informe. El Bloque 1 queda aparte: es para entender los tipos de banco antes de empezar.</figcaption>
+  </figure>
+
+  <ol class="pasos">
+    <li><b>Bloque 1.</b> Si es tu primera vez, recorre los tipos de banco y prueba el simulador con tu especie: te dice si la ruta que usas le queda y cuánto dura viva una accesión con el manejo que le das.</li>
+    <li><b>Bloque 2.</b> Trae tu lista, confirma qué descriptor es cada columna y revisa lo que la validación marca. Mira el retrato de la colección y qué tan completo está el pasaporte. Guarda el proyecto.</li>
+    <li><b>Bloque 3.</b> Corre la revisión de la colección completa, aplica las correcciones que te convenzan, decide sobre cada par de posibles duplicados y descarga el informe de calidad. Este paso va antes de cualquier análisis: un duplicado sin resolver cuenta dos veces y un punto en el mar no cae en ninguna región.</li>
+    <li><b>Bloques 4, 5 y 6.</b> Mira dónde colectaste, cuánta diversidad hay en cada región y cuánta falta, y a dónde conviene ir la próxima vez. Exporta la ruta de colecta si vas a salir al campo.</li>
+    <li><b>Bloque 7.</b> Si tienes caracterización, cárgala, revisa el tipo de cada descriptor, lee los grupos y arma la colección núcleo; comprueba con su validación que de verdad representa al resto.</li>
+    <li><b>Bloques 8 y 9.</b> Revisa los supuestos de cada ruta, atiende las alertas del plan de trabajo, registra pruebas y regeneraciones, y prepara las etiquetas, la lista de siembra o el vale de lo que sale del banco.</li>
+    <li><b>Bloque 10.</b> Elige las secciones del informe, revísalo tal como sale y descárgalo, junto con el paquete y el pasaporte en el formato que te pidan.</li>
+  </ol>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Lo de arriba manda sobre lo de abajo</div>
+    <p>Si cargas otra colección en el Bloque 2, todo se rehace y las palomitas de la barra lateral se borran. Si aplicas una corrección en el Bloque 3, el mapa, la diversidad y los vacíos la toman al abrirlos. El informe del Bloque 10 se redacta con lo que exista en ese momento: por eso conviene generarlo al final y volver a generarlo si se tocó algo.</p>
+  </div>
+
+  <!-- I.9 -->
+  <h2 id="si-9"><span class="num">I.9</span>Lo que el programa no hace</h2>
+  <ul>
+    <li><b>No es un análisis ecogeográfico.</b> Los vacíos de colecta y la diversidad se calculan con la geografía y con la propia colección: accesiones, especies, celdas, entidades y altitud. La app no trae capas de clima ni de suelo, así que no dice qué ambientes faltan en sentido ecológico ni modela la distribución de una especie.</li>
+    <li><b>No descarga ni sube datos.</b> No consulta Genesys ni ningún otro portal, no busca nombres en catálogos taxonómicos en línea ni georreferencia localidades por su nombre. Trabaja con lo que le das y entrega archivos que tú decides a dónde mandar.</li>
+    <li><b>Una proyección de viabilidad no es una prueba de germinación.</b> La ecuación de Ellis y Roberts estima cuándo bajará la germinación de un lote, pero sólo es tan buena como sus constantes: la app trae las publicadas para el maíz, y en cualquier otra especie hay que poner las propias antes de leer los años como pronóstico. La decisión de regenerar se toma con una prueba real, y el programa así lo dice.</li>
+    <li><b>No conoce tus fronteras al detalle.</b> El Bloque 3 compara cada coordenada con un rectángulo que envuelve al país declarado: caza errores gruesos, como un signo perdido, pero no verifica un municipio. Los mapas usan contornos simplificados, buenos para una colección, no para un deslinde.</li>
+    <li><b>No sustituye al sistema de información de tu institución.</b> Guarda la colección en el navegador de una computadora; no es una base de datos compartida entre varios usuarios ni lleva bitácora de quién cambió qué. El respaldo es el proyecto <code>.json</code>, y el intercambio con otros sistemas, los archivos MCPD y Darwin Core.</li>
+    <li><b>No lee libros de cálculo.</b> Un <code>.xlsx</code> no se abre a propósito: se guarda como <code>.csv</code> o se copia y pega el bloque de celdas. Eso es lo que le permite abrirse con doble clic y funcionar sin internet.</li>
+    <li><b>No decide por ti.</b> Las correcciones del Bloque 3 se proponen y no se aplican sin tu visto bueno; los duplicados se proponen con una puntuación que tú interpretas; las prioridades de colecta y la colección núcleo son sugerencias razonadas. La app señala, explica y deja la decisión a quien conoce la colección.</li>
+  </ul>
+</section>
+
+</body>
+</html>
