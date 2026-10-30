@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · Manual de usuario · Capítulo 1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- reparte el contenido en hojas tamaño carta, con encabezados, números de página e índice -->
+<script src="../paginar.js"></script>
+<style>
+  .formula { font-family: var(--mono); font-size: 9pt; background: var(--marino-suave); border-radius: 5px; padding: 0.07in 0.12in; margin: 0.08in 0; }
+  .cuenta td { font-family: var(--mono); font-size: 8.6pt; }
+  figure.reducida { width: 74%; margin-left: auto; margin-right: auto; }
+  figure.mediana { width: 86%; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<section class="capitulo" id="cap-b1" data-pestana="1" data-orden="1" style="--acento: var(--b1)">
+  <div class="cap-apertura">
+    <div class="cap-num">1</div>
+    <div class="cap-etiqueta">Capítulo uno · Bloque 1 · Inicio</div>
+    <h1 data-corto="Inicio">Inicio: tipos de banco y la vida de una accesión</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">La primera pantalla de la app no necesita datos. Presenta los cinco tipos de banco —cuatro ex situ y uno in situ—, dice qué comportamiento de semilla admite cada uno y trae un simulador que sigue a una accesión durante décadas por la ruta que elijas, con dos relojes en marcha: el del material y el de su diversidad genética. Es el lugar para entender por qué una especie se conserva como se conserva antes de cargar la colección.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>1.1</b>Lo que se ve al abrir la app</li>
+      <li><b>1.2</b>Los tipos de banco</li>
+      <li><b>1.3</b>El comportamiento de la semilla y las especies del simulador</li>
+      <li><b>1.4</b>El simulador «la vida de una accesión»</li>
+      <li><b>1.5</b>La ruta de semillas y la ecuación de viabilidad</li>
+      <li><b>1.6</b>Las otras cuatro rutas</li>
+      <li><b>1.7</b>Cuando la ruta no le queda a la especie</li>
+      <li><b>1.8</b>El resto de la portada y cómo citar</li>
+    </ul>
+  </div>
+
+  <!-- 1.1 -->
+  <h2 id="b1-1"><span class="num">1.1</span>Lo que se ve al abrir la app</h2>
+  <p class="lead">Al abrir <span class="ruta">index.html</span> aparece el Bloque 1. Arriba, en letras pequeñas, el ámbito del programa —<i>Recursos fitogenéticos · conservación ex situ e in situ · cualquier especie</i>— y, en grande, su lema: <b>«El banco, accesión por accesión»</b>. El párrafo de debajo resume la promesa: la libreta de campo, el pasaporte, el mapa de colecta y el inventario de la colección en un solo lugar, sea cual sea la especie y la forma de conservarla, sin hojas de cálculo sueltas, sin portales externos y sin que los datos salgan de la computadora.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b1-portada.png" alt="La portada del Bloque 1: el lema «El banco, accesión por accesión», el párrafo de presentación, los botones Cargar mis accesiones, Prueba el simulador y Cómo citar, los cinco sellos y la ilustración de las cinco rutas de conservación sobre una cuadrícula de colecta"></div>
+    <figcaption><b>Figura 1.1.</b> La portada. A la izquierda, el lema, la presentación, los tres botones y los cinco sellos; a la derecha, la ilustración: las cinco rutas de conservación —semillas, campo, in vitro, crio e in situ— sobre una cuadrícula con puntos de colecta, y la etiqueta de una accesión con su código de barras.</figcaption>
+  </figure>
+  <p>Tres botones dan la entrada. <span class="ui">Cargar mis accesiones →</span> lleva al Bloque 2, donde empieza el trabajo con tu colección; <span class="ui">Prueba el simulador ↓</span> baja al simulador de este bloque (apartado 1.4), y <span class="ui">Cómo citar</span> abre el cuadro con la cita del programa (apartado 1.8). Debajo, cinco sellos resumen lo que el programa garantiza: <i>Cualquier cultivo, árbol o pariente silvestre</i>; <i>Ex situ e in situ</i>; <i>Funciona sin internet</i>; <i>Descriptores FAO/Bioversity (MCPD v2.1)</i>, y <i>Español e inglés · tema claro y oscuro</i>.</p>
+  <p>La ilustración está dibujada por el propio programa. Las cuatro rutas ex situ van a la izquierda de una línea punteada y la in situ, a la derecha; los puntos de colecta se agrupan en cinco núcleos, como se agrupan de verdad las colectas a lo largo de caminos y valles. La etiqueta de abajo (<i>MEX-CR-0417 · accesión · pasaporte MCPD</i>) es decorativa: no corresponde a ninguna accesión de la colección de ejemplo. El botón <span class="ui">otra colecta al azar ↻</span> vuelve a dibujar la escena con otros puntos.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>El Bloque 1 no lee tu colección</div>
+    <p>Es el único bloque que no usa el pasaporte. Nada de lo que hagas aquí se guarda, cambia la colección o entra en el informe del Bloque 10. Por eso conviene usarlo para pensar: cambiar un control a la vez y ver qué le pasa a la accesión.</p>
+  </div>
+
+  <!-- 1.2 -->
+  <h2 id="b1-2"><span class="num">1.2</span>Los tipos de banco</h2>
+  <p>La sección <span class="ui">No hay un solo tipo de banco de germoplasma</span> empieza por lo esencial: un banco de semillas sólo sirve para las especies cuya semilla tolera secarse y congelarse. Los árboles de semilla recalcitrante y todo lo que se propaga por estaca, tubérculo o hijuelo —la papa, la yuca, el agave, la vainilla, el chayote— se conservan vivos, en frascos o en nitrógeno líquido, y nada de eso sustituye a la conservación in situ. Cinco tarjetas presentan las rutas; cada una lleva su sello <i>Ex situ</i> o <i>In situ</i>.</p>
+  <figure>
+    <div class="marco"><img src="../img/b1-tipos.png" alt="Las cinco tarjetas de los tipos de banco: banco de semillas, banco de campo o colección viva, cultivo in vitro de crecimiento lento y criopreservación, con el sello Ex situ, y reserva genética y conservación en la parcela, con el sello In situ; debajo, el recuadro «¿Y el banco de ADN?»"></div>
+    <figcaption><b>Figura 1.2.</b> Las cinco tarjetas de los tipos de banco y el recuadro del banco de ADN. Un clic en una tarjeta abre el simulador con esa ruta.</figcaption>
+  </figure>
+  <table class="compacta">
+    <thead><tr><th style="width:1.55in">Tarjeta</th><th>Qué es</th><th style="width:1.85in">Su punto débil</th></tr></thead>
+    <tbody>
+      <tr><td><b><span class="ui">Banco de semillas</span></b><br><span class="small">ex situ</span></td><td>Semilla seca en frasco cerrado, en cámara fría. Barato, compacto y seguro.</td><td>Sólo dura si alguien vigila la germinación y regenera a tiempo.</td></tr>
+      <tr><td><b><span class="ui">Banco de campo o colección viva</span></b><br><span class="small">ex situ</span></td><td>Las plantas vivas en una parcela, un huerto o un arboreto. Indispensable para árboles y especies recalcitrantes.</td><td>Caro y expuesto al clima, a las plagas y a los recortes de presupuesto.</td></tr>
+      <tr><td><b><span class="ui">Cultivo in vitro de crecimiento lento</span></b><br><span class="small">ex situ</span></td><td>Plántulas o ápices en frascos, con el crecimiento frenado para subcultivar lo menos posible. Ahorra espacio y sanea el material.</td><td>Cada subcultivo cuesta trabajo y arriesga contaminación y variación somaclonal.</td></tr>
+      <tr><td><b><span class="ui">Criopreservación</span></b><br><span class="small">ex situ</span></td><td>Ápices, embriones o polen en nitrógeno líquido a −196 °C. El material deja de envejecer y ya no hay ciclos de regeneración.</td><td>Todo el riesgo está en la entrada (cuánto rebrota al descongelar) y en que nunca falte nitrógeno.</td></tr>
+      <tr><td><b><span class="ui">Reserva genética y conservación en la parcela</span></b><br><span class="small">in situ</span></td><td>La población sigue viva en su sitio —una reserva de parientes silvestres o la milpa de quien la siembra cada año— y sigue evolucionando.</td><td>Se pierde control: hay selección, flujo génico de las poblaciones vecinas y riesgo de que el sitio desaparezca.</td></tr>
+    </tbody>
+  </table>
+  <p>Las dos caras de lo in situ —la reserva genética de parientes silvestres y la conservación en finca, en la parcela de familias custodias— comparten tarjeta y modelo en el simulador, porque las mueve la misma dinámica: una población que se reproduce sola, con deriva, flujo génico y riesgo de perder el sitio. En el pasaporte, en cambio, se registran por separado (capítulo 2), y por eso el retrato de la colección de ejemplo cuenta seis rutas (figura I.3).</p>
+  <p>Al tocar una tarjeta, la app elige el primer escenario listo de esa ruta (tabla 1.3), lo carga en el simulador y baja hasta él: <i>Banco de semillas</i> abre la norma FAO con maíz; <i>Banco de campo</i>, el chayote; <i>Cultivo in vitro</i> y <i>Criopreservación</i>, la papa, e <i>In situ</i>, el maíz criollo en la milpa.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>¿Y el banco de ADN?</div>
+    <p>Bajo las tarjetas, un recuadro lo aclara: el banco de ADN conserva información, no material vivo —de un tubo de ADN no sale una planta—. GermplasmPro lo registra en el pasaporte, junto con las muestras de herbario y de polen, pero no lo simula, porque no hay ciclo de regeneración que seguir. Por eso la introducción habla de «cinco tipos de banco»: el sexto existe, pero sólo como registro.</p>
+  </div>
+
+  <!-- 1.3 -->
+  <h2 id="b1-3"><span class="num">1.3</span>El comportamiento de la semilla y las especies del simulador</h2>
+  <p>Qué ruta le conviene a una especie depende, antes que nada, de cómo se comporta su semilla al secarse y al enfriarse, y de si la variedad que se quiere conservar se reproduce por semilla o es un clon. La app distingue cuatro comportamientos, con la misma frase que muestra en el veredicto del simulador:</p>
+  <table class="compacta">
+    <thead><tr><th style="width:1.5in">Comportamiento</th><th>Lo que dice la app</th></tr></thead>
+    <tbody>
+      <tr><td><b>Ortodoxa</b></td><td>Tolera secarse al 3–7 % de humedad y congelarse: se conserva en frasco a −18 °C.</td></tr>
+      <tr><td><b>Intermedia</b></td><td>Tolera secarse, pero no el frío profundo: pierde viabilidad en pocos años a −18 °C.</td></tr>
+      <tr><td><b>Recalcitrante</b></td><td>No tolera la desecación ni el congelamiento: no hay banco de semillas posible.</td></tr>
+      <tr><td><b>De propagación vegetativa</b></td><td>Su semilla no reproduce el genotipo que se quiere conservar, porque la variedad es un clon.</td></tr>
+    </tbody>
+  </table>
+  <p>Con esos cuatro comportamientos la app decide, para cada pareja de especie y ruta, si el camino <b>le queda</b>, si <b>se puede con reservas</b> o si <b>no le queda</b>. La tabla 1.1 reúne esas decisiones; son las que producen los veredictos del apartado 1.7.</p>
+  <table class="compacta">
+    <caption><b>Tabla 1.1.</b> Qué ruta admite cada comportamiento, según la app. ✓ le queda · ! se puede, con reservas · ✗ no le queda.</caption>
+    <thead><tr><th>Comportamiento</th><th class="c">Semillas</th><th class="c">Campo</th><th class="c">In vitro</th><th class="c">Crio</th><th class="c">In situ</th></tr></thead>
+    <tbody>
+      <tr><td>Ortodoxa</td><td class="c si">✓</td><td class="c si">✓</td><td class="c parcial">!</td><td class="c si">✓</td><td class="c si">✓</td></tr>
+      <tr><td>Intermedia</td><td class="c parcial">!</td><td class="c si">✓</td><td class="c si">✓</td><td class="c si">✓</td><td class="c si">✓</td></tr>
+      <tr><td>Recalcitrante</td><td class="c no">✗</td><td class="c si">✓</td><td class="c si">✓</td><td class="c si">✓</td><td class="c si">✓</td></tr>
+      <tr><td>De propagación vegetativa</td><td class="c no">✗</td><td class="c si">✓</td><td class="c si">✓</td><td class="c si">✓</td><td class="c si">✓</td></tr>
+    </tbody>
+  </table>
+  <p>Las dos reservas tienen su razón. La semilla intermedia se puede secar, pero en cámara a −18 °C su vida útil se mide en años, no en siglos, y hay que revisarla muy seguido. Y para una especie de semilla ortodoxa el frasco in vitro funciona, pero es un gasto innecesario: el banco de semillas hace el mismo trabajo por una fracción del costo.</p>
+
+  <h3>Las especies del simulador</h3>
+  <p>El selector <span class="ui">Especie</span> trae quince entradas: catorce especies que ilustran los cuatro comportamientos y una entrada genérica para la tuya. No es un catálogo cerrado de lo que la app puede manejar —el pasaporte acepta cualquier taxón—, sino casos reales para que el simulador tenga con qué trabajar. Cada especie lleva una nota que aparece al pie de los resultados.</p>
+  <table class="compacta">
+    <caption><b>Tabla 1.2.</b> Las especies del simulador, su comportamiento y lo que dice su nota.</caption>
+    <thead><tr><th style="width:1.75in">Especie</th><th style="width:1.05in">Semilla</th><th>La nota de la app, en breve</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Otra especie (elige su comportamiento)</span></td><td>la que elijas</td><td>Declara cómo se comporta tu especie y, si va a banco de semillas, pon sus constantes de viabilidad antes de decidir con los años que salgan.</td></tr>
+      <tr><td>Maíz (<i>Zea mays</i>)</td><td>ortodoxa</td><td>Constantes publicadas. Alógamo: regenerar con al menos 100 plantas y polinización controlada.</td></tr>
+      <tr><td>Frijol (<i>Phaseolus vulgaris</i>)</td><td>ortodoxa</td><td>Autógamo: bastan menos plantas, pero conviene cosechar por planta.</td></tr>
+      <tr><td>Calabaza (<i>Cucurbita pepo</i>)</td><td>ortodoxa</td><td>Alógama, con polinizadores específicos: aislamiento o polinización manual.</td></tr>
+      <tr><td>Chile (<i>Capsicum annuum</i>)</td><td>ortodoxa</td><td>Autógamo con cruzamiento natural apreciable: regenerar bajo malla antiáfidos.</td></tr>
+      <tr><td>Trigo (<i>Triticum aestivum</i>)</td><td>ortodoxa</td><td>El caso más cómodo para un banco de semillas.</td></tr>
+      <tr><td>Café (<i>Coffea arabica</i>)</td><td>intermedia</td><td>El congelamiento la mata: se conserva en campo, in vitro o criopreservado.</td></tr>
+      <tr><td>Aguacate (<i>Persea americana</i>)</td><td>recalcitrante</td><td>Colección viva en campo; el germoplasma élite, como clon injertado.</td></tr>
+      <tr><td>Cacao (<i>Theobroma cacao</i>)</td><td>recalcitrante</td><td>Colecciones de campo con respaldo in vitro y ápices criopreservados.</td></tr>
+      <tr><td>Chayote (<i>Sechium edule</i>)</td><td>recalcitrante</td><td>Germina dentro del fruto: banco de campo o in vitro, con resiembra periódica.</td></tr>
+      <tr><td>Encino (<i>Quercus</i> spp.)</td><td>recalcitrante</td><td>La conservación empieza in situ, en rodales semilleros y reservas.</td></tr>
+      <tr><td>Papa (<i>Solanum tuberosum</i>)</td><td>vegetativa</td><td>La variedad es un clon: in vitro y criopreservada, con respaldo en campo.</td></tr>
+      <tr><td>Yuca (<i>Manihot esculenta</i>)</td><td>vegetativa</td><td>Se propaga por estacas: campo e in vitro, con la crio de respaldo.</td></tr>
+      <tr><td>Agave (<i>Agave</i> spp.)</td><td>vegetativa</td><td>Cultivares por hijuelos; muchas poblaciones silvestres sólo in situ.</td></tr>
+      <tr><td>Vainilla (<i>Vanilla planifolia</i>)</td><td>vegetativa</td><td>Base genética estrecha: in vitro, campo bajo sombra e in situ de sus parientes.</td></tr>
+    </tbody>
+  </table>
+  <p>Sólo con <span class="ui">Otra especie (elige su comportamiento)</span> aparece el selector <span class="ui">Su semilla es</span>, con las cuatro opciones de arriba; en las demás especies el comportamiento viene dado. Las especies alógamas y autógamas no se distinguen en el cálculo de la deriva —en todas las de reproducción sexual se sortean dos copias por planta—; la diferencia se queda en la nota, como consejo de manejo para la regeneración.</p>
+
+  <!-- 1.4 -->
+  <h2 id="b1-4"><span class="num">1.4</span>El simulador «la vida de una accesión»</h2>
+  <p>La sección <span class="ui">Pruébalo: la vida de una accesión, por la ruta que elijas</span> sigue a una accesión durante décadas con dos relojes en marcha, los mismos de la cuarta idea de la introducción (I.3): el del <b>material</b> —la germinación del lote, las plantas vivas de la parcela, los frascos del laboratorio, los explantes que rebrotan al descongelar o el tamaño de la población en su sitio— y el de la <b>integridad genética</b>, porque cada cuello de botella vuelve a sortear las frecuencias de los alelos y se lleva los raros.</p>
+  <figure style="width:62%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/b1-sim-semillas.png" alt="El simulador con el escenario del banco comunitario sin cámara: los selectores, el veredicto en verde, la gráfica de germinación con quince regeneraciones y la de diversidad, seis deslizadores, siete recuadros de resultados y la lectura en palabras"></div>
+    <figcaption><b>Figura 1.3.</b> El simulador completo, con el escenario <span class="ui">Semillas · banco comunitario sin cámara (20 °C, 12 %)</span>. De arriba abajo: los selectores, el veredicto, las dos gráficas, los deslizadores de la ruta, los recuadros de resultados y la lectura en palabras.</figcaption>
+  </figure>
+  <h3>Los controles</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:1.75in">Control</th><th>Para qué sirve</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Escenario</span></td><td>Carga de un golpe uno de los catorce escenarios listos (tabla 1.3): ruta, especie y valores de los deslizadores.</td></tr>
+      <tr><td><span class="ui">Forma de conservación</span></td><td>La ruta, en dos grupos: <i>Ex situ</i> (las cuatro primeras) e <i>In situ</i>. Cambiarla cambia los deslizadores.</td></tr>
+      <tr><td><span class="ui">Especie</span></td><td>Una de las quince entradas de la tabla 1.2.</td></tr>
+      <tr><td><span class="ui">Su semilla es</span></td><td>Sólo con <i>Otra especie</i>: el comportamiento de tu semilla.</td></tr>
+      <tr><td><span class="ui">K<sub>E</sub></span> y <span class="ui">C<sub>W</sub></span></td><td>Sólo en banco de semillas y con una especie cuyas constantes de viabilidad son editables (todas las de semilla salvo el maíz). Ver el apartado 1.5.</td></tr>
+      <tr><td><span class="ui">Otra corrida al azar ↻</span></td><td>Repite la simulación con otra semilla del generador de números al azar: las regeneraciones, las pruebas, los golpes del clima y la deriva cambian; los parámetros, no.</td></tr>
+    </tbody>
+  </table>
+  <p>Debajo de las gráficas van los <b>deslizadores de la ruta</b>, distintos en cada una (apartados 1.5 y 1.6); todas comparten el último, <span class="ui">Horizonte de la simulación (años)</span>, de 30 a 200 años. Cada movimiento vuelve a correr la simulación al instante.</p>
+
+  <h3>Los escenarios listos</h3>
+  <table class="compacta">
+    <caption><b>Tabla 1.3.</b> Los catorce escenarios del selector <span class="ui">Escenario</span> y lo que da cada uno con la corrida inicial (la que aparece al abrir la app, antes de pulsar <span class="ui">Otra corrida al azar ↻</span>).</caption>
+    <thead><tr><th>Escenario</th><th class="c" style="width:0.62in">Alelos</th><th class="c" style="width:0.62in">H<sub>e</sub></th><th class="c" style="width:0.55in">F</th><th style="width:1.75in">Y además</th></tr></thead>
+    <tbody>
+      <tr><td>Semillas · banco de largo plazo (norma FAO: −18 °C, 6 %)</td><td class="c">100.0 %</td><td class="c">100.0 %</td><td class="c">0.0 %</td><td>p₅₀ 883 años; ninguna regeneración</td></tr>
+      <tr><td>Semillas · cámara de mediano plazo (5 °C, 8 %)</td><td class="c">98.3 %</td><td class="c">96.2 %</td><td class="c">1.9 %</td><td>trigo; p₅₀ 117 años; 3 regeneraciones en 200 años</td></tr>
+      <tr><td>Semillas · banco comunitario sin cámara (20 °C, 12 %)</td><td class="c">69.4 %</td><td class="c">85.0 %</td><td class="c">16.8 %</td><td>p₅₀ 11 años; 15 regeneraciones</td></tr>
+      <tr><td>Semillas · el mismo banco comunitario sin probar germinación en 15 años</td><td class="c">59.4 %</td><td class="c">79.2 %</td><td class="c">20.9 %</td><td>6 regeneraciones con N<sub>e</sub> medio de 14</td></tr>
+      <tr><td>Semillas · buena cámara, pero se regenera con 25 plantas</td><td class="c">80.0 %</td><td class="c">91.8 %</td><td class="c">7.6 %</td><td>3 regeneraciones con N<sub>e</sub> medio de 19</td></tr>
+      <tr><td>Campo · chayote, recalcitrante, resiembra cada 3 años</td><td class="c">53.3 %</td><td class="c">73.9 %</td><td class="c">33.6 %</td><td>33 resiembras, 3 golpes</td></tr>
+      <tr><td>Campo · colección de árboles de cacao, renovada cada 25 años</td><td class="c">46.7 %</td><td class="c">74.3 %</td><td class="c">28.7 %</td><td>4 resiembras, 3 golpes</td></tr>
+      <tr><td>In vitro · papa en crecimiento lento, subcultivo cada 12 meses</td><td class="c">17.8 %</td><td class="c">4.5 %</td><td class="c">72.8 %</td><td>50 subcultivos; fidelidad 77.8 %</td></tr>
+      <tr><td>In vitro · la misma papa, pero subcultivada cada 3 meses</td><td class="c">16.7 %</td><td class="c">0.0 %</td><td class="c">99.4 %</td><td>200 subcultivos; fidelidad 36.7 %</td></tr>
+      <tr><td>Crio · ápices de papa en nitrógeno líquido</td><td class="c">100.0 %</td><td class="c">98.2 %</td><td class="c">0.5 %</td><td>100 de 200 explantes recuperados</td></tr>
+      <tr><td>Crio · la misma papa, pero con sólo 30 explantes congelados</td><td class="c">73.9 %</td><td class="c">94.2 %</td><td class="c">4.2 %</td><td>12 de 30 recuperados</td></tr>
+      <tr><td>In situ · maíz criollo en la milpa (on-farm)</td><td class="c">100.0 %</td><td class="c">97.1 %</td><td class="c">4.4 %</td><td>N<sub>e</sub> medio 136; 3 golpes</td></tr>
+      <tr><td>In situ · la misma milpa, aislada y con poca semilla (sin flujo génico)</td><td class="c">17.2 %</td><td class="c">2.3 %</td><td class="c">98.8 %</td><td>N<sub>e</sub> medio 17; 2 golpes</td></tr>
+      <tr><td>In situ · encinos de una reserva de parientes silvestres</td><td class="c">100.0 %</td><td class="c">99.7 %</td><td class="c">0.3 %</td><td>N<sub>e</sub> medio 777; 1 golpe</td></tr>
+    </tbody>
+  </table>
+  <p>Los escenarios vienen en pares a propósito: el mismo material con una sola cosa cambiada. Compara el banco comunitario que prueba cada 3 años con el que deja pasar 15; la cámara buena que regenera con 100 plantas con la que regenera con 25; la papa subcultivada cada año con la subcultivada cada tres meses; los 200 explantes con los 30; la milpa conectada con la aislada. En cada par, lo que se pierde no lo explica el tiempo, sino el manejo.</p>
+
+  <h3>Lo que muestran las gráficas y los recuadros</h3>
+  <ul>
+    <li><b>El estado del material</b> (izquierda). En el eje vertical, lo que se mide en cada ruta: la germinación del lote (%), las plantas vivas como porcentaje del objetivo, la fidelidad genética (% de líneas sin cambio), el material recuperable (%) o el tamaño de la población como porcentaje del censo inicial. Las líneas verticales punteadas son los ciclos —regeneraciones, resiembras, la entrada al nitrógeno—; se omiten cuando pasan de 60, como en las cien generaciones in situ. En banco de semillas, los puntos son las pruebas de germinación y la línea roja discontinua, el umbral para regenerar.</li>
+    <li><b>Lo que queda de la diversidad original</b> (derecha). Tres curvas en porcentaje del valor inicial: los <span class="ui">alelos conservados</span> (en in vitro, <span class="ui">variantes clonales conservadas</span>), la <span class="ui">diversidad esperada</span> (la heterocigosis esperada, H<sub>e</sub>/H<sub>e0</sub>) y la <span class="ui">consanguinidad acumulada (F)</span>, discontinua.</li>
+    <li><b>Los recuadros.</b> Siempre los tres de la diversidad —<span class="ui">Alelos conservados</span>, <span class="ui">Diversidad conservada</span> y <span class="ui">Consanguinidad</span>— más los propios de cada ruta, que se explican en los apartados 1.5 y 1.6.</li>
+    <li><b>La lectura en palabras.</b> Un párrafo que pone las cifras en una frase y dice qué significan; agrega advertencias cuando el manejo lo amerita y termina con la nota de la especie. Si la accesión se perdió, lo dice en rojo, con el año.</li>
+  </ul>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · la deriva en cada ciclo</div>
+    <p>La accesión simulada empieza con 30 loci de seis alelos cada uno, con frecuencias que van de lo común a lo raro (alrededor de 0.45, 0.22, 0.15, 0.09, 0.06 y 0.03, con una pequeña variación al azar entre loci). Cada vez que pasa por un cuello de botella, la app vuelve a sortear las frecuencias con <b>2N<sub>e</sub></b> copias si la reproducción es sexual, o con <b>N<sub>e</sub></b> si el material es clonal. Un alelo con frecuencia 0.03 tiene buena probabilidad de no salir en un sorteo pequeño, y una vez perdido no vuelve: por eso los alelos se pierden antes y más rápido que la diversidad esperada, que pesa poco los raros. La consanguinidad crece con cada ciclo:</p>
+    <div class="formula">F<sub>t</sub> = 1 − (1 − F<sub>t−1</sub>)(1 − 1/(2N<sub>e</sub>))</div>
+    <p>De ahí la regla del banco: <b>pocos ciclos y con muchos individuos</b>. In situ ocurre lo mismo cada generación, pero el flujo génico de las poblaciones vecinas devuelve parte de lo perdido (apartado 1.6).</p>
+  </div>
+
+  <!-- 1.5 -->
+  <h2 id="b1-5"><span class="num">1.5</span>La ruta de semillas y la ecuación de viabilidad</h2>
+  <p>En el banco de semillas el reloj del material es la <b>ecuación de viabilidad de Ellis y Roberts</b> (1980): con la temperatura de la cámara y la humedad de la semilla da cuánto tarda el lote en perder germinación. El simulador la aplica año por año a un lote que entra con 96 % de germinación y 2 500 semillas, y la combina con las pruebas de germinación y las regeneraciones del banco.</p>
+  <div class="formula">v = K<sub>i</sub> − p/σ  ·  log<sub>10</sub> σ = K<sub>E</sub> − C<sub>W</sub> log<sub>10</sub> m − C<sub>H</sub> t − C<sub>Q</sub> t²  ·  germinación = 100 Φ(v)</div>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · la ecuación de viabilidad</div>
+    <p>La germinación de un lote no cae en línea recta: las semillas mueren a lo largo del tiempo siguiendo una distribución normal, y por eso la ecuación se escribe en <b>probits</b>, unidades de desviación normal. <b>v</b> es la viabilidad en probits después de <b>p</b> días; <b>K<sub>i</sub></b>, la viabilidad inicial del lote en probits (96 % equivale a 1.7507); <b>σ</b>, los días que tarda la viabilidad en bajar un probit. La germinación esperada es Φ(v), la probabilidad normal acumulada.</p>
+    <p>σ depende de la humedad de la semilla <b>m</b> (% en peso fresco) y de la temperatura <b>t</b> (°C). <b>K<sub>E</sub></b> y <b>C<sub>W</sub></b> son propias de cada especie; <b>C<sub>H</sub></b> = 0.0329 y <b>C<sub>Q</sub></b> = 0.000478 describen el efecto de la temperatura y valen para muchas especies ortodoxas, así que la app las deja fijas. Como el término de humedad va en logaritmo, bajar la humedad del 12 al 6 % multiplica σ por 2<sup>2.115</sup> ≈ 4.3; bajar de 20 a −18 °C lo multiplica por unos 19, y las dos cosas juntas, por 84: de 6 a 505 años por probit.</p>
+  </div>
+  <h3>Los deslizadores y las reglas del banco</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:2.1in">Deslizador</th><th style="width:0.9in">Intervalo</th><th>Qué controla</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Temperatura de la cámara (°C)</span></td><td>−20 a 25</td><td>t en la ecuación.</td></tr>
+      <tr><td><span class="ui">Humedad de la semilla (%)</span></td><td>3 a 14</td><td>m en la ecuación, de medio en medio punto.</td></tr>
+      <tr><td><span class="ui">Umbral para regenerar (% germinación)</span></td><td>50 a 95</td><td>Si una prueba da menos, se regenera. Es la línea roja de la gráfica.</td></tr>
+      <tr><td><span class="ui">Cada cuántos años se revisa</span></td><td>1 a 30</td><td>Cada cuánto se hace una prueba de germinación, con 100 semillas.</td></tr>
+      <tr><td><span class="ui">Plantas con las que se regenera</span></td><td>10 a 300</td><td>Las semillas que se siembran en cada regeneración.</td></tr>
+    </tbody>
+  </table>
+  <p>Cada prueba gasta 100 semillas y su resultado lleva el error de muestreo de un conteo real (por eso los puntos no caen exactamente sobre la curva). Se regenera cuando una prueba queda bajo el umbral o cuando las existencias bajan a 400 semillas. En la regeneración germina, al azar, la fracción viva de lo que se siembra; el 90 % de las plantas que nacen deja descendencia —ese es el N<sub>e</sub> del ciclo—, y el lote nuevo vuelve a 96 % de germinación con tantas semillas como den esas plantas. Si nacen menos de dos, el lote se pierde.</p>
+  <p>Los siete recuadros de esta ruta son <span class="ui">Vida media del lote</span> (los años hasta 50 % de germinación, p₅₀; si pasan de 999 se escribe <i>&gt;999</i>), <span class="ui">Regeneraciones</span> en el horizonte, los tres de la diversidad, <span class="ui">Tamaño efectivo medio</span> de las regeneraciones y <span class="ui">Semilla gastada en pruebas</span>. La lectura agrega dos advertencias: si se revisa cada 10 años o más, y si se regenera con 30 plantas o menos.</p>
+
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · la ecuación a mano</div>
+    <p>El escenario del banco comunitario sin cámara: maíz a 20 °C con 12 % de humedad, constantes K<sub>E</sub> = 6.474, C<sub>W</sub> = 2.115.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td style="width:46%">log<sub>10</sub> 12 = 1.07918</td><td>C<sub>W</sub> log<sub>10</sub> m = 2.115 × 1.07918 = 2.28247</td></tr>
+      <tr><td>C<sub>H</sub> t = 0.0329 × 20 = 0.65800</td><td>C<sub>Q</sub> t² = 0.000478 × 400 = 0.19120</td></tr>
+      <tr><td colspan="2">log<sub>10</sub> σ = 6.474 − 2.28247 − 0.65800 − 0.19120 = 3.34233  →  σ = 10<sup>3.34233</sup> = 2 199.5 días = 6.02 años por probit</td></tr>
+      <tr><td colspan="2">K<sub>i</sub> = Φ<sup>−1</sup>(0.96) = 1.7507 · al 50 %, v = 0  →  p₅₀ = 1.7507 × 6.02 = 10.54 años</td></tr>
+      <tr><td colspan="2">al 85 %, v = Φ<sup>−1</sup>(0.85) = 1.0364  →  p = (1.7507 − 1.0364) × 6.02 = 4.30 años</td></tr>
+      <tr><td colspan="2">a los 3 años: v = 1.7507 − 3/6.02 = 1.2525 → 89.5 % · a los 6 años: v = 0.7544 → 77.5 %</td></tr>
+    </tbody></table>
+    <p>La app escribe <i>σ = 6 años por probit</i> y una vida media de <b>11</b> años (10.54 redondeado). El lote cruza el umbral de 85 % a los 4.3 años, pero con pruebas cada 3 años la del año 3 aún da cerca de 89 % y es la del año 6 la que lo descubre, con el lote ya en 77.5 %: por eso la primera de las 15 regeneraciones cae en el año 6. Con el mismo cálculo, la norma FAO (−18 °C, 6 %) da log<sub>10</sub> σ = 6.474 − 1.6458 + 0.5922 − 0.1549 = 5.2655, σ = 504.6 años por probit y p₅₀ = 1.7507 × 504.6 = <b>883</b> años, la cifra del recuadro; en 100 años el lote sólo baja a 94 %.</p>
+  </div>
+
+  <h3>Las constantes de viabilidad</h3>
+  <p>Sólo el <b>maíz</b> trae constantes publicadas (K<sub>E</sub> = 6.474, C<sub>W</sub> = 2.115), y con él las casillas <span class="ui">K<sub>E</sub></span> y <span class="ui">C<sub>W</sub></span> no aparecen. En las demás especies que pueden ir a banco de semillas —frijol, calabaza, chile, trigo, café y <i>Otra especie</i>— las casillas aparecen junto al selector de especie y arrancan con los valores del maíz, salvo el café, que empieza con K<sub>E</sub> = 5.2 para reflejar su vida corta. Es decir: el trigo del escenario de mediano plazo envejece como un maíz hasta que le pongas sus propias constantes.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b1-constantes.png" alt="Los selectores del simulador con el café en banco de semillas: aparecen las casillas K E con 5.2 y C W con 2.115, y el veredicto naranja «Se puede, pero con reservas»"></div>
+    <figcaption><b>Figura 1.4.</b> El café en banco de semillas: el veredicto <span class="ui">Se puede, pero con reservas.</span> y las casillas <span class="ui">K<sub>E</sub></span> y <span class="ui">C<sub>W</sub></span>, que arrancan en 5.2 y 2.115. Con esos valores, a −18 °C y 6 % el lote tiene una vida media de 47 años.</figcaption>
+  </figure>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Sin constantes propias, los años son una ilustración</div>
+    <p>La sección <span class="ui">Qué corre dónde</span> de la portada lo advierte: en cualquier especie que no sea el maíz, K<sub>E</sub> y C<sub>W</sub> son un punto de partida. Tómalas de la Seed Information Database de Kew o de la literatura de tu especie antes de usar los años del simulador para programar una regeneración. Lo que sí vale sin ellas es la forma de las respuestas: cuánto gana un lote al bajar la humedad o la temperatura, y cuánto cuesta revisar tarde o regenerar con pocas plantas.</p>
+  </div>
+
+  <!-- 1.6 -->
+  <h2 id="b1-6"><span class="num">1.6</span>Las otras cuatro rutas</h2>
+  <p>En las rutas sin semilla almacenada no hay ecuación de viabilidad: el reloj del material es otro en cada una. Lo que no cambia es el reloj genético, que corre con la misma deriva del recuadro del apartado 1.4.</p>
+
+  <h3>Banco de campo o colección viva</h3>
+  <p>Una colección viva no envejece en un frasco: envejece en la parcela. Cada año existe la probabilidad de un golpe —sequía, plaga o huracán— que mata entre el 30 y el 70 % de las plantas; cada cierto número de años la colección se renueva, y en esa resiembra el 75 % de las plantas que quedan deja descendencia. Después la parcela vuelve a su número de plantas.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2.4in">Deslizador</th><th style="width:0.9in">Intervalo</th><th>Qué controla</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Años entre resiembras</span></td><td>1 a 30</td><td>Cada cuánto se renueva la parcela.</td></tr>
+      <tr><td><span class="ui">Plantas que mantiene la colección</span></td><td>10 a 300</td><td>El objetivo de plantas vivas.</td></tr>
+      <tr><td><span class="ui">Riesgo anual de sequía, plaga o huracán (%)</span></td><td>0 a 15</td><td>La probabilidad de un golpe cada año.</td></tr>
+    </tbody>
+  </table>
+  <p>Los recuadros propios son <span class="ui">Golpes a la colección</span>, <span class="ui">Resiembras</span> y <span class="ui">Tamaño efectivo medio</span>. La gráfica izquierda muestra las plantas vivas como porcentaje del objetivo: cada caída es un golpe, y la línea vuelve a 100 en la siguiente resiembra.</p>
+  <figure style="width:68%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/b1-sim-campo.png" alt="El simulador con el chayote en banco de campo, resiembra cada 3 años: tres caídas de plantas vivas por golpes del clima, la pérdida gradual de alelos y diversidad, los cuatro deslizadores y seis recuadros: 3 golpes, 33 resiembras, 53.3 % de alelos, 73.9 % de diversidad, 33.6 % de consanguinidad y tamaño efectivo medio de 43"></div>
+    <figcaption><b>Figura 1.5.</b> El chayote en campo, con resiembra cada 3 años y 60 plantas. En 100 años, 33 resiembras y 3 golpes; la colección conserva el 53.3 % de sus alelos y la consanguinidad llega a 33.6 %.</figcaption>
+  </figure>
+  <p>La lectura lo dice sin rodeos: aquí el enemigo no es el tiempo de almacén, sino la frecuencia de la renovación, el tamaño de la parcela y la suerte. El escenario del cacao lo muestra por el otro lado: renovar cada 25 años parece barato, pero tres golpes antes de la primera renovación (en los años 12, 18 y 21) dejan sólo 2 de los 40 árboles para renovarla en el año 24: en ese único paso la colección cae al 46.7 % de sus alelos, y las tres renovaciones siguientes, con 30 árboles, ya no le quitan ninguno. Por eso la app insiste en que un banco de campo siempre necesita un respaldo: in vitro, criopreservación o una segunda localidad.</p>
+
+  <h3>Cultivo in vitro de crecimiento lento</h3>
+  <p>Aquí el reloj del material es la <b>fidelidad genética</b>. Cada subcultivo deja atrás una parte del material fiel por variación somaclonal (la app supone 0.5 % por pase, un valor fijo que no tiene deslizador) y pierde frascos por contaminación o mal enraizamiento; los que sobreviven se multiplican hasta reponer el número de líneas. Con 50 pases, la fidelidad queda en 0.995<sup>50</sup> = 77.8 %; con 200, en 36.7 %.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2.4in">Deslizador</th><th style="width:0.9in">Intervalo</th><th>Qué controla</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Meses entre subcultivos</span></td><td>2 a 24</td><td>Cada cuánto se pasa el material a medio fresco.</td></tr>
+      <tr><td><span class="ui">Frascos (líneas) por accesión</span></td><td>5 a 60</td><td>Cuántas líneas se mantienen.</td></tr>
+      <tr><td><span class="ui">Frascos que se pierden por subcultivo (%)</span></td><td>0 a 20</td><td>La pérdida por contaminación en cada pase.</td></tr>
+    </tbody>
+  </table>
+  <p>Los recuadros propios son <span class="ui">Subcultivos</span>, <span class="ui">Fidelidad genética</span> y <span class="ui">Frascos manipulados</span>, que mide el trabajo del laboratorio: 1 000 frascos en 50 años con subcultivo anual y 20 líneas, 4 000 si se subcultiva cada tres meses. La lectura recuerda que alargar el intervalo —con menos temperatura, menos luz o medios con osmóticos— es la única forma de bajar ese costo, y que el respaldo definitivo es la criopreservación.</p>
+
+  <h3>Criopreservación</h3>
+  <p>A −196 °C el material no envejece, así que el único cuello de botella es la <b>entrada</b>: de los explantes que se congelan sólo rebrota una parte al descongelar, y esa parte es la accesión que queda. Ese sorteo ocurre una sola vez, en el año 0, y la consanguinidad queda en 1/(2N): con 100 explantes recuperados, 0.5 %; con 12, 4.2 %. Después, lo único que puede pasar es que falle el tanque o el suministro de nitrógeno, y entonces se pierde todo.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2.4in">Deslizador</th><th style="width:0.9in">Intervalo</th><th>Qué controla</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Explantes que se congelan</span></td><td>10 a 500</td><td>Cuántos ápices o embriones entran al nitrógeno.</td></tr>
+      <tr><td><span class="ui">Recuperación al descongelar (%)</span></td><td>5 a 95</td><td>Qué fracción rebrota.</td></tr>
+      <tr><td><span class="ui">Riesgo de fallo del tanque (por mil años)</span></td><td>0 a 20</td><td>La probabilidad anual, en tanto por mil, de perder el tanque.</td></tr>
+    </tbody>
+  </table>
+  <p>Los recuadros propios son <span class="ui">Explantes recuperados</span>, <span class="ui">Ciclos de regeneración</span> (siempre 0) y <span class="ui">Fallos del tanque</span>. La gráfica del material es una línea plana a la altura de la recuperación, que cae a cero si el tanque falla. Comparar los dos escenarios de papa enseña la lección de la ruta: con 200 explantes y 50 % de recuperación se conservan todos los alelos; con 30 y 40 %, quedan 12 plantas y el 73.9 %.</p>
+
+  <h3>In situ: reserva genética o conservación en la parcela</h3>
+  <p>La población vive en su sitio y se reproduce sola, una generación por año. En cada generación hay deriva con el tamaño efectivo (una fracción del censo) y después llega flujo génico de las poblaciones vecinas, que trae de vuelta las frecuencias del acervo regional. Cada año existe además el riesgo de un golpe al sitio —sequía, incendio, cambio de uso del suelo, que se deje de sembrar la variedad— que se lleva entre el 40 y el 100 % de la población; si sobrevive, se recupera poco a poco, un 15 % por año, hasta su censo habitual.</p>
+  <figure style="width:66%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/b1-sim-insitu.png" alt="El simulador con la milpa aislada y con poca semilla: dos caídas fuertes de la población y su recuperación, la consanguinidad que sube hasta casi 100 % mientras alelos y diversidad se desploman; recuadros: 100 generaciones, 2 golpes, 17.2 % de alelos, 2.3 % de diversidad, 98.8 % de consanguinidad, tamaño efectivo medio de 17 y población final de 80"></div>
+    <figcaption><b>Figura 1.6.</b> La milpa aislada: 80 plantas, N<sub>e</sub> del 25 % del censo y sin flujo génico. En 100 generaciones conserva el 17.2 % de sus alelos y la consanguinidad llega a 98.8 %. Con 500 plantas y 5 % de flujo génico (el escenario de la milpa conectada) conserva el 100 % de sus alelos y la consanguinidad se queda en 4.4 %.</figcaption>
+  </figure>
+  <div class="formula">F<sub>t</sub> = (1 − m)² [F<sub>t−1</sub>(1 − 1/(2N<sub>e</sub>)) + 1/(2N<sub>e</sub>)]</div>
+  <p>Con migración m, los dos genes de un individuo vienen de padres residentes con probabilidad (1 − m)², así que la consanguinidad no crece sin freno: se estabiliza en un equilibrio entre deriva y migración. Sin flujo génico (m = 0), la fórmula vuelve a la del recuadro del apartado 1.4.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2.4in">Deslizador</th><th style="width:0.9in">Intervalo</th><th>Qué controla</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Individuos de la población</span></td><td>20 a 3 000</td><td>El censo habitual.</td></tr>
+      <tr><td><span class="ui">Tamaño efectivo (Ne como % del censo)</span></td><td>5 a 100</td><td>Qué parte del censo deja descendencia de verdad.</td></tr>
+      <tr><td><span class="ui">Flujo génico de las poblaciones vecinas (%)</span></td><td>0 a 30</td><td>m, por generación.</td></tr>
+      <tr><td><span class="ui">Riesgo anual de perder el sitio (%)</span></td><td>0 a 10</td><td>La probabilidad de un golpe cada año.</td></tr>
+    </tbody>
+  </table>
+  <p>Los recuadros propios son <span class="ui">Generaciones</span>, <span class="ui">Golpes al sitio</span>, <span class="ui">Tamaño efectivo medio</span> y <span class="ui">Población final</span>. La lectura cambia según haya o no flujo génico —conservar in situ es conservar una red de poblaciones, no una sola parcela— y cierra siempre con la misma idea: es la única ruta en la que la accesión sigue evolucionando y conserva su conocimiento asociado; lo que se gana en adaptación se pierde en control, y por eso in situ y ex situ son complementarias, no alternativas.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Lo que el simulador simplifica</div>
+    <p>Es un modelo para entender, no para pronosticar una accesión concreta: la diversidad inicial es la de 30 loci imaginarios, la germinación inicial del lote (96 %) y sus existencias iniciales son fijas, y no hay selección natural ni mutación. Sus cifras sirven para comparar manejos entre sí. Las decisiones sobre los lotes reales se toman en el Bloque 8, con tus pruebas y tus regeneraciones.</p>
+  </div>
+
+  <!-- 1.7 -->
+  <h2 id="b1-7"><span class="num">1.7</span>Cuando la ruta no le queda a la especie</h2>
+  <p>Encima de las gráficas, un recuadro dice siempre qué tipo de semilla tiene la especie elegida y si la ruta le queda. Tiene tres formas, que salen de la tabla 1.1:</p>
+  <ul>
+    <li><b>Verde</b>: <i>«… El método elegido es adecuado para ella.»</i> La simulación corre normalmente.</li>
+    <li><b>Naranja, <span class="ui">Se puede, pero con reservas.</span></b> La simulación corre, y el recuadro explica la reserva: la semilla intermedia en cámara (figura 1.4) o una especie ortodoxa en frasco in vitro.</li>
+    <li><b>Naranja, <span class="ui">Este camino no le queda a esta especie.</span></b> La app <b>no inventa una simulación</b>: de una semilla recalcitrante en cámara no sale una curva de viabilidad. La gráfica izquierda dice <span class="ui">Sin simulación: este material no se conserva así.</span>, los recuadros desaparecen y la gráfica derecha ofrece, bajo <span class="ui">Prueba con:</span>, un botón por cada ruta que sí le queda. Un clic en cualquiera la carga y corre la simulación.</li>
+  </ul>
+  <figure style="width:72%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/b1-aviso.png" alt="El chayote en banco de semillas: el aviso «Este camino no le queda a esta especie», la gráfica izquierda con «Sin simulación: este material no se conserva así» y la derecha con los botones de las cuatro rutas que sí le quedan"></div>
+    <figcaption><b>Figura 1.7.</b> El chayote en banco de semillas. El aviso explica por qué —semilla recalcitrante: no hay banco de semillas posible— y propone las cuatro rutas que sí le quedan: campo, in vitro, criopreservación e in situ.</figcaption>
+  </figure>
+  <p>Sólo el banco de semillas puede quedar bloqueado: con semilla recalcitrante o con una variedad clonal, la app responde que el banco de semillas no conserva lo que quieres conservar y propone campo, in vitro o criopreservación. Pasa con el aguacate, el cacao, el chayote y el encino (recalcitrantes), con la papa, la yuca, el agave y la vainilla (vegetativas), y con <i>Otra especie</i> cuando eliges <span class="ui">recalcitrante</span> o <span class="ui">de propagación vegetativa</span> en <span class="ui">Su semilla es</span>.</p>
+
+  <!-- 1.8 -->
+  <h2 id="b1-8"><span class="num">1.8</span>El resto de la portada y cómo citar</h2>
+  <h3>El camino de una accesión y los diez bloques</h3>
+  <p>Entre las tarjetas y el simulador, la franja <span class="ui">El camino de una accesión</span> resume en siete pasos el orden en que ocurre el trabajo de una colección: <i>Colectar</i> (sitio, altitud, informante), <i>Registrar</i> (pasaporte MCPD), <i>Depurar</i> (errores y duplicados), <i>Ubicar</i> (mapas y rejillas), <i>Analizar</i> (diversidad y vacíos), <i>Conservar</i> (la ruta que le toque a cada especie) y <i>Entregar</i> (etiquetas e informe). Son los bloques 2 a 10 agrupados por lo que resuelven; la figura I.4 de la introducción dibuja el mismo camino bloque por bloque.</p>
+  <p>Después del simulador, la sección <span class="ui">Los diez bloques</span> trae nueve tarjetas, del Bloque 2 al 10, con una línea sobre lo que hace cada uno; un clic lleva al bloque. La misma lista, con la pregunta que contesta cada bloque, está en el apartado I.2.</p>
+  <h3>Qué corre dónde y de dónde salen los métodos</h3>
+  <p>La tarjeta <span class="ui">Qué corre dónde</span> repite lo que ya sabes de la introducción —todo se calcula en el navegador, nada se sube, los mapas funcionan sin conexión, y la app se abre con doble clic o con <span class="ruta">Open GermplasmPro.bat</span>— y añade dos recuadros: la advertencia sobre las constantes de viabilidad del apartado 1.5 y una idea que resume el programa: la misma accesión escrita de tres maneras, una coordenada con el signo cambiado, un lote que lleva doce años sin prueba de germinación o una parcela in situ que nadie visita no se ven en una hoja con mil renglones.</p>
+  <p>La lista <span class="ui">De dónde salen los métodos</span> da las seis fuentes del bloque: la ecuación de Ellis y Roberts (1980); las normas de bancos de germoplasma de la FAO (2014) para semillas, campo, in vitro y criopreservación; los descriptores MCPD v2.1 (Alercia, Diulgheroff y Mackay, 2015); la revisión de Engels y Ebert (2021) sobre el sistema mundial de conservación ex situ; el libro de Maxted, Dulloo y Ford-Lloyd (2016) sobre conservación in situ y en finca, y la Seed Information Database de Kew, para las constantes de viabilidad y el comportamiento de cada especie. El apéndice E las reproduce completas.</p>
+  <h3>Cómo citar</h3>
+  <figure class="reducida">
+    <div class="marco"><img src="../img/b1-citar.png" alt="El cuadro «Cómo citar» con la cita del programa: Barrera-Guzmán, L.Á. (2026). GermplasmPro: el banco de germoplasma, accesión por accesión (versión 1.0.0) [software]. https://github.com/luisangelbg/GermplasmPro"></div>
+    <figcaption><b>Figura 1.8.</b> El cuadro que abre el botón <span class="ui">Cómo citar</span> de la portada.</figcaption>
+  </figure>
+  <div class="cita">Barrera-Guzmán, L.Á. (2026). GermplasmPro: el banco de germoplasma, accesión por accesión (versión 1.0.0) [software]. https://github.com/luisangelbg/GermplasmPro</div>
+  <p>Es la misma cita de los créditos de este manual y del archivo <span class="ruta">CITATION.cff</span> de la carpeta del programa. El programa no tiene identificador de objeto digital: la cita lleva la dirección del repositorio. El cuadro se cierra con su botón ✕ o con la tecla Esc.</p>
+
+  <h3>Cuando algo no sale</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:40%">Lo que ves</th><th>Por qué pasa y qué hacer</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Sin simulación: este material no se conserva así.</span></td><td>La ruta no le queda a la especie (apartado 1.7). Pulsa uno de los botones de <span class="ui">Prueba con:</span>.</td></tr>
+      <tr><td>No aparecen las casillas <span class="ui">K<sub>E</sub></span> y <span class="ui">C<sub>W</sub></span></td><td>Sólo salen en banco de semillas y con especies de constantes editables; con el maíz no salen porque sus constantes son las publicadas.</td></tr>
+      <tr><td>No aparece <span class="ui">Su semilla es</span></td><td>Sólo sale con <span class="ui">Otra especie (elige su comportamiento)</span>.</td></tr>
+      <tr><td>La vida media dice <i>&gt;999</i></td><td>El lote tarda más de 999 años en llegar al 50 %: la cámara es muy fría o la semilla muy seca. Es un resultado, no un error.</td></tr>
+      <tr><td>Las cifras no coinciden con las de este manual</td><td>Se pulsó <span class="ui">Otra corrida al azar ↻</span> o se movió un deslizador. Vuelve a elegir el escenario o recarga la página: la corrida inicial siempre es la misma.</td></tr>
+      <tr><td>La gráfica del material no tiene líneas verticales</td><td>Hay más de 60 ciclos en el horizonte (como en in situ, una generación por año) y la app las omite para que se lea la curva.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja regla">
+    <div class="caja-t"><span class="ico">✓</span>Regla de decisión · qué hacer en el Bloque 1</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:44%"><b>Si</b> no sabes qué ruta le conviene a una especie</td><td><b>entonces</b> elígela en <span class="ui">Especie</span> (o usa <i>Otra especie</i> y declara su semilla) y prueba las cinco rutas: el veredicto te dice cuáles le quedan.</td></tr>
+      <tr><td><b>Si</b> manejas un banco de semillas sin cámara fría</td><td><b>entonces</b> compara los dos escenarios del banco comunitario: revisar seguido importa tanto como la temperatura.</td></tr>
+      <tr><td><b>Si</b> vas a usar los años del banco de semillas para planear</td><td><b>entonces</b> pon antes las constantes K<sub>E</sub> y C<sub>W</sub> de tu especie; sólo las del maíz vienen publicadas.</td></tr>
+      <tr><td><b>Si</b> una cifra cambia mucho con <span class="ui">Otra corrida al azar ↻</span></td><td><b>entonces</b> el resultado depende de la suerte (golpes, pocos individuos): córrelo varias veces y fíjate en el rango, no en un número.</td></tr>
+      <tr><td><b>Si</b> ya tienes tu lista de accesiones</td><td><b>entonces</b> <span class="ui">Cargar mis accesiones →</span> y sigue el capítulo 2.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">Nada de lo que se haga en el Bloque 1 afecta a la colección: el simulador no guarda estado ni entra en el informe.</p>
+  </div>
+
+</section>
+
+</body>
+</html>
