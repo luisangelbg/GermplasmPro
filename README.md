@@ -119,7 +119,9 @@ El pasaporte, que es lo que convierte un montón de sobres en una colección:
   seguridad. Los problemas se agrupan por tipo y se corrigen en la tabla o en la ficha completa.
 - **El retrato de la colección.** Accesiones por ruta, por especie, por estatus y por país, altitud de los sitios,
   año de colecta y qué tan completo está cada descriptor.
-- **Exportar.** CSV MCPD con las claves oficiales, CSV completo con la extensión, o el proyecto en JSON.
+- **Exportar.** CSV MCPD con las claves oficiales, CSV completo con la extensión, o el proyecto en JSON (con la
+  caracterización, los descartes y el umbral del Bloque 3, los supuestos y constantes del Bloque 8 y las preferencias
+  de las etiquetas).
 
 ## Qué hace el Bloque 3
 
@@ -161,7 +163,8 @@ El mapa, dibujado en el navegador y sin conexión, de modo que **ninguna coorden
   proporcional a las existencias.
 - **Coropleta** de accesiones o de especies por entidad, o de accesiones por país, y **rejilla** de 0.25° a 2° con
   el conteo de cada celda: el punto de partida de los Bloques 5 y 6.
-- **Barra de escala, flecha de norte y título**, y exportación a **SVG** y **PNG 2×** con los colores resueltos, más
+- **Barra de escala** (con la latitud en que vale si el encuadre es alto; sin barra en el mundo entero, donde la
+  escala este-oeste cambia con la latitud), **flecha de norte y título**, y exportación a **SVG** y **PNG 2×** con los colores resueltos, más
   un CSV de los puntos visibles con la entidad, el país y la celda de cada uno.
 - Debajo, las tablas de accesiones y especies **por entidad de México** y **por país**, y el aviso de cuántas
   accesiones con coordenadas caen fuera de todo país (es decir, en el mar: coordenadas con algún error).

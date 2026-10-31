@@ -345,18 +345,27 @@
   }
 
   /* ============ informe ============ */
-  function report() {
-    const a = ui.lastAudit || QC.audit(state.acc, { threshold: ui.threshold, dismissed: ui.dismissed });
+  /* las filas del informe de calidad. Las usa este bloque y también el
+     paquete del Bloque 10 (datos/calidad.csv), para que los dos archivos
+     sean el mismo: auditoría `a` de QC.audit, accesiones `acc` y avisos del
+     pasaporte `issues` */
+  const QUALITY_COLS = ['tipo', 'nivel', 'accesion', 'campo', 'detalle'];
+  function qualityRows(a, acc, issues) {
     const rows = [];
-    a.geo.forEach(p => rows.push({ tipo: 'geografia', nivel: p.level, accesion: state.acc[p.i].ACCENUMB, campo: p.field, detalle: p.msg.es }));
-    a.consistency.forEach(c => rows.push({ tipo: 'consistencia', nivel: c.level, accesion: c.items.map(i => state.acc[i].ACCENUMB).join(' '), campo: QC.codeLabel(c.code).es, detalle: c.msg.es }));
-    a.fixes.forEach(f => rows.push({ tipo: 'correccion', nivel: 'fix', accesion: state.acc[f.i].ACCENUMB, campo: f.field, detalle: `${f.from} → ${f.to} · ${f.msg.es}` }));
+    a.geo.forEach(p => rows.push({ tipo: 'geografia', nivel: p.level, accesion: acc[p.i].ACCENUMB, campo: p.field, detalle: p.msg.es }));
+    a.consistency.forEach(c => rows.push({ tipo: 'consistencia', nivel: c.level, accesion: c.items.map(i => acc[i].ACCENUMB).join(' '), campo: QC.codeLabel(c.code).es, detalle: c.msg.es }));
+    a.fixes.forEach(f => rows.push({ tipo: 'correccion', nivel: 'fix', accesion: acc[f.i].ACCENUMB, campo: f.field, detalle: `${f.from} → ${f.to} · ${f.msg.es}` }));
     a.dup.pairs.forEach(p => rows.push({
-      tipo: 'duplicado', nivel: String(Math.round(p.score)), accesion: `${state.acc[p.i].ACCENUMB} + ${state.acc[p.j].ACCENUMB}`,
+      tipo: 'duplicado', nivel: String(Math.round(p.score)), accesion: `${acc[p.i].ACCENUMB} + ${acc[p.j].ACCENUMB}`,
       campo: p.dist != null ? QC.fmtDist(p.dist) : '', detalle: p.reasons.map(r => r.es).join('; '),
     }));
-    (state.issues || []).forEach(p => rows.push({ tipo: 'pasaporte', nivel: p.level, accesion: state.acc[p.i].ACCENUMB, campo: p.field, detalle: p.msg.es }));
-    download(IO.toCSV(rows, ['tipo', 'nivel', 'accesion', 'campo', 'detalle']), 'informe-calidad.csv', 'text/csv;charset=utf-8');
+    (issues || []).forEach(p => rows.push({ tipo: 'pasaporte', nivel: p.level, accesion: acc[p.i].ACCENUMB, campo: p.field, detalle: p.msg.es }));
+    return rows;
+  }
+  function qualityCSV(a, acc, issues) { return IO.toCSV(qualityRows(a, acc, issues), QUALITY_COLS); }
+  function report() {
+    const a = ui.lastAudit || QC.audit(state.acc, { threshold: ui.threshold, dismissed: ui.dismissed });
+    download(qualityCSV(a, state.acc, state.issues), 'informe-calidad.csv', 'text/csv;charset=utf-8');
   }
 
   /* ============ utilidades ============ */
@@ -390,5 +399,5 @@
   document.addEventListener('stepchange', e => { if (e.detail.step === 3) runUI(); });
   document.addEventListener('langchange', () => { if (el('panel-3') && ui.lastAudit) render(); });
 
-  window.B3 = { run, report, ui, render, loadState, dismissPair, cmpValue };
+  window.B3 = { run, report, ui, render, loadState, dismissPair, cmpValue, qualityRows, qualityCSV };
 })();

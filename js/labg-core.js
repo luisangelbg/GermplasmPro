@@ -207,7 +207,7 @@
     const all = [
       { keys: ['Alt', '←'], es: 'Bloque anterior', en: 'Previous block' },
       { keys: ['Alt', '→'], es: 'Bloque siguiente', en: 'Next block' },
-      { keys: ['←', '→'], es: 'Recorrer la barra de bloques (con el foco en ella)', en: 'Move along the block bar (when it has focus)' },
+      { keys: ['←', '→'], sep: ' / ', es: 'Recorrer la barra de bloques (con el foco en ella)', en: 'Move along the block bar (when it has focus)' },
       { keys: ['?'], es: 'Mostrar esta lista', en: 'Show this list' },
       { keys: ['Esc'], es: 'Cerrar ventanas y paneles', en: 'Close dialogs and panels' },
     ].concat(shortcutList);
@@ -218,13 +218,14 @@
       document.body.appendChild(dlg);
       dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
     }
-    const kbd = k => k.map(x => '<kbd>' + x.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])) + '</kbd>').join(' + ');
+    /* las teclas que se pulsan juntas van con «+»; las que son una u otra (← / →) llevan sep */
+    const kbd = (k, sep) => k.map(x => '<kbd>' + x.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])) + '</kbd>').join(sep || ' + ');
     dlg.innerHTML =
       '<div class="dialog-head"><h2 id="labgShortcutsTitle">' + LABG.t('Atajos de teclado', 'Keyboard shortcuts') + '</h2>' +
       '<button type="button" class="icon-btn" data-close aria-label="' + LABG.t('Cerrar', 'Close') + '">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
       '<div class="dialog-body"><dl class="shortcut-list">' +
-      all.map(s => '<dt>' + kbd(s.keys) + '</dt><dd>' + LABG.t(s.es, s.en) + '</dd>').join('') +
+      all.map(s => '<dt>' + kbd(s.keys, s.sep) + '</dt><dd>' + LABG.t(s.es, s.en) + '</dd>').join('') +
       '</dl></div>';
     dlg.querySelector('[data-close]').addEventListener('click', () => dlg.close());
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');

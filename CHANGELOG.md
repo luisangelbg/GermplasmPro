@@ -264,6 +264,29 @@
 - **Etiquetas (Bloque 9):** «los lotes en apuros del Bloque 8 (10)» lleva su número aunque no se haya visitado el
   Bloque 8.
 - 1258 pruebas, todas en verde.
+- **Últimos detalles hallados al escribir el manual:**
+  - Informe: todos los recuadros de cifras concuerdan con su número («1 coordenada con error claro», «1 corrección
+    propuesta», «1 par candidato a duplicado», «1 accesión», «1 lote con alerta crítica»…; en inglés también). El de
+    manejo dice «lotes sin constantes publicadas».
+  - «Sin declarar» se escribe con mayúscula, como las demás rutas, en la leyenda del mapa, la tabla «Cómo se conserva»,
+    el retrato del Bloque 2, el Bloque 8 y las hojas de trabajo del Bloque 9.
+  - Barra de escala de los mapas (Bloques 4 y 6, y sus figuras en el informe): en esta proyección la escala
+    este-oeste sólo es exacta en la latitud central. Si en el encuadre cambia menos de 10 % (México, una entidad) va la
+    barra sola; hasta 35 %, la barra dice en qué latitud vale («500 km a 40° N»); con más, como el mundo entero, no se
+    dibuja y el mapa dice «Sin barra de escala: varía con la latitud» (`GEO.scaleBar` devuelve `mode` y `spread`;
+    `GEO.scaleLabel`).
+  - Guardado (Bloque 2): `Prefs.set` devuelve si pudo guardar. Si el navegador no deja (espacio lleno o modo privado),
+    en vez de «guardado en este navegador» aparece «No se pudo guardar en este navegador (espacio lleno o modo
+    privado): descarga el proyecto .json», en rojo y anunciado.
+  - Proyecto .json, versión 2: además del pasaporte y la caracterización lleva los pares descartados y el umbral del
+    Bloque 3 (`quality`), los supuestos del banco, las constantes de viabilidad propias y los de las calculadoras del
+    Bloque 8 (`bank`) y las preferencias de las etiquetas (`labels`); al abrirlo se restauran. Los proyectos de la
+    versión 1 se abren igual y dejan esas preferencias como estaban; un valor sin sentido se ignora.
+  - Lista de atajos: la fila de las flechas dice «← / →» (una u otra), no «← + →».
+  - ZIP del informe: `datos/calidad.csv` sale de la misma función que «Descargar el informe de calidad» del Bloque 3
+    (`B3.qualityCSV`), así que es el mismo archivo, con las filas de corrección y de validación del pasaporte y el
+    nombre legible en «consistencia».
+  - 1299 pruebas, todas en verde.
 
 ## Después de la 1.0.0 — 2026-10-09
 

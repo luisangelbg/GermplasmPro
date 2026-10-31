@@ -64,7 +64,9 @@ function slug(s) {
 /* preferencias que sobreviven al cierre del navegador */
 const Prefs = {
   get(k, d) { try { const v = localStorage.getItem('germplasmpro:' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem('germplasmpro:' + k, JSON.stringify(v)); } catch (e) { /* ignorar */ } },
+  /* devuelve true si quedó guardado y false si el navegador no lo dejó
+     (espacio lleno o navegación privada); quien no lo necesite lo ignora */
+  set(k, v) { try { localStorage.setItem('germplasmpro:' + k, JSON.stringify(v)); return true; } catch (e) { return false; } },
 };
 
 /* ---------------- números ---------------- */

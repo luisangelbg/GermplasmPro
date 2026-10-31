@@ -138,10 +138,17 @@
       g.push(`<text x="${m.x.toFixed(1)}" y="${(m.y + 3.4).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="700" fill="${cv('--text')}">${i + 1}</text>`);
     });
 
+    /* como en el Bloque 4: con un encuadre muy alto no hay barra que valga en todo el mapa */
     const sb = GEO.scaleBar(proj, Math.min(140, W * 0.22));
-    g.push(`<g transform="translate(${W - sb.px - 26},${H - 22})">
-      <line x1="0" y1="0" x2="${sb.px.toFixed(1)}" y2="0" stroke="${cv('--text')}" stroke-width="2"/>
-      <text x="${(sb.px / 2).toFixed(1)}" y="-5" text-anchor="middle" font-size="9.5" fill="${cv('--text')}">${fmtInt(sb.km)} km</text></g>`);
+    const sbText = GEO.scaleLabel(sb, T);
+    if (sb.mode === 'none') {
+      g.push(`<text x="${W - 26}" y="${H - 18}" text-anchor="end" font-size="9" fill="${cv('--text')}" fill-opacity="0.75" data-scale="none">${esc(sbText)}</text>`);
+    } else {
+      const tw = Math.max(sb.px, sbText.length * 5.4), x0 = (tw - sb.px) / 2;
+      g.push(`<g transform="translate(${(W - tw - 26).toFixed(1)},${H - 22})" data-scale="${sb.mode}">
+      <line x1="${x0.toFixed(1)}" y1="0" x2="${(x0 + sb.px).toFixed(1)}" y2="0" stroke="${cv('--text')}" stroke-width="2"/>
+      <text x="${(tw / 2).toFixed(1)}" y="-5" text-anchor="middle" font-size="9.5" fill="${cv('--text')}">${esc(sbText)}</text></g>`);
+    }
 
     const what = view.show === 'distance' ? T('distancia de cada celda vacía a la colecta más cercana', 'distance from each empty cell to the nearest collection')
       : view.show === 'richness' ? T('riqueza de las celdas ocupadas', 'richness of the occupied cells')

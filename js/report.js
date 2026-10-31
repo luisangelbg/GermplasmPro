@@ -533,6 +533,10 @@
     /* Los hallazgos se cuentan, y contar obliga a concordar: «1 accesión no
        tiene coordenadas», no «1 accesiones no tienen». */
     const pl = (n, uno, varios) => (n === 1 ? uno : varios).replace('#', fmtInt(n));
+    /* un recuadro de stats([...]) que cuenta algo concuerda con su número:
+       «1 coordenada con error claro», no «1 coordenadas». `shown` es la cifra
+       que se escribe cuando no es el entero mismo (Chao1 trae decimales). */
+    const cuenta = (n, es1, esN, en1, enN, shown) => [shown != null ? shown : fmtInt(n), L(n === 1 ? es1 : esN, n === 1 ? en1 : enN)];
     const hallazgos = [];
     if (D.quality) {
       /* los niveles de QC.audit son error, warn e info, igual que en el Bloque 3 */
@@ -573,10 +577,10 @@
     out.push({
       id: 'summary', title: L('Resumen', 'Summary'),
       html: `${stats([
-        [fmtInt(D.n), L('accesiones', 'accessions')],
-        S ? [fmtInt(S.taxa.length), L('taxones', 'taxa')] : null,
-        S ? [fmtInt(S.countries.length), L('países de origen', 'countries of origin')] : null,
-        S ? [fmtInt(S.routes.length), L('rutas de conservación', 'conservation routes')] : null,
+        cuenta(D.n, 'accesión', 'accesiones', 'accession', 'accessions'),
+        S ? cuenta(S.taxa.length, 'taxón', 'taxones', 'taxon', 'taxa') : null,
+        S ? cuenta(S.countries.length, 'país de origen', 'países de origen', 'country of origin', 'countries of origin') : null,
+        S ? cuenta(S.routes.length, 'ruta de conservación', 'rutas de conservación', 'conservation route', 'conservation routes') : null,
         S ? [fmtInt(S.withCoords), L('con coordenadas', 'with coordinates')] : null,
         S ? [fmtInt(S.withDupl), L('con duplicado', 'with a safety duplicate')] : null,
       ])}
@@ -622,12 +626,12 @@
         id: 'quality', title: L('Calidad de los datos', 'Data quality'),
         html: `${stats([
           /* los niveles de QC.audit: error (diagnóstico claro), warn e info */
-          [fmtInt(porNivel('error')), L('coordenadas con error claro', 'coordinates with a clear error')],
-          [fmtInt(porNivel('warn')), L('coordenadas sospechosas', 'suspicious coordinates')],
-          [fmtInt(q.consistency.length), L('avisos de consistencia', 'consistency warnings')],
-          [fmtInt(q.fixes.length), L('correcciones propuestas', 'proposed fixes')],
-          [fmtInt(q.dup.pairs.length), L('pares candidatos a duplicado', 'candidate duplicate pairs')],
-          [fmtInt((D.issues || []).length), L('avisos del pasaporte', 'passport warnings')],
+          cuenta(porNivel('error'), 'coordenada con error claro', 'coordenadas con error claro', 'coordinate with a clear error', 'coordinates with a clear error'),
+          cuenta(porNivel('warn'), 'coordenada sospechosa', 'coordenadas sospechosas', 'suspicious coordinate', 'suspicious coordinates'),
+          cuenta(q.consistency.length, 'aviso de consistencia', 'avisos de consistencia', 'consistency warning', 'consistency warnings'),
+          cuenta(q.fixes.length, 'corrección propuesta', 'correcciones propuestas', 'proposed fix', 'proposed fixes'),
+          cuenta(q.dup.pairs.length, 'par candidato a duplicado', 'pares candidatos a duplicado', 'candidate duplicate pair', 'candidate duplicate pairs'),
+          cuenta((D.issues || []).length, 'aviso del pasaporte', 'avisos del pasaporte', 'passport warning', 'passport warnings'),
         ])}
         ${pares.length ? `<h4>${L('Pares con mayor puntaje', 'Highest scoring pairs')}</h4>${
           tbl([L('Accesiones', 'Accessions'), L('Puntaje', 'Score'), L('Distancia', 'Distance'), L('Por qué', 'Why')],
@@ -680,10 +684,10 @@
       out.push({
         id: 'diversity', title: L('Diversidad geográfica', 'Geographic diversity'),
         html: `${stats([
-          [fmtInt(A.total.S), L('tipos en total', 'types in total')],
+          cuenta(A.total.S, 'tipo en total', 'tipos en total', 'type in total', 'types in total'),
           [fmt(A.total.H, 2), L('Shannon del conjunto', 'Shannon of the whole')],
           [fmt(A.beta, 2), L('beta de Whittaker', "Whittaker's beta")],
-          A.chao1 ? [fmt(A.chao1.est, 0), L('tipos estimados (Chao1)', 'estimated types (Chao1)')] : null,
+          A.chao1 ? cuenta(Math.round(A.chao1.est), 'tipo estimado (Chao1)', 'tipos estimados (Chao1)', 'estimated type (Chao1)', 'estimated types (Chao1)', fmt(A.chao1.est, 0)) : null,
           isFinite(A.total.coverage) ? [fmt(100 * A.total.coverage, 1) + ' %', L('cobertura del muestreo', 'sampling coverage')] : null,
         ])}
         ${tbl([L('Unidad', 'Unit'), 'n', L('Riqueza', 'Richness'), 'Shannon', 'Pielou', L('Exclusivos', 'Exclusive')],
@@ -714,9 +718,9 @@
         id: 'gaps', title: L('Vacíos de colecta', 'Collecting gaps'),
         html: `${stats([
           [fmt(G.coverage, 1) + ' %', L('cobertura de la rejilla', 'grid coverage')],
-          [fmtInt(G.filled.length), L('celdas con colecta', 'collected cells')],
-          [fmtInt(G.empty.length), L('celdas vacías', 'empty cells')],
-          G.complementarity ? [fmtInt(G.complementarity.order ? G.complementarity.order.length : 0), L('sitios del conjunto mínimo', 'sites in the minimum set')] : null,
+          cuenta(G.filled.length, 'celda con colecta', 'celdas con colecta', 'collected cell', 'collected cells'),
+          cuenta(G.empty.length, 'celda vacía', 'celdas vacías', 'empty cell', 'empty cells'),
+          G.complementarity ? cuenta(G.complementarity.order ? G.complementarity.order.length : 0, 'sitio del conjunto mínimo', 'sitios del conjunto mínimo', 'site in the minimum set', 'sites in the minimum set') : null,
         ])}
         ${o.figures ? fig(draw(B6.gapMap, W, Math.round(W * 0.62)), L('Celdas sin colectar y las diez prioridades mejor puntuadas.',
           'Uncollected cells and the ten highest scoring priorities.')) : ''}
@@ -743,9 +747,9 @@
       out.push({
         id: 'charac', title: L('Caracterización y colección núcleo', 'Characterization and core collection'),
         html: `${stats([
-          [fmtInt(A.pairs.length), L('accesiones caracterizadas', 'characterized accessions')],
-          [fmtInt(A.used.length), L('descriptores', 'descriptors')],
-          [fmtInt(A.core.core.length), L('accesiones en el núcleo', 'accessions in the core')],
+          cuenta(A.pairs.length, 'accesión caracterizada', 'accesiones caracterizadas', 'characterized accession', 'characterized accessions'),
+          cuenta(A.used.length, 'descriptor', 'descriptores', 'descriptor', 'descriptors'),
+          cuenta(A.core.core.length, 'accesión en el núcleo', 'accesiones en el núcleo', 'accession in the core', 'accessions in the core'),
           isFinite(A.sil && A.sil.mean) ? [fmt(A.sil.mean, 2), L('silueta media', 'mean silhouette')] : null,
         ])}
         ${o.figures ? fig(draw(B7.pcoaPlot, W, 340), L(`Coordenadas principales sobre la distancia de Gower; el color es ${colorEs} y el símbolo grande con borde marca las accesiones del núcleo.`,
@@ -775,10 +779,10 @@
       out.push({
         id: 'manage', title: L('Manejo del banco', 'Genebank management'),
         html: `${stats([
-          [fmtInt(M.lots.filter(l => l.st.levelName === 'crit').length), L('lotes con alerta crítica', 'lots with a critical alert')],
-          [fmtInt(M.lots.filter(l => l.st.levelName === 'warn').length), L('lotes con aviso', 'lots with a warning')],
-          [fmtInt(M.lots.filter(l => l.st.projected != null).length), L('lotes con viabilidad proyectada', 'lots with projected viability')],
-          [fmtInt(M.lots.filter(l => l.st.alerts.some(a => a.code === 'noConstants')).length), L('sin constantes publicadas', 'without published constants')],
+          cuenta(M.lots.filter(l => l.st.levelName === 'crit').length, 'lote con alerta crítica', 'lotes con alerta crítica', 'lot with a critical alert', 'lots with a critical alert'),
+          cuenta(M.lots.filter(l => l.st.levelName === 'warn').length, 'lote con aviso', 'lotes con aviso', 'lot with a warning', 'lots with a warning'),
+          cuenta(M.lots.filter(l => l.st.projected != null).length, 'lote con viabilidad proyectada', 'lotes con viabilidad proyectada', 'lot with projected viability', 'lots with projected viability'),
+          cuenta(M.lots.filter(l => l.st.alerts.some(a => a.code === 'noConstants')).length, 'lote sin constantes publicadas', 'lotes sin constantes publicadas', 'lot without published constants', 'lots without published constants'),
         ])}
         ${tbl([L('Alerta', 'Alert'), L('Lotes', 'Lots')],
           codes.map(c => [

@@ -446,7 +446,7 @@
         T(`${n} ${pl(n, 'accesión', 'accesiones')} al ${today}`, `${n} ${pl(n, 'accession', 'accessions')} as of ${today}`))}
       ${[...byRoute.entries()].map(([route, list]) => {
         const c = MCPD.GPCONS.find(x => x.c === route);
-        return `<h4 class="ws-sub">${esc(c ? T(c.es, c.en) : T('sin declarar', 'not declared'))} · ${list.length}</h4>
+        return `<h4 class="ws-sub">${esc(c ? T(c.es, c.en) : T('Sin declarar', 'Not declared'))} · ${list.length}</h4>
         <table class="tbl ws-tbl"><thead><tr>
           <th>${T('Accesión', 'Accession')}</th><th>${T('Nombre', 'Name')}</th><th>${T('Especie', 'Species')}</th>
           <th>${T('Sitio', 'Site')}</th><th class="num">${T('Ingreso', 'Acquired')}</th>

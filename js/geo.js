@@ -198,12 +198,39 @@
   }
 
   /* ---------- barra de escala: elige una distancia redonda ---------- */
+  /* En esta proyección (equirrectangular corregida por la latitud central) la
+     escala norte-sur es la misma en todo el mapa, pero la este-oeste sólo es
+     exacta en la latitud central: a la latitud φ un pixel horizontal mide
+     cos φ / cos φ0 veces lo que dice la barra. `spread` es el mayor error
+     relativo dentro del encuadre y `mode` dice qué barra es honesta:
+       'plain' (≤ 10 %): la barra sola, como en México o una entidad;
+       'lat'   (≤ 35 %): la barra con la latitud en la que vale;
+       'none'  (más, como el mundo entero): sin barra, porque cualquier
+               distancia que dijera sería falsa en casi todo el mapa. */
   function scaleBar(proj, maxPx) {
     const nice = [1, 2, 5, 10, 25, 50, 100, 200, 250, 500, 1000, 2000, 5000];
     const maxKm = (maxPx || 120) * proj.kmPerPx;
     let km = nice[0];
     for (const v of nice) if (v <= maxKm) km = v;
-    return { km, px: km / proj.kmPerPx };
+    const bb = proj.bbox || [0, 0, 0, 0];
+    const lat = (bb[1] + bb[3]) / 2;
+    const cos = l => Math.cos(clampLat(l) * Math.PI / 180);
+    const c0 = Math.max(1e-6, cos(lat));
+    const lats = [bb[1], bb[3]];
+    if (bb[1] < 0 && bb[3] > 0) lats.push(0);
+    const spread = Math.max(...lats.map(l => Math.abs(cos(l) - c0) / c0));
+    const mode = spread <= 0.10 ? 'plain' : (spread <= 0.35 ? 'lat' : 'none');
+    return { km, px: km / proj.kmPerPx, lat, spread, mode };
+  }
+  function clampLat(l) { return Math.max(-89.9, Math.min(89.9, l)); }
+  /* el texto de la barra: «500 km», «500 km a 40° N» o, sin barra, el aviso */
+  function scaleLabel(sb, t) {
+    const T2 = t || ((es) => es);
+    const deg = Math.round(Math.abs(sb.lat));
+    const hemi = deg === 0 ? '' : (sb.lat > 0 ? ' N' : ' S');
+    if (sb.mode === 'lat') return T2(`${fmtInt(sb.km)} km a ${deg}°${hemi}`, `${fmtInt(sb.km)} km at ${deg}°${hemi}`);
+    if (sb.mode === 'none') return T2('Sin barra de escala: varía con la latitud', 'No scale bar: it varies with latitude');
+    return T2(`${fmtInt(sb.km)} km`, `${fmtInt(sb.km)} km`);
   }
 
   /* ---------- puntos utilizables de una colección ---------- */
@@ -325,7 +352,7 @@
     A3_TO_A2, A2_TO_A3, MX, MX_BY_CODE, WORLD, WORLD_BY_A2,
     ringsBBox, pointInRing, pointInRings, inBBox, stateOf, countryOf,
     projection, bboxOfPoints, unionBBox, ringsToPath,
-    cellKey, cellBBox, gridCount, scaleBar, pointsOf, countByState, countByCountry,
+    cellKey, cellBBox, gridCount, scaleBar, scaleLabel, pointsOf, countByState, countByCountry,
     ELEV_MIN, ELEV_MAX, elevOf, elevPlausible, ringArea, labelPoint,
     MX_BBOX: [-118.5, 14.3, -86.6, 32.8],
     WORLD_BBOX: [-180, -60, 180, 84],

@@ -26,10 +26,18 @@
   let saveTimer = null;
   function saveNow() {
     clearTimeout(saveTimer);
-    Prefs.set('acc', state.acc);
-    Prefs.set('savedAt', Date.now());
+    /* si el navegador no deja guardar, se dice: el aviso de «guardado» sería mentira */
+    const ok = Prefs.set('acc', state.acc) && Prefs.set('savedAt', Date.now());
     const el2 = el('b2Saved');
-    if (el2) el2.textContent = T('guardado en este navegador · ', 'saved in this browser · ') + new Date().toLocaleTimeString();
+    if (el2) {
+      el2.textContent = ok
+        ? T('guardado en este navegador · ', 'saved in this browser · ') + new Date().toLocaleTimeString()
+        : T('No se pudo guardar en este navegador (espacio lleno o modo privado): descarga el proyecto .json',
+            'Could not save in this browser (storage full or private mode): download the .json project');
+      el2.classList.toggle('field-error', !ok);
+      if (ok) el2.removeAttribute('role'); else el2.setAttribute('role', 'alert');
+    }
+    return ok;
   }
   /* tras una edición se espera un momento, por si vienen más cambios seguidos */
   function save() {
@@ -441,7 +449,7 @@
     if (!box) return;
     if (!state.acc.length) { box.innerHTML = ''; return; }
     const s = MCPD.summarize(state.acc);
-    const routeName = c => { const h = MCPD.GPCONS.find(x => x.c === c); return h ? T(h.es, h.en) : T('sin declarar', 'not declared'); };
+    const routeName = c => { const h = MCPD.GPCONS.find(x => x.c === c); return h ? T(h.es, h.en) : T('Sin declarar', 'Not declared'); };
     const statName = c => { const h = MCPD.SAMPSTAT.find(x => x.c === c); return h ? T(h.es, h.en) : c; };
     const cty = c => { const h = MCPD.COUNTRY_MAP[c]; return h ? T(h.es, h.en) : c; };
 
@@ -499,16 +507,78 @@
     const example = {}; MCPD.FIELDS.forEach(f => example[f.k] = f.ex || '');
     download(IO.toCSV([example], cols), 'plantilla-pasaporte.csv', 'text/csv;charset=utf-8');
   }
-  /* el proyecto lleva el pasaporte y la caracterización del Bloque 7 */
+  /* El proyecto lleva todo lo que se trabajó y no está en el pasaporte:
+       versión 1: el pasaporte (acc) y la caracterización del Bloque 7 (traits);
+       versión 2: además, lo que cada bloque guardaba sólo en el navegador:
+         quality  — pares descartados y umbral de duplicados (Bloque 3),
+         bank     — supuestos del banco, constantes de viabilidad propias y
+                    los de las calculadoras (Bloque 8),
+         labels   — encabezado, campos, código y chayote de las etiquetas (Bloque 9).
+     Se lee de los bloques mismos y, si alguno no ha cargado, de lo guardado. */
+  const PROJECT_VERSION = 2;
+  function projectState() {
+    const b3 = window.B3 && B3.ui ? B3.ui : null;
+    const cfg = window.B8 && B8.cfg ? B8.cfg() : null;
+    const viab = window.B8 && B8.viab ? B8.viab() : null;
+    const v9 = window.B9 && B9.view ? B9.view : null;
+    return {
+      quality: {
+        dismissed: (b3 ? b3.dismissed : Prefs.get('dismissed', [])) || [],
+        threshold: b3 ? b3.threshold : Prefs.get('dupThreshold', 50),
+      },
+      bank: {
+        config: cfg || Prefs.get('bankConfig', null),
+        viability: viab ? MANAGE.customConstants(viab) : (Prefs.get('viability', null) || {}),
+        calc: { p: Prefs.get('calcP', 5), P: Prefs.get('calcPP', 95), g: Prefs.get('calcG', 85) },
+      },
+      labels: v9
+        ? { header: v9.header || '', fields: v9.fields, codigo: v9.codigo, barcode: v9.barcode, logo: v9.logo }
+        : { header: Prefs.get('labelHeader', ''), fields: Prefs.get('labelFields', null), codigo: Prefs.get('labelCodigo', null),
+            barcode: Prefs.get('labelBarcode', null), logo: Prefs.get('labelLogo', null) },
+    };
+  }
   function projectJSON() {
-    return JSON.stringify({ app: 'GermplasmPro', version: 1, saved: new Date().toISOString(), acc: state.acc, traits: state.traits || [] }, null, 1);
+    return JSON.stringify(Object.assign({ app: 'GermplasmPro', version: PROJECT_VERSION, saved: new Date().toISOString(),
+      acc: state.acc, traits: state.traits || [] }, projectState()), null, 1);
+  }
+  /* devuelve a cada bloque lo que trae el proyecto. Lo que falta (un
+     proyecto de la versión 1 no trae nada de esto) se queda como estaba. */
+  function restoreProjectState(o) {
+    const isObj = x => x && typeof x === 'object' && !Array.isArray(x);
+    if (isObj(o.quality)) {
+      if (Array.isArray(o.quality.dismissed)) Prefs.set('dismissed', o.quality.dismissed.filter(p => typeof p === 'string'));
+      const th = Number(o.quality.threshold);
+      if (o.quality.threshold != null && Number.isFinite(th)) Prefs.set('dupThreshold', clamp(th, 25, 95));   /* el rango del deslizador */
+      if (window.B3 && B3.loadState) B3.loadState();
+    }
+    if (isObj(o.bank)) {
+      if (isObj(o.bank.config)) Prefs.set('bankConfig', o.bank.config);
+      if (isObj(o.bank.viability)) Prefs.set('viability', o.bank.viability);
+      if (isObj(o.bank.calc)) {
+        [['p', 'calcP'], ['P', 'calcPP'], ['g', 'calcG']].forEach(([k, pk]) => {
+          const v = Number(o.bank.calc[k]);
+          if (o.bank.calc[k] != null && Number.isFinite(v)) Prefs.set(pk, v);
+        });
+      }
+      if (window.B8 && B8.loadCfg) B8.loadCfg();
+    }
+    if (isObj(o.labels)) {
+      const L9 = o.labels;
+      if (typeof L9.header === 'string') Prefs.set('labelHeader', L9.header);
+      if (Array.isArray(L9.fields) && L9.fields.length) Prefs.set('labelFields', L9.fields.filter(f => typeof f === 'string'));
+      if (L9.codigo === 'barras' || L9.codigo === 'qr') Prefs.set('labelCodigo', L9.codigo);
+      if (typeof L9.barcode === 'boolean') Prefs.set('labelBarcode', L9.barcode);
+      if (typeof L9.logo === 'boolean') Prefs.set('labelLogo', L9.logo);
+      if (window.B9 && B9.loadPrefs) B9.loadPrefs();
+    }
   }
   function exportProject() {
     download(projectJSON(), 'coleccion-germplasmpro.json', 'application/json');
   }
   /* abre un proyecto .json. Devuelve true si lo abrió; false si no era un
      proyecto o si se canceló el reemplazo. Los proyectos viejos no traen
-     «traits»: entonces la caracterización que ya había se queda como está. */
+     «traits»: entonces la caracterización que ya había se queda como está;
+     tampoco traen lo de los Bloques 3, 8 y 9, que se queda igual. */
   function importProject(text) {
     let o = null;
     try { o = JSON.parse(text); } catch (e) { o = null; }
@@ -523,6 +593,7 @@
       state.traits = o.traits.filter(t => t && typeof t === 'object');
       Prefs.set('traits', state.traits);
     }
+    restoreProjectState(o);
     view.page = 0;
     refresh(); saveNow();
     if (window.B7) B7.run();

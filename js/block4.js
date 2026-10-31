@@ -104,7 +104,7 @@
     return String(r[k] ?? '').trim();
   }
   function labelOf(k, v) {
-    if (k === 'GP_CONS') { const h = MCPD.GPCONS.find(x => x.c === v); return h ? T(h.es, h.en) : T('sin declarar', 'not declared'); }
+    if (k === 'GP_CONS') { const h = MCPD.GPCONS.find(x => x.c === v); return h ? T(h.es, h.en) : T('Sin declarar', 'Not declared'); }
     if (k === 'SAMPSTAT') { const h = MCPD.SAMPSTAT.find(x => x.c === v); return h ? T(h.es, h.en) : v || '—'; }
     if (k === 'COLLSRC') { const h = MCPD.COLLSRC.find(x => x.c === v); return h ? T(h.es, h.en) : v || '—'; }
     if (k === 'ORIGCTY') { const h = MCPD.COUNTRY_MAP[v]; return h ? T(h.es, h.en) : v || '—'; }
@@ -246,15 +246,29 @@
     g.push(`<g>${circles}</g>`);
     g.push(`<g>${stateLabels.join('')}</g>`);
 
-    /* barra de escala y norte */
+    /* barra de escala y norte. La escala este-oeste cambia con la latitud:
+       con encuadres altos la barra dice en qué latitud vale, y con el mundo
+       entero no se dibuja (GEO.scaleBar explica el criterio) */
     const sb = GEO.scaleBar(proj, Math.min(140, W * 0.22));
-    g.push(`<g transform="translate(${W - sb.px - 26},${H - 26})">
-      <rect x="-6" y="-14" width="${(sb.px + 12).toFixed(1)}" height="26" rx="6" fill="${paint('--card-bg')}" fill-opacity="0.82"/>
-      <line x1="0" y1="0" x2="${sb.px.toFixed(1)}" y2="0" stroke="${cText}" stroke-width="2"/>
-      <line x1="0" y1="-4" x2="0" y2="4" stroke="${cText}" stroke-width="2"/>
-      <line x1="${sb.px.toFixed(1)}" y1="-4" x2="${sb.px.toFixed(1)}" y2="4" stroke="${cText}" stroke-width="2"/>
-      <text x="${(sb.px / 2).toFixed(1)}" y="-6" text-anchor="middle" font-size="9.5" fill="${cText}">${fmtInt(sb.km)} km</text>
+    const sbText = GEO.scaleLabel(sb, T);
+    if (sb.mode === 'none') {
+      const tw = sbText.length * 5.2;
+      g.push(`<g transform="translate(${(W - tw - 26).toFixed(1)},${H - 26})" data-scale="none">
+      <title>${esc(T('En esta proyección la distancia este-oeste de un pixel cambia con la latitud; en un encuadre tan alto ninguna barra sería cierta en todo el mapa.', 'In this projection the east-west distance of a pixel changes with latitude; in such a tall frame no bar would be true across the whole map.'))}</title>
+      <rect x="-6" y="-12" width="${(tw + 12).toFixed(1)}" height="18" rx="6" fill="${paint('--card-bg')}" fill-opacity="0.82"/>
+      <text x="0" y="1" font-size="9" fill="${cMuted}">${esc(sbText)}</text>
     </g>`);
+    } else {
+      const tw = Math.max(sb.px, sbText.length * 5.4);
+      const x0 = (tw - sb.px) / 2;
+      g.push(`<g transform="translate(${(W - tw - 26).toFixed(1)},${H - 26})" data-scale="${sb.mode}">
+      <rect x="-6" y="-14" width="${(tw + 12).toFixed(1)}" height="26" rx="6" fill="${paint('--card-bg')}" fill-opacity="0.82"/>
+      <line x1="${x0.toFixed(1)}" y1="0" x2="${(x0 + sb.px).toFixed(1)}" y2="0" stroke="${cText}" stroke-width="2"/>
+      <line x1="${x0.toFixed(1)}" y1="-4" x2="${x0.toFixed(1)}" y2="4" stroke="${cText}" stroke-width="2"/>
+      <line x1="${(x0 + sb.px).toFixed(1)}" y1="-4" x2="${(x0 + sb.px).toFixed(1)}" y2="4" stroke="${cText}" stroke-width="2"/>
+      <text x="${(tw / 2).toFixed(1)}" y="-6" text-anchor="middle" font-size="9.5" fill="${cText}">${esc(sbText)}</text>
+    </g>`);
+    }
     g.push(`<g transform="translate(22,${H - 30})">
       <path d="M0 8 L0 -14 M0 -14 L-4 -7 M0 -14 L4 -7" stroke="${cText}" stroke-width="1.6" fill="none" stroke-linecap="round"/>
       <text x="0" y="20" text-anchor="middle" font-size="9" fill="${cMuted}">N</text>

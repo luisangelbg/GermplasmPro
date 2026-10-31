@@ -178,6 +178,15 @@
     setTimeout(() => w.print(), 400);
   }
 
+  /* datos/calidad.csv es el mismo archivo que «Descargar el informe» del
+     Bloque 3 (informe-calidad.csv): sale de la misma función, con las
+     correcciones propuestas y los avisos del pasaporte. Sin filas, no va. */
+  function qualityCSV(D) {
+    if (!D || !D.quality || !window.B3 || !B3.qualityRows) return null;
+    const rows = B3.qualityRows(D.quality, D.rows || state.acc, D.issues || []);
+    return rows.length ? B3.qualityCSV(D.quality, D.rows || state.acc, D.issues || []) : null;
+  }
+
   /* ============ el paquete completo ============ */
   async function downloadZip() {
     say(T('Armando el paquete…', 'Building the package…'));
@@ -187,17 +196,8 @@
     files.push({ name: 'datos/pasaporte-completo.csv', data: IO.toCSV(state.acc, MCPD.FIELDS.map(f => f.k)) });
     files.push({ name: 'datos/darwin-core.csv', data: IO.toCSV(REPORT.darwinCore(state.acc, view.lang || I18N.lang), REPORT.DWC_COLUMNS) });
 
-    if (D.quality) {
-      const q = D.quality, filas = [];
-      q.geo.forEach(p => filas.push({ tipo: 'geografia', nivel: p.level, accesion: state.acc[p.i].ACCENUMB, campo: p.field, detalle: p.msg.es }));
-      q.consistency.forEach(c => filas.push({ tipo: 'consistencia', nivel: c.level, accesion: c.items.map(i => state.acc[i].ACCENUMB).join(' '), campo: c.code, detalle: c.msg.es }));
-      q.dup.pairs.forEach(p => filas.push({
-        tipo: 'duplicado', nivel: String(Math.round(p.score)),
-        accesion: `${state.acc[p.i].ACCENUMB} + ${state.acc[p.j].ACCENUMB}`,
-        campo: p.dist != null ? `${fmt(p.dist, 1)} km` : '', detalle: p.reasons.map(r => r.es).join('; '),
-      }));
-      if (filas.length) files.push({ name: 'datos/calidad.csv', data: IO.toCSV(filas, ['tipo', 'nivel', 'accesion', 'campo', 'detalle']) });
-    }
+    const cal = qualityCSV(D);
+    if (cal) files.push({ name: 'datos/calidad.csv', data: cal });
     if (D.manage) {
       const plan = [];
       D.manage.lots.forEach(l => l.st.alerts.forEach(a => plan.push({
@@ -282,5 +282,5 @@ Todo se calculó en tu navegador; nada de esto salió de tu computadora.
   document.addEventListener('stepchange', e => { if (e.detail.step === 10) inWork(run); });
   document.addEventListener('langchange', () => { if (el('panel-10') && el('b10Body') && el('b10Body').children.length) run(); });
 
-  window.B10 = { run, build, view, data: () => D, htmlOf: () => html, downloadZip, leeme };
+  window.B10 = { run, build, view, data: () => D, htmlOf: () => html, downloadZip, leeme, qualityCSV };
 })();

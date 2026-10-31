@@ -12,6 +12,7 @@
   .grp { margin-top: 10px; font-weight: bold; color: #6b4a8f; }
 </style>
 <script src="../js/i18n.js"></script>
+<script src="../js/labg-core.js"></script>
 </head>
 <body>
 <h1>GermplasmPro — suite de pruebas</h1>
@@ -2782,6 +2783,161 @@ ok(document.getElementById('b9PrintRoot').querySelectorAll('.label-sheet').lengt
 B9.endPrint();
 ok(!document.getElementById('b9PrintRoot') && !document.getElementById('b9PageStyle') && !document.body.classList.contains('b9-print-labels'), 'después de imprimir todo vuelve a como estaba');
 prevDiv.remove();
+/* ============ detalles hallados al escribir el manual (30 oct) ============ */
+{
+state.acc = EXAMPLES.build();
+B2.revalidate();
+const DM = REPORT.gather({ run: true });
+
+/* 1. los recuadros del informe concuerdan con su número */
+const q1 = DM.quality;
+const unoDe = a => (a && a.length ? [a[0]] : []);
+const geoErr = q1.geo.filter(p => p.level === 'error');
+const geoWarn = q1.geo.filter(p => p.level === 'warn');
+/* el ejemplo no trae avisos de todos los niveles: los que faltan se copian de
+   otro, porque aquí sólo se cuentan */
+const geoWarn1 = geoWarn.length ? [geoWarn[0]] : [Object.assign({}, geoErr[0], { level: 'warn' })];
+const cons1 = q1.consistency.length ? [q1.consistency[0]] : [{ level: 'warn', code: 'x', items: [0], msg: { es: 'x', en: 'x' } }];
+const DM1 = Object.assign({}, DM, {
+  quality: Object.assign({}, q1, { geo: unoDe(geoErr).concat(geoWarn1), consistency: cons1, fixes: unoDe(q1.fixes), dup: Object.assign({}, q1.dup, { pairs: unoDe(q1.dup.pairs) }) }),
+  issues: unoDe(DM.issues),
+});
+ok(geoErr.length && q1.fixes.length && q1.dup.pairs.length && DM.issues.length, 'el ejemplo tiene de cada cosa para probar el singular');
+const st1 = statsDe(secDe(DM1, 'quality').html).map(s => s.join(' '));
+ok(['1 coordenada con error claro', '1 coordenada sospechosa', '1 aviso de consistencia', '1 corrección propuesta', '1 par candidato a duplicado', '1 aviso del pasaporte'].every(t => st1.includes(t)),
+  `con una de cada cosa, el recuadro de calidad va en singular (${st1.join(' · ')})`);
+const st1en = statsDe(secDe(DM1, 'quality', 'en').html).map(s => s.join(' '));
+ok(st1en.includes('1 coordinate with a clear error') && st1en.includes('1 proposed fix') && st1en.includes('1 candidate duplicate pair'), 'y en inglés también');
+const DM0 = Object.assign({}, DM1, { quality: Object.assign({}, DM1.quality, { geo: [] }) });
+ok(statsDe(secDe(DM0, 'quality').html)[0].join(' ') === '0 coordenadas con error claro', 'con cero, en plural');
+const stM = statsDe(secDe(DM, 'quality').html);
+ok(stM.every(([v, l]) => (v === '1') === !/s$/.test(l.split(' ')[0])), `con los números reales cada etiqueta concuerda (${stM.map(s => s.join(' ')).join(' · ')})`);
+const DMun = Object.assign({}, DM, { n: 1 });
+ok(statsDe(secDe(DMun, 'summary').html)[0].join(' ') === '1 accesión', 'el resumen dice «1 accesión»');
+if (DM.manage) {
+  const crit = DM.manage.lots.filter(l => l.st.levelName === 'crit');
+  const DMm = Object.assign({}, DM, { manage: Object.assign({}, DM.manage, { lots: crit.slice(0, 1) }) });
+  ok(statsDe(secDe(DMm, 'manage').html)[0].join(' ') === '1 lote con alerta crítica', 'el manejo dice «1 lote con alerta crítica»');
+}
+const sinCuenta = (REPORT.sections.toString().match(/\[fmtInt\([^\]]*\), L\('[^']*'/g) || []).map(s => s.replace(/.*L\('/, '').replace(/'$/, ''));
+ok(sinCuenta.every(l => /^con /.test(l)), `las únicas cifras enteras sin concordar son las de «con …», que no cambian con el número (${sinCuenta.join(', ')})`);
+
+/* 2. «Sin declarar» con mayúscula, igual en la leyenda del mapa y en la tabla */
+state.acc = EXAMPLES.build().slice(0, 6).map((r, i) => Object.assign({}, r, i === 0 ? { GP_CONS: '', STORAGE: '' } : {}));
+B4.view.scope = 'world'; B4.view.choro = 'none'; B4.view.grid = 0; B4.view.color = 'GP_CONS';
+const dibRuta = B4.drawMap(900, 560);
+const leyRuta = B4.legendHTML(dibRuta.cinfo);
+const sinRuta = state.acc.filter(r => !MCPD.consRoute(r)).length;
+ok(sinRuta >= 1 && leyRuta.includes('Sin declarar') && !leyRuta.includes('sin declarar'), `la leyenda del mapa dice «Sin declarar» con mayúscula (${sinRuta})`);
+const DMr = REPORT.gather({ run: false });
+ok(filasDe(secDe(DMr, 'passport').html).some(f => f[0] === 'Sin declarar'), 'y la tabla «Cómo se conserva» lo escribe igual');
+B4.view.scope = 'mx';
+
+/* 3. la barra de escala sólo dice lo que es verdad */
+const sbMX = GEO.scaleBar(GEO.projection([-118.5, 14.3, -86.6, 32.8], 900, 560, 10), 140);
+ok(sbMX.mode === 'plain' && sbMX.spread < 0.10, `en México la escala horizontal cambia menos de 10 % (${fmt(100 * sbMX.spread, 1)} %): barra sola`);
+const sbW = GEO.scaleBar(GEO.projection(GEO.WORLD_BBOX, 900, 560, 10), 140);
+ok(sbW.mode === 'none', `con el mundo entero la escala horizontal cambia ${fmt(100 * sbW.spread, 0)} %: sin barra`);
+const sbMed = GEO.scaleBar(GEO.projection([-10, 25, 30, 55], 900, 560, 10), 140);
+const txMed = GEO.scaleLabel(sbMed, (es) => es);
+ok(sbMed.mode === 'lat' && /km a 40° N$/.test(txMed), `con un encuadre alto, la barra dice en qué latitud vale (${txMed})`);
+ok(GEO.scaleLabel(sbMed, (es, en) => en).endsWith('km at 40° N'), 'y en inglés');
+B4.view.scope = 'world';
+const dibW = B4.drawMap(900, 560).svg;
+ok(dibW.includes('data-scale="none"') && dibW.includes('Sin barra de escala') && !/\d km</.test(dibW), 'el mapa del mundo no lleva barra y dice por qué');
+B4.view.scope = 'mx';
+const dibMX = B4.drawMap(900, 560).svg;
+ok(dibMX.includes('data-scale="plain"') && /\d km</.test(dibMX), 'el de México sí la lleva');
+ok(!!parseSVG(dibW) && !!parseSVG(dibMX), 'los dos siguen siendo SVG válidos');
+
+/* 4. si el navegador no deja guardar, la interfaz lo dice */
+const spanG = document.createElement('span'); spanG.id = 'b2Saved'; document.body.appendChild(spanG);
+const setItemOrig = Storage.prototype.setItem;
+Storage.prototype.setItem = function () { throw new DOMException('lleno', 'QuotaExceededError'); };
+const okFalla = Prefs.set('prueba', 1);
+const okSave = B2.saveNow();
+Storage.prototype.setItem = setItemOrig;
+ok(okFalla === false, 'Prefs.set devuelve false cuando el navegador no deja guardar');
+ok(okSave === false && spanG.textContent.includes('No se pudo guardar en este navegador') && spanG.textContent.includes('.json') && !spanG.textContent.includes('guardado en'),
+  'y el Bloque 2 avisa que no se guardó, en vez de decir «guardado»');
+ok(spanG.classList.contains('field-error') && spanG.getAttribute('role') === 'alert', 'el aviso se ve como error y se anuncia');
+ok(Prefs.set('prueba', 1) === true, 'cuando sí se puede, Prefs.set devuelve true');
+ok(B2.saveNow() === true && spanG.textContent.startsWith('guardado en este navegador') && !spanG.classList.contains('field-error') && !spanG.hasAttribute('role'), 'y el aviso vuelve a «guardado en este navegador»');
+try { localStorage.removeItem('germplasmpro:prueba'); } catch (e) { /* nada */ }
+spanG.remove();
+
+/* 5. el proyecto .json lleva todo y lo devuelve; los viejos siguen abriendo */
+const prefsAntes = {};
+['dismissed', 'dupThreshold', 'bankConfig', 'viability', 'calcP', 'calcPP', 'calcG', 'labelHeader', 'labelFields', 'labelCodigo', 'labelBarcode', 'labelLogo', 'traits', 'acc', 'savedAt']
+  .forEach(k => { try { prefsAntes[k] = localStorage.getItem('germplasmpro:' + k); } catch (e) { /* nada */ } });
+const confirmO5 = window.confirm, alertO5 = window.alert;
+window.confirm = () => true; window.alert = () => {};
+state.acc = EXAMPLES.build().slice(0, 4);
+state.traits = [{ ACCENUMB: state.acc[0].ACCENUMB, BRIX: '9.1' }];
+B3.ui.dismissed = ['par-descartado-1', 'par-descartado-2']; B3.ui.threshold = 70;
+Prefs.set('bankConfig', { seed: { temp: -20, threshold: 80 } });
+Prefs.set('viability', { 'Phaseolus vulgaris': { KE: 8.1, CW: 3.2, CH: 0.0329, CQ: 0.000478, source: 'propia' } });
+Prefs.set('calcG', 75);
+B8.loadCfg();
+Object.assign(B9.view, { header: 'Banco de prueba', fields: ['ACCENAME', 'COLLSITE'], codigo: 'qr', barcode: false, logo: false });
+const pj = JSON.parse(B2.projectJSON());
+ok(pj.version === 2, 'el formato del proyecto sube a la versión 2');
+ok(pj.quality && pj.quality.threshold === 70 && pj.quality.dismissed.length === 2, 'lleva el umbral y los pares descartados del Bloque 3');
+ok(pj.bank && pj.bank.config.seed.temp === -20 && pj.bank.config.seed.threshold === 80 && pj.bank.viability['Phaseolus vulgaris'].KE === 8.1, 'los supuestos del banco y las constantes de viabilidad propias');
+ok(!('Zea mays' in pj.bank.viability) && pj.bank.calc.g === 75, 'sólo las constantes propias (no las publicadas sin tocar) y la germinación de la calculadora');
+ok(pj.labels && pj.labels.header === 'Banco de prueba' && pj.labels.codigo === 'qr' && pj.labels.logo === false && pj.labels.fields.join() === 'ACCENAME,COLLSITE', 'y las preferencias de las etiquetas');
+/* se borra todo y se abre el proyecto */
+const textoPj = JSON.stringify(pj);
+B3.ui.dismissed = []; B3.ui.threshold = 50; Prefs.set('dismissed', []); Prefs.set('dupThreshold', 50);
+Prefs.set('bankConfig', null); Prefs.set('viability', null); Prefs.set('calcG', 85); B8.loadCfg();
+Object.assign(B9.view, { header: '', fields: ['ACCENAME', 'TAXON', 'COLLSITE'], codigo: 'barras', barcode: true, logo: true });
+Prefs.set('labelHeader', ''); Prefs.set('labelFields', null); Prefs.set('labelCodigo', 'barras'); Prefs.set('labelBarcode', true); Prefs.set('labelLogo', true);
+state.acc = []; state.traits = [];
+ok(B2.importProject(textoPj) === true && state.acc.length === 4 && state.traits.length === 1, 'al abrirlo vuelven las accesiones y la caracterización');
+ok(B3.ui.threshold === 70 && B3.ui.dismissed.join() === 'par-descartado-1,par-descartado-2', 'vuelven el umbral y los descartes del Bloque 3');
+ok(B8.cfg().seed.temp === -20 && B8.cfg().seed.threshold === 80 && B8.cfg().seed.moisture === 6, 'vuelven los supuestos del banco (y lo no guardado queda en su valor por omisión)');
+ok(B8.viab()['Phaseolus vulgaris'] && B8.viab()['Phaseolus vulgaris'].KE === 8.1 && B8.viab()['Zea mays'].KE === 6.474, 'vuelven las constantes propias, junto a las publicadas');
+ok(Prefs.get('calcG', 85) === 75, 'y la germinación supuesta de la calculadora');
+ok(B9.view.header === 'Banco de prueba' && B9.view.codigo === 'qr' && B9.view.logo === false && B9.view.barcode === false && B9.view.fields.join() === 'ACCENAME,COLLSITE', 'y las preferencias de las etiquetas');
+/* un proyecto viejo (versión 1) abre y no toca nada de esto */
+const viejo5 = JSON.stringify({ app: 'GermplasmPro', version: 1, saved: '2026-09-30T10:00:00Z', acc: [{ ACCENUMB: 'V-9', GENUS: 'Zea', SPECIES: 'mays' }], traits: [] });
+ok(B2.importProject(viejo5) === true && state.acc.length === 1 && state.acc[0].ACCENUMB === 'V-9', 'un proyecto de la versión 1 se sigue abriendo');
+ok(B3.ui.threshold === 70 && B8.cfg().seed.temp === -20 && !!B8.viab()['Phaseolus vulgaris'] && B9.view.header === 'Banco de prueba', 'y deja como estaban el Bloque 3, el banco y las etiquetas');
+const raro = JSON.stringify({ app: 'GermplasmPro', version: 2, acc: [{ ACCENUMB: 'R-1' }], quality: { threshold: 'mucho', dismissed: [3, 'ok'] }, bank: { config: 'x' }, labels: { codigo: 'morse', logo: 'sí' } });
+ok(B2.importProject(raro) === true && B3.ui.threshold === 70 && B3.ui.dismissed.join() === 'ok' && B9.view.codigo === 'qr' && B9.view.logo === false && B8.cfg().seed.temp === -20,
+  'los valores que no tienen sentido se ignoran sin romper nada');
+window.confirm = confirmO5; window.alert = alertO5;
+Object.keys(prefsAntes).forEach(k => { try { if (prefsAntes[k] == null) localStorage.removeItem('germplasmpro:' + k); else localStorage.setItem('germplasmpro:' + k, prefsAntes[k]); } catch (e) { /* nada */ } });
+B3.loadState(); B8.loadCfg(); Object.assign(B9.view, { header: '', fields: ['ACCENAME', 'TAXON', 'COLLSITE'], codigo: 'barras', barcode: true, logo: true }); B9.loadPrefs();
+
+/* 6. la lista de atajos: las flechas son una u otra, no las dos juntas */
+LABG.showShortcuts();
+const dlgAt = document.querySelector('dialog.labg-dialog');
+const dtFlechas = dlgAt ? [...dlgAt.querySelectorAll('dt')].map(d => d.textContent) : [];
+ok(dtFlechas.includes('← / →') && !dtFlechas.includes('← + →') && dtFlechas.includes('Alt + ←'), `la fila de las flechas dice «← / →» y Alt sigue con «+» (${dtFlechas.slice(0, 3).join(' · ')})`);
+if (dlgAt) { if (dlgAt.open && dlgAt.close) dlgAt.close(); dlgAt.remove(); }
+
+/* 7. datos/calidad.csv del paquete es el informe-calidad.csv del Bloque 3 */
+/* al ejemplo se le suman cuatro accesiones con avisos de consistencia */
+state.acc = EXAMPLES.build().concat([
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'C7-1', GENUS: 'zea', SPECIES: 'Mays', CROPNAME: 'Maíz', COLLSITE: 'Oaxaca, Apoala' }),
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'C7-2', GENUS: 'Zea', SPECIES: 'mays', CROPNAME: 'Elote', COLLSITE: 'OAXACA, APOALA' }),
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'C7-3', GENUS: 'Phaseolus', SPECIES: 'vulgaris', CROPNAME: 'Frijol', COLLSITE: 'Puebla' }),
+  Object.assign(MCPD.emptyRow(), { ACCENUMB: 'C7-4', GENUS: 'Phaseolous', SPECIES: 'vulgaris', CROPNAME: 'Frijol', COLLSITE: 'Tlaxcala' }),
+]);
+B2.revalidate();
+const D7 = REPORT.gather({ run: false });
+const csvZip = B10.qualityCSV(D7);
+const csvB3 = B3.qualityCSV(QC.audit(state.acc, { threshold: B3.ui.threshold, dismissed: B3.ui.dismissed }), state.acc, state.issues);
+ok(!!csvZip && csvZip === csvB3, 'el CSV de calidad del paquete es idéntico al del Bloque 3');
+const filas7 = IO.parseDelimited(csvZip).rows;
+const tipos7 = new Set(filas7.map(r => r.tipo));
+ok(['geografia', 'consistencia', 'correccion', 'duplicado', 'pasaporte'].every(t => tipos7.has(t)), `y trae los cinco tipos de fila, con las correcciones y el pasaporte (${[...tipos7].join(', ')})`);
+const cons7 = filas7.filter(r => r.tipo === 'consistencia');
+ok(cons7.length && cons7.every(r => Object.values(QC.CODES).some(c => c.es === r.campo)), `en «consistencia» el campo es el nombre legible (${cons7[0] ? cons7[0].campo : '—'}), no el código interno`);
+ok(B10.qualityCSV({ quality: { geo: [], consistency: [], fixes: [], dup: { pairs: [] } }, rows: [], issues: [] }) === null, 'sin nada que reportar, no va el archivo');
+}
+
 state.acc = [];
 document.getElementById('summary').innerHTML = fail === 0
   ? `<span class="ok">Todas las pruebas pasaron: ${pass}</span>`

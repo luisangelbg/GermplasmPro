@@ -41,7 +41,7 @@
 
   const pl = (n, uno, varios) => (n === 1 ? uno : varios);
   /* el nombre de una ruta en el idioma de la interfaz; la vacía es «sin declarar» */
-  const routeName = c => { const h = MCPD.GPCONS.find(x => x.c === c); return h ? T(h.es, h.en) : T('sin declarar', 'not declared'); };
+  const routeName = c => { const h = MCPD.GPCONS.find(x => x.c === c); return h ? T(h.es, h.en) : T('Sin declarar', 'Not declared'); };
   const has =v => v != null && Number.isFinite(v);
   const isSeedRoute = r => r === 'seed' || r === '' || r === MANAGE.NO_ROUTE;
   /* «1 semilla», «1 200 semillas», en el idioma de la interfaz */
@@ -442,5 +442,5 @@
   document.addEventListener('langchange', () => { if (el('panel-8')) run(); });
   document.addEventListener('themechange', () => { if (el('panel-8') && A) render(); });
 
-  window.B8 = { run, view, analysis: () => A, cfg: () => cfg, viab: () => viab, workPlot, byUrgency, recordTest };
+  window.B8 = { run, view, analysis: () => A, cfg: () => cfg, viab: () => viab, loadCfg, workPlot, byUrgency, recordTest };
 })();
