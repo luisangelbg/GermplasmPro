@@ -18,7 +18,7 @@
   Object.assign(B8.view, { filter: "all", route: "", sort: "score" });
   B8.run(); await W(800);
   const s = seccion("2");
-  const tw = s[1].querySelector(".table-wrap"), f = tw.querySelectorAll("tbody tr")[2];
+  const tw = document.querySelector("#b8Body .table-wrap"), f = tw.querySelectorAll("tbody tr")[2];
   tw.style.maxHeight = Math.ceil(f.getBoundingClientRect().bottom - tw.getBoundingClientRect().top + 1) + "px";
   await irA(s[0]);
   return caja(s, 8);

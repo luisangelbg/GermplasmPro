@@ -181,18 +181,19 @@
 
   <!-- 8.5 -->
   <h2 id="b8-5"><span class="num">8.5</span>La lista de trabajo</h2>
-  <p>La sección <span class="ui">2 · Qué hay que hacer</span> es la lista de la temporada: una fila por accesión, ordenada por urgencia. El <b>puntaje</b> de una accesión es la suma de los puntos de sus alertas (3, 2 o 1); la lista va de mayor a menor puntaje y, a igual puntaje, del nivel más grave al más leve; si siguen empatadas, en el orden del pasaporte. Muestra hasta 200 filas.</p>
+  <p>La sección <span class="ui">2 · Qué hay que hacer</span> es la lista de la temporada: una fila por accesión, ordenada por urgencia, como lo explica el párrafo bajo el título. Primero va el <b>nivel</b>: las accesiones en apuros, luego las que piden atención, las que tienen un dato faltante y, al final, las que están al día. Dentro de cada nivel, el <b>puntaje</b>, la suma de los puntos de sus alertas (3, 2 o 1), de mayor a menor; a igual puntaje, el número de accesión, en orden alfabético. Muestra hasta 200 filas.</p>
   <div class="caja ejemplo">
     <div class="caja-t"><span class="ico">▸</span>Ejemplo · el orden de las primeras filas</div>
     <table class="compacta cuenta"><tbody>
-      <tr><td colspan="2">MEX-TC-0027, cacao: resiembra atrasada (8.7 &gt; 8 años) 3 + 20 plantas &lt; 25 → 3 + sin duplicado 2 = 8</td></tr>
       <tr><td colspan="2">MEX-PH-0041, frijol tépari: 79 % &lt; 85 → 3 + sin constantes 1 + 430 &lt; 600 → 2 + sin duplicado 2 = 8</td></tr>
+      <tr><td colspan="2">MEX-TC-0027, cacao: resiembra atrasada (8.7 &gt; 8 años) 3 + 20 plantas &lt; 25 → 3 + sin duplicado 2 = 8</td></tr>
       <tr><td colspan="2">MEX-SE-0046, chayote: sin fecha de resiembra 2 + 15 plantas → 3 + sin duplicado 2 = 7</td></tr>
-      <tr><td colspan="2">MEX-SE-0013, frijol vaquita: 84 % → 3 + sin constantes 1 + sin duplicado 2 = 6;  MEX-PA-0026, aguacate: 3 + 3 = 6</td></tr>
-      <tr><td colspan="2">MEX-ZM-0043, maíz ancho de riego: 72 % → 3 + sin duplicado 2 = 5 (grave);  MEX-CH-0042, chile costeño: 1 + 2 + 2 = 5 (atención)</td></tr>
-      <tr><td colspan="2">PER-ST-0022, papa criopreservada: revisión 2 + sin duplicado 2 = 4;  MEX-CA-0028, café: 2 + 2 = 4;  MEX-ZP-0011, teocintle: 3</td></tr>
+      <tr><td colspan="2">MEX-PA-0026, aguacate: 3 + 3 = 6;  MEX-SE-0013, frijol vaquita: 84 % → 3 + sin constantes 1 + sin duplicado 2 = 6</td></tr>
+      <tr><td colspan="2">MEX-ZM-0043, maíz ancho de riego: 72 % → 3 + sin duplicado 2 = 5</td></tr>
+      <tr><td colspan="2">COL-MA-0035, MEX-VA-0025, MEX-ZP-0011 y PER-ST-0021: una sola alerta grave, 3 cada uno</td></tr>
+      <tr><td colspan="2">pide atención: MEX-CH-0042, chile costeño: 1 + 2 + 2 = 5;  MEX-CA-0028 y PER-ST-0022: 2 + 2 = 4;  …</td></tr>
     </tbody></table>
-    <p>Los dos primeros empatan con 8 puntos y nivel grave, así que quedan en el orden del pasaporte; el maíz ancho de riego va antes que el chile porque, con el mismo puntaje, su alerta es grave. El teocintle, con una sola alerta grave y con duplicado de seguridad, queda después de dos accesiones que sólo piden atención: el puntaje premia acumular problemas. Por eso conviene mirar también el filtro <span class="ui">en apuros</span>. Las 9 accesiones al día van al final, con 0 puntos.</p>
+    <p>Las 10 accesiones en apuros van primero, aunque el teocintle sólo sume 3 puntos y el chile costeño, que sólo pide atención, sume 5. Los dos primeros empatan con 8 puntos, y el frijol tépari va antes que el cacao por su número de accesión (MEX-PH antes que MEX-TC); lo mismo el aguacate y el frijol vaquita, con 6, y los cuatro lotes de 3 puntos. Después de las 21 que piden atención vienen las 6 con un dato faltante y, al final, las 9 al día.</p>
   </div>
   <table class="compacta">
     <caption><b>Tabla 8.5.</b> Las columnas de la lista de trabajo.</caption>
@@ -206,14 +207,14 @@
     </tbody>
   </table>
   <figure class="angosta">
-    <div class="marco"><img src="../img/b8-tareas.png" alt="La sección 2: los selectores Mostrar en todo y Ruta en todas, el botón Plan de trabajo en CSV y las tres primeras filas de la tabla: MEX-TC-0027, Cacao criollo de Ocosing, Banco de campo o colección viva, 20 plantas, germinación —, tres alertas y el botón Resiembra; MEX-PH-0041, Frijol tepari, Banco de semillas, 430 semillas, 79 % hace 3.8 a, la alerta La última prueba dio 79 %, por debajo del umbral de 85 %. Para regenerar con 100 plantas hay que sembrar unas 141 semillas, y tres más, con los botones Registrar prueba y Regeneración; MEX-SE-0046, Chayote verde liso, 15 plantas, tres alertas y el botón Resiembra"></div>
-    <figcaption><b>Figura 8.4.</b> Las tres primeras filas de la lista de trabajo, con 8, 8 y 7 puntos.</figcaption>
+    <div class="marco"><img src="../img/b8-tareas.png" alt="La sección 2: el párrafo La lista va por urgencia, primero los lotes en apuros, luego los que piden atención, los que tienen un dato faltante y al final los que están al día, dentro de cada grupo primero los que suman más alertas y a igual puntaje por número de accesión; los selectores Mostrar en todo y Ruta en todas, el botón Plan de trabajo en CSV y las tres primeras filas de la tabla: MEX-PH-0041, Frijol tepari, Banco de semillas, 430 semillas, 79 % hace 3.8 a, la alerta La última prueba dio 79 %, por debajo del umbral de 85 %. Para regenerar con 100 plantas hay que sembrar unas 141 semillas, y tres más, con los botones Registrar prueba y Regeneración; MEX-TC-0027, Cacao criollo de Ocosing, Banco de campo o colección viva, 20 plantas, germinación —, tres alertas y el botón Resiembra; MEX-SE-0046, Chayote verde liso, 15 plantas, tres alertas y el botón Resiembra"></div>
+    <figcaption><b>Figura 8.4.</b> El párrafo que explica el orden y las tres primeras filas de la lista de trabajo, en apuros con 8, 8 y 7 puntos.</figcaption>
   </figure>
   <p>Dos selectores filtran la lista. <span class="ui">Mostrar</span> deja <span class="ui">todo</span>, sólo las accesiones <span class="ui">en apuros</span> (10), las que <span class="ui">piden atención</span> (21), las que tienen <span class="ui">faltan datos</span> (6) o las que están <span class="ui">al día</span> (9). <span class="ui">Ruta</span> deja una sola ruta; cada opción dice cuántas accesiones tiene, por ejemplo <span class="ui">Banco de semillas (28)</span> o <span class="ui">sin declarar (1)</span>, que deja sólo el chile costeño (MEX-CH-0042).</p>
 
   <!-- 8.6 -->
   <h2 id="b8-6"><span class="num">8.6</span>Registrar lo que se hace y el plan en CSV</h2>
-  <p>Los botones de cada fila escriben en el pasaporte lo que hiciste hoy. Cada ruta tiene los suyos y funcionan con las ventanas de pregunta del navegador; si cancelas la primera, no se guarda nada. Al terminar, el pasaporte se guarda en el navegador, la tabla del Bloque 2 se actualiza y el Bloque 8 se recalcula.</p>
+  <p>Los botones de cada fila escriben en el pasaporte lo que hiciste hoy. Cada ruta tiene los suyos y funcionan con las ventanas de pregunta del navegador; si cancelas la primera pregunta, no se guarda nada, y en <span class="ui">Registrar prueba</span> tampoco si cancelas la segunda. En <span class="ui">Regeneración</span>, cancelar la pregunta de la germinación equivale a dejarla vacía: la regeneración se registra sin prueba. Al terminar, el pasaporte se guarda en el navegador, la tabla del Bloque 2 se actualiza y el Bloque 8 se recalcula.</p>
   <table class="compacta">
     <caption><b>Tabla 8.6.</b> Los botones de cada ruta (la fecha que escriben es la de hoy, en AAAAMMDD).</caption>
     <thead><tr><th style="width:1.35in">Botón · ruta</th><th style="width:2.4in">Pregunta</th><th>Cambia en el pasaporte</th></tr></thead>
@@ -245,7 +246,7 @@
   <h2 id="b8-7"><span class="num">8.7</span>Cuántas plantas y cuántas semillas</h2>
   <p>La sección <span class="ui">3 · Cuántas plantas y cuántas semillas</span> tiene dos paneles. El de la izquierda, <span class="ui">Plantas necesarias</span>, responde la pregunta de toda regeneración: con cuántas plantas no se pierden los alelos raros. Tiene tres deslizadores: <span class="ui">Frecuencia del alelo a conservar</span> (1 a 20 %, de fábrica 5 %), <span class="ui">Seguridad deseada</span> (80 a 99 %, de fábrica 95 %) y <span class="ui">Germinación del lote (%)</span> (20 a 100 % en pasos de 5, de fábrica 85 %). El resultado cambia mientras arrastras.</p>
   <figure style="width:66%;margin-left:auto;margin-right:auto">
-    <div class="marco"><img src="../img/b8-calculo.png" alt="La sección 3: a la izquierda, el panel Plantas necesarias con Frecuencia del alelo a conservar 5 %, Seguridad deseada 95 % y Germinación del lote 85 %; especie alógama 30 plantas y 40 semillas a sembrar; especie autógama 59 plantas y 78 semillas; Regeneración del banco (supuestos) 100 plantas y 131 semillas; y la nota de que con las 100 plantas la probabilidad es de más de 99.99 % en una alógama y de 99.41 % en una autógama; a la derecha, la gráfica de barras Carga de trabajo de los próximos 25 años con escala 0, 12.5 y 25, picos de 25 tareas en los años 7 y 17, subcultivos en azul todos los años, regeneraciones y resiembras en el año 0, y la leyenda de cuatro series"></div>
+    <div class="marco"><img src="../img/b8-calculo.png" alt="La sección 3: a la izquierda, el panel Plantas necesarias con Frecuencia del alelo a conservar 5 %, Seguridad deseada 95 % y Germinación del lote 85 %; especie alógama 30 plantas y 40 semillas a sembrar; especie autógama 59 plantas y 78 semillas; Regeneración del banco (supuestos) 100 plantas y 131 semillas; y la nota de que con las 100 plantas la probabilidad es de más de 99.99 % en una alógama y de 99.41 % en una autógama; a la derecha, la gráfica de barras Carga de trabajo de los próximos 25 años con escala 0, 13 y 25, picos de 25 tareas en los años 7 y 17, subcultivos en azul todos los años, regeneraciones y resiembras en el año 0, y la leyenda de cuatro series"></div>
     <figcaption><b>Figura 8.5.</b> La calculadora de tamaño de muestra con sus valores de fábrica y la carga de trabajo de la colección de ejemplo.</figcaption>
   </figure>
   <div class="caja teoria">
@@ -291,7 +292,7 @@
     </tbody></table>
     <p>Los dos picos son los 22 lotes probados entre marzo y abril de 2024: sus pruebas vencen juntas dentro de 7.4 años y se repiten diez años después. Es el caso que la nota del panel señala: conviene adelantar parte de esas pruebas para repartirlas en los años vecinos. Otros cuatro lotes, probados en 2023, caen en el año +6.</p>
   </div>
-  <p>La gráfica tiene un texto alternativo con el resumen —totales, el año +0 y el año más cargado— para los lectores de pantalla. Al pasar el puntero sobre un segmento, una etiqueta dice el año, cuántas tareas hay y, en las regeneraciones, cuántas plantas suman: <span class="ui">año +0: 4 regeneraciones (≈ 400 plantas)</span>. La escala vertical tiene tres marcas: 0, la mitad y el máximo (con la colección de ejemplo, 0, 12.5 y 25). La gráfica también entra en el informe del Bloque 10 (capítulo 10).</p>
+  <p>La gráfica tiene un texto alternativo con el resumen —totales, el año +0 y el año más cargado— para los lectores de pantalla. Al pasar el puntero sobre un segmento, una etiqueta dice el año, cuántas tareas hay y, en las regeneraciones, cuántas plantas suman: <span class="ui">año +0: 4 regeneraciones (≈ 400 plantas)</span>. La escala vertical tiene tres marcas: 0, la mitad y el máximo (con la colección de ejemplo, 0, 13 y 25). La gráfica también entra en el informe del Bloque 10 (capítulo 10).</p>
   <p>La carga cambia con los supuestos. Con pruebas cada 5 años, los picos de 22 pruebas se repiten en los años 2, 7, 12, 17 y 22. Con 24 meses entre subcultivos, cada frasco se subcultiva 13 veces en 26 años y no 26. Con la cámara a 5 °C y 8 % de humedad, a las 4 regeneraciones del año +0 se suman otras en los años 6, 10, 13, 17 y 21; a 20 °C y 12 %, 16 regeneraciones caen en el año +0.</p>
 
   <!-- 8.9 -->
