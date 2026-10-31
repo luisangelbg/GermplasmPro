@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · Manual de usuario · Capítulo 8</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- reparte el contenido en hojas tamaño carta, con encabezados, números de página e índice -->
+<script src="../paginar.js"></script>
+<style>
+  .formula { font-family: var(--mono); font-size: 9pt; background: var(--marino-suave); border-radius: 5px; padding: 0.07in 0.12in; margin: 0.08in 0; }
+  .cuenta td { font-family: var(--mono); font-size: 8.6pt; }
+  .csv td { font-family: var(--mono); font-size: 7.6pt; }
+  figure.reducida { width: 74%; margin-left: auto; margin-right: auto; }
+  figure.mediana { width: 86%; margin-left: auto; margin-right: auto; }
+  figure.chica { width: 72%; margin-left: auto; margin-right: auto; }
+  figure.angosta { width: 44%; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<section class="capitulo" id="cap-b8" data-pestana="8" data-orden="8" style="--acento: var(--b8)">
+  <div class="cap-apertura">
+    <div class="cap-num">8</div>
+    <div class="cap-etiqueta">Capítulo ocho · Bloque 8 · Manejo del banco</div>
+    <h1 data-corto="Manejo del banco">Manejo del banco</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">El simulador del Bloque 1 seguía a una accesión imaginaria; el Bloque 8 hace lo mismo con tus lotes. Con la última prueba de germinación, las existencias, las fechas de regeneración y las condiciones de tu cámara, proyecta con la ecuación de Ellis y Roberts en qué porcentaje anda hoy cada lote de semilla y cuántos años le quedan antes del umbral; revisa cada ruta de conservación —semillas, campo, in vitro, criopreservación, reserva y parcela— y levanta alertas ordenadas por urgencia; registra las pruebas y regeneraciones que vas haciendo; calcula cuántas plantas y cuántas semillas hacen falta para regenerar sin perder los alelos raros, y dibuja la carga de trabajo de los próximos 25 años.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>8.1</b>El tablero del banco</li>
+      <li><b>8.2</b>Los supuestos: la cámara y los intervalos</li>
+      <li><b>8.3</b>La viabilidad de hoy, lote por lote</li>
+      <li><b>8.4</b>Las alertas, ruta por ruta</li>
+      <li><b>8.5</b>La lista de trabajo</li>
+      <li><b>8.6</b>Registrar lo que se hace y el plan en CSV</li>
+      <li><b>8.7</b>Cuántas plantas y cuántas semillas</li>
+      <li><b>8.8</b>La carga de trabajo de los próximos 25 años</li>
+      <li><b>8.9</b>El banco por rutas</li>
+    </ul>
+  </div>
+
+  <!-- 8.1 -->
+  <h2 id="b8-1"><span class="num">8.1</span>El tablero del banco</h2>
+  <p class="lead">El Bloque 8 trabaja con cuatro campos del pasaporte que el capítulo 2 presentó (apartado 2.1): <code>GP_STOCK</code> (existencias), <code>GP_GERMPCT</code> (última germinación), <code>GP_GERMDATE</code> (fecha de esa prueba) y <code>GP_REGENDATE</code> (última regeneración, resiembra o subcultivo), más la ruta de conservación (<code>GP_CONS</code>, o la que se deduce de <code>STORAGE</code>) y el duplicado de seguridad (<code>DUPLSITE</code>). Todo se recalcula al entrar al bloque, sin espera: las cuentas son instantáneas. Si no hay accesiones, el bloque dice <span class="ui">Primero carga tus accesiones en el Bloque 2.</span></p>
+  <figure class="chica">
+    <div class="marco"><img src="../img/b8-tablero.png" alt="La cabecera del Bloque 8: el título Bloque 8 · El manejo del banco, el párrafo de presentación y seis recuadros: Lotes en apuros 10, piden acción esta temporada; Piden atención 21, prueba vencida, poco stock o sin respaldo; Al día 9, de 46 accesiones; Con proyección de viabilidad 15, el resto no tiene constantes o prueba; Sin duplicado de seguridad 21, dependen de una sola instalación; Existencias registradas 53,047, semillas, plantas, frascos o criotubos"></div>
+    <figcaption><b>Figura 8.1.</b> La cabecera del bloque con la colección de ejemplo y los supuestos de fábrica, el 30 de octubre de 2026.</figcaption>
+  </figure>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Los números dependen de la fecha</div>
+    <p>Todo lo que el bloque calcula se mide desde <b>hoy</b>, la fecha de tu computadora: los años desde la última prueba, la viabilidad proyectada, las visitas atrasadas. Las cifras de este capítulo se tomaron el <b>30 de octubre de 2026</b> con la colección de ejemplo; si la abres otro día, las fechas cambian y, con ellas, algunos decimales y quizá alguna alerta. Las fechas incompletas se completan a la mitad: un año sin mes cuenta desde el 15 de junio, y un mes sin día, desde el 15.</p>
+  </div>
+  <p>Los seis recuadros resumen el estado del banco. Cada accesión recibe el <b>nivel</b> de su alerta más grave (apartado 8.4): <i>en apuros</i>, <i>pide atención</i>, <i>falta un dato</i> o <i>al día</i>.</p>
+  <table class="compacta">
+    <caption><b>Tabla 8.1.</b> Los recuadros del tablero con la colección de ejemplo.</caption>
+    <thead><tr><th style="width:1.95in">Recuadro</th><th class="c" style="width:0.6in">Ejemplo</th><th>Qué cuenta</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Lotes en apuros</span></td><td class="c">10</td><td>Accesiones con al menos una alerta grave (roja). En rojo si hay alguna.</td></tr>
+      <tr><td><span class="ui">Piden atención</span></td><td class="c">21</td><td>Accesiones cuya alerta más grave es de atención (ocre).</td></tr>
+      <tr><td><span class="ui">Al día</span></td><td class="c">9</td><td>Accesiones sin ninguna alerta, «de 46 accesiones». Las 6 restantes sólo tienen un aviso de dato faltante, que no tiene recuadro propio: 10 + 21 + 9 + 6 = 46.</td></tr>
+      <tr><td><span class="ui">Con proyección de viabilidad</span></td><td class="c">15</td><td>Lotes de semilla con constantes de viabilidad para su especie y con prueba fechada: los 15 maíces y teocintles en banco de semillas.</td></tr>
+      <tr><td><span class="ui">Sin duplicado de seguridad</span></td><td class="c">21</td><td>Accesiones ex situ sin copia en otra institución (apartado 8.4).</td></tr>
+      <tr><td><span class="ui">Existencias registradas</span></td><td class="c">53,047</td><td>La suma de <code>GP_STOCK</code> de todas las accesiones.</td></tr>
+    </tbody>
+  </table>
+  <p>El último recuadro suma cosas distintas —semillas, plantas de campo, frascos, criotubos y hasta los individuos censados en la reserva y en las parcelas—, así que sólo sirve para ver si la cifra cambia de una temporada a otra. Las existencias que importan van por ruta, en la sección 4 (apartado 8.9). Debajo de las cuatro secciones del bloque, una nota recuerda que <span class="ui">Una proyección no sustituye a una prueba.</span> (figura 8.6).</p>
+
+  <!-- 8.2 -->
+  <h2 id="b8-2"><span class="num">8.2</span>Los supuestos: la cámara y los intervalos</h2>
+  <p>La sección <span class="ui">1 · Los supuestos con los que se hacen las cuentas</span> reúne ocho deslizadores. Son las condiciones de tu cámara y los intervalos de trabajo de tu banco; todo lo que el bloque dice más abajo sale de ellos. El número a la derecha cambia mientras arrastras, y el cálculo se rehace al soltar. Los valores se guardan en el navegador y se conservan al cerrar la app.</p>
+  <figure>
+    <div class="marco"><img src="../img/b8-supuestos.png" alt="La sección 1: ocho deslizadores en tres columnas, Temperatura de la cámara −18, Humedad de la semilla 6, Umbral de regeneración 85, Años entre pruebas de germinación 10, Mínimo de semillas en el frasco 400, Plantas por regeneración 100, Años entre resiembras (campo) 8 y Meses entre subcultivos 12; debajo, Constantes de viabilidad cargadas: 1 taxones — Zea mays, el botón Añadir constantes de una especie y la nota de que sin constantes la app no proyecta la viabilidad"></div>
+    <figcaption><b>Figura 8.2.</b> Los supuestos de fábrica. Son los de la norma de la FAO para la conservación de largo plazo: −18 °C y 6 % de humedad.</figcaption>
+  </figure>
+  <table class="compacta">
+    <caption><b>Tabla 8.2.</b> Los ocho deslizadores (de fábrica, en negritas).</caption>
+    <thead><tr><th style="width:2.05in">Deslizador</th><th class="c" style="width:0.95in">Intervalo · paso</th><th>Qué gobierna</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Temperatura de la cámara (°C)</span></td><td class="c">−20 a 25 · 1<br><b>−18</b></td><td>La <i>t</i> de la ecuación de viabilidad (apartado 8.3).</td></tr>
+      <tr><td><span class="ui">Humedad de la semilla (%)</span></td><td class="c">3 a 14 · 0.5<br><b>6</b></td><td>La <i>m</i> de la ecuación, en % del peso fresco.</td></tr>
+      <tr><td><span class="ui">Umbral de regeneración (%)</span></td><td class="c">50 a 95 · 5<br><b>85</b></td><td>Por debajo de esta germinación, medida o proyectada, el lote está en apuros y hay que regenerarlo.</td></tr>
+      <tr><td><span class="ui">Años entre pruebas de germinación</span></td><td class="c">1 a 20 · 1<br><b>10</b></td><td>Cuándo vence la prueba de un lote de semilla y cada cuánto se repite en la carga de trabajo.</td></tr>
+      <tr><td><span class="ui">Mínimo de semillas en el frasco</span></td><td class="c">50 a 2 000 · 50<br><b>400</b></td><td>Por debajo, existencias en apuros; por debajo de 1.5 veces el mínimo (600), aviso de que se acercan.</td></tr>
+      <tr><td><span class="ui">Plantas por regeneración</span></td><td class="c">20 a 300 · 10<br><b>100</b></td><td>Se guarda, pero ningún cálculo lo usa: la calculadora de la sección 3 tiene sus propios deslizadores (apartado 8.7).</td></tr>
+      <tr><td><span class="ui">Años entre resiembras (campo)</span></td><td class="c">1 a 30 · 1<br><b>8</b></td><td>El ciclo del banco de campo: pasado este plazo desde <code>GP_REGENDATE</code>, la resiembra está atrasada.</td></tr>
+      <tr><td><span class="ui">Meses entre subcultivos</span></td><td class="c">2 a 24 · 1<br><b>12</b></td><td>El intervalo del cultivo in vitro de crecimiento lento.</td></tr>
+    </tbody>
+  </table>
+  <p>Otros seis supuestos son fijos y no tienen deslizador: el mínimo de <b>25 plantas</b> en el banco de campo, de <b>10 frascos</b> in vitro y de <b>20 criotubos</b>; una visita cada <b>2 años</b> a la reserva genética y cada <b>año</b> a la parcela, y <b>200 semillas</b> por prueba de germinación como valor propuesto al registrarla (apartado 8.6).</p>
+  <h3>Las constantes de viabilidad</h3>
+  <p>Debajo de los deslizadores, la línea <span class="ui">Constantes de viabilidad cargadas</span> dice cuántos taxones tienen constantes y nombra los cuatro primeros. De fábrica sólo hay uno, <i>Zea mays</i>, con las constantes publicadas por Ellis y Roberts: K<sub>E</sub> = 6.474, C<sub>W</sub> = 2.115, C<sub>H</sub> = 0.0329 y C<sub>Q</sub> = 0.000478. La app escribe «1 taxones», sin concordar el número.</p>
+  <p>El botón <span class="ui">Añadir constantes de una especie</span> abre cuatro preguntas seguidas del navegador: el taxón (te sugiere los de tu colección), K<sub>E</sub>, C<sub>W</sub> y la fuente. Las dos primeras constantes proponen los valores del maíz; C<sub>H</sub> y C<sub>Q</sub> no se preguntan y toman los valores de arriba, que describen el efecto de la temperatura en muchas especies ortodoxas (apartado 1.5). Escribe el taxón exactamente como el <b>género y la especie</b> del pasaporte, separados por un espacio: <i>Phaseolus vulgaris</i>, no <i>P. vulgaris</i> ni <i>frijol</i>. Las constantes se guardan en el navegador; si vuelves a añadir el mismo taxón, las nuevas reemplazan a las anteriores, y no hay manera de borrarlas desde la app.</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Sólo el maíz trae constantes publicadas</div>
+    <p>En las otras 17 especies de la colección de ejemplo la app no proyecta nada: dice que faltan las constantes y trabaja sólo con la fecha y el valor de la última prueba. Es preferible a inventar un número. Toma K<sub>E</sub> y C<sub>W</sub> de tu especie de la Seed Information Database de Kew o de la literatura, y anota la fuente en la cuarta pregunta. Aceptar los valores propuestos para otra especie equivale a suponer que envejece como un maíz.</p>
+  </div>
+
+  <!-- 8.3 -->
+  <h2 id="b8-3"><span class="num">8.3</span>La viabilidad de hoy, lote por lote</h2>
+  <p>Para cada lote en banco de semillas —o sin ruta declarada, que el bloque trata igual— con constantes para su especie, con germinación y con fecha de prueba, la app proyecta la germinación de hoy y los años que le quedan antes de cruzar el umbral. Es la misma ecuación del simulador del Bloque 1 (apartado 1.5), aplicada desde la última prueba real del lote.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · la ecuación de viabilidad de Ellis y Roberts</div>
+    <div class="formula">v = K<sub>i</sub> − p / σ   ·   log<sub>10</sub> σ = K<sub>E</sub> − C<sub>W</sub> log<sub>10</sub> m − C<sub>H</sub> t − C<sub>Q</sub> t²   ·   germinación = 100 Φ(v)</div>
+    <p><b>K<sub>i</sub></b> es la germinación de la última prueba expresada en probits: K<sub>i</sub> = Φ<sup>−1</sup>(g<sub>0</sub>/100); <b>p</b>, los días transcurridos desde esa prueba; <b>σ</b>, los días que tarda la viabilidad en bajar un probit, y Φ, la normal acumulada. Con el umbral <i>u</i>, los años que le quedan al lote <b>desde hoy</b> son</p>
+    <div class="formula">años al umbral = σ · [Φ<sup>−1</sup>(g<sub>0</sub>/100) − Φ<sup>−1</sup>(u/100)] / 365.25 − años desde la prueba</div>
+    <p>Si la cuenta da un número negativo, el lote ya cruzó el umbral. La germinación se acota entre 0.01 y 99.99 % antes de pasarla a probits, porque Φ<sup>−1</sup> de 0 o de 100 es infinito.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · el Maíz azul de Apoala (MEX-ZM-0001)</div>
+    <p>La última prueba dio 88 % el 10 de marzo de 2024; el 30 de octubre de 2026 han pasado 2.642 años (965 días). La cámara está a −18 °C con 6 % de humedad.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">log<sub>10</sub> σ = 6.474 − 2.115 × 0.77815 − 0.0329 × (−18) − 0.000478 × 324 = 6.474 − 1.6458 + 0.5922 − 0.1549 = 5.2655</td></tr>
+      <tr><td colspan="2">σ = 10<sup>5.2655</sup> = 184 305 días = 504.6 años por probit</td></tr>
+      <tr><td style="width:50%">K<sub>i</sub> = Φ<sup>−1</sup>(0.88) = 1.17499</td><td>v = 1.17499 − 965 / 184 305 = 1.16975</td></tr>
+      <tr><td colspan="2">germinación de hoy = 100 · Φ(1.16975) = 87.89 %  →  la tabla escribe 88 % → 88 %</td></tr>
+      <tr><td colspan="2">años al umbral = 504.6 × (1.17499 − 1.03643) − 2.642 = 69.91 − 2.64 = 67.27 años</td></tr>
+    </tbody></table>
+    <p>A −18 °C el lote pierde una décima de punto en dos años y medio: la proyección no tiene nada que avisar, y la única alerta del lote es que no tiene duplicado de seguridad. El Teocintle de Balsas (MEX-ZP-0011) es otro caso: su última prueba dio 81 % el 14 de septiembre de 2023, ya por debajo del umbral de 85 %; la proyección lo pone hoy en 80.83 % y sus «años al umbral» son −83.1, porque en esas condiciones tardaría 83 años en bajar de 85 a 81 %.</p>
+  </div>
+  <p>La viabilidad proyectada aparece en la columna <span class="ui">Germinación</span> de la lista de trabajo, detrás de una flecha: <span class="ui">88 % → 88 %</span> es la última prueba y la de hoy. Debajo va el tiempo desde la prueba, en años con un decimal: <span class="ui">hace 2.6 a</span>.</p>
+  <h3>Lo que pesan la temperatura y la humedad</h3>
+  <p>A −18 °C y 6 % de humedad la diferencia entre la prueba y la proyección es invisible. Las condiciones de la cámara son las que cambian el cuadro: mueve los dos primeros deslizadores y mira cómo responde la colección.</p>
+  <table class="compacta">
+    <caption><b>Tabla 8.3.</b> Cuatro cámaras con la colección de ejemplo (umbral de 85 %; los demás supuestos, de fábrica).</caption>
+    <thead><tr><th>Cámara</th><th class="c">σ (años por probit)</th><th class="c">MEX-ZM-0001 hoy</th><th class="c">Años al umbral</th><th class="c">En apuros</th><th class="c">Al día</th></tr></thead>
+    <tbody>
+      <tr><td>−18 °C, 6 % (de fábrica)</td><td class="c">504.6</td><td class="c">87.89 %</td><td class="c">67.27</td><td class="c">10</td><td class="c">9</td></tr>
+      <tr><td>5 °C, 6 %</td><td class="c">122.8</td><td class="c">87.56 %</td><td class="c">14.37</td><td class="c">10</td><td class="c">9</td></tr>
+      <tr><td>5 °C, 8 %</td><td class="c">66.8</td><td class="c">87.19 %</td><td class="c">6.62</td><td class="c">10</td><td class="c">9</td></tr>
+      <tr><td>20 °C, 12 % (sin cámara)</td><td class="c">6.0</td><td class="c">76.92 %</td><td class="c">−1.81</td><td class="c">19</td><td class="c">0</td></tr>
+    </tbody>
+  </table>
+  <p>En un cuarto frío a 5 °C el maíz azul pasa de tener 67 años por delante a tener 14, y con semilla al 8 % de humedad, menos de 7; el tablero todavía no cambia, pero la carga de trabajo sí: a 5 °C y 6 % aparecen regeneraciones en los años 14 y 21 (apartado 8.8). En un banco comunitario sin cámara, a 20 °C y 12 %, nueve maíces más cruzan el umbral y los lotes en apuros pasan de 10 a 19; los otros cuatro —los de 93 a 95 %— quedan con menos de 3 años y piden atención.</p>
+  <figure>
+    <div class="marco"><img src="../img/b8-comunitario.png" alt="Los seis recuadros del tablero con la cámara a 20 grados y 12 por ciento de humedad: Lotes en apuros 19, Piden atención 21, Al día 0 de 46 accesiones, Con proyección de viabilidad 15, Sin duplicado de seguridad 21, Existencias registradas 53,047"></div>
+    <figcaption><b>Figura 8.3.</b> El tablero con la cámara de un banco comunitario: 20 °C y 12 % de humedad. Ningún lote queda al día.</figcaption>
+  </figure>
+
+  <!-- 8.4 -->
+  <h2 id="b8-4"><span class="num">8.4</span>Las alertas, ruta por ruta</h2>
+  <p>Cada ruta de conservación tiene su propio reloj, y el bloque le aplica a cada accesión las revisiones de su ruta. Cada alerta tiene un nivel: <b>grave</b> (en rojo, 3 puntos), <b>atención</b> (en ocre, 2 puntos) o <b>dato faltante</b> (en azul, 1 punto). La tabla 8.4 las reúne todas.</p>
+  <p>Con la colección de ejemplo, las 10 accesiones en apuros son cuatro lotes de semilla bajo el umbral —el teocintle (81 %), el maíz ancho de riego (72 %), el frijol vaquita (84 %) y el frijol tépari (79 %)—, tres accesiones de campo con pocas plantas —el cacao, el aguacate y un chayote— y los tres cultivos in vitro, con 32 a 34 meses sin subcultivo frente a un intervalo de 12. Las 6 que sólo tienen un dato faltante son lotes de semilla sin constantes y con todo lo demás en orden: el ayocote, la calabacita, dos chiles, el tomate milpero y el trigo.</p>
+  <table class="compacta">
+    <caption><b>Tabla 8.4.</b> Las alertas del Bloque 8, con los supuestos de fábrica, y cuántas accesiones de la colección de ejemplo las tienen.</caption>
+    <thead><tr><th style="width:1.05in">Ruta</th><th>Cuándo aparece y qué dice</th><th class="c" style="width:0.55in">Nivel</th><th class="c" style="width:0.45in">Ej.</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="9">Banco de semillas (o sin ruta declarada)</td><td>La proyección queda por debajo del umbral: <span class="ui">La proyección lo pone en N % de germinación, por debajo del umbral de 85 %.</span></td><td class="c">grave</td><td class="c">2</td></tr>
+      <tr><td>Le quedan menos de 3 años antes de cruzar el umbral: <span class="ui">Le quedan unos N años…</span></td><td class="c">atención</td><td class="c">0</td></tr>
+      <tr><td>Tiene germinación, pero no hay constantes para su especie: <span class="ui">No hay constantes de viabilidad para…</span></td><td class="c">dato</td><td class="c">14</td></tr>
+      <tr><td>No tiene fecha de prueba: <span class="ui">Nunca se le ha hecho una prueba de germinación.</span></td><td class="c">grave</td><td class="c">0</td></tr>
+      <tr><td>Pasaron más años que el intervalo desde la última prueba: <span class="ui">Van N años desde la última prueba…</span></td><td class="c">atención</td><td class="c">0</td></tr>
+      <tr><td>La última prueba ya dio menos que el umbral: <span class="ui">La última prueba dio N %, por debajo del umbral.</span></td><td class="c">grave</td><td class="c">4</td></tr>
+      <tr><td>Existencias por debajo del mínimo: <span class="ui">Quedan N semillas…</span></td><td class="c">grave</td><td class="c">0</td></tr>
+      <tr><td>Existencias por debajo de 1.5 veces el mínimo: <span class="ui">Las existencias (N) se acercan al mínimo.</span></td><td class="c">atención</td><td class="c">2</td></tr>
+      <tr><td>Sin existencias registradas: <span class="ui">No hay existencias registradas.</span></td><td class="c">dato</td><td class="c">0</td></tr>
+      <tr><td rowspan="3">Banco de campo</td><td>Sin fecha de la última resiembra: <span class="ui">No hay fecha de la última resiembra.</span></td><td class="c">atención</td><td class="c">2</td></tr>
+      <tr><td>Más años que el ciclo desde <code>GP_REGENDATE</code>: <span class="ui">Van N años desde la última resiembra…</span></td><td class="c">grave</td><td class="c">2</td></tr>
+      <tr><td>Menos de 25 plantas: <span class="ui">Sólo quedan N plantas (el mínimo es 25): la deriva en la próxima resiembra será fuerte.</span></td><td class="c">grave</td><td class="c">3</td></tr>
+      <tr><td rowspan="3">Cultivo in vitro</td><td>Sin fecha del último subcultivo: <span class="ui">No hay fecha del último subcultivo.</span></td><td class="c">atención</td><td class="c">0</td></tr>
+      <tr><td>Más meses que el intervalo desde <code>GP_REGENDATE</code>: <span class="ui">Van N meses desde el último subcultivo…</span></td><td class="c">grave</td><td class="c">3</td></tr>
+      <tr><td>Menos de 10 frascos: <span class="ui">Quedan N frascos (el mínimo es 10).</span></td><td class="c">atención</td><td class="c">0</td></tr>
+      <tr><td>Criopreservación</td><td>Menos de 20 criotubos: <span class="ui">Quedan N criotubos (el mínimo es 20).</span></td><td class="c">atención</td><td class="c">0</td></tr>
+      <tr><td>Reserva y parcela</td><td>Más de 2 años (reserva) o 1 año (parcela) desde la última visita, que es <code>GP_REGENDATE</code> o, si falta, la fecha de colecta: <span class="ui">Hace N años que no se registra una visita al sitio…</span></td><td class="c">atención</td><td class="c">5</td></tr>
+      <tr><td>Toda ruta ex situ</td><td>Ningún sitio de <code>DUPLSITE</code> es una institución distinta de <code>INSTCODE</code>: <span class="ui">Sin duplicado de seguridad en otra institución.</span></td><td class="c">atención</td><td class="c">21</td></tr>
+    </tbody>
+  </table>
+  <p>El duplicado de seguridad sigue la misma regla que la validación del Bloque 2 (apartado 2.6): <code>DUPLSITE</code> puede tener varios códigos separados por punto y coma, y basta con que uno sea distinto del código de la institución que conserva la accesión. Las rutas in situ no lo piden; todas las demás, sí, incluidos la criopreservación y el banco de ADN. El banco de ADN no tiene más revisión que ésa, y la criopreservación sólo la del número de criotubos: el bloque no programa pruebas de recuperación.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Dos alertas para el mismo problema</div>
+    <p>Un lote de maíz cuya prueba ya dio menos que el umbral recibe dos alertas graves: la de la prueba y la de la proyección, que parte de ese mismo valor. Al Teocintle de Balsas le pasa: <i>La proyección lo pone en 81 %…</i> y <i>La última prueba dio 81 %…</i> No son dos problemas, sino uno dicho dos veces; pero las dos suman puntos, y empujan el lote hacia arriba de la lista frente a uno de otra especie con el mismo defecto.</p>
+  </div>
+
+  <!-- 8.5 -->
+  <h2 id="b8-5"><span class="num">8.5</span>La lista de trabajo</h2>
+  <p>La sección <span class="ui">2 · Qué hay que hacer</span> es la lista de la temporada: una fila por accesión, ordenada por urgencia. El <b>puntaje</b> de una accesión es la suma de los puntos de sus alertas (3, 2 o 1); la lista va de mayor a menor puntaje y, a igual puntaje, del nivel más grave al más leve; si siguen empatadas, en el orden del pasaporte. Muestra hasta 200 filas.</p>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo · por qué el cacao encabeza la lista</div>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">MEX-TC-0027, cacao: resiembra atrasada (8.7 &gt; 8 años) 3 + 20 plantas &lt; 25 → 3 + sin duplicado 2 = 8</td></tr>
+      <tr><td colspan="2">MEX-PH-0041, frijol tépari: sin constantes 1 + 79 % &lt; 85 → 3 + 430 &lt; 600 → 2 + sin duplicado 2 = 8</td></tr>
+      <tr><td colspan="2">MEX-ZM-0043, maíz ancho de riego: proyección 71.52 % → 3 + prueba 72 % → 3 + sin duplicado 2 = 8</td></tr>
+      <tr><td colspan="2">MEX-SE-0046, chayote: sin fecha de resiembra 2 + 15 plantas → 3 + sin duplicado 2 = 7</td></tr>
+    </tbody></table>
+    <p>Los tres primeros empatan con 8 puntos y con nivel grave, así que quedan en el orden del pasaporte. Siguen el chayote (7), el teocintle y el frijol vaquita (6) y el aguacate (6). Las 9 accesiones al día van al final, con 0 puntos.</p>
+  </div>
+  <table class="compacta">
+    <caption><b>Tabla 8.5.</b> Las columnas de la lista de trabajo.</caption>
+    <thead><tr><th style="width:1.3in">Columna</th><th>Qué muestra</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Accesión</span></td><td>El número de accesión y, debajo, los primeros 24 caracteres del nombre.</td></tr>
+      <tr><td><span class="ui">Ruta</span></td><td>La ruta de conservación, en una etiqueta del color del nivel de la accesión: roja en apuros, ocre si pide atención, azul si falta un dato, verde si está al día.</td></tr>
+      <tr><td><span class="ui">Existencias</span></td><td><code>GP_STOCK</code>, en las unidades de la ruta.</td></tr>
+      <tr><td><span class="ui">Germinación</span></td><td>La última prueba, la proyección de hoy tras la flecha si la hay, y el tiempo desde la prueba. En las rutas sin prueba de germinación escribe <span class="ui">0 %</span> en vez de un guion: no es un resultado, sino la casilla vacía.</td></tr>
+      <tr><td><span class="ui">Qué pasa</span></td><td>Las alertas, cada una con una raya del color de su nivel, o la etiqueta <span class="ui">al día</span>.</td></tr>
+      <tr><td>(botones)</td><td><span class="ui">Registrar prueba</span> en todas las filas; <span class="ui">Regeneración</span> en semillas y campo, y <span class="ui">Subcultivo</span> in vitro (apartado 8.6).</td></tr>
+    </tbody>
+  </table>
+  <figure class="angosta">
+    <div class="marco"><img src="../img/b8-tareas.png" alt="La sección 2: los selectores Mostrar en todo y Ruta en todas, el botón Plan de trabajo en CSV y las tres primeras filas de la tabla: MEX-TC-0027, Cacao criollo de Ocosing, Banco de campo o colección viva, 20, 0 %, con tres alertas, van 8.7 años desde la última resiembra, sólo quedan 20 plantas y sin duplicado de seguridad; MEX-PH-0041, Frijol tepari, Banco de semillas, 430, 79 % hace 3.8 a, con cuatro alertas; MEX-ZM-0043, Maíz ancho de riego, Banco de semillas, 1,150, 72 % → 72 % hace 7.2 a, con tres alertas; cada fila con los botones Registrar prueba y Regeneración, este último cortado en el borde derecho"></div>
+    <figcaption><b>Figura 8.4.</b> Las tres primeras filas de la lista de trabajo, las tres con 8 puntos. El botón <span class="ui">Regeneración</span> queda cortado en el borde de la tabla.</figcaption>
+  </figure>
+  <p>Dos selectores filtran la lista. <span class="ui">Mostrar</span> deja <span class="ui">todo</span>, sólo las accesiones <span class="ui">en apuros</span> (10), las que <span class="ui">piden atención</span> (21), las que tienen <span class="ui">faltan datos</span> (6) o las que están <span class="ui">al día</span> (9). <span class="ui">Ruta</span> deja una sola ruta; cada opción dice cuántas accesiones tiene, por ejemplo <span class="ui">Banco de semillas (28)</span>. La opción <span class="ui">sin declarar (1)</span> deja la lista vacía aunque la accesión exista: es el chile costeño (MEX-CH-0042), y para verlo hay que usar <span class="ui">todas</span>.</p>
+
+  <!-- 8.6 -->
+  <h2 id="b8-6"><span class="num">8.6</span>Registrar lo que se hace y el plan en CSV</h2>
+  <p>Los botones de cada fila escriben en el pasaporte lo que hiciste hoy. Funcionan con las ventanas de pregunta del navegador; si cancelas la primera, no se guarda nada. Al terminar, el pasaporte se guarda en el navegador, la tabla del Bloque 2 se actualiza y el Bloque 8 se recalcula.</p>
+  <table class="compacta">
+    <caption><b>Tabla 8.6.</b> Lo que pregunta y lo que cambia cada botón (la fecha es la de hoy, en AAAAMMDD).</caption>
+    <thead><tr><th style="width:1.15in">Botón</th><th style="width:2.4in">Pregunta</th><th>Cambia en el pasaporte</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Registrar prueba</span></td><td>El resultado (%, de 0 a 100; acepta coma decimal) y cuántas semillas se usaron, con 200 propuestas (0 si no descuentas).</td><td><code>GP_GERMPCT</code> (con un decimal), <code>GP_GERMDATE</code>, y resta las semillas de <code>GP_STOCK</code> sin bajar de 0.</td></tr>
+      <tr><td><span class="ui">Regeneración</span> (semillas)</td><td>Las existencias después de regenerar y la germinación del lote nuevo, con 96 % propuesto; en blanco si aún no se prueba.</td><td><code>GP_REGENDATE</code>, <code>GP_STOCK</code> si es mayor que 0 y, si diste germinación, <code>GP_GERMPCT</code> y <code>GP_GERMDATE</code>.</td></tr>
+      <tr><td><span class="ui">Regeneración</span> (campo) y <span class="ui">Subcultivo</span> (in vitro)</td><td>Sólo las existencias después de la resiembra o el subcultivo.</td><td><code>GP_REGENDATE</code> y <code>GP_STOCK</code>.</td></tr>
+    </tbody>
+  </table>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo · una prueba que sale mal y la regeneración que la corrige</div>
+    <p>En el Maíz azul de Apoala (MEX-ZM-0001), <span class="ui">Registrar prueba</span> con 80 % y 200 semillas deja <code>GP_GERMPCT</code> = 80, <code>GP_GERMDATE</code> = 20261030 y <code>GP_STOCK</code> = 1 600 (1 800 − 200). El lote pasa de pedir atención a estar en apuros, con la proyección y la prueba por debajo de 85 %. Después, <span class="ui">Regeneración</span> con 3 000 semillas y 97 % deja <code>GP_STOCK</code> = 3 000, <code>GP_GERMPCT</code> = 97 y las dos fechas en 20261030; al lote sólo le queda la alerta de que no tiene duplicado de seguridad.</p>
+  </div>
+  <p>Los cambios entran al pasaporte como cualquier edición: se ven en la ficha del Bloque 2 y viajan en sus exportaciones. No hay un historial de pruebas; cada registro reemplaza al anterior. Si necesitas conservar la serie, exporta el pasaporte antes de cada temporada. Dos detalles: <span class="ui">Registrar prueba</span> aparece también en las rutas que no usan prueba de germinación —campo, in vitro, criopreservación e in situ—, donde no tiene sentido; y la accesión sin ruta declarada, que el bloque revisa como lote de semilla, no tiene botón de regeneración.</p>
+  <h3>El plan de trabajo en CSV</h3>
+  <p>El botón <span class="ui">Plan de trabajo en CSV</span> guarda <span class="ruta">plan-de-trabajo.csv</span>, en UTF-8, con una fila por accesión con alguna alerta —37 con la colección de ejemplo— en el orden del pasaporte y sin aplicar los filtros. Si ninguna tiene alertas, la app dice <span class="ui">No hay nada pendiente: toda la colección está al día.</span></p>
+  <table class="compacta csv">
+    <caption><b>Tabla 8.7.</b> Siete de las once columnas del plan de trabajo, con dos filas de la colección de ejemplo.</caption>
+    <thead><tr><th>ACCENUMB</th><th>ruta</th><th>urgencia</th><th>existencias</th><th>germinacion_ultima</th><th>germinacion_proyectada</th><th>anios_al_umbral</th></tr></thead>
+    <tbody>
+      <tr><td>MEX-ZM-0001</td><td>seed</td><td>warn</td><td>1800</td><td>88</td><td>87.9</td><td>67.3</td></tr>
+      <tr><td>MEX-ZP-0011</td><td>seed</td><td>crit</td><td>900</td><td>81</td><td>80.8</td><td>-83.1</td></tr>
+    </tbody>
+  </table>
+  <p>Las otras cuatro columnas son <code>ACCENAME</code>, <code>TAXON</code> (género y especie), <code>anios_desde_prueba</code> y <code>acciones</code>, las alertas de la accesión. La ruta y la urgencia van con sus códigos internos (<code>seed</code>, <code>field</code>, <code>invitro</code>, <code>cryo</code>, <code>insitu</code>, <code>onfarm</code>; <code>crit</code>, <code>warn</code>, <code>info</code>), los años con un decimal y las alertas separadas por una raya vertical, siempre en español. Las rutas sin prueba de germinación llevan 0 en <code>germinacion_ultima</code>, como en la tabla. Ordénalo por <code>urgencia</code> en tu hoja de cálculo y repártelo entre quienes hacen cada tarea.</p>
+
+  <!-- 8.7 -->
+  <h2 id="b8-7"><span class="num">8.7</span>Cuántas plantas y cuántas semillas</h2>
+  <p>La sección <span class="ui">3 · Cuántas plantas y cuántas semillas</span> tiene dos paneles. El de la izquierda, <span class="ui">Plantas necesarias</span>, responde la pregunta de toda regeneración: con cuántas plantas no se pierden los alelos raros. Tiene tres deslizadores: <span class="ui">Frecuencia del alelo a conservar</span> (1 a 20 %, de fábrica 5 %), <span class="ui">Seguridad deseada</span> (80 a 99 %, de fábrica 95 %) y <span class="ui">Germinación del lote (%)</span> (20 a 100 % en pasos de 5, de fábrica 85 %). El resultado cambia mientras arrastras.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Teoría en breve · la probabilidad de conservar un alelo raro</div>
+    <p>Una regeneración con <i>n</i> plantas es un muestreo de gametos. En una especie <b>alógama</b>, cada planta aporta dos gametos independientes, y la probabilidad de que un alelo de frecuencia <i>p</i> quede fuera de los 2<i>n</i> gametos es (1 − <i>p</i>)<sup>2<i>n</i></sup>. En una <b>autógama</b>, casi homocigota, cada planta aporta en la práctica un solo gameto efectivo, y el exponente es <i>n</i>. Para conservar el alelo con probabilidad <i>P</i>:</p>
+    <div class="formula">P(conservar) = 1 − (1 − p)<sup>k·n</sup>   ·   n = ⌈ ln(1 − P) / (k · ln(1 − p)) ⌉   ·   k = 2 en alógamas, 1 en autógamas</div>
+    <p>Las semillas que hay que sembrar salen de dividir las plantas entre la germinación <i>g</i> y un establecimiento en campo fijo de 90 %: semillas = ⌈ n / (g · 0.9) ⌉.</p>
+  </div>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b8-calculo.png" alt="La sección 3: a la izquierda, el panel Plantas necesarias con Frecuencia del alelo a conservar 5 %, Seguridad deseada 95 % y Germinación del lote 85 %; especie alógama 30 plantas y 40 semillas a sembrar; especie autógama 59 plantas y 78 semillas a sembrar; y la nota de que con las 100 plantas que recomienda FAO la probabilidad es de 100.00 %; a la derecha, la gráfica de barras Carga de trabajo de los próximos 25 años, con dos picos de 25 pruebas de germinación en los años 7 y 17, regeneraciones en el año 0 y resiembras repartidas, con la leyenda y la nota de los picos"></div>
+    <figcaption><b>Figura 8.5.</b> La calculadora de tamaño de muestra con sus valores de fábrica y la carga de trabajo de la colección de ejemplo.</figcaption>
+  </figure>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · los valores de fábrica y un alelo del 1 %</div>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">p = 0.05, P = 0.95: ln 0.05 = −2.99573; ln 0.95 = −0.05129</td></tr>
+      <tr><td style="width:50%">alógama: 2.99573 / (2 × 0.05129) = 29.20 → 30 plantas</td><td>autógama: 2.99573 / 0.05129 = 58.40 → 59 plantas</td></tr>
+      <tr><td style="width:50%">semillas: 30 / (0.85 × 0.9) = 39.2 → 40</td><td>semillas: 59 / 0.765 = 77.1 → 78</td></tr>
+      <tr><td colspan="2">p = 0.01, P = 0.95: alógama 2.99573 / (2 × 0.01005) = 149.04 → 150 plantas y 197 semillas; autógama 299 y 391</td></tr>
+      <tr><td colspan="2">con 100 plantas y p = 0.01: 1 − 0.99<sup>200</sup> = 1 − 0.1340 = 0.8660 → la nota dice 86.60 %</td></tr>
+    </tbody></table>
+    <p>Un alelo del 5 % se conserva con 30 plantas de una alógama; uno del 1 % pide 150. Por eso conviene fijar la frecuencia más baja que te importe, no la más cómoda.</p>
+  </div>
+  <p>La nota de abajo compara con las 100 plantas que recomienda la FAO para una alógama. Con la frecuencia de fábrica, 5 %, la probabilidad es 1 − 0.95<sup>200</sup> = 99.9965 %, y la nota la redondea a <span class="ui">100.00 %</span>, que suena a certeza y no lo es. Baja la frecuencia a 1 o 2 % para ver qué tan lejos queda la recomendación. La cuenta supone una muestra al azar y cruzamiento sin restricciones: si sólo florece y se cruza una parte de las plantas, el número efectivo es menor que el que siembras, y hay que sembrar más.</p>
+
+  <!-- 8.8 -->
+  <h2 id="b8-8"><span class="num">8.8</span>La carga de trabajo de los próximos 25 años</h2>
+  <p>El panel de la derecha de la sección 3 es una gráfica de barras apiladas: por cada año, de hoy (+0) a dentro de 25 (+25), cuántas <b>pruebas de germinación</b> (morado), <b>regeneraciones</b> (naranja) y <b>resiembras de campo</b> (rojo) tocarían si se mantienen los intervalos de la sección 1. Es lo que decide el presupuesto de un banco: cuántas siembras, cuánto invernadero y cuántas manos hacen falta cada año.</p>
+  <table class="compacta">
+    <caption><b>Tabla 8.8.</b> Cómo se programa cada tarea.</caption>
+    <thead><tr><th style="width:1.5in">Tarea</th><th>Cuándo cae</th></tr></thead>
+    <tbody>
+      <tr><td>Prueba de germinación</td><td>En los lotes de semilla (o sin ruta declarada): intervalo − años desde la última prueba, y de ahí cada intervalo; en el año 0 si nunca se ha probado.</td></tr>
+      <tr><td>Regeneración</td><td>Sólo en los lotes con proyección: el año en que cruzan el umbral, o el año 0 si ya lo cruzaron.</td></tr>
+      <tr><td>Resiembra de campo</td><td>Ciclo − años desde la última resiembra, y de ahí cada ciclo; en el año 0 si no hay fecha.</td></tr>
+    </tbody>
+  </table>
+  <p>Cada fecha se redondea al año entero más cercano. Con la colección de ejemplo los dos picos son los años 7 y 17: 25 lotes se probaron entre junio de 2023 y abril de 2024, así que sus pruebas vencen juntas dentro de 6.6 a 7.4 años y se repiten diez años después. Es el caso que la nota del panel señala: conviene adelantar parte de esas pruebas para repartirlas. En el año 0 caen las regeneraciones del teocintle y del maíz ancho de riego, y las resiembras del café y de un chayote, que no tienen fecha.</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Lo que la gráfica no cuenta</div>
+    <p><b>El trabajo atrasado.</b> Una tarea vencida da una fecha negativa y la gráfica la salta: el aguacate y el cacao, con la resiembra atrasada (9.0 y 8.7 años contra un ciclo de 8), no aparecen en el año 0, sino hasta el 7, en su siguiente ciclo. Lo mismo pasa con una prueba vencida. El trabajo atrasado está en la lista de la sección 2, no aquí.<br>
+    <b>Los subcultivos.</b> Se calculan, pero no se dibujan ni entran en la escala, y la leyenda no los menciona.<br>
+    <b>Las regeneraciones sin proyección.</b> Un lote de frijol bajo el umbral necesita regenerarse, pero sin constantes la gráfica no lo programa.</p>
+  </div>
+  <p>Al pasar el puntero sobre un segmento, una etiqueta dice el año y cuántas tareas hay, pero nombra la tarea con su clave interna en inglés: <span class="ui">año +7: 25 tests</span>. La escala vertical tiene tres marcas, 0, la mitad redondeada y el máximo (con la colección de ejemplo, 0, 14 y 27). La gráfica también entra en el informe del Bloque 10 (capítulo 10).</p>
+  <p>La carga cambia con los supuestos. Con pruebas cada 5 años, los picos de 25 pruebas se repiten en los años 2, 7, 12, 17 y 22. Con la cámara a 5 °C y 8 % de humedad aparecen regeneraciones en los años 7, 10, 14, 18 y 22; a 20 °C y 12 %, 14 regeneraciones caen en el año 0.</p>
+
+  <!-- 8.9 -->
+  <h2 id="b8-9"><span class="num">8.9</span>El banco por rutas</h2>
+  <p>La sección <span class="ui">4 · El banco por rutas</span> resume la colección por ruta de conservación, de la que tiene más accesiones a la que tiene menos: cuántas accesiones, cuántas en apuros y cuántas piden atención (en etiquetas de color cuando no son 0) y la suma de sus existencias. Aquí las existencias sí son comparables, porque cada fila tiene una sola unidad.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b8-rutas.png" alt="La sección 4: la tabla con las columnas Ruta, Accesiones, En apuros, Piden atención y Existencias; Banco de semillas 28, 4, 9, 49,070; Banco de campo o colección viva 8, 3, 5, 305; Cultivo in vitro 3, 3, 0, 72; Conservación en la parcela (on-farm) 3, 0, 3, 1,350; Reserva genética (in situ) 2, 0, 2, 1,550; Criopreservación 1, 0, 1, 180; sin declarar 1, 0, 1, 520; debajo, la nota Una proyección no sustituye a una prueba"></div>
+    <figcaption><b>Figura 8.6.</b> El banco de ejemplo por rutas y la nota con que termina el panel.</figcaption>
+  </figure>
+  <p><b>Cómo se lee.</b> El banco de semillas concentra las accesiones, pero sus problemas son pocos y casi todos de respaldo: 4 de 28 lotes en apuros. El campo y el in vitro son lo contrario: 3 de 8 y 3 de 3 en apuros, con 305 plantas y 72 frascos en total. Son las rutas que se pierden por descuido —una resiembra que no se hizo, un subcultivo que se atrasó— y las que piden más manos por accesión. La fila <span class="ui">sin declarar</span> es el chile costeño, que no tiene <code>GP_CONS</code> y cuyo <code>STORAGE</code> trae un código que no existe en MCPD (15, uno de los errores sembrados para el Bloque 3): declárale una ruta en el Bloque 2 para que reciba las revisiones correctas.</p>
+  <p>La nota del pie, <span class="ui">Una proyección no sustituye a una prueba.</span>, resume el límite del bloque: la ecuación dice lo que <i>debería</i> pasarle a un lote en esas condiciones, no lo que le pasó. Un secado incompleto, un frasco mal cerrado o un corte de luz no aparecen en ninguna fórmula. Usa la proyección para decidir qué lotes probar primero, no para ahorrarte la prueba.</p>
+
+  <h3>Cuando algo no sale</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:40%">Lo que ves</th><th>Por qué pasa y qué hacer</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Primero carga tus accesiones en el Bloque 2.</span></td><td>No hay pasaporte. Carga tu colección o la de ejemplo (capítulo 2).</td></tr>
+      <tr><td><span class="ui">No hay constantes de viabilidad para…</span> en casi todos los lotes</td><td>Sólo el maíz trae constantes. Añade las de tu especie con <span class="ui">Añadir constantes de una especie</span> (apartado 8.2).</td></tr>
+      <tr><td>Añadí constantes y el lote sigue sin proyección</td><td>El taxón no coincide letra por letra con el género y la especie del pasaporte, o el lote no tiene <code>GP_GERMPCT</code> o <code>GP_GERMDATE</code>.</td></tr>
+      <tr><td>Un lote de semilla dice que la última prueba dio 0 % y que quedan 0 semillas</td><td>Las casillas <code>GP_GERMPCT</code> y <code>GP_STOCK</code> están vacías y la app las lee como 0. Llénalas en la ficha del Bloque 2, o haz la prueba y regístrala.</td></tr>
+      <tr><td>La columna <span class="ui">Germinación</span> dice <span class="ui">0 %</span> en campo, in vitro o in situ</td><td>Esas rutas no tienen prueba de germinación; el 0 es la casilla vacía. Ignóralo.</td></tr>
+      <tr><td>El filtro <span class="ui">sin declarar</span> deja la lista vacía</td><td>Falla del filtro. Usa <span class="ui">todas</span>, o declara la ruta en el Bloque 2.</td></tr>
+      <tr><td>Un lote de maíz suma dos alertas graves por lo mismo</td><td>La prueba ya está bajo el umbral y la proyección parte de ella (apartado 8.4). Regenéralo.</td></tr>
+      <tr><td>Muevo <span class="ui">Plantas por regeneración</span> y nada cambia</td><td>Ese deslizador no entra a ningún cálculo. Usa los de la sección 3.</td></tr>
+      <tr><td>Una resiembra atrasada no aparece en la carga de trabajo</td><td>La gráfica salta las tareas vencidas (apartado 8.8). Están en la lista de la sección 2.</td></tr>
+      <tr><td>Registré una prueba por error</td><td>No hay deshacer. Corrige <code>GP_GERMPCT</code>, <code>GP_GERMDATE</code> y <code>GP_STOCK</code> en la ficha del Bloque 2.</td></tr>
+      <tr><td>Los números cambian de un día a otro</td><td>Todo se mide desde la fecha de hoy (apartado 8.1).</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja regla">
+    <div class="caja-t"><span class="ico">✓</span>Regla de decisión · qué hacer en el Bloque 8</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:44%"><b>Si</b> vas a leer el bloque por primera vez</td><td><b>entonces</b> pon antes la temperatura y la humedad reales de tu cámara, no las de la norma.</td></tr>
+      <tr><td><b>Si</b> tus especies no son maíz</td><td><b>entonces</b> añade sus constantes con su fuente; sin ellas, trabaja con las pruebas y sus fechas.</td></tr>
+      <tr><td><b>Si</b> la última prueba o la proyección quedan bajo el umbral</td><td><b>entonces</b> regenera el lote esta temporada, con las plantas que pida la calculadora para el alelo más raro que te importe.</td></tr>
+      <tr><td><b>Si</b> le quedan menos de 3 años antes del umbral</td><td><b>entonces</b> adelanta su prueba de germinación: la proyección decide qué probar primero, la prueba decide si se regenera.</td></tr>
+      <tr><td><b>Si</b> una accesión de campo tiene menos de 25 plantas o la resiembra atrasada</td><td><b>entonces</b> resiémbrala primero y haz un respaldo in vitro o en criopreservación.</td></tr>
+      <tr><td><b>Si</b> un cultivo in vitro pasó su intervalo de subcultivo</td><td><b>entonces</b> subcultívalo antes que cualquier lote de semilla: el frasco no espera.</td></tr>
+      <tr><td><b>Si</b> una accesión ex situ no tiene duplicado de seguridad</td><td><b>entonces</b> envía una copia a otra institución y anótala en <code>DUPLSITE</code>.</td></tr>
+      <tr><td><b>Si</b> la carga de trabajo tiene un pico</td><td><b>entonces</b> adelanta parte de esas pruebas para repartirlas en los años vecinos.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">El Bloque 8 escribe en el pasaporte sólo cuando registras una prueba, una regeneración o un subcultivo; lo demás son cuentas. Exporta el pasaporte cada temporada para conservar la historia de tus lotes, que la app no guarda.</p>
+  </div>
+
+</section>
+
+</body>
+</html>
