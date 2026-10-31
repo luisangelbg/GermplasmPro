@@ -252,17 +252,17 @@
     const sb = GEO.scaleBar(proj, Math.min(140, W * 0.22));
     const sbText = GEO.scaleLabel(sb, T);
     if (sb.mode === 'none') {
-      const tw = sbText.length * 5.2;
+      const tw = sbText.length * 4.7;
       g.push(`<g transform="translate(${(W - tw - 26).toFixed(1)},${H - 26})" data-scale="none">
       <title>${esc(T('En esta proyección la distancia este-oeste de un pixel cambia con la latitud; en un encuadre tan alto ninguna barra sería cierta en todo el mapa.', 'In this projection the east-west distance of a pixel changes with latitude; in such a tall frame no bar would be true across the whole map.'))}</title>
       <rect x="-6" y="-12" width="${(tw + 12).toFixed(1)}" height="18" rx="6" fill="${paint('--card-bg')}" fill-opacity="0.82"/>
       <text x="0" y="1" font-size="9" fill="${cMuted}">${esc(sbText)}</text>
     </g>`);
     } else {
-      const tw = Math.max(sb.px, sbText.length * 5.4);
+      const tw = Math.max(sb.px, sbText.length * 5.7);
       const x0 = (tw - sb.px) / 2;
       g.push(`<g transform="translate(${(W - tw - 26).toFixed(1)},${H - 26})" data-scale="${sb.mode}">
-      <rect x="-6" y="-14" width="${(tw + 12).toFixed(1)}" height="26" rx="6" fill="${paint('--card-bg')}" fill-opacity="0.82"/>
+      <rect x="-8" y="-14" width="${(tw + 16).toFixed(1)}" height="26" rx="6" fill="${paint('--card-bg')}" fill-opacity="0.82"/>
       <line x1="${x0.toFixed(1)}" y1="0" x2="${(x0 + sb.px).toFixed(1)}" y2="0" stroke="${cText}" stroke-width="2"/>
       <line x1="${x0.toFixed(1)}" y1="-4" x2="${x0.toFixed(1)}" y2="4" stroke="${cText}" stroke-width="2"/>
       <line x1="${(x0 + sb.px).toFixed(1)}" y1="-4" x2="${(x0 + sb.px).toFixed(1)}" y2="4" stroke="${cText}" stroke-width="2"/>

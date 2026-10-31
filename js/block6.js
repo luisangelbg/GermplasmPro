@@ -144,7 +144,7 @@
     if (sb.mode === 'none') {
       g.push(`<text x="${W - 26}" y="${H - 18}" text-anchor="end" font-size="9" fill="${cv('--text')}" fill-opacity="0.75" data-scale="none">${esc(sbText)}</text>`);
     } else {
-      const tw = Math.max(sb.px, sbText.length * 5.4), x0 = (tw - sb.px) / 2;
+      const tw = Math.max(sb.px, sbText.length * 5.7), x0 = (tw - sb.px) / 2;
       g.push(`<g transform="translate(${(W - tw - 26).toFixed(1)},${H - 22})" data-scale="${sb.mode}">
       <line x1="${x0.toFixed(1)}" y1="0" x2="${(x0 + sb.px).toFixed(1)}" y2="0" stroke="${cv('--text')}" stroke-width="2"/>
       <text x="${(tw / 2).toFixed(1)}" y="-5" text-anchor="middle" font-size="9.5" fill="${cv('--text')}">${esc(sbText)}</text></g>`);
