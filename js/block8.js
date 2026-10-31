@@ -387,7 +387,9 @@
     let germ = null;
     if (isSeedRoute(route)) {
       const g = prompt(T('Germinación del lote nuevo (%), o vacío si todavía no se prueba', 'Germination of the new lot (%), or blank if not tested yet'), '96');
-      if (g != null) germ = MANAGE.optNum(g);
+      /* como en «Registrar prueba»: cancelar la segunda pregunta cancela todo */
+      if (g == null) return;
+      germ = MANAGE.optNum(g);
     }
     MANAGE.recordRegeneration(r, MANAGE.todayStamp(), stock, germ);
     persist();
