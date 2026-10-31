@@ -20,8 +20,6 @@
   const card = s.find(n => n.classList && n.classList.contains("card"));
   const det = card.querySelector("details.b7-detail");
   det.open = true;
-  /* para que se vean todas las columnas, la validación ocupa todo el ancho (en la app comparte renglón con el reparto) */
-  card.querySelector(".sum-grid").style.gridTemplateColumns = "1fr"; await W(400);
   await irA(det);
   return caja([det], 8);
 })()

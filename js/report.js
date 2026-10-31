@@ -575,8 +575,8 @@
         ${tbl([L('Alerta', 'Alert'), L('Lotes', 'Lots')],
           M.codes.slice(0, 12).map(c => [
             `<span class="lvl lvl-${c.level}"></span>${esc2(codeName(c))}`, fmtInt(c.n)]), { num: [1] })}
-        ${o.figures ? fig(inLight(() => figure(B8.workPlot, W, 240)), L('Trabajo que cae cada año en los próximos 25: pruebas, regeneraciones y resiembras.',
-          'Work falling due each year over the next 25: tests, regenerations and replantings.')) : ''}
+        ${o.figures ? fig(inLight(() => figure(B8.workPlot, W, 240)), L('Trabajo que cae cada año en los próximos 25 (el año +0 incluye lo atrasado): pruebas, regeneraciones, resiembras y subcultivos.',
+          'Work falling due each year over the next 25 (year +0 includes overdue work): tests, regenerations, replantings and subcultures.')) : ''}
         <p class="rnote">${L('Una proyección de viabilidad no sustituye a una prueba de germinación: dice lo que debería pasarle al lote en esas condiciones, no lo que le pasó.',
           'A viability projection does not replace a germination test: it says what should happen to the lot under those conditions, not what did happen.')}</p>`,
       });
@@ -601,7 +601,7 @@
           L('Sitio', 'Site'), L('Ruta', 'Route'), L('Existencias', 'Stock')],
         D.rows.map(r => [
           `<span class="mono">${esc2(r.ACCENUMB)}</span>`, esc2(r.ACCENAME), `<i>${esc2([r.GENUS, r.SPECIES].filter(Boolean).join(' '))}</i>`,
-          esc2(r.ORIGCTY), esc2(r.COLLSITE), esc2(routeName(MCPD.consRoute(r))), fmtInt(Number(r.GP_STOCK) || 0) || '—',
+          esc2(r.ORIGCTY), esc2(r.COLLSITE), esc2(routeName(MCPD.consRoute(r))), (MANAGE.optNum(r.GP_STOCK) != null ? fmtInt(MANAGE.optNum(r.GP_STOCK)) : '—'),
         ]), { num: [6] }),
       });
     }

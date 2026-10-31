@@ -116,6 +116,24 @@
     return A;
   }
 
+  /* qué tamaño de núcleo hace falta para llegar a 10 accesiones, con las n caracterizadas */
+  const PCT_OPTIONS = [5, 10, 15, 20, 25, 30];
+  function smallCoreTip(n, lang) {
+    const es = lang === 'es';
+    if (n < 10) return es
+      ? `La colección caracterizada tiene sólo ${n} ${pl(n, 'accesión', 'accesiones')}: ni con todas se llega a 10. Caracteriza más accesiones antes de tomar estas cifras en serio.`
+      : `The characterized collection has only ${n} ${pl(n, 'accession', 'accessions')}: not even all of them reach 10. Characterize more accessions before taking these numbers seriously.`;
+    /* Math.round(n·p/100) ≥ 10 ⇔ p ≥ 950/n */
+    const need = Math.ceil(950 / n);
+    const opt = PCT_OPTIONS.find(p => p >= need && Math.round(n * p / 100) >= 10);
+    if (opt) return es
+      ? `Para llegar al menos a 10 accesiones, con ${n} caracterizadas, hace falta un núcleo de ${need} % o más: elige ${opt} % en «Tamaño», o trabaja con una colección más grande, antes de tomar estas cifras en serio.`
+      : `To reach at least 10 accessions, with ${n} characterized, the core must be ${need}% or more: choose ${opt}% under “Size”, or work with a larger collection, before taking these numbers seriously.`;
+    return es
+      ? `Para llegar al menos a 10 accesiones, con ${n} caracterizadas, haría falta un núcleo de ${need} %, más del 30 % que ofrece «Tamaño»: trabaja con una colección más grande antes de tomar estas cifras en serio.`
+      : `To reach at least 10 accessions, with ${n} characterized, the core would need ${need}%, more than the 30% “Size” offers: work with a larger collection before taking these numbers seriously.`;
+  }
+
   /* ============ figuras ============ */
   /* marcas redondas para los ejes: 1, 2 ó 5 por potencia de diez */
   function niceTicks(lo, hi, n) {
@@ -332,7 +350,7 @@
       <div class="card">
         <div class="imp-row">
           <label class="inline-label">${T('Tamaño', 'Size')}<select class="sel" id="b7Pct">
-            ${[5, 10, 15, 20, 25, 30].map(p => `<option value="${p}"${view.pct === p ? ' selected' : ''}>${p} %</option>`).join('')}</select></label>
+            ${PCT_OPTIONS.map(p => `<option value="${p}"${view.pct === p ? ' selected' : ''}>${p} %</option>`).join('')}</select></label>
           <label class="inline-label">${T('Método', 'Method')}<select class="sel" id="b7Method">
             <option value="strata"${view.method === 'strata' ? ' selected' : ''}>${T('por estratos', 'by strata')}</option>
             <option value="M"${view.method === 'M' ? ' selected' : ''}>${T('método M (máximas clases)', 'method M (maximum classes)')}</option></select></label>
@@ -349,15 +367,15 @@
         </div>
 
         ${!isM && A.core.unrepresented > 0 ? `<div class="note-warn" style="margin-top:12px">${T(
-          `<b>${A.core.unrepresented} de ${A.core.strata.length} estratos se ${pl(A.core.unrepresented, 'queda', 'quedan')} sin representante.</b> Hay más estratos que plazas (${A.core.target}), y las plazas fueron a los estratos con más peso según el reparto ${esc(T(CHAR.ALLOCATIONS[view.alloc].es, CHAR.ALLOCATIONS[view.alloc].en).toLowerCase())} (a igual peso, el más grande). Si necesitas uno de cada estrato, marca «al menos 1 por estrato»: el núcleo tendría ${A.core.strata.length} accesiones en vez de ${A.core.target}.`,
+          `<b>${A.core.unrepresented} de ${A.core.strata.length} estratos se ${pl(A.core.unrepresented, 'queda', 'quedan')} sin representante.</b> Hay más estratos que plazas (${A.core.target}), y las plazas fueron a los estratos con más peso según el reparto ${esc(CHAR.ALLOCATIONS[view.alloc].adj)} (a igual peso, el más grande). Si necesitas uno de cada estrato, marca «al menos 1 por estrato»: el núcleo tendría ${A.core.strata.length} accesiones en vez de ${A.core.target}.`,
           `<b>${A.core.unrepresented} of ${A.core.strata.length} strata ${pl(A.core.unrepresented, 'is', 'are')} left without a representative.</b> There are more strata than places (${A.core.target}), and the places went to the strata with the most weight under the ${esc(T(CHAR.ALLOCATIONS[view.alloc].es, CHAR.ALLOCATIONS[view.alloc].en).toLowerCase())} allocation (on equal weight, the largest). If you need one from every stratum, tick “at least 1 per stratum”: the core would have ${A.core.strata.length} accessions instead of ${A.core.target}.`)}</div>` : ''}
         ${!isM && A.core.exceeds ? `<div class="note-warn" style="margin-top:12px">${T(
           `<b>El núcleo tiene ${A.core.core.length} accesiones, no las ${A.core.target} pedidas (${view.pct} %).</b> Con «al menos 1 por estrato» cada uno de los ${A.core.strata.length} estratos pone una, y eso rebasa el tamaño pedido: el núcleo real es el ${fmt(v.pct, 1)} % de las caracterizadas.`,
           `<b>The core has ${A.core.core.length} accessions, not the ${A.core.target} requested (${view.pct}%).</b> With “at least 1 per stratum” each of the ${A.core.strata.length} strata contributes one, which exceeds the requested size: the actual core is ${fmt(v.pct, 1)}% of the characterized ones.`)}</div>` : ''}
 
         ${A.core.core.length < 10 ? `<div class="note-warn" style="margin-top:12px">${T(
-          `<b>El núcleo es demasiado pequeño para juzgarlo con estas cifras.</b> Con ${A.core.core.length} ${pl(A.core.core.length, 'accesión', 'accesiones')}, las pruebas t y F casi no tienen potencia y es normal que VD% se dispare y que CR% se quede corto: no es que el núcleo esté mal armado, es que no hay con qué medirlo. Sube el porcentaje a 20 o 25 %, o trabaja con una colección más grande, antes de tomar estas cifras en serio.`,
-          `<b>The core is too small to be judged by these figures.</b> With ${A.core.core.length} ${pl(A.core.core.length, 'accession', 'accessions')}, the t and F tests have almost no power and it is normal for VD% to shoot up and CR% to fall short: it is not that the core is badly built, it is that there is nothing to measure it with. Raise the percentage to 20 or 25%, or work with a larger collection, before taking these numbers seriously.`)}</div>` : ''}
+          `<b>El núcleo es demasiado pequeño para juzgarlo con estas cifras.</b> Con ${A.core.core.length} ${pl(A.core.core.length, 'accesión', 'accesiones')}, las pruebas t y F casi no tienen potencia y es normal que VD% se dispare y que CR% se quede corto: no es que el núcleo esté mal armado, es que no hay con qué medirlo. ${smallCoreTip(A.traits.length, 'es')}`,
+          `<b>The core is too small to be judged by these figures.</b> With ${A.core.core.length} ${pl(A.core.core.length, 'accession', 'accessions')}, the t and F tests have almost no power and it is normal for VD% to shoot up and CR% to fall short: it is not that the core is badly built, it is that there is nothing to measure it with. ${smallCoreTip(A.traits.length, 'en')}`)}</div>` : ''}
 
         <div class="sum-grid" style="margin-top:12px">
           <div class="pg-pane"><div class="pg-title">${T('¿Representa bien? Criterios de Hu et al. (2000)', 'Does it represent well? Hu et al. (2000) criteria')}</div>
@@ -374,25 +392,6 @@
               ${v.VD > 20 && v.VR >= VRT && v.CR > 80 ? `<br><b>${T('Sobre el VD% alto de este núcleo:', 'About this core’s high VD%:')}</b> ${T(
                 `al elegir las accesiones más distintas entre sí, el núcleo sale más variable que la colección, y la prueba F lo detecta como diferencia. Con el rango conservado y VR% de ${VRT} o más, eso no es un defecto: es exactamente lo que se busca. VD% alto sólo debe preocupar cuando viene acompañado de VR% bajo.`,
                 `by picking the most distinct accessions, the core ends up more variable than the collection, and the F test flags that as a difference. With the range retained and VR% at ${VRT} or above, that is not a flaw: it is exactly the point. A high VD% is only worrying when it comes with a low VR%.`)}` : ''}</p>
-            <details class="b7-detail"><summary>${T('Detalle por carácter', 'Detail per trait')}</summary>
-              <div class="table-wrap" tabindex="0" role="region" aria-label="${esc(T('Detalle de la validación por carácter', 'Validation detail per trait'))}"><table class="tbl"><thead><tr>
-                <th>${T('Carácter', 'Trait')}</th><th class="num">${T('Media colección', 'Collection mean')}</th><th class="num">${T('Media núcleo', 'Core mean')}</th>
-                <th class="num">p (t)</th><th class="num">p (F)</th><th class="num">CR%</th><th class="num">VR%</th>
-              </tr></thead><tbody>
-              ${v.perTrait.map(p => p.usable ? `<tr><td>${esc(p.k)}</td><td class="num">${fmt(p.meanAll, 2)}</td><td class="num">${fmt(p.meanCore, 2)}</td>
-                <td class="num"${p.mdSig ? ' style="color:var(--danger);font-weight:700"' : ''}>${fmt(p.pMean, 3)}</td><td class="num"${p.vdSig ? ' style="color:var(--danger);font-weight:700"' : ''}>${fmt(p.pVar, 3)}</td>
-                <td class="num">${fmt(p.cr, 1)}</td><td class="num">${fmt(p.vr, 1)}</td></tr>`
-                : `<tr><td>${esc(p.k)}</td><td colspan="6" class="muted">${T('muy pocos datos en el núcleo para compararlo', 'too few values in the core to compare')}</td></tr>`).join('')}
-              </tbody></table></div>
-              ${v.catDetail.length ? `<div class="table-wrap" style="margin-top:8px" tabindex="0" role="region" aria-label="${esc(T('Clases capturadas por carácter', 'Classes captured per trait'))}"><table class="tbl"><thead><tr>
-                <th>${T('Carácter', 'Trait')}</th><th>${T('Tipo', 'Type')}</th><th class="num">${T('Clases', 'Classes')}</th><th class="num">${T('En el núcleo', 'In the core')}</th>
-                <th class="num">H′ ${T('colección', 'collection')}</th><th class="num">H′ ${T('núcleo', 'core')}</th><th>${T('Faltan', 'Missing')}</th>
-              </tr></thead><tbody>
-              ${v.catDetail.map(c => `<tr><td>${esc(c.k)}</td><td>${c.type === 'ord' ? T('ordinal', 'ordinal') : T('cualitativo', 'qualitative')}</td>
-                <td class="num">${c.classesAll}</td><td class="num">${c.classesCore}</td><td class="num">${fmt(c.hAll, 2)}</td><td class="num">${fmt(c.hCore, 2)}</td>
-                <td>${esc(c.missing.join(', ')) || '—'}</td></tr>`).join('')}
-              </tbody></table></div>` : ''}
-            </details>
           </div>
           <div class="pg-pane"><div class="pg-title">${T('Reparto por estrato', 'Allocation per stratum')}</div>
             ${A.core.strata ? `<div class="table-wrap" style="max-height:300px;overflow:auto" tabindex="0" role="region" aria-label="${esc(T('Reparto por estrato', 'Allocation per stratum'))}"><table class="tbl"><thead><tr>
@@ -403,6 +402,25 @@
             : `<p class="hint">${T(`Método M: se ${pl(A.core.core.length, 'eligió', 'eligieron')} ${A.core.core.length} ${pl(A.core.core.length, 'accesión', 'accesiones')} maximizando las clases capturadas. ${pl(A.core.missingClasses.length, 'Quedó', 'Quedaron')} fuera ${A.core.missingClasses.length} ${pl(A.core.missingClasses.length, 'clase', 'clases')}.`, `Method M: ${A.core.core.length} ${pl(A.core.core.length, 'accession', 'accessions')} chosen maximizing captured classes. ${A.core.missingClasses.length} ${pl(A.core.missingClasses.length, 'class was', 'classes were')} left out.`)}</p>`}
           </div>
         </div>
+        <details class="b7-detail"><summary>${T('Detalle por carácter', 'Detail per trait')}</summary>
+          <div class="table-wrap" tabindex="0" role="region" aria-label="${esc(T('Detalle de la validación por carácter', 'Validation detail per trait'))}"><table class="tbl"><thead><tr>
+            <th>${T('Carácter', 'Trait')}</th><th class="num">${T('Media colección', 'Collection mean')}</th><th class="num">${T('Media núcleo', 'Core mean')}</th>
+            <th class="num">p (t)</th><th class="num">p (F)</th><th class="num">CR%</th><th class="num">VR%</th>
+          </tr></thead><tbody>
+          ${v.perTrait.map(p => p.usable ? `<tr><td>${esc(p.k)}</td><td class="num">${fmt(p.meanAll, 2)}</td><td class="num">${fmt(p.meanCore, 2)}</td>
+            <td class="num"${p.mdSig ? ' style="color:var(--danger);font-weight:700"' : ''}>${fmt(p.pMean, 3)}</td><td class="num"${p.vdSig ? ' style="color:var(--danger);font-weight:700"' : ''}>${fmt(p.pVar, 3)}</td>
+            <td class="num">${fmt(p.cr, 1)}</td><td class="num">${fmt(p.vr, 1)}</td></tr>`
+            : `<tr><td>${esc(p.k)}</td><td colspan="6" class="muted">${T('muy pocos datos en el núcleo para compararlo', 'too few values in the core to compare')}</td></tr>`).join('')}
+          </tbody></table></div>
+          ${v.catDetail.length ? `<div class="table-wrap" style="margin-top:8px" tabindex="0" role="region" aria-label="${esc(T('Clases capturadas por carácter', 'Classes captured per trait'))}"><table class="tbl"><thead><tr>
+            <th>${T('Carácter', 'Trait')}</th><th>${T('Tipo', 'Type')}</th><th class="num">${T('Clases', 'Classes')}</th><th class="num">${T('En el núcleo', 'In the core')}</th>
+            <th class="num">H′ ${T('colección', 'collection')}</th><th class="num">H′ ${T('núcleo', 'core')}</th><th>${T('Faltan', 'Missing')}</th>
+          </tr></thead><tbody>
+          ${v.catDetail.map(c => `<tr><td>${esc(c.k)}</td><td>${c.type === 'ord' ? T('ordinal', 'ordinal') : T('cualitativo', 'qualitative')}</td>
+            <td class="num">${c.classesAll}</td><td class="num">${c.classesCore}</td><td class="num">${fmt(c.hAll, 2)}</td><td class="num">${fmt(c.hCore, 2)}</td>
+            <td>${esc(c.missing.join(', ')) || '—'}</td></tr>`).join('')}
+          </tbody></table></div>` : ''}
+        </details>
 
         <div class="table-wrap" style="max-height:360px;overflow:auto;margin-top:12px" tabindex="0" role="region" aria-label="${esc(T('Accesiones del núcleo', 'Core accessions'))}">
           <table class="tbl"><thead><tr>

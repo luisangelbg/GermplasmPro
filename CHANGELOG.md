@@ -152,6 +152,75 @@
   acentos; la app la quita al volver a leerlos.
 - **Informe:** la tabla de prioridades de colecta muestra la entidad y la distancia (leía campos que no existían).
   1102 pruebas, todas en verde.
+- **Vacíos de colecta (Bloque 6), lo hallado al escribir el manual:**
+  - El vecindario del índice se mide en kilómetros (220 km, `GAPS.NEIGHBOUR_KM`/`radiusCells`), no en dos celdas
+    fijas: son 2 celdas con 1° (las prioridades no cambian), 4 con 0.5° y 1 con 2°. Con 0.5° el vecindario era la cuarta
+    parte, 320 celdas empataban en 60 puntos y la primera era la isla Clarión; ahora gana 21.25, −98.75 (Hidalgo, 83.6) y
+    con 2°, 17, −101 (Guerrero, 82.9). El texto de la sección 2 dice el radio.
+  - Las franjas altitudinales vacías usan el mismo rango de altitudes posibles que los Bloques 4 y 5
+    (`GEO.elevPlausible`, −500 a 7000 m) en vez de −430 a 6500 fijo.
+  - El CSV de tipos en riesgo trae las rutas por su nombre («Banco de semillas»), no por su código; el aviso «N
+    accesiones caen fuera del área analizada» no aparece cuando son 0; «≥ 90 %» ya no se parte en el título del recuadro.
+- **Caracterización y núcleo (Bloque 7):** el aviso de estratos sin representante concuerda («según el reparto
+  logarítmico», `CHAR.ALLOCATIONS[k].adj`); el de núcleo pequeño calcula el porcentaje que hace falta para llegar a 10
+  accesiones y cuál elegir (con 46 caracterizadas, 21 % o más: 25 %); el «Detalle por carácter» ocupa todo el ancho de
+  la tarjeta, debajo de los criterios y el reparto, y sus dos tablas caben sin desplazarse de lado.
+- **Manejo del banco (Bloque 8):**
+  - Casilla vacía = sin dato (`MANAGE.optNum`): existencias y germinación vacías ya no se leen como 0. Un lote de
+    semilla sin datos dice «No hay existencias registradas» y «sin prueba registrada», no «Quedan 0» ni «0 %»; registrar
+    una prueba sin existencias anotadas no escribe un 0; el CSV deja la celda vacía. La germinación sólo se muestra en
+    semilla (o sin ruta, que se maneja como semilla): «—» en campo, in vitro, criopreservación e in situ.
+  - La ruta sin declarar se agrupa y se filtra con la misma clave (`MANAGE.NO_ROUTE`): el filtro «sin declarar» ya no
+    deja la lista vacía.
+  - Carga de trabajo: el año +k es el lapso de k a k + 1 años y lo atrasado cae en el año +0 (antes desaparecía); los
+    subcultivos se dibujan, cuentan para la escala y van en la leyenda, con su número real de eventos (24 meses entre
+    subcultivos = uno cada dos años, no uno por año); las regeneraciones de los lotes con la prueba medida bajo el umbral
+    también cuentan. Títulos de las barras en el idioma de la interfaz; la gráfica tiene `role="img"` y nombre.
+  - «Plantas por regeneración» se usa: la calculadora da la probabilidad de retener el alelo y las semillas a sembrar con
+    esas plantas (y avisa si no alcanzan la seguridad pedida), las alertas de regeneración dicen cuántas semillas hay que
+    sembrar y la lista de siembra del Bloque 9 parte de ese número. «100.00 %» ya no redondea un 99.9965 %: «> 99.99 %».
+  - Medida y proyección bajo el umbral dan una sola alerta («La última prueba dio 81 %…», con lo proyectado si ya se
+    nota); antes salían dos y sumaban dos veces.
+  - Botones por ruta: «Registrar prueba» sólo en semilla (y sin ruta); «Regeneración» en semilla y sin ruta, «Resiembra»
+    en campo, «Subcultivo» in vitro, «Revisión» en criopreservación y «Visita» in situ y en la parcela. Van debajo de las
+    alertas y se envuelven: la tabla ya cabe en la tarjeta a 1400 px.
+  - Las constantes editadas del maíz se guardan (`MANAGE.customConstants`) y «Volver a las publicadas» borra las propias.
+  - La criopreservación se revisa por fecha (`cryo.checkYears`, desde la última revisión o, sin ella, desde el ingreso);
+    los mínimos de campo, in vitro y criotubos, las visitas in situ y en la parcela y las semillas por prueba tienen su
+    deslizador en los supuestos.
+  - Textos: «pocas existencias»; «Existencias registradas» se desglosa por unidad (semillas, plantas, frascos,
+    criotubos, individuos) en vez de sumarlas; el CSV del plan trae ruta, urgencia y acciones en el idioma de la
+    interfaz, y la unidad; «1 taxón».
+- **Etiquetas y registro (Bloque 9):**
+  - Las etiquetas se imprimen a escala exacta: al imprimir, las hojas pasan a un contenedor propio, la página se declara
+    del tamaño del papel con `margin: 0` y cada hoja mide exactamente el papel con sus márgenes por dentro. Antes
+    `@page { margin: 10mm }` hacía que el navegador encogiera la hoja al 88.6 % (borde del sobre de 79.4 mm) y dejaba una
+    hoja en blanco al final; ahora el borde mide 89.6 mm y salen tantas hojas como hojas de etiquetas (comprobado
+    imprimiendo a PDF con Edge sin ventana).
+  - Lista de siembra, vale y libro de registro: las tablas se parten entre hojas y repiten su encabezado (antes la
+    primera hoja salía sólo con el título) y ya no queda una hoja en blanco al final.
+  - La lista de siembra no inventa la germinación: sin prueba usa el supuesto de la calculadora del Bloque 8 marcado
+    «85 %*» con su nota, y un 0 % medido se respeta (sin semillas a sembrar, con aviso). Plantas por accesión: las de una
+    regeneración del Bloque 8 mientras no se cambien.
+  - «La colección núcleo del Bloque 7» dice cuántas accesiones tiene; sin núcleo calculado avisa «Aún no hay núcleo:
+    calcúlalo en el Bloque 7» y no imprime la colección entera. «Los lotes en apuros» también dice cuántos son.
+  - El foco no se pierde al escribir el encabezado o las plantas, al buscar, al marcar campos o accesiones ni al cambiar
+    de formato u hoja (incluso tras la ventana de espera).
+  - Encabezado, número y campos se recortan con «…» al ancho disponible (el encabezado largo ya no se monta sobre el
+    QR); el encabezado se edita también con las hojas de trabajo.
+  - Avisos antes de imprimir: etiquetas sin código de barras porque el número trae letras fuera de ASCII (marcadas en
+    la vista previa, con la sugerencia del QR), campos que no caben en el formato, y barra del Code 128 por debajo de
+    0.19 mm (criotubo 0.152 mm, frasco 0.179 mm con MEX-ZM-0001).
+  - QR con la zona en blanco de 4 módulos que pide la norma (antes 2). El hueco del chayote se achica si fuera a tapar
+    un módulo de función (en la versión 1 rozaba la información de formato; de la 7 en adelante no hay chayote), y la
+    suite comprueba que en cada bloque toca menos códigos de los que corrige el nivel H. Comentario corregido: el hueco
+    es 7.8 % del símbolo en la versión 2, no «menos del 6 %».
+  - Restaura el código, «sin código» y el chayote guardados; `aria-pressed` en los campos y en el chayote; cada
+    etiqueta de la vista previa con `role="img"` y nombre; plurales («1 accesión», «1 marcada», «hace falta 1 hoja»);
+    encabezados numéricos de las hojas con la misma letra que los demás; el campo Encabezado ya no corta su ayuda; la
+    presentación del bloque menciona el QR.
+- **Recetas del manual:** `b7-detalle` ya no ensancha a mano el detalle por carácter (ahora ocupa todo el ancho).
+  1182 pruebas, todas en verde.
 
 ## Después de la 1.0.0 — 2026-10-09
 

@@ -1196,7 +1196,7 @@ ok(riesgos.filter(r => r.flags.includes('noDuplicate')).length > 0, 'hay tipos s
 const elev = GAPS.elevationGaps(ptsGap, 500);
 ok(elev.dropped >= 1, 'la altitud de 25 000 m del ejemplo se deja fuera');
 ok(elev.bands.length > 0 && elev.bands.every(b => b.to - b.from === 500), 'las franjas miden lo pedido');
-ok(elev.bands[elev.bands.length - 1].to <= 6500, 'y ninguna se va más allá de lo posible en la Tierra');
+ok(elev.bands[elev.bands.length - 1].to <= GEO.ELEV_MAX, 'y ninguna se va más allá de lo posible en la Tierra');
 ok(elev.gaps.every(b => b.n === 0), 'las franjas señaladas como vacías lo están de verdad');
 ok(elev.gaps.length < elev.bands.length, 'no todas las franjas están vacías');
 
@@ -2346,6 +2346,242 @@ ok(LABELS.labelSVG(qrFila, 'envelope', { codigo: 'qr', barcode: false }).indexOf
 const etTextos = [...parseSVG(etQR).querySelectorAll('text')].map(t => t.textContent);
 ok(etTextos.includes('MEX-CR-0417'), 'el número de accesión sigue impreso en claro junto al QR');
 ok([...parseSVG(etQR).querySelectorAll('text')].length >= 2, 'y los demás campos también caben');
+
+/* ============ 30. correcciones halladas al escribir el manual (bloques 6 a 9) ============ */
+/* 6.1 el vecindario se mide en kilómetros, no en celdas */
+ok(GAPS.radiusCells(GAPS.NEIGHBOUR_KM, 1) === 2 && GAPS.radiusCells(GAPS.NEIGHBOUR_KM, 0.5) === 4 && GAPS.radiusCells(GAPS.NEIGHBOUR_KM, 2) === 1,
+  'el vecindario de 220 km son 2 celdas de 1°, 4 de 0.5° y 1 de 2°');
+const filasVec = EXAMPLES.build();
+[0.5, 1, 2].forEach(sz => {
+  const g = GAPS.analyse(filasVec, { size: sz, scope: 'mx', classMode: 'species' });
+  const top = g.allPriorities[0];
+  const empates = g.allPriorities.filter(c => Math.abs(c.score - top.score) < 1e-9).length;
+  ok(empates <= 3, `con ${sz}° no hay cientos de celdas empatadas arriba (${empates})`);
+  ok(top.nbRichness > 0 && isFinite(top.dist) && top.dist < 400, `y la primera prioridad con ${sz}° tiene riqueza alrededor y colectas a menos de 400 km (${top.lat}, ${top.lon}: ${top.nbRichness} tipos, ${Math.round(top.dist)} km)`);
+  ok(!(Math.abs(top.lat - 18.25) < 0.01 && Math.abs(top.lon + 114.75) < 0.01), `y con ${sz}° no es la isla Clarión`);
+  ok(g.opts.radius === GAPS.radiusCells(GAPS.NEIGHBOUR_KM, sz), `el radio usado con ${sz}° es el de 220 km (${g.opts.radius} celdas)`);
+});
+const g1Vec = GAPS.analyse(filasVec, { size: 1, scope: 'mx', classMode: 'species' });
+ok(Math.abs(g1Vec.allPriorities[0].score - 86.9) < 0.05 && g1Vec.allPriorities[0].lat === 21.5, 'con 1° las prioridades no cambian: San Luis Potosí, 86.9');
+ok(GAPS.analyse(filasVec, { size: 1, scope: 'mx', radius: 3 }).opts.radius === 3, 'un radio en celdas pedido a mano se respeta');
+
+/* 6.2 las franjas usan el mismo rango de altitudes posibles que el Bloque 5 */
+const ptsAlt = ['100', '600', '6800', '-450', '7100', '25000'].map(v => ({ row: { ELEVATION: v } }));
+const elevAlt = GAPS.elevationGaps(ptsAlt, 500);
+ok(elevAlt.dropped === 2, `sólo se dejan fuera las altitudes fuera de ${GEO.ELEV_MIN} a ${GEO.ELEV_MAX} m (${elevAlt.dropped})`);
+ok(elevAlt.bands[0].from === -500 && elevAlt.bands[elevAlt.bands.length - 1].to === 7000, 'y 6 800 m y −450 m sí cuentan, como en el Bloque 5');
+
+/* 8.1 casilla vacía = sin dato, no cero */
+const vacio8 = MANAGE.lotStatus(lote({ GENUS: 'Zea', SPECIES: 'mays', GP_CONS: 'seed', GP_STOCK: '', GP_GERMPCT: '', DUPLSITE: 'X' }), cfg8, viab8, hoy);
+ok(vacio8.stock === null && vacio8.germ === null, 'existencias y germinación vacías quedan como «sin dato» (null), no como 0');
+ok(vacio8.alerts.some(a => a.code === 'noStock') && !vacio8.alerts.some(a => ['lowStock', 'measuredLow', 'belowThreshold'].includes(a.code)),
+  'un lote de semilla sin datos dice «No hay existencias registradas», no «Quedan 0» ni «0 %»');
+ok(MANAGE.optNum('') === null && MANAGE.optNum('  ') === null && MANAGE.optNum('0') === 0 && MANAGE.optNum('12,5') === 12.5 && MANAGE.optNum('abc') === null,
+  'optNum distingue la casilla vacía del cero');
+const campoG = MANAGE.lotStatus(lote({ GENUS: 'Persea', GP_CONS: 'field', GP_STOCK: '40', GP_GERMPCT: '90', GP_REGENDATE: '20250101', DUPLSITE: 'X' }), cfg8, viab8, hoy);
+ok(campoG.germ === null && campoG.yearsSinceTest === null, 'en un banco de campo no hay germinación que mostrar');
+const sinStock = lote({ GP_CONS: 'seed', GP_STOCK: '', GP_GERMPCT: '80', GP_GERMDATE: '20200101' });
+MANAGE.recordTest(sinStock, 90, '20260923', 200);
+ok(sinStock.GP_STOCK === '', 'registrar una prueba sin existencias anotadas no inventa un 0');
+const regenVacio = lote({ GP_CONS: 'field', GP_STOCK: '30' });
+MANAGE.recordRegeneration(regenVacio, '20260923', null, null);
+ok(regenVacio.GP_STOCK === '30' && regenVacio.GP_REGENDATE === '20260923', 'una resiembra sin existencias nuevas deja las anteriores');
+
+/* 8.2 la ruta sin declarar se agrupa y se filtra con la misma clave */
+const panelNR = MANAGE.analyse(EXAMPLES.build(), cfg8, viab8, hoy);
+const grupoNR = panelNR.byRoute.find(r => r.route === MANAGE.NO_ROUTE);
+ok(!!grupoNR && grupoNR.n === panelNR.lots.filter(l => (l.st.route || MANAGE.NO_ROUTE) === MANAGE.NO_ROUTE).length && grupoNR.n > 0,
+  `el filtro «sin declarar» encuentra sus ${grupoNR ? grupoNR.n : 0} accesiones`);
+ok(panelNR.stockByUnit.every(x => MANAGE.STOCK_UNITS[x.unit]) && panelNR.stockByUnit.length >= 3, 'las existencias se reparten por unidad (semillas, plantas, frascos…), sin sumarlas entre sí');
+
+/* 8.3 lo atrasado cuenta en el año 0 */
+const atrasos = MANAGE.workload([
+  lote({ GENUS: 'Zea', SPECIES: 'mays', GP_CONS: 'seed', GP_STOCK: '2000', GP_GERMPCT: '95', GP_GERMDATE: '20090310' }),
+  lote({ GENUS: 'Persea', GP_CONS: 'field', GP_STOCK: '30', GP_REGENDATE: '20100101' }),
+], cfg8, viab8, 25, hoy);
+ok(atrasos[0].tests === 1 && atrasos[0].replant === 1, 'la prueba y la resiembra vencidas caen en el año +0, no desaparecen');
+ok(atrasos[10].tests === 1 && atrasos[8].replant === 1, 'y la siguiente va un intervalo después');
+
+/* 8.4 subcultivos con su número real de eventos por año */
+const cfg24 = MANAGE.config({ invitro: { subMonths: 24 } });
+const sub24 = MANAGE.workload([lote({ GENUS: 'Solanum', GP_CONS: 'invitro', GP_STOCK: '20', GP_REGENDATE: '20260101' })], cfg24, viab8, 25, hoy);
+const tot24 = sub24.reduce((a, y) => a + y.sub, 0);
+ok(tot24 === 13 && sub24.every(y => y.sub === 0 || y.sub === 1), `con 24 meses entre subcultivos son 13 en 26 años (0.5 por año), no 26 (${tot24})`);
+const cfg5 = MANAGE.config({ invitro: { subMonths: 5 } });
+const sub5 = MANAGE.workload([lote({ GENUS: 'Solanum', GP_CONS: 'invitro', GP_STOCK: '20', GP_REGENDATE: '20260801' })], cfg5, viab8, 25, hoy);
+ok(sub5.every(y => y.sub === 2 || y.sub === 3) && Math.abs(sub5.reduce((a, y) => a + y.sub, 0) / 26 - 2.4) < 0.1, 'con 5 meses son 2 o 3 por año, 2.4 en promedio');
+state.acc = EXAMPLES.build();
+B8.run();
+const wp = B8.workPlot(500, 300);
+ok(/role="img"/.test(wp) && /aria-label="Carga de trabajo/.test(wp), 'la gráfica de carga tiene nombre accesible');
+ok(wp.includes('subcultivos in vitro') && (wp.match(/<title>año \+\d+: \d+ subcultivo/g) || []).length > 0, 'y dibuja los subcultivos, con leyenda y títulos en español');
+ok(!/<title>[^<]*(tests|regen|replant|sub)<\/title>/.test(wp), 'los títulos de las barras ya no salen con la clave en inglés');
+
+/* 8.5 las plantas por regeneración se usan */
+const bajo = lote({ GENUS: 'Zea', SPECIES: 'mays', GP_CONS: 'seed', GP_STOCK: '2000', GP_GERMPCT: '70', GP_GERMDATE: '20250310', DUPLSITE: 'X' });
+const cfg60 = MANAGE.config({ seed: { regenPlants: 60 } });
+const st60 = MANAGE.lotStatus(bajo, cfg60, viab8, hoy), st100 = MANAGE.lotStatus(bajo, cfg8, viab8, hoy);
+ok(st60.regenSeeds === MANAGE.seedsToSow(60, st60.projected) && st100.regenSeeds > st60.regenSeeds, 'las semillas para regenerar salen de las plantas por regeneración de los supuestos');
+ok(st60.alerts.find(a => a.code === 'measuredLow').msg.es.includes('60 plantas'), 'y la alerta lo dice');
+const carga60 = MANAGE.workload([bajo], cfg60, viab8, 25, hoy);
+ok(carga60[0].regen === 1 && carga60[0].plants === 60, 'la carga de trabajo cuenta las plantas de cada regeneración');
+
+/* 8.10 una sola alerta cuando medida y proyección quedan bajo el umbral */
+const doble = MANAGE.lotStatus(lote({ GENUS: 'Zea', SPECIES: 'mays', GP_CONS: 'seed', GP_STOCK: '2000', GP_GERMPCT: '80', GP_GERMDATE: '20200310', DUPLSITE: 'X' }),
+  MANAGE.config({ seed: { temp: 20, moisture: 12 } }), viab8, hoy);
+const bajas = doble.alerts.filter(a => a.code === 'measuredLow' || a.code === 'belowThreshold');
+ok(bajas.length === 1 && bajas[0].code === 'measuredLow', 'medida y proyección bajo el umbral dan una sola alerta');
+ok(bajas[0].msg.es.includes('la proyección lo pone hoy en'), 'que menciona también lo proyectado cuando ya bajó');
+const mismo = MANAGE.lotStatus(lote({ GENUS: 'Zea', SPECIES: 'mays', GP_CONS: 'seed', GP_STOCK: '2000', GP_GERMPCT: '81', GP_GERMDATE: '20250310', DUPLSITE: 'X' }), cfg8, viab8, hoy);
+ok(!mismo.alerts.find(a => a.code === 'measuredLow').msg.es.includes('proyección'), 'y no repite la proyección si redondeada es igual a lo medido');
+ok(MANAGE.analyse(EXAMPLES.build(), cfg8, viab8, hoy).lots.every(l => !(l.st.alerts.some(a => a.code === 'measuredLow') && l.st.alerts.some(a => a.code === 'belowThreshold'))),
+  'en la colección de ejemplo ningún lote lleva las dos');
+
+/* 8.12 las constantes propias del maíz se guardan */
+const maizEditado = MANAGE.viabilityTable();
+maizEditado['Zea mays'] = { KE: 7.1, CW: 2.2, CH: 0.0329, CQ: 0.000478, source: 'mi laboratorio' };
+const propias = MANAGE.customConstants(maizEditado);
+ok(propias['Zea mays'] && propias['Zea mays'].KE === 7.1, 'las constantes editadas del maíz se guardan');
+ok(MANAGE.viabilityTable(propias)['Zea mays'].KE === 7.1, 'y al volver a cargar siguen ahí');
+ok(Object.keys(MANAGE.customConstants(MANAGE.viabilityTable())).length === 0, 'las publicadas sin tocar no se guardan');
+ok(MANAGE.viabilityTable(null)['Zea mays'].KE === 6.474, 'y volver a las publicadas devuelve las de Ellis y Roberts');
+
+/* 8.13 la criopreservación se revisa por fecha */
+const crioViejo = MANAGE.lotStatus(lote({ GENUS: 'Solanum', GP_CONS: 'cryo', GP_STOCK: '180', ACQDATE: '20180901', DUPLSITE: 'X' }), cfg8, viab8, hoy);
+ok(crioViejo.alerts.some(a => a.code === 'checkDue'), 'criotubos sin revisión desde que entraron hace ocho años piden revisión');
+const crioNuevo = MANAGE.lotStatus(lote({ GENUS: 'Solanum', GP_CONS: 'cryo', GP_STOCK: '180', GP_REGENDATE: '20250101', DUPLSITE: 'X' }), cfg8, viab8, hoy);
+ok(!crioNuevo.alerts.some(a => a.code === 'checkDue' || a.code === 'neverChecked'), 'y revisados el año pasado, no');
+
+/* 9.3 la lista de siembra no inventa la germinación */
+const siembra2 = LABELS.sowingSheet([{ row: { ACCENUMB: 'S-1', GP_GERMPCT: '' } }, { row: { ACCENUMB: 'S-2', GP_GERMPCT: '0' } }, { row: { ACCENUMB: 'S-3', GP_GERMPCT: '60' } }], { plants: 100, germ: 80 });
+ok(siembra2[0].germinacion === 80 && siembra2[0].germinacion_supuesta === true, 'sin prueba se usa el supuesto dado y se marca como supuesto');
+ok(siembra2[1].germinacion === 0 && siembra2[1].germinacion_supuesta === false && siembra2[1].semillas === null, 'un 0 % medido se respeta: no hay semilla viable que sembrar');
+ok(siembra2[2].germinacion_supuesta === false && siembra2[2].semillas === Math.ceil(100 / (0.6 * 0.9)), 'y lo medido se usa tal cual');
+
+/* 9.4 sin núcleo, la opción del núcleo no imprime la colección entera */
+const prevTraits = state.traits;
+state.traits = [];
+B7.run();
+B9.view.which = 'core';
+ok(B7.analysis() === null && B9.pickRows().length === 0, 'sin núcleo calculado, «la colección núcleo» no devuelve las 46 accesiones');
+B9.view.which = 'work';
+ok(B9.pickRows().length === B8.analysis().lots.filter(l => l.st.alerts.some(a => a.level === 'crit')).length, 'los lotes en apuros salen del Bloque 8');
+B9.view.which = 'all';
+state.traits = prevTraits;
+
+/* 9.7 plurales */
+B9.view.which = 'selection';
+B9.view.selection = new Set([state.acc[0].ACCENUMB]);
+B9.run();
+B9.view.sheet = 'register';
+ok(/1 accesión al/.test(B9.workSheet()) && !/1 accesiones/.test(B9.workSheet()), 'el libro de registro dice «1 accesión al»');
+B9.view.sheet = 'sowing';
+ok(/1 accesión ·/.test(B9.workSheet()), 'y la lista de siembra «1 accesión ·»');
+ok(B9.workSheet().includes(`${B8.cfg().seed.regenPlants} plantas por accesión`), 'con las plantas por regeneración del Bloque 8');
+B9.view.sheet = 'labels';
+B9.view.which = 'all';
+B9.view.selection = new Set();
+
+/* 9.8 el código y el chayote se recuerdan */
+const prefsPrev = ['labelCodigo', 'labelLogo', 'labelBarcode'].map(k => Prefs.get(k, null));
+Prefs.set('labelCodigo', 'qr'); Prefs.set('labelLogo', false); Prefs.set('labelBarcode', true);
+B9.loadPrefs();
+ok(B9.view.codigo === 'qr' && B9.view.logo === false && B9.view.barcode === true, 'al arrancar se leen el código y el chayote guardados');
+['labelCodigo', 'labelLogo', 'labelBarcode'].forEach((k, i) => Prefs.set(k, prefsPrev[i]));
+Object.assign(B9.view, { codigo: 'barras', logo: true, barcode: true });
+
+/* 9.9 número fuera de ASCII: sin código de barras, pero con aviso */
+const filaNoAscii = { ACCENUMB: 'MÉX-ÑU-001', ACCENAME: 'Prueba', GENUS: 'Zea', SPECIES: 'mays' };
+const etNoAscii = LABELS.labelSVG(filaNoAscii, 'envelope', { codigo: 'barras', lang: 'es' });
+ok(etNoAscii.includes('lbl-nocode') && /aria-label="[^"]*sin código de barras/.test(etNoAscii), 'la etiqueta sin código queda marcada y lo dice');
+const accPrev = state.acc;
+state.acc = [filaNoAscii].concat(EXAMPLES.build().slice(0, 3));
+B9.run();
+ok(/sin código de barras/.test(B9.notes()) && B9.notes().includes('MÉX-ÑU-001'), 'y el bloque avisa cuál no lleva código y sugiere el QR');
+ok(LABELS.labelSVG(filaNoAscii, 'envelope', { codigo: 'qr', lang: 'es' }).includes('<circle'), 'con QR sí se codifica');
+
+/* 9.10 los campos que no caben se avisan */
+const cinco = ['ACCENAME', 'TAXON', 'COLLSITE', 'ORIGCTY', 'COLLDATE'];
+ok(LABELS.fieldFit('stake', { fields: cinco, barcode: true, codigo: 'barras' }).slots === 2, 'en la estaca con código de barras caben dos campos');
+ok(LABELS.fieldFit('vial', { fields: cinco, barcode: true, codigo: 'barras', header: 'Banco' }).slots === 0, 'en el criotubo con encabezado, ninguno');
+Object.keys(LABELS.FORMATS).forEach(k => {
+  const fit = LABELS.fieldFit(k, { fields: cinco, barcode: true, codigo: 'barras' });
+  const n = (LABELS.labelSVG(filaEt, k, { fields: cinco, lang: 'es' }).match(/<text/g) || []).length - 1 - (LABELS.FORMATS[k].barText === false ? 0 : 1);
+  ok(n === fit.fit.length, `en «${LABELS.FORMATS[k].es}» el aviso cuenta los mismos campos que se dibujan (${n})`);
+});
+Object.assign(B9.view, { fmt: 'stake', fields: cinco });
+ok(/no caben/.test(B9.notes()) && B9.notes().includes('País'), 'el bloque dice qué campos no caben');
+Object.assign(B9.view, { fmt: 'envelope', fields: ['ACCENAME', 'TAXON', 'COLLSITE'] });
+
+/* 9.11 módulo mínimo del Code 128 */
+ok(LABELS.barModulo('vial', 'MEX-ZM-0001').suficiente === false && LABELS.barModulo('envelope', 'MEX-ZM-0001').suficiente === true, 'el criotubo queda por debajo del módulo imprimible; el sobre, no');
+Object.assign(B9.view, { fmt: 'vial' });
+ok(/barra más delgada del código queda en/.test(B9.notes()), 'y el bloque lo avisa');
+Object.assign(B9.view, { fmt: 'envelope' });
+state.acc = accPrev;
+
+/* 9.12 zona en blanco de 4 módulos y el hueco del chayote, que el nivel H tolera */
+ok(LABELS.QR_QUIET === 4, 'la zona en blanco del QR es de 4 módulos');
+const qrMod = LABELS.qrModulo('envelope', 'MEX-CR-0417');
+const qrSym = QR.encode('MEX-CR-0417', { ecl: 'H' });
+near(qrMod.mm, qrMod.lado / (qrSym.size + 8), 1e-12, 'el módulo se calcula con cuatro módulos en blanco por lado');
+const etQ4 = parseSVG(LABELS.labelSVG(qrFila, 'envelope', { codigo: 'qr', logo: false, lang: 'es' }));
+const qrG = etQ4.querySelector('g[transform]');
+const qrXs = [...qrG.querySelectorAll('rect')].slice(1).map(r => +r.getAttribute('x'));
+ok(Math.abs(Math.min(...qrXs) - 4 * qrMod.mm) < 0.01, 'en la etiqueta el primer módulo oscuro queda a 4 módulos del borde del QR');
+/* lector independiente: qué códigos toca el hueco, bloque por bloque */
+function codigosTapados(text) {
+  const q = QR.encode(text, { ecl: 'H' });
+  const n = q.size, F = q.funcs, celdas = [];
+  for (let right = n - 1; right >= 1; right -= 2) {
+    if (right === 6) right = 5;
+    for (let v = 0; v < n; v++) for (let j = 0; j < 2; j++) {
+      const x = right - j, y = ((right + 1) & 2) === 0 ? n - 1 - v : v;
+      if (!F[y][x]) celdas.push([x, y]);
+    }
+  }
+  const { desde, hasta, hueco } = LABELS.qrHueco(n, true, F);
+  const [ec, n1, d1, n2, d2] = QR.BLOCKS[q.version].H;
+  const nb = n1 + n2, maxDat = Math.max(d1, d2);
+  /* el orden entrelazado: a qué bloque pertenece cada código */
+  const bloqueDe = [];
+  for (let i = 0; i < maxDat; i++) for (let b = 0; b < nb; b++) if (i < (b < n1 ? d1 : d2)) bloqueDe.push(b);
+  for (let i = 0; i < ec; i++) for (let b = 0; b < nb; b++) bloqueDe.push(b);
+  const tocados = Array.from({ length: nb }, () => new Set());
+  let funcEnHueco = 0;
+  for (let y = desde; y < hasta; y++) for (let x = desde; x < hasta; x++) if (F[y][x]) funcEnHueco++;
+  celdas.forEach(([x, y], i) => {
+    if (x >= desde && x < hasta && y >= desde && y < hasta && (i >> 3) < bloqueDe.length) tocados[bloqueDe[i >> 3]].add(i >> 3);
+  });
+  return { version: q.version, hueco, peor: Math.max(...tocados.map(s => s.size)), puede: Math.floor(ec / 2), funcEnHueco, pct: 100 * (hasta - desde) ** 2 / (n * n) };
+}
+const qrPruebas = ['A1', 'MEX-001', 'MEX-0001', 'MEX-CR-0417', 'MEX-ZM-0001-B', 'CRUCO-MEX-ZM-0001-2026', 'BANCO-NACIONAL-MEX-ZM-000123-A', 'X'.repeat(70)].map(codigosTapados);
+ok(qrPruebas.every(r => r.peor <= r.puede), 'en cada versión el hueco toca menos códigos por bloque de los que el nivel H corrige: '
+  + qrPruebas.map(r => `v${r.version} ${r.peor}/${r.puede}`).join(', '));
+ok(qrPruebas.every(r => r.funcEnHueco === 0), 'y no tapa ningún patrón de búsqueda, alineación, temporizador ni formato');
+ok(qrPruebas[0].version === 1 && qrPruebas[0].hueco > 0 && qrPruebas[0].hueco < 5, 'en la versión 1 el hueco se achica para no rozar la información de formato');
+ok(qrPruebas[qrPruebas.length - 1].version >= 7 && qrPruebas[qrPruebas.length - 1].hueco === 0 && !LABELS.qrSVG('X'.repeat(70), { mm: 20, logo: true }).svg.includes('<circle'), 'y de la versión 7 en adelante, con el patrón de alineación en el centro, sale sin chayote');
+const v2 = codigosTapados('MEX-CR-0417');
+ok(v2.version === 2 && Math.abs(v2.pct - 7.84) < 0.01, `en la versión 2 el hueco es 49 de 625 módulos (${v2.pct.toFixed(2)} %)`);
+
+/* 9.1 la hoja de etiquetas se imprime al tamaño exacto del papel */
+const hojaP = LABELS.sheet(EXAMPLES.build(), 'envelope', 'letter');
+const prevDiv = document.createElement('div');
+prevDiv.id = 'b9Preview';
+state.acc = EXAMPLES.build();
+B9.run();
+prevDiv.innerHTML = B9.labelsPreview(hojaP, 'es');
+document.body.appendChild(prevDiv);
+ok(prevDiv.innerHTML.includes(`width:${hojaP.page.w}mm;height:${hojaP.page.h}mm;padding:${hojaP.margin}mm`), 'cada hoja mide exactamente el papel, con los márgenes por dentro');
+ok(B9.preparePrint() === true, 'al imprimir se prepara la hoja de etiquetas');
+const pageSt = document.getElementById('b9PageStyle');
+ok(!!pageSt && /@page\s*\{\s*size:\s*216mm 279mm;\s*margin:\s*0;?\s*\}/.test(pageSt.textContent), 'con la página del tamaño del papel y sin margen, para que nada se escale');
+ok(document.getElementById('b9PrintRoot').querySelectorAll('.label-sheet').length === hojaP.pages.length && document.body.classList.contains('b9-print-labels'),
+  `y sólo las ${hojaP.pages.length} hojas de etiquetas, ni una más`);
+B9.endPrint();
+ok(!document.getElementById('b9PrintRoot') && !document.getElementById('b9PageStyle') && !document.body.classList.contains('b9-print-labels'), 'después de imprimir todo vuelve a como estaba');
+prevDiv.remove();
+state.acc = [];
 document.getElementById('summary').innerHTML = fail === 0
   ? `<span class="ok">Todas las pruebas pasaron: ${pass}</span>`
   : `<span class="fail">${fail} fallaron</span> de ${pass + fail}`;

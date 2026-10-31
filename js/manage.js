@@ -42,6 +42,31 @@
     onfarm: { visitYears: 1 },
   };
 
+  /* la clave con la que se agrupan y filtran las accesiones sin ruta declarada
+     (y que no se deduce de STORAGE): se manejan como semilla */
+  const NO_ROUTE = 'none';
+  /* en qué se cuentan las existencias de cada ruta */
+  const STOCK_UNITS = {
+    seed: { es: ['semilla', 'semillas'], en: ['seed', 'seeds'] },
+    field: { es: ['planta', 'plantas'], en: ['plant', 'plants'] },
+    invitro: { es: ['frasco', 'frascos'], en: ['jar', 'jars'] },
+    cryo: { es: ['criotubo', 'criotubos'], en: ['cryovial', 'cryovials'] },
+    dna: { es: ['muestra', 'muestras'], en: ['sample', 'samples'] },
+    insitu: { es: ['individuo', 'individuos'], en: ['individual', 'individuals'] },
+    onfarm: { es: ['individuo', 'individuos'], en: ['individual', 'individuals'] },
+  };
+  /* in situ y en la parcela cuentan lo mismo (individuos): una sola unidad */
+  function stockUnit(route) { return route === 'onfarm' ? 'insitu' : STOCK_UNITS[route] ? route : 'seed'; }
+
+  /* un campo numérico opcional: la casilla vacía es «sin dato» (null), no cero */
+  function optNum(v) {
+    const s = String(v ?? '').trim().replace(',', '.');
+    if (s === '') return null;
+    const x = Number(s);
+    return Number.isFinite(x) ? x : null;
+  }
+  const has = v => v != null && Number.isFinite(v);
+
   function config(saved) {
     const c = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
     if (saved) Object.keys(saved).forEach(k => { if (c[k]) Object.assign(c[k], saved[k]); });
@@ -52,12 +77,23 @@
      El maíz viene con las publicadas; lo demás lo pone quien cura, con su
      fuente. Sin constantes no hay proyección: es preferible no decir nada a
      decir un número inventado. */
+  const PUBLISHED = {
+    'Zea mays': { KE: 6.474, CW: 2.115, CH: 0.0329, CQ: 0.000478, source: 'Ellis & Roberts (publicadas)' },
+  };
   function viabilityTable(saved) {
-    const t = {
-      'Zea mays': { KE: 6.474, CW: 2.115, CH: 0.0329, CQ: 0.000478, source: 'Ellis & Roberts (publicadas)' },
-    };
+    const t = JSON.parse(JSON.stringify(PUBLISHED));
     if (saved) Object.keys(saved).forEach(k => { t[k] = Object.assign({ CH: 0.0329, CQ: 0.000478 }, saved[k]); });
     return t;
+  }
+  /* las constantes que hay que guardar: las de taxones nuevos y las publicadas
+     que se editaron (el maíz incluido); las publicadas sin tocar no se guardan */
+  function customConstants(viab) {
+    const out = {};
+    Object.keys(viab || {}).forEach(k => {
+      const p = PUBLISHED[k], v = viab[k];
+      if (!p || ['KE', 'CW', 'CH', 'CQ', 'source'].some(f => p[f] !== v[f])) out[k] = Object.assign({}, v);
+    });
+    return out;
   }
   function taxonOf(row) { return [row.GENUS, row.SPECIES].filter(Boolean).join(' ').trim(); }
 
@@ -81,36 +117,66 @@
   /* ---------- estado de un lote ---------- */
   function lotStatus(row, cfg, viab, today) {
     const route = MCPD.consRoute(row) || '';
+    /* sin ruta declarada (ni deducible de STORAGE) se maneja como semilla */
+    const isSeed = route === 'seed' || route === '';
     const st = {
-      route, alerts: [], stock: Number(row.GP_STOCK), germ: Number(row.GP_GERMPCT),
-      yearsSinceTest: yearsSince(row.GP_GERMDATE, today),
+      route, alerts: [], stock: optNum(row.GP_STOCK),
+      /* la germinación sólo tiene sentido en un lote de semilla */
+      germ: isSeed ? optNum(row.GP_GERMPCT) : null,
+      yearsSinceTest: isSeed ? yearsSince(row.GP_GERMDATE, today) : null,
       yearsSinceRegen: yearsSince(row.GP_REGENDATE, today),
-      projected: null, yearsToThreshold: null, sigmaYears: null, constants: null,
+      projected: null, yearsToThreshold: null, sigmaYears: null, constants: null, regenSeeds: null,
     };
     const add = (code, level, es, en, extra) => st.alerts.push(Object.assign({ code, level, msg: { es, en } }, extra || {}));
 
-    if (route === 'seed' || route === '') {
+    if (isSeed) {
       const c = cfg.seed;
       const k = viab[taxonOf(row)];
       /* proyección de la viabilidad, sólo si hay constantes para el taxón */
-      if (k && isFinite(st.germ) && st.yearsSinceTest != null) {
+      if (k && has(st.germ) && st.yearsSinceTest != null) {
         const sig = GB.sigma(k.KE, k.CW, k.CH, k.CQ, c.moisture, c.temp);
         st.sigmaYears = sig / 365.25;
         st.constants = k;
         st.projected = GB.germination(st.germ, st.yearsSinceTest * 365.25, sig);
-        const yrs = GB.yearsTo(st.germ, c.threshold, sig) - st.yearsSinceTest;
-        st.yearsToThreshold = yrs;
-        if (st.projected < c.threshold) {
-          add('belowThreshold', 'crit',
-            `La proyección lo pone en ${fmt(st.projected, 0)} % de germinación, por debajo del umbral de ${c.threshold} %.`,
-            `The projection puts it at ${fmt(st.projected, 0)}% germination, below the ${c.threshold}% threshold.`,
-            { value: st.projected });
-        } else if (yrs < 3) {
-          add('nearThreshold', 'warn',
-            `Le quedan unos ${fmt(Math.max(0, yrs), 1)} años antes de caer del umbral.`,
-            `About ${fmt(Math.max(0, yrs), 1)} years left before it drops below the threshold.`, { value: yrs });
-        }
-      } else if (isFinite(st.germ) && !k) {
+        st.yearsToThreshold = GB.yearsTo(st.germ, c.threshold, sig) - st.yearsSinceTest;
+      }
+      /* lo que pide una regeneración con las plantas de los supuestos: semillas
+         a sembrar con la germinación de hoy (la proyectada, si la hay) */
+      const gNow = st.projected != null ? st.projected : st.germ;
+      if (has(gNow) && gNow > 0) st.regenSeeds = seedsToSow(c.regenPlants, gNow);
+      const regenTip = () => {
+        if (!has(gNow)) return { es: '', en: '' };
+        if (!(gNow > 0)) return {
+          es: ' No queda semilla viable de la cual regenerar: recurre al duplicado de seguridad o vuelve a colectar.',
+          en: ' There is no viable seed left to regenerate from: turn to the safety duplicate or collect again.' };
+        const short = has(st.stock) && st.stock < st.regenSeeds;
+        return {
+          es: ` Para regenerar con ${fmtInt(c.regenPlants)} plantas hay que sembrar unas ${fmtInt(st.regenSeeds)} semillas${short ? `, y sólo quedan ${fmtInt(st.stock)}` : ''}.`,
+          en: ` Regenerating with ${fmtInt(c.regenPlants)} plants means sowing about ${fmtInt(st.regenSeeds)} seeds${short ? `, and only ${fmtInt(st.stock)} are left` : ''}.` };
+      };
+      /* por debajo del umbral: una sola alerta, la más grave. Si ya la prueba
+         medida quedó abajo, la proyección (que sólo puede bajar) también: se
+         dice lo medido y, al lado, lo proyectado. */
+      if (has(st.germ) && st.germ < c.threshold) {
+        const tip = regenTip();
+        /* lo proyectado sólo se menciona si ya se nota al redondear */
+        const proj = st.projected != null && Math.round(st.projected) < Math.round(st.germ);
+        add('measuredLow', 'crit',
+          `La última prueba dio ${fmt(st.germ, 0)} %, por debajo del umbral de ${c.threshold} %${proj ? `; la proyección lo pone hoy en ${fmt(st.projected, 0)} %` : ''}.${tip.es}`,
+          `The last test gave ${fmt(st.germ, 0)}%, below the ${c.threshold}% threshold${proj ? `; the projection puts it at ${fmt(st.projected, 0)}% today` : ''}.${tip.en}`,
+          { value: st.germ });
+      } else if (st.projected != null && st.projected < c.threshold) {
+        const tip = regenTip();
+        add('belowThreshold', 'crit',
+          `La proyección lo pone en ${fmt(st.projected, 0)} % de germinación, por debajo del umbral de ${c.threshold} %.${tip.es}`,
+          `The projection puts it at ${fmt(st.projected, 0)}% germination, below the ${c.threshold}% threshold.${tip.en}`,
+          { value: st.projected });
+      } else if (st.yearsToThreshold != null && st.yearsToThreshold < 3) {
+        add('nearThreshold', 'warn',
+          `Le quedan unos ${fmt(Math.max(0, st.yearsToThreshold), 1)} años antes de caer del umbral.`,
+          `About ${fmt(Math.max(0, st.yearsToThreshold), 1)} years left before it drops below the threshold.`, { value: st.yearsToThreshold });
+      }
+      if (has(st.germ) && !k) {
         add('noConstants', 'info',
           `No hay constantes de viabilidad para ${taxonOf(row) || 'esta especie'}: la proyección no se puede hacer y sólo queda la fecha de la última prueba.`,
           `No viability constants for ${taxonOf(row) || 'this species'}: the projection cannot be made and only the last test date is available.`);
@@ -124,14 +190,8 @@
           `${fmt(st.yearsSinceTest, 1)} years since the last test (the genebank interval is ${c.testInterval}).`,
           { value: st.yearsSinceTest });
       }
-      /* medida por debajo del umbral, sin necesidad de proyectar */
-      if (isFinite(st.germ) && st.germ < c.threshold) {
-        add('measuredLow', 'crit',
-          `La última prueba dio ${fmt(st.germ, 0)} %, por debajo del umbral.`,
-          `The last test gave ${fmt(st.germ, 0)}%, below the threshold.`, { value: st.germ });
-      }
       /* existencias */
-      if (isFinite(st.stock)) {
+      if (has(st.stock)) {
         if (st.stock < c.minStock) {
           add('lowStock', 'crit',
             `Quedan ${fmtInt(st.stock)} semillas, por debajo del mínimo de ${fmtInt(c.minStock)}.`,
@@ -154,7 +214,7 @@
           `${fmt(st.yearsSinceRegen, 1)} years since the last replanting (the cycle is ${c.cycle}).`,
           { value: st.yearsSinceRegen });
       }
-      if (isFinite(st.stock) && st.stock < c.minPlants) {
+      if (has(st.stock) && st.stock < c.minPlants) {
         add('fewPlants', 'crit',
           `Sólo quedan ${fmtInt(st.stock)} plantas (el mínimo es ${c.minPlants}): la deriva en la próxima resiembra será fuerte.`,
           `Only ${fmtInt(st.stock)} plants left (the minimum is ${c.minPlants}): drift at the next replanting will be severe.`,
@@ -170,14 +230,26 @@
           `Van ${fmt(months, 0)} meses desde el último subcultivo (el intervalo es de ${c.subMonths}).`,
           `${fmt(months, 0)} months since the last subculture (the interval is ${c.subMonths}).`, { value: months });
       }
-      if (isFinite(st.stock) && st.stock < c.minJars) {
+      if (has(st.stock) && st.stock < c.minJars) {
         add('fewJars', 'warn',
           `Quedan ${fmtInt(st.stock)} frascos (el mínimo es ${c.minJars}).`,
           `${fmtInt(st.stock)} jars left (the minimum is ${c.minJars}).`, { value: st.stock });
       }
     } else if (route === 'cryo') {
       const c = cfg.cryo;
-      if (isFinite(st.stock) && st.stock < c.minVials) {
+      /* revisión de los criotubos (descongelar uno y comprobar que rebrota) cada
+         checkYears; sin fecha de revisión se cuenta desde que entró al banco */
+      const fromAcq = st.yearsSinceRegen == null;
+      const last = fromAcq ? yearsSince(row.ACQDATE, today) : st.yearsSinceRegen;
+      if (last == null) {
+        add('neverChecked', 'warn', 'No hay fecha de la última revisión de los criotubos.', 'No date for the last check of the cryovials.');
+      } else if (last > c.checkYears) {
+        add('checkDue', 'warn',
+          `Van ${fmt(last, 1)} años desde ${fromAcq ? 'que entró al banco, sin revisión registrada' : 'la última revisión'} (lo previsto es cada ${c.checkYears}).`,
+          `${fmt(last, 1)} years since ${fromAcq ? 'it entered the genebank, with no check recorded' : 'the last check'} (the plan is every ${c.checkYears}).`,
+          { value: last });
+      }
+      if (has(st.stock) && st.stock < c.minVials) {
         add('fewVials', 'warn',
           `Quedan ${fmtInt(st.stock)} criotubos (el mínimo es ${c.minVials}).`,
           `${fmtInt(st.stock)} cryovials left (the minimum is ${c.minVials}).`, { value: st.stock });
@@ -204,7 +276,6 @@
     st.score = st.alerts.reduce((a, x) => a + (order[x.level] || 0), 0);
     return st;
   }
-
   /* ---------- tamaño de muestra para regenerar ----------
      n plantas para retener, con probabilidad P, un alelo de frecuencia p. */
   function plantsNeeded(p, P, outcrossing) {
@@ -224,52 +295,57 @@
     return Math.ceil(plants / (g * e));
   }
 
-  /* ---------- carga de trabajo de los próximos años ---------- */
+  /* ---------- carga de trabajo de los próximos años ----------
+     El año +k es el lapso de k a k + 1 años a partir de hoy. Lo atrasado (una
+     prueba, una resiembra o un subcultivo que ya debió hacerse) cae en el año
+     +0: es trabajo de esta temporada, no trabajo que desaparece. Los eventos se
+     cuentan de verdad, uno por uno, desde la última fecha: con 24 meses entre
+     subcultivos, un año toca y el siguiente no (0.5 por año en promedio). */
   function workload(rows, cfg, viab, years, today) {
     const horizon = years || 25;
-    const perYear = new Array(horizon + 1).fill(0).map(() => ({ tests: 0, regen: 0, sub: 0, replant: 0 }));
+    const perYear = new Array(horizon + 1).fill(0).map(() => ({ tests: 0, regen: 0, sub: 0, replant: 0, plants: 0 }));
+    const bin = t => Math.floor(t + 1e-9);
+    /* eventos cada `every` años a partir del primero, que si está atrasado va al año 0 */
+    const series = (first, every, key) => {
+      if (!(every > 0)) return;
+      let t = Math.max(0, first);
+      while (t < horizon + 1) { perYear[bin(t)][key]++; t += every; }
+    };
     rows.forEach(r => {
       const route = MCPD.consRoute(r) || 'seed';
       const st = lotStatus(r, cfg, viab, today);
       if (route === 'seed') {
         /* pruebas cada testInterval a partir de la última */
-        let t = st.yearsSinceTest == null ? 0 : cfg.seed.testInterval - st.yearsSinceTest;
-        while (t <= horizon) {
-          if (t >= 0) perYear[Math.round(t)].tests++;
-          t += cfg.seed.testInterval;
-        }
-        /* regeneración cuando la proyección cruza el umbral */
-        if (st.yearsToThreshold != null) {
-          let y = st.yearsToThreshold;
+        series(st.yearsSinceTest == null ? 0 : cfg.seed.testInterval - st.yearsSinceTest, cfg.seed.testInterval, 'tests');
+        /* regeneración cuando la proyección cruza el umbral (o ya, si la prueba medida quedó abajo) */
+        let y = st.yearsToThreshold;
+        if (st.alerts.some(a => a.code === 'measuredLow')) y = 0;
+        if (y != null && isFinite(y)) {
           if (y < 0) y = 0;
-          if (y <= horizon) perYear[Math.round(y)].regen++;
+          if (y < horizon + 1) { perYear[bin(y)].regen++; perYear[bin(y)].plants += cfg.seed.regenPlants; }
         }
       } else if (route === 'field') {
-        let y = st.yearsSinceRegen == null ? 0 : cfg.field.cycle - st.yearsSinceRegen;
-        while (y <= horizon) {
-          if (y >= 0) perYear[Math.round(y)].replant++;
-          y += cfg.field.cycle;
-        }
+        series(st.yearsSinceRegen == null ? 0 : cfg.field.cycle - st.yearsSinceRegen, cfg.field.cycle, 'replant');
       } else if (route === 'invitro') {
-        const per = Math.max(1, Math.round(12 / cfg.invitro.subMonths));
-        for (let y = 0; y <= horizon; y++) perYear[y].sub += per;
+        const every = cfg.invitro.subMonths / 12;
+        series(st.yearsSinceRegen == null ? 0 : every - st.yearsSinceRegen, every, 'sub');
       }
     });
     return perYear;
   }
-
   /* ---------- registrar una prueba o una regeneración ---------- */
   function recordTest(row, pct, dateStr, seedsUsed) {
     row.GP_GERMPCT = String(Math.round(pct * 10) / 10);
     row.GP_GERMDATE = dateStr;
-    const s = Number(row.GP_STOCK);
-    if (isFinite(s) && seedsUsed > 0) row.GP_STOCK = String(Math.max(0, s - seedsUsed));
+    /* sin existencias registradas no hay de dónde descontar: no se inventa un cero */
+    const s = optNum(row.GP_STOCK);
+    if (has(s) && seedsUsed > 0) row.GP_STOCK = String(Math.max(0, s - seedsUsed));
     return row;
   }
   function recordRegeneration(row, dateStr, newStock, newGerm) {
     row.GP_REGENDATE = dateStr;
-    if (isFinite(newStock) && newStock > 0) row.GP_STOCK = String(Math.round(newStock));
-    if (isFinite(newGerm) && newGerm > 0) {
+    if (has(newStock) && newStock >= 0) row.GP_STOCK = String(Math.round(newStock));
+    if (has(newGerm) && newGerm >= 0) {
       row.GP_GERMPCT = String(Math.round(newGerm * 10) / 10);
       row.GP_GERMDATE = dateStr;
     }
@@ -287,14 +363,20 @@
     const byLevel = { crit: [], warn: [], info: [], ok: [] };
     lots.forEach(l => byLevel[l.st.levelName === 'ok' ? 'ok' : l.st.levelName].push(l));
     const byRoute = new Map();
+    /* existencias por unidad: semillas, plantas, frascos… no se suman entre sí */
+    const stockByUnit = new Map();
     lots.forEach(l => {
-      const k = l.st.route || 'sin declarar';
-      if (!byRoute.has(k)) byRoute.set(k, { route: k, n: 0, crit: 0, warn: 0, stock: 0 });
+      const k = l.st.route || NO_ROUTE;
+      if (!byRoute.has(k)) byRoute.set(k, { route: k, n: 0, crit: 0, warn: 0, stock: 0, withStock: 0, unit: stockUnit(l.st.route) });
       const e = byRoute.get(k);
       e.n++;
       if (l.st.levelName === 'crit') e.crit++;
       if (l.st.levelName === 'warn') e.warn++;
-      if (isFinite(l.st.stock)) e.stock += l.st.stock;
+      if (has(l.st.stock)) {
+        e.stock += l.st.stock; e.withStock++;
+        const u = stockUnit(l.st.route);
+        stockByUnit.set(u, (stockByUnit.get(u) || 0) + l.st.stock);
+      }
     });
     const codes = new Map();
     lots.forEach(l => l.st.alerts.forEach(a => {
@@ -304,6 +386,8 @@
     }));
     return {
       lots, byLevel, byRoute: [...byRoute.values()].sort((a, b) => b.n - a.n),
+      stockByUnit: [...stockByUnit.entries()].map(([unit, n]) => ({ unit, n }))
+        .sort((a, b) => Object.keys(STOCK_UNITS).indexOf(a.unit) - Object.keys(STOCK_UNITS).indexOf(b.unit)),
       codes: [...codes.values()].sort((a, b) => (b.level === a.level ? b.n - a.n : (b.level === 'crit' ? 1 : -1))),
       work: workload(rows, cfg, viab, 25, now),
       today: now,
@@ -311,7 +395,8 @@
   }
 
   window.MANAGE = {
-    DEFAULT_CONFIG, config, viabilityTable, taxonOf, parseDate, yearsSince,
+    DEFAULT_CONFIG, NO_ROUTE, STOCK_UNITS, stockUnit, optNum, PUBLISHED, customConstants,
+    config, viabilityTable, taxonOf, parseDate, yearsSince,
     lotStatus, plantsNeeded, retentionProb, seedsToSow, workload,
     recordTest, recordRegeneration, todayStamp, analyse,
   };

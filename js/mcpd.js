@@ -336,7 +336,7 @@
     { k: 'GP_GERMDATE', g: 'gp', t: 'date', gp: true, es: 'Fecha de la última prueba', en: 'Last test date',
       d: { es: 'Cuándo se hizo esa prueba, en AAAAMMDD. Una accesión sin prueba reciente es una accesión sin saber si vive.', en: 'When that test was done, in YYYYMMDD. An accession with no recent test is an accession you cannot vouch for.' }, ex: '20240310' },
     { k: 'GP_REGENDATE', g: 'gp', t: 'date', gp: true, es: 'Fecha de la última regeneración', en: 'Last regeneration date',
-      d: { es: 'Cuándo se regeneró, resembró o subcultivó por última vez, en AAAAMMDD.', en: 'When it was last regenerated, replanted or subcultured, in YYYYMMDD.' }, ex: '20210615' },
+      d: { es: 'Cuándo se regeneró, resembró o subcultivó por última vez (en criopreservación, la última revisión; in situ, la última visita), en AAAAMMDD.', en: 'When it was last regenerated, replanted or subcultured (for cryopreservation, the last check; in situ, the last visit), in YYYYMMDD.' }, ex: '20210615' },
   ];
   const FIELD_MAP = Object.fromEntries(FIELDS.map(f => [f.k, f]));
   const MCPD_FIELDS = FIELDS.filter(f => !f.gp);

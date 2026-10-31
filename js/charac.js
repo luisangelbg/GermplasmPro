@@ -331,10 +331,11 @@
 
   /* ================= colección núcleo ================= */
   const ALLOCATIONS = {
-    C: { es: 'Constante', en: 'Constant' },
-    P: { es: 'Proporcional', en: 'Proportional' },
-    L: { es: 'Logarítmica', en: 'Logarithmic' },
-    S: { es: 'Raíz cuadrada', en: 'Square root' },
+    /* «adj» concuerda con «el reparto …» en una frase (la etiqueta concuerda con «regla») */
+    C: { es: 'Constante', en: 'Constant', adj: 'constante' },
+    P: { es: 'Proporcional', en: 'Proportional', adj: 'proporcional' },
+    L: { es: 'Logarítmica', en: 'Logarithmic', adj: 'logarítmico' },
+    S: { es: 'Raíz cuadrada', en: 'Square root', adj: 'de raíz cuadrada' },
   };
 
   /* cuántas accesiones toca a cada estrato.

@@ -249,7 +249,18 @@
     return cells;
   }
 
-  /* riqueza y exclusividad en el vecindario de cada celda */
+  /* el vecindario se mide en kilómetros, no en celdas: con un radio fijo de dos
+     celdas, al pasar a 0.5° el vecindario se encoge a la cuarta parte y casi
+     ninguna celda vacía alcanza a ver riqueza alrededor (cientos empatan); con
+     2° se cuadruplica. 220 km son las dos celdas de siempre con 1°; con 0.5°
+     son cuatro y con 2°, una. */
+  const NEIGHBOUR_KM = 220;
+  function radiusCells(km, size) {
+    const s = size > 0 ? size : 1;
+    return Math.max(1, Math.round((km == null ? NEIGHBOUR_KM : km) / (111.32 * s)));
+  }
+
+  /* riqueza y exclusividad en el vecindario de cada celda (radio en celdas) */
   function neighbourhood(cells, radiusCells) {
     const r = radiusCells == null ? 2 : radiusCells;
     const byIJ = new Map(cells.map(c => [c.i + '|' + c.j, c]));
@@ -451,7 +462,7 @@
   function elevationGaps(points, band) {
     const b = band || 500;
     const raw = points.map(p => Number(p.row.ELEVATION)).filter(v => isFinite(v));
-    const els = raw.filter(v => v >= -430 && v <= 6500);
+    const els = raw.filter(v => GEO.elevPlausible(v));
     const dropped = raw.length - els.length;
     if (els.length < 3) return { bands: [], gaps: [], dropped };
     const lo = Math.floor(Math.min(...els) / b) * b, hi = Math.floor(Math.max(...els) / b) * b;
@@ -466,7 +477,7 @@
   function analyse(rows, opts) {
     const o = Object.assign({
       size: 1, scope: 'mx', classMode: 'species', weights: null,
-      distCap: 250, radius: 2, band: 500, topN: 25,
+      distCap: 250, radiusKm: NEIGHBOUR_KM, radius: null, band: 500, topN: 25,
     }, opts || {});
 
     const points = GEO.pointsOf(rows);
@@ -485,6 +496,8 @@
     cells.forEach(c => { c.exclusiveTypes = [...c.types].filter(t => exclusive.has(t)).length; });
 
     nearestDistance(cells, points);
+    /* radio en celdas: el que se pida explícitamente o el equivalente a radiusKm */
+    o.radius = o.radius != null ? o.radius : radiusCells(o.radiusKm, o.size);
     neighbourhood(cells, o.radius);
     const { deficit, per } = stateDeficits(cells);
     const W = Object.assign({}, DEFAULT_WEIGHTS, o.weights || {});
@@ -508,7 +521,7 @@
   }
 
   window.GAPS = {
-    DEFAULT_WEIGHTS, areaGrid, fillCells, nearestDistance, neighbourhood,
+    DEFAULT_WEIGHTS, NEIGHBOUR_KM, radiusCells, areaGrid, fillCells, nearestDistance, neighbourhood,
     stateDeficits, priorities, cellDeficit, complementarity, collectionGaps, elevationGaps, analyse,
     unitsOf, unitAt, placePoint, siteOf,
   };

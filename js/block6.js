@@ -46,6 +46,8 @@
     return { main: main || '—', others: others.map(code => unitName(code, view.scope)) };
   }
   const isTaxon = () => view.cls === 'species' || view.cls === 'genus';
+  /* el nombre de una ruta de conservación en el idioma de la interfaz (no su código) */
+  function routeName(x) { const h = MCPD.GPCONS.find(y => y.c === x); return h ? T(h.es, h.en) : x; }
 
   /* las diez prioridades numeradas, sin que se tapen: si un círculo choca con
      otro ya puesto, se aparta en espiral y una línea fina lo une con su celda */
@@ -220,7 +222,7 @@
       { k: T('Celdas sin ninguna colecta', 'Cells with no collection'), v: fmtInt(G.empty.length), d: T('territorio sin representar en la colección', 'territory unrepresented in the collection'), c: 'var(--s2)' },
       { k: T('Vacío más grande', 'Largest gap'), v: (far ? fmtInt(far.dist) : '0') + ' km',
         d: far ? T(`de la celda ${fmt(far.lat, 2)}, ${fmt(far.lon, 2)} (${esc(cellPlace(far).main)}) a la colecta más cercana`, `from cell ${fmt(far.lat, 2)}, ${fmt(far.lon, 2)} (${esc(cellPlace(far).main)}) to the nearest collection`) : T('a la colecta más cercana', 'to the nearest collection'), c: 'var(--s5)' },
-      { k: T('Celdas que captan ≥ 90 %', 'Cells holding ≥ 90%'), v: fmtInt(Math.max(0, k90)), d: k90 > 0 ? T(`juntan el ${fmt(G.complementarity.order[k90 - 1].pct, 0)} % de ${fmtInt(G.complementarity.total)} tipos, por complementariedad`, `together hold ${fmt(G.complementarity.order[k90 - 1].pct, 0)}% of ${fmtInt(G.complementarity.total)} types, by complementarity`) : T(`de ${fmtInt(G.complementarity.total)} tipos, por complementariedad`, `of ${fmtInt(G.complementarity.total)} types, by complementarity`), c: 'var(--s4)' },
+      { k: T('Celdas que captan <span style="white-space:nowrap">≥&nbsp;90&nbsp;%</span>', 'Cells holding <span style="white-space:nowrap">≥&nbsp;90%</span>'), v: fmtInt(Math.max(0, k90)), d: k90 > 0 ? T(`juntan el ${fmt(G.complementarity.order[k90 - 1].pct, 0)} % de ${fmtInt(G.complementarity.total)} tipos, por complementariedad`, `together hold ${fmt(G.complementarity.order[k90 - 1].pct, 0)}% of ${fmtInt(G.complementarity.total)} types, by complementarity`) : T(`de ${fmtInt(G.complementarity.total)} tipos, por complementariedad`, `of ${fmtInt(G.complementarity.total)} types, by complementarity`), c: 'var(--s4)' },
       { k: T('Tipos en riesgo', 'Types at risk'), v: fmtInt(nRisk), d: T('una sola accesión, sin respaldo, sólo in situ o sólo ADN', 'single accession, no backup, in situ only or DNA only'), c: nRisk ? 'var(--danger)' : 'var(--s3)' },
     ].map(x => `<div class="stat" style="--sc:${x.c}"><div class="s-k">${x.k}</div><div class="s-v">${x.v}</div><div class="s-d">${x.d}</div></div>`).join('');
 
@@ -271,8 +273,8 @@
 
       <h3 class="section-title">${T('2 · A dónde ir la próxima vez', '2 · Where to go next time')}</h3>
       <p class="section-sub">${T(
-        `La prioridad de cada celda vacía es la suma de cuatro cosas, y cada una se puede pesar distinto según lo que busques. Si vas tras material nuevo, sube la distancia; si vas tras diversidad, sube la riqueza del vecindario; si quieres equilibrar la colección entre ${world ? 'países' : 'estados'}, sube el déficit ${world ? 'del país' : 'de la entidad'}: accesiones cuyo propio punto cae en ${world ? 'el país' : 'la entidad'} entre su superficie, comparado con ${world ? 'el país mejor cubierto' : 'la entidad mejor cubierta'} (en una celda que comparten varias, cada una pesa por la tierra que ocupa). A igual puntaje, va primero la celda con más riqueza alrededor y, si sigue el empate, la más lejana. La tabla trae las coordenadas del centro de cada celda, listas para cargarlas en el GPS.`,
-        `The priority of each empty cell is the sum of four things, and each can be weighted differently depending on what you are after. If you want new material, raise the distance; if you want diversity, raise neighbourhood richness; if you want to balance the collection across ${world ? 'countries' : 'states'}, raise the ${world ? 'country' : 'state'} deficit: accessions whose own point falls in the ${world ? 'country' : 'state'} divided by its area, compared with the best covered one (in a cell shared by several, each weighs by the land it occupies). On equal scores, the cell with more richness around goes first and, if still tied, the farthest one. The table carries the coordinates of each cell centre, ready for a GPS.`)}</p>
+        `La prioridad de cada celda vacía es la suma de cuatro cosas, y cada una se puede pesar distinto según lo que busques. Si vas tras material nuevo, sube la distancia; si vas tras diversidad, sube la riqueza del vecindario; si quieres equilibrar la colección entre ${world ? 'países' : 'estados'}, sube el déficit ${world ? 'del país' : 'de la entidad'}: accesiones cuyo propio punto cae en ${world ? 'el país' : 'la entidad'} entre su superficie, comparado con ${world ? 'el país mejor cubierto' : 'la entidad mejor cubierta'} (en una celda que comparten varias, cada una pesa por la tierra que ocupa). El vecindario de una celda son las celdas a unos ${fmtInt(GAPS.NEIGHBOUR_KM)} km o menos (${G.opts.radius} ${pl(G.opts.radius, 'celda', 'celdas')} de ${sizeTxt}° hacia cada lado), sea cual sea el tamaño de celda. A igual puntaje, va primero la celda con más riqueza alrededor y, si sigue el empate, la más lejana. La tabla trae las coordenadas del centro de cada celda, listas para cargarlas en el GPS.`,
+        `The priority of each empty cell is the sum of four things, and each can be weighted differently depending on what you are after. If you want new material, raise the distance; if you want diversity, raise neighbourhood richness; if you want to balance the collection across ${world ? 'countries' : 'states'}, raise the ${world ? 'country' : 'state'} deficit: accessions whose own point falls in the ${world ? 'country' : 'state'} divided by its area, compared with the best covered one (in a cell shared by several, each weighs by the land it occupies). The neighbourhood of a cell is the cells within about ${fmtInt(GAPS.NEIGHBOUR_KM)} km (${G.opts.radius} ${pl(G.opts.radius, 'cell', 'cells')} of ${sizeTxt}° each way), whatever the cell size. On equal scores, the cell with more richness around goes first and, if still tied, the farthest one. The table carries the coordinates of each cell centre, ready for a GPS.`)}</p>
       <div class="card">
         <div class="field-grid b6-weights">
           ${[['distance', T('Lejanía de la colecta más cercana', 'Distance to nearest collection')],
@@ -336,7 +338,7 @@
           ${shown.slice(0, MAXR).map(r => `<tr>
             <td>${isTaxon() ? `<i class="sci">${esc(r.type)}</i>` : esc(r.type)}</td>
             <td class="num">${fmtInt(r.n)}</td><td class="num">${fmtInt(r.sites)}</td>
-            <td>${r.routes.map(x => { const h = MCPD.GPCONS.find(y => y.c === x); return esc(h ? T(h.es, h.en) : x); }).join(', ') || '—'}</td>
+            <td>${r.routes.map(x => esc(routeName(x))).join(', ') || '—'}</td>
             <td>${r.flags.map(f => `<span class="tag ${FLAGS[f].c}">${esc(T(FLAGS[f].es, FLAGS[f].en))}</span>`).join(' ')}</td>
           </tr>`).join('')}
           </tbody></table>
@@ -389,7 +391,7 @@
   function exportRisks() {
     const rows = G.risks.filter(r => r.flags.length).map(r => ({
       tipo: r.type, accesiones: r.n, entidades_o_paises: r.sites,
-      rutas: r.routes.join('; '), duplicados: r.dupl, con_coordenadas: r.coords,
+      rutas: r.routes.map(routeName).join('; '), duplicados: r.dupl, con_coordenadas: r.coords,
       riesgos: r.flags.map(f => FLAGS[f] ? T(FLAGS[f].es, FLAGS[f].en) : f).join('; '), peso: r.weight,
     }));
     download(IO.toCSV(rows, Object.keys(rows[0] || { tipo: '' })), 'tipos-en-riesgo.csv', 'text/csv;charset=utf-8');

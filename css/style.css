@@ -323,6 +323,12 @@ table.dup-tbl tr.dup-differ td:first-child { font-weight: 700; }
 .prio-bar i { display: block; height: 100%; }
 
 /* ---------- Bloque 8: alertas y calculadora ---------- */
+/* lista de trabajo del Bloque 8: los botones van debajo de las alertas y se
+   envuelven, así la tabla cabe en la tarjeta sin desplazarse de lado */
+.b8-act { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 4px; }
+.b8-act:empty { display: none; }
+.b8-act .btn { white-space: nowrap; }
+.b8-tasks td:nth-child(5) { min-width: 14rem; }
 .alert-line { font-size: .82rem; padding: 1px 0 1px 10px; border-left: 3px solid var(--border-strong); margin: 2px 0; }
 .alert-line.crit { border-left-color: var(--stBad); color: var(--text); }
 .alert-line.warn { border-left-color: var(--stWarn); color: var(--text-muted); }
@@ -355,16 +361,41 @@ table.dup-tbl tr.dup-differ td:first-child { font-weight: 700; }
 .ws-line { display: inline-block; border-bottom: 1px solid #666; min-width: 130px; height: 1em; }
 .ws-line.long { display: block; min-width: 0; margin-top: 18px; }
 .ws-sign { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 26px; font-size: 9pt; color: #333; }
+.ws-note { margin: 6px 0 0; font-size: 8.5pt; color: #333; }
+.ws-note.ws-warn { border-left: 3px solid #b45309; padding-left: 7px; }
+/* los encabezados numéricos de las hojas de trabajo, con la misma letra que los demás */
+.print-sheet .ws-tbl th.num { font-family: inherit; font-size: 8pt; }
+.print-sheet .ws-tbl td.num { font-size: inherit; }
+.b9-header { min-width: 15.5rem; }
+/* etiqueta sin código de barras (número fuera de ASCII): se marca sólo en pantalla */
+@media screen { .lbl.lbl-nocode { outline: 2px dashed var(--danger); outline-offset: -1px; } }
 
 @media print {
   .print-sheet { box-shadow: none; margin: 0; border-radius: 0; }
+  /* sin el relleno inferior de la pantalla, que empujaba una hoja en blanco al final */
+  main { padding-bottom: 0; }
+  /* el aviso para lectores de pantalla, hijo de <body>, abría una hoja en blanco al final */
+  body > .sr-only { display: none !important; }
   .ws { width: auto; min-height: 0; padding: 0; }
   .print-sheet .ws-tbl { font-size: 8pt; }
+  /* las tablas largas de las hojas de trabajo se parten entre hojas (labg-base
+     pide no partir ninguna tabla y entonces la primera hoja salía sólo con el
+     título) y repiten su encabezado en cada hoja */
+  .print-sheet .ws-tbl { break-inside: auto; }
   .ws-tbl thead { display: table-header-group; }
-  .ws-tbl tr { page-break-inside: avoid; }
+  .ws-tbl tr { break-inside: avoid; page-break-inside: avoid; }
+  .ws-head, .ws-sub { break-after: avoid; }
   #panel-9 .blk-title, #panel-9 .section-sub { display: none !important; }
   .rep-frame { display: none !important; }
+  /* etiquetas a escala exacta: sólo las hojas, sin márgenes de página (los
+     trae cada hoja), cada una del tamaño del papel */
+  body.b9-print-labels { margin: 0 !important; padding: 0 !important; background: #fff !important; }
+  body.b9-print-labels > *:not(#b9PrintRoot) { display: none !important; }
+  body.b9-print-labels #b9PrintRoot { display: block; }
+  #b9PrintRoot .label-sheet { margin: 0; overflow: hidden; break-after: page; break-inside: avoid; }
+  #b9PrintRoot .label-sheet:last-child { break-after: auto; }
 }
+#b9PrintRoot { display: none; }
 @page { margin: 10mm; }
 .pick-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2px 12px; max-height: 260px; overflow: auto; margin-top: 8px; padding-right: 4px; }
 .pick-item { display: flex; align-items: baseline; gap: 6px; font-size: .82rem; padding: 2px 6px; border-radius: 5px; cursor: pointer; }

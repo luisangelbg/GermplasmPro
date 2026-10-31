@@ -25,9 +25,41 @@
   }
   function saveCfg() {
     Prefs.set('bankConfig', cfg);
-    const custom = {};
-    Object.keys(viab).forEach(k => { if (k !== 'Zea mays') custom[k] = viab[k]; });
-    Prefs.set('viability', custom);
+    /* se guardan las constantes propias: las de otros taxones y las publicadas
+       que se hayan editado (el maíz incluido) */
+    Prefs.set('viability', MANAGE.customConstants(viab));
+  }
+  /* borra las constantes propias y vuelve a las publicadas */
+  function resetConstants() {
+    const own = Object.keys(MANAGE.customConstants(viab));
+    if (!own.length) return;
+    if (!confirm(T(`¿Borrar las constantes propias (${own.join(', ')}) y volver a las publicadas?`, `Delete your own constants (${own.join(', ')}) and go back to the published ones?`))) return;
+    viab = MANAGE.viabilityTable(null);
+    saveCfg();
+    run();
+  }
+
+  const pl = (n, uno, varios) => (n === 1 ? uno : varios);
+  /* el nombre de una ruta en el idioma de la interfaz; la vacía es «sin declarar» */
+  const routeName = c => { const h = MCPD.GPCONS.find(x => x.c === c); return h ? T(h.es, h.en) : T('sin declarar', 'not declared'); };
+  const has =v => v != null && Number.isFinite(v);
+  const isSeedRoute = r => r === 'seed' || r === '' || r === MANAGE.NO_ROUTE;
+  /* «1 semilla», «1 200 semillas», en el idioma de la interfaz */
+  function unitWord(unit, n) {
+    const u = MANAGE.STOCK_UNITS[unit] || MANAGE.STOCK_UNITS.seed;
+    return T(pl(n, u.es[0], u.es[1]), pl(n, u.en[0], u.en[1]));
+  }
+  /* el botón de trabajo hecho que corresponde a cada ruta */
+  function doneLabel(route) {
+    if (isSeedRoute(route)) return T('Regeneración', 'Regeneration');
+    return { field: T('Resiembra', 'Replanting'), invitro: T('Subcultivo', 'Subculture'), cryo: T('Revisión', 'Check'),
+      insitu: T('Visita', 'Visit'), onfarm: T('Visita', 'Visit') }[route] || '';
+  }
+  /* un porcentaje cercano a 100 sin redondearlo a 100: 99.9965 no es 100 */
+  function pctNear100(x) {
+    if (!(x < 100)) return '100';
+    if (x > 99.99) return '> 99.99';
+    return fmt(x, 2);
   }
 
   function run() {
@@ -52,27 +84,33 @@
     }
     const n = A.lots.length;
     const crit = A.byLevel.crit.length, warn = A.byLevel.warn.length;
-    const stockTotal = A.lots.reduce((a, l) => a + (isFinite(l.st.stock) ? l.st.stock : 0), 0);
+    /* existencias por unidad: no se suman semillas con plantas ni con frascos */
+    const su = A.stockByUnit;
+    const stockV = su.length ? fmtInt(su[0].n) : '—';
+    const stockD = su.length
+      ? [unitWord(su[0].unit, su[0].n), ...su.slice(1).map(x => `${fmtInt(x.n)} ${unitWord(x.unit, x.n)}`)].join(' · ')
+      : T('ningún lote tiene existencias anotadas', 'no lot has its stock recorded');
     const sinRespaldo = A.lots.filter(l => l.st.alerts.some(x => x.code === 'noBackup')).length;
     const proyectables = A.lots.filter(l => l.st.projected != null).length;
 
     el('b8Stats').innerHTML = [
       { k: T('Lotes en apuros', 'Lots in trouble'), v: fmtInt(crit), d: T('piden acción esta temporada', 'need action this season'), c: crit ? 'var(--danger)' : 'var(--s3)' },
-      { k: T('Piden atención', 'Need attention'), v: fmtInt(warn), d: T('prueba vencida, poco stock o sin respaldo', 'test due, low stock or no backup'), c: warn ? 'var(--stWarn)' : 'var(--s3)' },
+      { k: T('Piden atención', 'Need attention'), v: fmtInt(warn), d: T('prueba vencida, pocas existencias o sin respaldo', 'test due, low stock or no backup'), c: warn ? 'var(--stWarn)' : 'var(--s3)' },
       { k: T('Al día', 'Up to date'), v: fmtInt(A.byLevel.ok.length), d: T(`de ${n} accesiones`, `of ${n} accessions`), c: 'var(--s3)' },
       { k: T('Con proyección de viabilidad', 'With viability projection'), v: fmtInt(proyectables), d: T('el resto no tiene constantes o prueba', 'the rest lack constants or a test'), c: 'var(--s1)' },
       { k: T('Sin duplicado de seguridad', 'Without safety duplicate'), v: fmtInt(sinRespaldo), d: T('dependen de una sola instalación', 'depend on a single facility'), c: sinRespaldo ? 'var(--stWarn)' : 'var(--s3)' },
-      { k: T('Existencias registradas', 'Recorded stock'), v: fmtInt(stockTotal), d: T('semillas, plantas, frascos o criotubos', 'seeds, plants, jars or cryovials'), c: 'var(--s6)' },
+      { k: T('Existencias registradas', 'Recorded stock'), v: stockV, d: stockD, c: 'var(--s6)' },
     ].map(x => `<div class="stat" style="--sc:${x.c}"><div class="s-k">${x.k}</div><div class="s-v">${x.v}</div><div class="s-d">${x.d}</div></div>`).join('');
 
     /* --- lista de tareas --- */
     let lots = A.lots.slice();
     if (view.filter !== 'all') lots = lots.filter(l => l.st.levelName === view.filter);
-    if (view.route) lots = lots.filter(l => l.st.route === view.route);
+    /* la ruta vacía se agrupa y se filtra con la misma clave (MANAGE.NO_ROUTE) */
+    if (view.route) lots = lots.filter(l => (l.st.route || MANAGE.NO_ROUTE) === view.route);
     lots.sort((a, b) => view.sort === 'score' ? b.st.score - a.st.score || b.st.level - a.st.level
       : String(a.row.ACCENUMB).localeCompare(String(b.row.ACCENUMB), 'es'));
 
-    const routeName = c => { const h = MCPD.GPCONS.find(x => x.c === c); return h ? T(h.es, h.en) : T('sin declarar', 'not declared'); };
+    const nK = Object.keys(viab).length, nOwn = Object.keys(MANAGE.customConstants(viab)).length;
 
     el('b8Body').innerHTML = `
       <h3 class="section-title">${T('1 · Los supuestos con los que se hacen las cuentas', '1 · The assumptions behind every figure')}</h3>
@@ -86,19 +124,27 @@
            ['seed', 'testInterval', T('Años entre pruebas de germinación', 'Years between germination tests'), 1, 20, 1],
            ['seed', 'minStock', T('Mínimo de semillas en el frasco', 'Minimum seeds in the jar'), 50, 2000, 50],
            ['seed', 'regenPlants', T('Plantas por regeneración', 'Plants per regeneration'), 20, 300, 10],
+           ['seed', 'testSeeds', T('Semillas por prueba de germinación', 'Seeds per germination test'), 50, 500, 25],
            ['field', 'cycle', T('Años entre resiembras (campo)', 'Years between replantings (field)'), 1, 30, 1],
-           ['invitro', 'subMonths', T('Meses entre subcultivos', 'Months between subcultures'), 2, 24, 1]].map(([grp, k, lab, mn, mx, stp]) => `
+           ['field', 'minPlants', T('Mínimo de plantas (campo)', 'Minimum plants (field)'), 5, 100, 5],
+           ['invitro', 'subMonths', T('Meses entre subcultivos', 'Months between subcultures'), 2, 24, 1],
+           ['invitro', 'minJars', T('Mínimo de frascos (in vitro)', 'Minimum jars (in vitro)'), 2, 50, 1],
+           ['cryo', 'checkYears', T('Años entre revisiones de criotubos', 'Years between cryovial checks'), 1, 20, 1],
+           ['cryo', 'minVials', T('Mínimo de criotubos', 'Minimum cryovials'), 5, 100, 5],
+           ['insitu', 'visitYears', T('Años entre visitas (in situ)', 'Years between visits (in situ)'), 1, 10, 1],
+           ['onfarm', 'visitYears', T('Años entre visitas (en la parcela)', 'Years between visits (on farm)'), 1, 10, 1]].map(([grp, k, lab, mn, mx, stp]) => `
           <div class="slider-row"><label>${esc(lab)}</label>
             <input type="range" data-cfg="${grp}.${k}" min="${mn}" max="${mx}" step="${stp}" value="${cfg[grp][k]}">
             <span class="range-val">${cfg[grp][k]}</span></div>`).join('')}
       </div>
       <div class="imp-row" style="margin-top:10px">
-        <span class="hint">${T('Constantes de viabilidad cargadas:', 'Viability constants loaded:')} <b>${Object.keys(viab).length}</b> ${T('taxones', 'taxa')} — ${esc(Object.keys(viab).slice(0, 4).join(', '))}</span>
+        <span class="hint">${T('Constantes de viabilidad cargadas:', 'Viability constants loaded:')} <b>${nK}</b> ${T(pl(nK, 'taxón', 'taxones'), pl(nK, 'taxon', 'taxa'))} — ${esc(Object.keys(viab).slice(0, 4).join(', '))}${nOwn ? ` (${T(`${nOwn} ${pl(nOwn, 'propia', 'propias')}`, `${nOwn} your own`)})` : ''}</span>
         <button class="btn btn-secondary btn-sm" id="b8AddK">${T('Añadir constantes de una especie', 'Add constants for a species')}</button>
+        ${nOwn ? `<button class="btn btn-ghost btn-sm" id="b8ResetK">${T('Volver a las publicadas', 'Back to the published ones')}</button>` : ''}
       </div>
       <p class="hint" style="margin-bottom:0">${T(
-        'Sin constantes para una especie, la app no proyecta su viabilidad: te dice la fecha de la última prueba y nada más. Es preferible a inventar un número. Las del maíz vienen publicadas; las demás tómalas de la Seed Information Database de Kew y anótalas con su fuente.',
-        'Without constants for a species, the app does not project its viability: it gives you the date of the last test and nothing else. That is better than making a number up. The maize ones are published; take the others from Kew’s Seed Information Database and record them with their source.')}</p>
+        'Sin constantes para una especie, la app no proyecta su viabilidad: te dice la fecha de la última prueba y nada más. Es preferible a inventar un número. Las del maíz vienen publicadas; las demás tómalas de la Seed Information Database de Kew y anótalas con su fuente. Para corregir las del maíz, añádelas con su mismo nombre (Zea mays); las constantes propias se guardan y «Volver a las publicadas» las borra.',
+        'Without constants for a species, the app does not project its viability: it gives you the date of the last test and nothing else. That is better than making a number up. The maize ones are published; take the others from Kew’s Seed Information Database and record them with their source. To correct the maize ones, add them under the same name (Zea mays); your own constants are saved and “Back to the published ones” deletes them.')}</p>
       </div>
 
       <h3 class="section-title">${T('2 · Qué hay que hacer', '2 · What needs doing')}</h3>
@@ -114,30 +160,37 @@
           </select></label>
           <button class="btn btn-secondary btn-sm" id="b8Plan">${T('Plan de trabajo en CSV', 'Work plan as CSV')}</button>
         </div>
-        <div class="table-wrap" style="max-height:520px;overflow:auto;margin-top:10px">
-          <table class="tbl"><thead><tr>
+        <div class="table-wrap" style="max-height:520px;overflow:auto;margin-top:10px" tabindex="0" role="region" aria-label="${esc(T('Lista de trabajo', 'Work list'))}">
+          <table class="tbl b8-tasks"><thead><tr>
             <th>${T('Accesión', 'Accession')}</th><th>${T('Ruta', 'Route')}</th>
             <th class="num">${T('Existencias', 'Stock')}</th><th class="num">${T('Germinación', 'Germination')}</th>
-            <th>${T('Qué pasa', 'What is going on')}</th><th></th>
+            <th>${T('Qué pasa y qué registrar', 'What is going on and what to record')}</th>
           </tr></thead><tbody>
           ${lots.slice(0, 200).map(l => {
             const st = l.st;
             const lv = LEVELS[st.levelName];
-            const germ = isFinite(st.germ)
-              ? `${fmt(st.germ, 0)} %${st.projected != null ? ` <span class="muted">→ ${fmt(st.projected, 0)} %</span>` : ''}`
-              : '—';
+            const seed = isSeedRoute(st.route);
+            /* la germinación sólo existe en la semilla; en las demás rutas, «—» */
+            const germ = !seed ? '—'
+              : has(st.germ)
+                ? `${fmt(st.germ, 0)} %${st.projected != null ? ` <span class="muted">→ ${fmt(st.projected, 0)} %</span>` : ''}`
+                : '—';
+            const germHint = !seed ? ''
+              : st.yearsSinceTest != null ? T(`hace ${fmt(st.yearsSinceTest, 1)} a`, `${fmt(st.yearsSinceTest, 1)} y ago`)
+                : T('sin prueba registrada', 'no test recorded');
+            const done = doneLabel(st.route);
             return `<tr>
               <td><b class="mono">${esc(l.row.ACCENUMB || '')}</b><div class="hint">${esc(String(l.row.ACCENAME || '').slice(0, 24))}</div></td>
               <td><span class="tag ${lv.c}">${esc(routeName(st.route))}</span></td>
-              <td class="num">${isFinite(st.stock) ? fmtInt(st.stock) : '—'}</td>
-              <td class="num">${germ}<div class="hint">${st.yearsSinceTest != null ? T(`hace ${fmt(st.yearsSinceTest, 1)} a`, `${fmt(st.yearsSinceTest, 1)} y ago`) : ''}</div></td>
+              <td class="num">${has(st.stock) ? `${fmtInt(st.stock)}<div class="hint">${esc(unitWord(MANAGE.stockUnit(st.route), st.stock))}</div>` : '—'}</td>
+              <td class="num">${germ}<div class="hint">${germHint}</div></td>
               <td>${st.alerts.length
                 ? st.alerts.map(a => `<div class="alert-line ${a.level}">${esc(T(a.msg.es, a.msg.en))}</div>`).join('')
-                : `<span class="tag ok">${T('al día', 'up to date')}</span>`}</td>
-              <td class="qc-act">
-                <button class="btn btn-ghost btn-sm" data-test="${l.i}">${T('Registrar prueba', 'Record test')}</button>
-                ${['seed', 'field', 'invitro'].includes(st.route) ? `<button class="btn btn-ghost btn-sm" data-regen="${l.i}">${st.route === 'invitro' ? T('Subcultivo', 'Subculture') : T('Regeneración', 'Regeneration')}</button>` : ''}
-              </td>
+                : `<span class="tag ok">${T('al día', 'up to date')}</span>`}
+                <div class="b8-act">
+                ${seed ? `<button class="btn btn-ghost btn-sm" data-test="${l.i}">${T('Registrar prueba', 'Record test')}</button>` : ''}
+                ${done ? `<button class="btn btn-ghost btn-sm" data-regen="${l.i}">${done}</button>` : ''}
+              </div></td>
             </tr>`;
           }).join('')}
           </tbody></table>
@@ -164,8 +217,8 @@
         <div class="pg-pane"><div class="pg-title">${T('Carga de trabajo de los próximos 25 años', 'Workload for the next 25 years')}</div>
           ${workPlot(520, 300)}
           <p class="hint">${T(
-            'Pruebas de germinación y regeneraciones que tocarían cada año si se mantienen los intervalos de arriba. Los picos son los que hay que repartir: si un año se junta el trabajo de veinte lotes, conviene adelantar o atrasar algunos.',
-            'Germination tests and regenerations that would fall due each year if the intervals above are kept. The peaks are what needs spreading out: if twenty lots pile up in one year, some are better brought forward or pushed back.')}</p>
+            'Pruebas de germinación, regeneraciones, resiembras y subcultivos que tocarían cada año si se mantienen los intervalos de arriba; el año +0 son los próximos doce meses e incluye todo lo atrasado. Los picos son los que hay que repartir: si un año se junta el trabajo de veinte lotes, conviene adelantar o atrasar algunos.',
+            'Germination tests, regenerations, replantings and subcultures that would fall due each year if the intervals above are kept; year +0 is the next twelve months and includes everything overdue. The peaks are what needs spreading out: if twenty lots pile up in one year, some are better brought forward or pushed back.')}</p>
         </div>
       </div></div>
 
@@ -179,7 +232,7 @@
           <td>${esc(routeName(r.route))}</td><td class="num">${r.n}</td>
           <td class="num">${r.crit ? `<span class="tag bad">${r.crit}</span>` : '0'}</td>
           <td class="num">${r.warn ? `<span class="tag warn">${r.warn}</span>` : '0'}</td>
-          <td class="num">${fmtInt(r.stock)}</td>
+          <td class="num">${r.withStock ? `${fmtInt(r.stock)} ${esc(unitWord(r.unit, r.stock))}` : '—'}</td>
         </tr>`).join('')}
       </tbody></table></div></div>`;
 
@@ -197,10 +250,12 @@
       if (nEl) nEl.addEventListener('change', () => {
         if (id === 'b8Filter') view.filter = nEl.value; else view.route = nEl.value;
         render();
+        const back = el(id); if (back) back.focus();
       });
     });
     el('b8Plan').addEventListener('click', exportPlan);
     el('b8AddK').addEventListener('click', addConstants);
+    if (el('b8ResetK')) el('b8ResetK').addEventListener('click', resetConstants);
     els('[data-test]', el('b8Body')).forEach(b => b.addEventListener('click', () => recordTest(Number(b.dataset.test))));
     els('[data-regen]', el('b8Body')).forEach(b => b.addEventListener('click', () => recordRegen(Number(b.dataset.regen))));
     ['b8p', 'b8P', 'b8g'].forEach(id => {
@@ -221,7 +276,10 @@
     Prefs.set('calcG', g);
     const alo = MANAGE.plantsNeeded(p, P, true), auto = MANAGE.plantsNeeded(p, P, false);
     const semAlo = MANAGE.seedsToSow(alo, g), semAuto = MANAGE.seedsToSow(auto, g);
-    const conFAO = MANAGE.retentionProb(p, 100, true);
+    /* las plantas por regeneración de los supuestos del banco (la recomendación de FAO para una alógama es 100) */
+    const N = cfg.seed.regenPlants;
+    const conN = MANAGE.retentionProb(p, N, true), conNauto = MANAGE.retentionProb(p, N, false);
+    const semN = MANAGE.seedsToSow(N, g);
     el('b8Calc').innerHTML = `
       <table class="tbl"><tbody>
         <tr><td>${T('Especie alógama (polinización cruzada)', 'Outcrossing species')}</td>
@@ -230,43 +288,57 @@
         <tr><td>${T('Especie autógama', 'Self-pollinating species')}</td>
           <td class="num"><b>${fmtInt(auto)}</b> ${T('plantas', 'plants')}</td>
           <td class="num">${fmtInt(semAuto)} ${T('semillas a sembrar', 'seeds to sow')}</td></tr>
+        <tr><td>${T('Regeneración del banco (supuestos)', 'Genebank regeneration (assumptions)')}</td>
+          <td class="num"><b>${fmtInt(N)}</b> ${T('plantas', 'plants')}</td>
+          <td class="num">${fmtInt(semN)} ${T('semillas a sembrar', 'seeds to sow')}</td></tr>
       </tbody></table>
       <p class="hint">${T(
-        `Con las 100 plantas que recomienda FAO para una alógama, la probabilidad de conservar un alelo de esa frecuencia es de ${fmt(100 * conFAO, 2)} %. Las semillas a sembrar salen de dividir las plantas entre la germinación (${g} %) y un 90 % de establecimiento en campo.`,
-        `With the 100 plants FAO recommends for an outcrosser, the probability of keeping an allele of that frequency is ${fmt(100 * conFAO, 2)}%. Seeds to sow come from dividing the plants by germination (${g}%) and a 90% field establishment.`)}</p>`;
+        `Con las ${fmtInt(N)} plantas por regeneración de los supuestos (FAO recomienda 100 para una alógama), la probabilidad de conservar un alelo de esa frecuencia es de ${pctNear100(100 * conN)} % en una alógama y de ${pctNear100(100 * conNauto)} % en una autógama.${alo > N ? ` <b>Con ${fmtInt(N)} plantas no se llega a la seguridad pedida en una alógama: harían falta ${fmtInt(alo)}.</b>` : auto > N ? ` En una autógama harían falta ${fmtInt(auto)} plantas para llegar a la seguridad pedida.` : ''} Las semillas a sembrar salen de dividir las plantas entre la germinación (${g} %) y un 90 % de establecimiento en campo.`,
+        `With the ${fmtInt(N)} plants per regeneration in the assumptions (FAO recommends 100 for an outcrosser), the probability of keeping an allele of that frequency is ${pctNear100(100 * conN)}% in an outcrosser and ${pctNear100(100 * conNauto)}% in a selfer.${alo > N ? ` <b>${fmtInt(N)} plants do not reach the requested certainty in an outcrosser: ${fmtInt(alo)} would be needed.</b>` : auto > N ? ` A selfer would need ${fmtInt(auto)} plants to reach the requested certainty.` : ''} Seeds to sow come from dividing the plants by germination (${g}%) and a 90% field establishment.`)}</p>`;
   }
 
   /* ---------- gráfica de carga de trabajo ---------- */
+  const WORK_SERIES = [
+    ['tests', '--s1', { es: ['prueba de germinación', 'pruebas de germinación'], en: ['germination test', 'germination tests'] }],
+    ['regen', '--s2', { es: ['regeneración', 'regeneraciones'], en: ['regeneration', 'regenerations'] }],
+    ['replant', '--s5', { es: ['resiembra de campo', 'resiembras de campo'], en: ['field replanting', 'field replantings'] }],
+    ['sub', '--s4', { es: ['subcultivo in vitro', 'subcultivos in vitro'], en: ['in-vitro subculture', 'in-vitro subcultures'] }],
+  ];
   function workPlot(W, H) {
     if (!A) return '';
     const w = A.work.slice(0, 26);
-    const maxV = Math.max(1, ...w.map(x => x.tests + x.regen + x.replant));
+    const tot = x => WORK_SERIES.reduce((a, [k]) => a + (x[k] || 0), 0);
+    const maxV = Math.max(1, ...w.map(tot));
     const pad = { l: 38, r: 12, t: 12, b: 28 };
     const bw = (W - pad.l - pad.r) / w.length;
     const g = [];
     [0, 0.5, 1].forEach(f => {
       const y = H - pad.b - f * (H - pad.t - pad.b);
       g.push(`<line x1="${pad.l}" y1="${y.toFixed(1)}" x2="${W - pad.r}" y2="${y.toFixed(1)}" stroke="${cv('--grid')}"/>`);
-      g.push(`<text x="${pad.l - 5}" y="${(y + 3.5).toFixed(1)}" text-anchor="end" font-size="9.5" fill="${cv('--text-muted')}">${Math.round(f * maxV)}</text>`);
+      g.push(`<text x="${pad.l - 5}" y="${(y + 3.5).toFixed(1)}" text-anchor="end" font-size="9.5" fill="${cv('--text-muted')}">${fmt(f * maxV, Number.isInteger(f * maxV) ? 0 : 1)}</text>`);
     });
     w.forEach((x, i) => {
       const x0 = pad.l + i * bw;
       let acc = 0;
-      [['tests', '--s1'], ['regen', '--s2'], ['replant', '--s5']].forEach(([k, col]) => {
+      WORK_SERIES.forEach(([k, col, name]) => {
         const v = x[k];
         if (!v) return;
         const h = (H - pad.t - pad.b) * v / maxV;
         const y = H - pad.b - acc - h;
-        g.push(`<rect x="${(x0 + 1).toFixed(1)}" y="${y.toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${h.toFixed(1)}" fill="${cv(col)}" opacity="0.88"><title>${T('año', 'year')} +${i}: ${v} ${k}</title></rect>`);
+        const extra = k === 'regen' && x.plants ? T(` (≈ ${fmtInt(x.plants)} plantas)`, ` (≈ ${fmtInt(x.plants)} plants)`) : '';
+        g.push(`<rect x="${(x0 + 1).toFixed(1)}" y="${y.toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${h.toFixed(1)}" fill="${cv(col)}" opacity="0.88"><title>${esc(T(`año +${i}: ${v} ${pl(v, name.es[0], name.es[1])}`, `year +${i}: ${v} ${pl(v, name.en[0], name.en[1])}`) + extra)}</title></rect>`);
         acc += h;
       });
       if (i % 5 === 0) g.push(`<text x="${(x0 + bw / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle" font-size="9" fill="${cv('--text-muted')}">+${i}</text>`);
     });
-    return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">${g.join('')}</svg>
+    const sum = k => w.reduce((a, x) => a + (x[k] || 0), 0);
+    const y0 = w[0] || {};
+    const label = T(
+      `Carga de trabajo de los próximos 25 años: ${WORK_SERIES.map(([k, , n]) => `${sum(k)} ${pl(sum(k), n.es[0], n.es[1])}`).join(', ')}; en el año +0, que incluye lo atrasado, ${tot(y0)} ${pl(tot(y0), 'tarea', 'tareas')}; el año más cargado suma ${maxV}.`,
+      `Workload for the next 25 years: ${WORK_SERIES.map(([k, , n]) => `${sum(k)} ${pl(sum(k), n.en[0], n.en[1])}`).join(', ')}; year +0, which includes overdue work, has ${tot(y0)} ${pl(tot(y0), 'task', 'tasks')}; the busiest year adds up to ${maxV}.`);
+    return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" role="img" aria-label="${esc(label)}">${g.join('')}</svg>
       <div class="map-legend" style="margin-top:6px">
-        <span class="lg-item"><i style="background:${cv('--s1')}"></i>${T('pruebas de germinación', 'germination tests')}</span>
-        <span class="lg-item"><i style="background:${cv('--s2')}"></i>${T('regeneraciones', 'regenerations')}</span>
-        <span class="lg-item"><i style="background:${cv('--s5')}"></i>${T('resiembras de campo', 'field replantings')}</span>
+        ${WORK_SERIES.map(([, col, n]) => `<span class="lg-item"><i style="background:${cv(col)}"></i>${T(n.es[1], n.en[1])}</span>`).join('')}
       </div>`;
   }
 
@@ -276,23 +348,31 @@
     const pct = prompt(T(`Resultado de la prueba de germinación de ${r.ACCENUMB} (%)`, `Germination test result for ${r.ACCENUMB} (%)`), r.GP_GERMPCT || '90');
     if (pct == null) return;
     const v = Number(String(pct).replace(',', '.'));
-    if (!isFinite(v) || v < 0 || v > 100) { alert(T('Ese porcentaje no es válido.', 'That percentage is not valid.')); return; }
-    const used = Number(prompt(T('¿Cuántas semillas se usaron en la prueba? (0 si no descuentas)', 'How many seeds were used for the test? (0 for no deduction)'), String(cfg.seed.testSeeds)) || 0);
-    MANAGE.recordTest(r, v, MANAGE.todayStamp(), isFinite(used) ? used : 0);
+    if (String(pct).trim() === '' || !isFinite(v) || v < 0 || v > 100) { alert(T('Ese porcentaje no es válido.', 'That percentage is not valid.')); return; }
+    const used = MANAGE.optNum(prompt(T('¿Cuántas semillas se usaron en la prueba? (0 si no descuentas)', 'How many seeds were used for the test? (0 for no deduction)'), String(cfg.seed.testSeeds)));
+    MANAGE.recordTest(r, v, MANAGE.todayStamp(), has(used) ? used : 0);
     persist();
   }
+  /* regeneración, resiembra, subcultivo, revisión o visita, según la ruta */
   function recordRegen(i) {
     const r = state.acc[i];
-    const route = MCPD.consRoute(r);
-    const label = route === 'invitro' ? T('subcultivo', 'subculture') : T('regeneración', 'regeneration');
-    const stock = prompt(T(`Existencias después de la ${label} de ${r.ACCENUMB}`, `Stock after the ${label} of ${r.ACCENUMB}`), r.GP_STOCK || '');
-    if (stock == null) return;
-    let germ = NaN;
-    if (route === 'seed') {
-      const g = prompt(T('Germinación del lote nuevo (%), o vacío si todavía no se prueba', 'Germination of the new lot (%), or blank if not tested yet'), '96');
-      if (g != null && String(g).trim() !== '') germ = Number(String(g).replace(',', '.'));
+    const route = MCPD.consRoute(r) || '';
+    const label = doneLabel(route).toLowerCase();
+    let stock = null;
+    if (route === 'insitu' || route === 'onfarm') {
+      if (!confirm(T(`¿Registrar hoy una visita al sitio de ${r.ACCENUMB}?`, `Record a visit to the site of ${r.ACCENUMB} today?`))) return;
+    } else {
+      const unit = unitWord(MANAGE.stockUnit(route), 2);
+      const s = prompt(T(`Existencias después de la ${label} de ${r.ACCENUMB} (${unit}; vacío si no cambian)`, `Stock after the ${label} of ${r.ACCENUMB} (${unit}; blank if unchanged)`), r.GP_STOCK || '');
+      if (s == null) return;
+      stock = MANAGE.optNum(s);
     }
-    MANAGE.recordRegeneration(r, MANAGE.todayStamp(), Number(stock), germ);
+    let germ = null;
+    if (isSeedRoute(route)) {
+      const g = prompt(T('Germinación del lote nuevo (%), o vacío si todavía no se prueba', 'Germination of the new lot (%), or blank if not tested yet'), '96');
+      if (g != null) germ = MANAGE.optNum(g);
+    }
+    MANAGE.recordRegeneration(r, MANAGE.todayStamp(), stock, germ);
     persist();
   }
   function persist() {
@@ -300,7 +380,6 @@
     if (window.B2) B2.refresh();
     run();
   }
-
   /* ---------- constantes de viabilidad ---------- */
   function addConstants() {
     const taxa = [...new Set(state.acc.map(r => MANAGE.taxonOf(r)).filter(Boolean))].sort();
@@ -319,13 +398,15 @@
   function exportPlan() {
     const rows = A.lots.filter(l => l.st.alerts.length).map(l => ({
       ACCENUMB: l.row.ACCENUMB, ACCENAME: l.row.ACCENAME,
-      TAXON: MANAGE.taxonOf(l.row), ruta: l.st.route,
-      urgencia: l.st.levelName, existencias: isFinite(l.st.stock) ? l.st.stock : '',
-      germinacion_ultima: isFinite(l.st.germ) ? l.st.germ : '',
+      TAXON: MANAGE.taxonOf(l.row), ruta: routeName(l.st.route),
+      urgencia: T(LEVELS[l.st.levelName].es, LEVELS[l.st.levelName].en),
+      existencias: has(l.st.stock) ? l.st.stock : '',
+      unidad: has(l.st.stock) ? unitWord(MANAGE.stockUnit(l.st.route), l.st.stock) : '',
+      germinacion_ultima: has(l.st.germ) ? l.st.germ : '',
       germinacion_proyectada: l.st.projected != null ? Math.round(l.st.projected * 10) / 10 : '',
       anios_desde_prueba: l.st.yearsSinceTest != null ? Math.round(l.st.yearsSinceTest * 10) / 10 : '',
       anios_al_umbral: l.st.yearsToThreshold != null ? Math.round(l.st.yearsToThreshold * 10) / 10 : '',
-      acciones: l.st.alerts.map(a => a.msg.es).join(' | '),
+      acciones: l.st.alerts.map(a => T(a.msg.es, a.msg.en)).join(' | '),
     }));
     if (!rows.length) { alert(T('No hay nada pendiente: toda la colección está al día.', 'Nothing pending: the whole collection is up to date.')); return; }
     download(IO.toCSV(rows, Object.keys(rows[0])), 'plan-de-trabajo.csv', 'text/csv;charset=utf-8');
