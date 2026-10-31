@@ -520,8 +520,9 @@
           'Uncollected cells and the ten highest scoring priorities.')) : ''}
         ${pr.length ? `<h4>${L('Prioridades de colecta', 'Collecting priorities')}</h4>${
           tbl(['#', L('Coordenada', 'Coordinate'), L('Entidad', 'State'), L('Distancia', 'Distance'), L('Puntaje', 'Score')],
-            pr.map((c, i) => [String(i + 1), `${fmt(c.lat, 2)}, ${fmt(c.lon, 2)}`, esc2(c.state || '—'),
-              c.nearest != null ? fmt(c.nearest, 0) + ' km' : '—', fmt(c.score, 1)]), { num: [0, 3, 4] })}` : ''}
+            pr.map((c, i) => [String(i + 1), `${fmt(c.lat, 2)}, ${fmt(c.lon, 2)}`,
+              esc2((GEO.MX_BY_CODE[c.stateCode] || {}).name || c.countryCode || '—'),
+              isFinite(c.dist) ? fmt(c.dist, 0) + ' km' : '—', fmt(c.score, 1)]), { num: [0, 3, 4] })}` : ''}
         ${Object.keys(conteo).length ? `<h4>${L('Tipos en riesgo', 'Types at risk')}</h4>${
           tbl([L('Riesgo', 'Risk'), L('Tipos', 'Types')],
             Object.entries(conteo).sort((a, b) => b[1] - a[1]).map(([f, n]) => [esc2(flagName(f)), fmtInt(n)]), { num: [1] })}` : ''}

@@ -1131,7 +1131,7 @@ ok(B5.tickDecimals([0, 0.25, 0.5, 0.75]) === 2 && B5.tickDecimals([0, 0.5, 1]) =
 /* ============ 19. vacíos de colecta ============ */
 const rejilla = GAPS.areaGrid(2, 'mx');
 ok(rejilla.length > 30, `la rejilla de 2° cubre México con ${rejilla.length} celdas`);
-ok(rejilla.every(c => GEO.stateOf(c.lon, c.lat)), 'todas las celdas del área tienen su centro en tierra mexicana');
+ok(rejilla.every(c => c.shares.size > 0 && [...c.shares.keys()].every(k => GEO.MX_BY_CODE[k])), 'todas las celdas del área tocan tierra mexicana');
 ok(rejilla.every(c => c.stateCode && c.countryCode === 'MEX'), 'y cada una sabe a qué entidad pertenece');
 ok(GAPS.areaGrid(1, 'mx').length > rejilla.length, 'con celdas más chicas hay más celdas');
 const rejillaW = GAPS.areaGrid(10, 'world');
@@ -1222,6 +1222,115 @@ ok(!!parseSVG(B6.compCurve(500, 300)), 'la curva de complementariedad es un SVG 
 ok(!B4.forFile(() => B6.gapMap(700, 420)).includes('var(--'), 'el mapa para un archivo no deja variables CSS');
 ok(Object.values(B6.FLAGS).every(f => f.es && f.en && f.c), 'las banderas de riesgo están en dos idiomas');
 state.acc = [];
+
+/* ---------- correcciones del Bloque 6 (30 de octubre) ---------- */
+{
+  const filas6 = EXAMPLES.build();
+  const g1 = GAPS.analyse(filas6, { size: 1, scope: 'mx', classMode: 'species' });
+  const g2 = GAPS.analyse(filas6, { size: 2, scope: 'mx', classMode: 'species' });
+  const pts6 = GEO.pointsOf(filas6);
+  /* 1. cada accesión cuenta en la entidad donde cae su propio punto */
+  const enMexico = pts6.filter(p => GEO.stateOf(p.lon, p.lat));
+  ok(g1.points.filter(p => GEO.stateOf(p.lon, p.lat)).every(p => p.unit === GEO.stateOf(p.lon, p.lat).code),
+    'cada accesión se asigna a la entidad de su propio punto, no a la del centro de su celda');
+  const nPorEntidad = code => (g1.stateStats.get(code) || { n: 0 }).n;
+  ok(nPorEntidad('TLA') === enMexico.filter(p => GEO.stateOf(p.lon, p.lat).code === 'TLA').length,
+    `Tlaxcala cuenta sólo las accesiones que caen en Tlaxcala (${nPorEntidad('TLA')}), no las de Puebla y el Estado de México`);
+  ok(nPorEntidad('PUE') > 0 && nPorEntidad('MEX') > 0, 'Puebla y el Estado de México reciben las suyas');
+  ok([...g1.stateStats.values()].reduce((a, e) => a + e.n, 0) === enMexico.length, 'la suma por entidad es el número de accesiones con punto en México');
+  ok(g1.stateDeficit.get('TLA') === 1, 'sin accesiones propias, Tlaxcala tiene el déficit máximo');
+  near(Math.min(...g1.stateDeficit.values()), 0, 1e-12, 'la entidad más densa tiene déficit cero');
+  const pue = g1.stateStats.get('PUE');
+  near(g1.stateDeficit.get('PUE'), 1 - pue.density / Math.max(...[...g1.stateStats.values()].map(e => e.density)), 1e-12, 'el déficit es 1 − densidad / densidad máxima, con la superficie de la entidad');
+  /* 2. toda entidad tiene al menos una celda, con 1° y con 2° */
+  ok(GEO.MX.every(s => (g1.stateStats.get(s.code) || { cells: 0 }).cells >= 1), 'con celdas de 1°, las 32 entidades tienen al menos una celda');
+  ok(GEO.MX.every(s => (g2.stateStats.get(s.code) || { cells: 0 }).cells >= 1), 'y también con celdas de 2°');
+  ok(['AGU', 'CMX', 'COL', 'MOR', 'QUE'].every(c => g1.cells.some(x => x.shares.has(c))), 'Aguascalientes, CDMX, Colima, Morelos y Querétaro aparecen en la rejilla de 1°');
+  ok(g1.cells.every(c => c.shares.size > 0 || c.n > 0), 'toda celda toca tierra o contiene accesiones');
+  /* 3. con 2°, las celdas de costa existen aunque su centro caiga en el mar */
+  const huerf2 = g2.orphan.map(p => p.row.ACCENUMB);
+  ok(['MEX-SE-0016', 'MEX-VA-0025', 'MEX-OF-0037'].every(a => !huerf2.includes(a)), 'con celdas de 2°, las accesiones de la costa ya no quedan fuera del área');
+  ok(g2.cells.some(c => !GEO.stateOf(c.lon, c.lat) && c.n > 0), 'hay celdas ocupadas cuyo centro cae en el mar');
+  ok(g2.orphan.every(p => !GEO.stateOf(p.lon, p.lat)), 'ninguna accesión con punto en México queda fuera del área');
+  ok(GAPS.areaGrid(2, 'mx', null, [{ lon: -97.3, lat: 25.9 }]).some(c => c.key === GEO.cellKey(-97.3, 25.9, 2)), 'la celda de un punto en el mar se crea aunque no tenga tierra');
+  /* 4. con el mundo, el déficit va por país */
+  const gw = GAPS.analyse(filas6, { size: 2, scope: 'world', classMode: 'species' });
+  ok(gw.stateDeficit.has('MEX') && gw.stateDeficit.has('PER') && !gw.stateDeficit.has('TLA'), 'con el mundo, el déficit se calcula por país y no por entidad');
+  ok([...gw.stateDeficit.values()].every(v => v >= 0 && v <= 1), 'y sigue entre 0 y 1');
+  const celdaPeru = gw.cells.find(c => c.shares.size === 1 && c.shares.has('PER') && c.n === 0);
+  ok(!!celdaPeru && Math.abs(GAPS.cellDeficit(celdaPeru, gw.stateDeficit) - gw.stateDeficit.get('PER')) < 1e-12, 'una celda toda peruana toma el déficit de Perú');
+  ok(gw.allPriorities.filter(c => c.countryCode === 'MEX').every(c => c.parts.state < 20 + 1e-9), 'las celdas mexicanas ya no reciben 20 de déficit por ser de una entidad');
+  near(GAPS.cellDeficit({ shares: new Map() }, new Map([['A', 0.2], ['B', 0.6]])), 0.4, 1e-12, 'una celda sin unidad toma el déficit medio, igual para todas');
+  const mixta = { shares: new Map([['A', 0.75], ['B', 0.25]]) };
+  near(GAPS.cellDeficit(mixta, new Map([['A', 0], ['B', 1]])), 0.25, 1e-12, 'en una celda compartida, cada unidad pesa por la tierra que ocupa');
+  /* las diez prioridades numeradas no se encima, ni con el mundo entero */
+  const projW = GEO.projection(GEO.WORLD_BBOX, 900, 520, 10);
+  const marcas = B6.placeMarkers(gw.priorities.slice(0, 10), projW, 900, 520, 9);
+  let minSep = Infinity;
+  marcas.forEach((a, i) => marcas.slice(i + 1).forEach(b => { minSep = Math.min(minSep, Math.hypot(a.x - b.x, a.y - b.y)); }));
+  ok(marcas.length === Math.min(10, gw.priorities.length) && minSep >= 21, `los círculos numerados quedan separados (mínimo ${fmt(minSep, 1)} px)`);
+  /* 12. pesos en cero y desempates */
+  const cero = GAPS.analyse(filas6, { size: 2, scope: 'mx', weights: { distance: 0, richness: 0, state: 0, exclusive: 0 } });
+  ok(cero.weightsZero && cero.priorities.length === 0 && cero.allPriorities.length === 0, 'con todos los pesos en cero no se inventa un ranking');
+  const empate = [
+    { key: 'a', n: 0, dist: 100, nbRichness: 1, nbExclusive: 0, lat: 20, lon: -100, shares: new Map() },
+    { key: 'b', n: 0, dist: 100, nbRichness: 3, nbExclusive: 0, lat: 19, lon: -100, shares: new Map() },
+    { key: 'c', n: 0, dist: 300, nbRichness: 3, nbExclusive: 0, lat: 18, lon: -100, shares: new Map() },
+  ];
+  const ordEmp = GAPS.priorities(empate, { stateDeficit: new Map(), distCap: 50 }, { distance: 10, richness: 0, state: 0, exclusive: 0 });
+  ok(ordEmp.map(c => c.key).join('') === 'cba', 'a igual puntaje gana la de más riqueza y luego la más lejana');
+  /* 15. entidades o países */
+  const riesgos6 = GAPS.collectionGaps(filas6, 'species');
+  const ocaR = riesgos6.find(r => /Oxalis/.test(r.type));
+  const papaR = riesgos6.filter(r => /Solanum/.test(r.type));
+  ok(ocaR && ocaR.sites >= 1, `la oca cuenta sus países (${ocaR && ocaR.sites}), ya no sale con 0`);
+  ok(papaR.length && papaR.every(r => r.sites >= 1), 'las papas también');
+  ok(GAPS.siteOf(-99.65, 19.29) === 'st:MEX' && GAPS.siteOf(-71.97, -13.53) === 'ct:PER', 'una accesión en Toluca cuenta por su entidad y una en Cusco por su país');
+  ok(GAPS.siteOf(-96, 21.5, { ORIGCTY: 'MEX' }) === 'ct:MEX' && GAPS.siteOf(-96, 21.5, { ORIGCTY: 'MEX' }) !== 'st:MEX', 'el país MEX y el Estado de México no chocan');
+  ok(B6.FLAGS.oneSite.es.includes('entidad o país') && B6.FLAGS.oneSite.en.includes('state or country'), 'el riesgo se llama «una sola entidad o país»');
+  /* 16. el ADN no regenera planta */
+  const adn = (cons, extra) => Object.assign({ INSTCODE: 'MEX001', GENUS: 'Zea', SPECIES: 'diploperennis', GP_CONS: cons }, extra || {});
+  const rAdn = GAPS.collectionGaps([adn('dna'), adn('dna')], 'species')[0];
+  ok(rAdn.flags.includes('onlyDNA') && !rAdn.flags.includes('onlyInSitu'), 'un tipo guardado sólo como ADN recibe su alerta');
+  ok(rAdn.weight >= 3 + 2, 'y pesa como riesgo grave');
+  const rAdnSem = GAPS.collectionGaps([adn('dna'), adn('seed')], 'species')[0];
+  ok(!rAdnSem.flags.includes('onlyDNA'), 'con semilla además del ADN ya no hay alerta');
+  const rAdnIn = GAPS.collectionGaps([adn('dna'), adn('insitu')], 'species')[0];
+  ok(rAdnIn.flags.includes('onlyDNA'), 'ADN más in situ sigue sin respaldo vivo ex situ');
+  const rCampoAdn = GAPS.collectionGaps([adn('field'), adn('dna')], 'species')[0];
+  ok(rCampoAdn.flags.includes('onlyField'), 'campo más ADN cuenta como «sólo en banco de campo»');
+  ok(B6.FLAGS.onlyDNA && B6.FLAGS.onlyDNA.es && B6.FLAGS.onlyDNA.en, 'la alerta del ADN está en dos idiomas');
+  /* 20. el tipo vacío «—» no es un tipo */
+  const sinNombre = filas6.map((r, i) => (i < 4 ? Object.assign({}, r, { GENUS: '', SPECIES: '' }) : r));
+  const gSin = GAPS.analyse(sinNombre, { size: 1, scope: 'mx', classMode: 'species' });
+  ok(gSin.cells.every(c => !c.types.has('—')), 'el tipo vacío no suma riqueza en las celdas');
+  ok(!gSin.exclusive.has('—') && !gSin.risks.some(r => r.type === '—'), 'ni cuenta como exclusivo ni como riesgo');
+  ok(gSin.complementarity.total === new Set([].concat(...gSin.cells.map(c => [...c.types]))).size && !gSin.complementarity.missing.includes('—'), 'la complementariedad no lo cuenta');
+  /* plurales y notas */
+  state.acc = filas6;
+  B6.run();
+  const nota = B6.elevationNote();
+  ok(/Se dejó fuera 1 altitud imposible; corrígela en la ficha de la accesión, en el Bloque 2/.test(nota), 'la nota de franjas concuerda en singular y manda al Bloque 2');
+  ok(!/Bloque 3/.test(nota) && !/1 altitudes/.test(nota), 'y ya no dice «1 altitudes» ni «Bloque 3»');
+  const mapa6 = B6.gapMap(700, 420);
+  ok(!/· 1 accesiones/.test(mapa6) && !/· 1 tipos/.test(mapa6), 'las celdas con una accesión o un tipo se dicen en singular');
+  ok(/role="img"/.test(mapa6) && /aria-label="/.test(mapa6), 'el mapa de vacíos tiene nombre accesible');
+  const curva6 = B6.compCurve(520, 320);
+  ok(/role="img"/.test(curva6) && /≥ 90 %/.test(curva6) && !/= 90 %/.test(curva6), 'la curva dice «≥ 90 %» y tiene nombre accesible');
+  const m90 = curva6.match(/<text x="([\d.]+)"[^>]*text-anchor="(start|end)"[^>]*>([^<]*≥ 90[^<]*)</);
+  ok(!!m90 && (m90[2] === 'end' ? Number(m90[1]) - m90[3].length * 5.5 > 0 : Number(m90[1]) + m90[3].length * 5.5 < 520), 'y su etiqueta cabe dentro de la figura');
+  state.acc = [];
+}
+/* 19. los CSV salen con BOM y se vuelven a leer igual */
+{
+  const csvB = IO.toCSV([{ a: 'Pérez', b: '1' }], ['a', 'b']);
+  ok(csvB.charCodeAt(0) === 0xFEFF, 'los CSV que salen de la app empiezan con la marca BOM de UTF-8');
+  const leido = IO.parseDelimited(csvB);
+  ok(leido.headers[0] === 'a' && leido.rows[0].a === 'Pérez', 'y al volver a leerlos la marca no se cuela en el primer encabezado');
+  const bytes = new TextEncoder().encode(csvB);
+  ok(bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF, 'en el archivo, la marca son los bytes EF BB BF');
+  ok(new TextDecoder('utf-8').decode(bytes).startsWith('a,b'), 'y el lector de archivos de la app (TextDecoder) la quita sola');
+}
 
 /* ============ 20. distribuciones y pruebas ============
    La beta incompleta y las pruebas t y F se comparan con valores de tabla. */
@@ -1368,6 +1477,88 @@ ok(!!parseSVG(B7.pcoaPlot(500, 360).split('</svg>')[0] + '</svg>'), 'la figura d
 ok(!!parseSVG(B7.dendroPlot(500)), 'el dendrograma es un SVG válido');
 ok(!B4.forFile(() => B7.dendroPlot(500)).includes('var(--'), 'para un archivo, las figuras salen con colores literales');
 state.acc = []; state.traits = [];
+
+/* ---------- correcciones del Bloque 7 (30 de octubre) ---------- */
+{
+  /* 1. el núcleo respeta el tamaño pedido */
+  const sumA = a => a.reduce((x, y) => x + y, 0);
+  ok(sumA(CHAR.allocate([5, 5, 5, 5, 5], 3, 'C')) === 3, 'con más estratos que plazas, el reparto no rebasa el tamaño pedido');
+  ok(CHAR.allocate([9, 1, 1, 1, 1], 3, 'P').join() === '2,1,0,0,0' && CHAR.allocate([4, 3, 2, 1, 1], 3, 'C').join() === '1,1,1,0,0', 'las plazas van a los estratos con más peso (a igual peso, al más grande) y los demás se quedan sin representante');
+  ok(CHAR.allocate([5, 5, 5, 5, 5], 3, 'C', true).every(x => x === 1), 'con «al menos 1 por estrato», cada estrato pone una aunque rebase');
+  ok(sumA(CHAR.allocate([40, 3, 2, 1], 10, 'L')) === 10 && CHAR.allocate([40, 3, 2, 1], 10, 'L').every(x => x >= 1), 'con plazas de sobra, cada estrato tiene al menos una y la suma cuadra');
+  const tr7 = EXAMPLES.buildTraits(EXAMPLES.build());
+  const acc7 = EXAMPLES.build();
+  const defs7 = Object.keys(tr7[0]).filter(k => k !== 'ACCENUMB').map(k => ({ k, type: CHAR.detectType(tr7.map(t => t[k])), weight: 1 }));
+  const D7 = CHAR.gowerMatrix(tr7, defs7).D;
+  const porEspecie = acc7.map(r => [r.GENUS, r.SPECIES].filter(Boolean).join(' '));
+  const nEsp = new Set(porEspecie).size;
+  const c20 = CHAR.buildCore(tr7, defs7, { pct: 20, strata: porEspecie, allocation: 'L', pick: 'distance', D: D7 });
+  ok(c20.core.length === 9 && c20.target === 9, `al 20 % estratificado por especie el núcleo tiene 9, no ${nEsp}`);
+  ok(c20.unrepresented === nEsp - 9 && !c20.exceeds, `y avisa que ${nEsp - 9} especies se quedan sin representante`);
+  const c20m = CHAR.buildCore(tr7, defs7, { pct: 20, strata: porEspecie, allocation: 'L', pick: 'distance', D: D7, atLeastOne: true });
+  ok(c20m.core.length === nEsp && c20m.exceeds && c20m.unrepresented === 0, `con «al menos 1 por estrato» el tamaño real es ${nEsp} y se marca que rebasa`);
+  ok(new Set(c20.core).size === c20.core.length && new Set(c20m.core).size === c20m.core.length, 'sin accesiones repetidas en ningún caso');
+  /* 2. estratos sin choque entre el Estado de México y el país */
+  ok(B7.strataLabel('st:MEX') !== B7.strataLabel('ct:MEX'), `«${B7.strataLabel('st:MEX')}» (entidad) y «${B7.strataLabel('ct:MEX')}» (país) se distinguen`);
+  ok(B7.strataLabel('st:PUE') === GEO.MX_BY_CODE.PUE.name && /Per[uú]/.test(B7.strataLabel('ct:PER')), 'las claves se leen con su nombre');
+  ok(B7.strataLabel('*') === T('toda la colección', 'whole collection'), 'el estrato único sigue el idioma');
+  state.acc = acc7; state.traits = tr7;
+  const prevStrata = B7.view.strata, prevPct = B7.view.pct;
+  B7.view.strata = 'state'; B7.view.pct = 25;
+  const a7s = B7.run();
+  ok(a7s.strata.every(k => k === '—' || /^(st|ct):/.test(k)), 'con estratos por entidad, cada clave dice si es entidad o país');
+  ok(a7s.core.core.length === a7s.core.target, `y el núcleo del 25 % tiene ${a7s.core.target}, lo pedido`);
+  B7.view.strata = 'none';
+  ok(B7.run().strata.every(k => k === '*'), 'sin estratificar, un solo estrato');
+  B7.view.strata = prevStrata; B7.view.pct = prevPct;
+  /* 4. un solo umbral de VR% */
+  ok(CHAR.VR_THRESHOLD === 100, 'el umbral de VR% es 100, en el letrero y en el semáforo');
+  /* 14. las clases capturadas cuentan también los ordinales */
+  const catOrd = defs7.filter(d => d.type === 'cat' || d.type === 'ord');
+  const totalClases = catOrd.reduce((a, d) => a + new Set(tr7.map(t => String(t[d.k] ?? '').trim().toLowerCase()).filter(Boolean)).size, 0);
+  const val7 = CHAR.validateCore(tr7, defs7, c20.core);
+  ok(val7.classesTotal === totalClases && defs7.some(d => d.type === 'ord'), `las clases cuentan cualitativos y ordinales (${val7.classesTotal})`);
+  near(val7.classCoverage, 100 * val7.classesCaptured / val7.classesTotal, 1e-9, 'y la cobertura es capturadas ÷ total');
+  ok(val7.catDetail.some(c => c.type === 'ord') && val7.catDetail.every(c => Array.isArray(c.missing) && c.missing.length === c.classesAll - c.classesCore), 'el detalle por carácter dice qué clases faltan');
+  /* 6. la plantilla usa los nombres del catálogo y vuelve a entrar */
+  const plantilla = B7.templateCSV();
+  const pl7 = IO.parseDelimited(plantilla);
+  ok(pl7.headers[0] === 'ACCENUMB' && pl7.headers.slice(1).every(h => TRAITS.has(h)), 'la plantilla de caracterización usa las claves del catálogo');
+  ok(pl7.rows.length === acc7.length, 'con una fila por accesión de la colección');
+  const llena = IO.toCSV(pl7.rows.map((r, i) => Object.assign({}, r, { DIAS_FLORACION: String(60 + i), HABITO: i % 2 ? 'erecto' : 'postrado' })), pl7.headers);
+  B7.importTraits(llena, 'plantilla');
+  ok(B7.pending().key === 'ACCENUMB' && B7.matchWith('ACCENUMB').unidas === acc7.length, 'la plantilla llena se une con todas las accesiones');
+  B7.applyTraits();
+  ok(state.traits.length === acc7.length && state.traits[0].DIAS_FLORACION === '60', 'y se importa de ida y vuelta sin perder nada');
+  const d7 = B7.defs();
+  ok(d7.find(d => d.k === 'LARGO_FRUTO').type === 'empty' && !d7.find(d => d.k === 'LARGO_FRUTO').use, 'una columna vacía queda como «vacía» y fuera del análisis');
+  ok(!B7.analysis().used.some(d => d.k === 'LARGO_FRUTO'), 'y no entra como cuantitativa');
+  /* plurales del mapeo de la caracterización */
+  const tmp = ['b7MapCard', 'b7MapInfo', 'b7MapMatch'].map(id => { const d = document.createElement('div'); d.id = id; document.body.appendChild(d); return d; });
+  const selK = document.createElement('select'); selK.id = 'b7MapKey'; document.body.appendChild(selK); tmp.push(selK);
+  const tbK = document.createElement('table'); const tb = document.createElement('tbody'); tb.id = 'b7MapBody'; tbK.appendChild(tb); document.body.appendChild(tbK); tmp.push(tbK);
+  B7.importTraits(`ACCENUMB\tx\n${acc7[0].ACCENUMB}\t1\n${acc7[0].ACCENUMB}\t2\n${acc7[1].ACCENUMB}\t3`, 'repetida');
+  const txt = document.getElementById('b7MapMatch').textContent;
+  ok(/1 fila repite un número/.test(txt) || /1 row repeats an accession/.test(txt), 'una sola fila repetida se dice en singular');
+  ok(!/1 filas/.test(txt) && !/1 rows/.test(txt), 'sin «1 filas» ni «1 rows»');
+  tmp.forEach(n => n.remove());
+  /* 7–10. figuras */
+  state.traits = tr7;
+  B7.run();
+  const arbol = B7.dendroPlot(520);
+  const tamLetra = [...arbol.matchAll(/font-size="([\d.]+)"/g)].map(m => Number(m[1]));
+  ok(tamLetra.length && Math.max(...tamLetra) >= 11 && [...arbol.matchAll(/text-anchor="end" font-size="([\d.]+)"/g)].every(m => Number(m[1]) >= 11), 'las etiquetas del dendrograma miden al menos 11 px');
+  ok((arbol.match(/text-anchor="end" font-size="11"/g) || []).length === 46, 'el árbol dibuja sus 46 hojas');
+  ok(/role="img"/.test(arbol) && /altura de fusión|merge height/.test(arbol), 'el árbol tiene nombre accesible y escala de altura');
+  const prevColor = B7.view.colorBy;
+  B7.view.colorBy = 'taxon';
+  const pc = B7.pcoaPlot(520, 380);
+  ok(/role="img"/.test(pc) && /<rect x=/.test(pc) && /<path d="M[\d.]+ [\d.]+ L[\d.]+ [\d.]+ L[\d.]+ [\d.]+Z"/.test(pc), 'con más de ocho especies, la PCoA combina forma y color');
+  const svgPc = parseSVG(pc.split('</svg>')[0] + '</svg>');
+  ok(!!svgPc && svgPc.querySelectorAll('text').length > 6, 'y sus ejes llevan marcas con números');
+  B7.view.colorBy = prevColor;
+  state.acc = []; state.traits = [];
+}
 
 /* ============ 24. manejo del banco ============ */
 const hoy = new Date(2026, 8, 23, 12, 0, 0);   /* hora local: la marca de trabajo del banco es local */

@@ -488,8 +488,8 @@
     const vacias = bands.filter(b => !b.N).length;
     const notas = [];
     if (vacias) notas.push(T(`${vacias} ${vacias === 1 ? 'franja vacía' : 'franjas vacías'} dentro del intervalo colectado.`, `${vacias} empty ${vacias === 1 ? 'belt' : 'belts'} within the collected range.`));
-    if (ser.fuera) notas.push(T(`${ser.fuera} ${ser.fuera === 1 ? 'accesión trae una altitud imposible y queda fuera' : 'accesiones traen altitudes imposibles y quedan fuera'} (se aceptan de ${fmtInt(GEO.ELEV_MIN).replace("-", "−")} a ${fmtInt(GEO.ELEV_MAX)} m; revísalas en el Bloque 3).`,
-      `${ser.fuera} ${ser.fuera === 1 ? 'accession has an impossible elevation and is left out' : 'accessions have impossible elevations and are left out'} (accepted range ${fmtInt(GEO.ELEV_MIN).replace("-", "−")} to ${fmtInt(GEO.ELEV_MAX)} m; check them in Block 3).`));
+    if (ser.fuera) notas.push(T(`${ser.fuera} ${ser.fuera === 1 ? 'accesión trae una altitud imposible y queda fuera' : 'accesiones traen altitudes imposibles y quedan fuera'} (se aceptan de ${fmtInt(GEO.ELEV_MIN).replace("-", "−")} a ${fmtInt(GEO.ELEV_MAX)} m; ${ser.fuera === 1 ? 'corrígela' : 'corrígelas'} en la ficha de la accesión, en el Bloque 2).`,
+      `${ser.fuera} ${ser.fuera === 1 ? 'accession has an impossible elevation and is left out' : 'accessions have impossible elevations and are left out'} (accepted range ${fmtInt(GEO.ELEV_MIN).replace("-", "−")} to ${fmtInt(GEO.ELEV_MAX)} m; fix ${ser.fuera === 1 ? 'it' : 'them'} in the accession record, in Block 2).`));
     if (ser.sinDato) notas.push(T(`${ser.sinDato} sin altitud.`, `${ser.sinDato} without elevation.`));
     return `<h3 class="section-title">${T('4 · El gradiente altitudinal', '4 · The elevation gradient')}</h3>
       <p class="section-sub">${T(`Accesiones (barra superior) y tipos distintos —${clsLabel()}— (barra inferior) por franja de ${view.band} m. En un país de montaña la altitud ordena el germoplasma mejor que casi cualquier otra variable: las franjas vacías son ambientes que la colección no representa.`,

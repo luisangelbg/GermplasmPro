@@ -17,8 +17,8 @@
   const pon = async o => { Object.assign(B7.view, fabrica, o || {}); B7.run(); await W(800); };
   await pon();
   const s = seccion("2");
-  /* el árbol se despliega completo (en la app se desplaza dentro de su caja) */
-  const arbol = s.find(n => n.classList && n.classList.contains("card")).querySelectorAll(".pg-pane")[1].querySelector("div[style]"); arbol.style.maxHeight = "none"; await W(300);
+  /* el árbol ya se ve completo en la app; si alguna versión lo mete en una caja con desplazamiento, se despliega */
+  const arbol = s.find(n => n.classList && n.classList.contains("card")).querySelectorAll(".pg-pane")[1].querySelector("div[style]"); if (arbol) arbol.style.maxHeight = "none"; await W(300);
   await irA(s[0]);
   return caja(s, 8);
 })()

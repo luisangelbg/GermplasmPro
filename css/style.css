@@ -164,6 +164,11 @@ code, .mono { font-family: var(--mono); font-size: .88em; }
 .slider-row { display: grid; grid-template-columns: 1fr 110px 56px; gap: 8px; align-items: center; font-size: .82rem; }
 .slider-row label { color: var(--text-muted); font-weight: 600; }
 .slider-row .range-val { font-family: var(--mono); font-size: .8rem; text-align: right; color: var(--text); }
+/* los pesos del Bloque 6: el nombre arriba y, abajo, el deslizador con su valor en un solo renglón */
+.b6-weights .slider-row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'l l' 'r v'; gap: 4px 10px; }
+.b6-weights .slider-row label { grid-area: l; }
+.b6-weights .slider-row input[type=range] { grid-area: r; width: 100%; min-width: 0; }
+.b6-weights .slider-row .range-val { grid-area: v; white-space: nowrap; }
 input[type="range"] { accent-color: var(--primary); width: 100%; }
 .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 10px; margin-top: 14px; }
 .stat { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; border-top: 3px solid var(--sc, var(--primary)); }
@@ -293,6 +298,10 @@ table.dup-tbl tr.dup-differ td:first-child { font-weight: 700; }
    (con los bordes de las celdas incluidos) y quedan alineados con sus extremos */
 .legend-scale { display: inline-flex; flex-direction: column; gap: 2px; }
 .legend-scale .legend-ends { width: auto; gap: 12px; line-height: 1.2; }
+.legend-scale .legend-title { font-size: .7rem; line-height: 1.2; color: var(--text-muted); }
+.map-legend .lg-shape svg { flex: none; display: block; }
+.b7-detail { margin-top: 10px; }
+.b7-detail summary { cursor: pointer; font-weight: 600; font-size: .85rem; color: var(--text); }
 
 /* ---------- referencias y pie ---------- */
 .refs { font-size: .84rem; color: var(--text-muted); max-width: 900px; }

@@ -31,10 +31,14 @@
      · VALIDACIÓN del núcleo con los criterios de Hu et al. (2000): MD% (medias
        que difieren), VD% (varianzas que difieren), CR% (rangos conservados) y
        VR% (coeficientes de variación), además de la cobertura de clases
-       cualitativas y la comparación de Shannon. Un buen núcleo tiene MD% < 20,
-       CR% > 80 y VR% cercano o superior a 100. */
+       cualitativas y la comparación de Shannon. Un buen núcleo tiene MD% < 20 y
+       CR% > 80 (los dos umbrales de Hu et al.); de VR% el artículo sólo dice
+       que cuanto mayor, mejor, y la app pide VR% ≥ 100: que el núcleo no
+       pierda variación relativa frente a la colección (VR_THRESHOLD). */
 
 (function () {
+
+  const VR_THRESHOLD = 100;
 
   /* ================= distribuciones, para las pruebas t y F ================= */
   /* función beta incompleta regularizada por fracción continua */
@@ -333,8 +337,16 @@
     S: { es: 'Raíz cuadrada', en: 'Square root' },
   };
 
-  /* cuántas accesiones toca a cada estrato */
-  function allocate(sizes, target, method) {
+  /* cuántas accesiones toca a cada estrato.
+     El tamaño pedido se respeta: si hay al menos tantas plazas como estratos,
+     cada estrato recibe una y el resto se reparte según la regla; si hay MÁS
+     estratos que plazas, las plazas van a los estratos con más peso según la
+     regla elegida (a igual peso, el más grande) y los demás se quedan sin
+     representante, cosa que la interfaz avisa. Sólo con atLeastOne = true se
+     garantiza una accesión por estrato aunque eso rebase el tamaño pedido.
+     El reparto es por mayor resto: plaza a plaza, al estrato más lejos de la
+     cuota que le toca (target × peso / suma de pesos). */
+  function allocate(sizes, target, method, atLeastOne) {
     const k = sizes.length;
     if (!k) return [];
     let w;
@@ -343,21 +355,21 @@
     else if (method === 'S') w = sizes.map(s => Math.sqrt(s));
     else w = sizes.slice();
     const sw = w.reduce((a, b) => a + b, 0) || 1;
-    let alloc = w.map((v, i) => Math.min(sizes[i], Math.max(1, Math.round(target * v / sw))));
-    /* se ajusta el redondeo hasta cuadrar con el tamaño pedido */
-    const fix = () => alloc.reduce((a, b) => a + b, 0) - target;
-    let guard = 0;
-    while (fix() !== 0 && guard++ < 1000) {
-      const over = fix() > 0;
-      let idx = -1, best = over ? -Infinity : Infinity;
+    const total = sizes.reduce((a, b) => a + b, 0);
+    const tgt = Math.max(0, Math.min(target, total));
+    const minOne = atLeastOne || k <= tgt;
+    const alloc = sizes.map(s => (minOne ? Math.min(1, s) : 0));
+    const quota = w.map(v => tgt * v / sw);
+    let left = tgt - alloc.reduce((a, b) => a + b, 0);
+    while (left > 0) {
+      let idx = -1, best = -Infinity;
       for (let i = 0; i < k; i++) {
-        if (over && alloc[i] <= 1) continue;
-        if (!over && alloc[i] >= sizes[i]) continue;
-        const ratio = alloc[i] / Math.max(1, sizes[i]);
-        if (over ? ratio > best : ratio < best) { best = ratio; idx = i; }
+        if (alloc[i] >= sizes[i]) continue;
+        const gap = quota[i] - alloc[i];
+        if (gap > best + 1e-12 || (Math.abs(gap - best) <= 1e-12 && idx >= 0 && sizes[i] > sizes[idx])) { best = gap; idx = i; }
       }
       if (idx < 0) break;
-      alloc[idx] += over ? -1 : 1;
+      alloc[idx]++; left--;
     }
     return alloc;
   }
@@ -438,7 +450,7 @@
   function buildCore(rows, traits, opts) {
     const o = Object.assign({
       pct: 10, strata: null, allocation: 'L', pick: 'distance', method: 'strata',
-      D: null, seed: 20260923, minPerStratum: 1,
+      D: null, seed: 20260923, atLeastOne: false,
     }, opts || {});
     const n = rows.length;
     const target = clamp(Math.round(n * o.pct / 100), 1, n);
@@ -457,15 +469,18 @@
     });
     const keys = [...strata.keys()];
     const sizes = keys.map(k => strata.get(k).length);
-    const alloc = allocate(sizes, target, o.allocation);
+    const alloc = allocate(sizes, target, o.allocation, o.atLeastOne);
     const core = [];
     keys.forEach((k, idx) => {
+      if (!alloc[idx]) return;
       const chosen = pickFromStratum(strata.get(k), alloc[idx], o.D, o.pick, rnd);
       chosen.forEach(c => core.push(c));
     });
     return {
-      core: core.sort((a, b) => a - b), target, method: o.allocation, pick: o.pick,
+      core: core.sort((a, b) => a - b), target, method: o.allocation, pick: o.pick, atLeastOne: !!o.atLeastOne,
       strata: keys.map((k, i) => ({ key: k, size: sizes[i], taken: alloc[i] })),
+      unrepresented: alloc.filter(a => a === 0).length,
+      exceeds: core.length > target,
     };
   }
 
@@ -473,7 +488,9 @@
   function validateCore(rows, traits, coreIdx) {
     const inCore = new Set(coreIdx);
     const nums = traits.filter(t => t.type === 'num' || t.type === 'ord');
-    const cats = traits.filter(t => t.type === 'cat');
+    /* las clases capturadas cuentan los cualitativos Y los ordinales (cada valor
+       de la escala es una clase), que son justo los que persigue el método M */
+    const cats = traits.filter(t => t.type === 'cat' || t.type === 'ord');
     const perTrait = [];
     let mdCount = 0, vdCount = 0, crSum = 0, vrSum = 0, nUsable = 0;
 
@@ -518,7 +535,8 @@
       classesAll += sAll.size; classesCore += sCore.size;
       const hAll = DIV.indices([...countMap(rows, t.k, null).values()]).H;
       const hCore = DIV.indices([...countMap(rows, t.k, inCore).values()]).H;
-      return { k: t.k, classesAll: sAll.size, classesCore: sCore.size, pct: sAll.size ? 100 * sCore.size / sAll.size : 100, hAll, hCore };
+      const missing = [...sAll].filter(v => !sCore.has(v));
+      return { k: t.k, type: t.type, classesAll: sAll.size, classesCore: sCore.size, pct: sAll.size ? 100 * sCore.size / sAll.size : 100, hAll, hCore, missing };
     });
 
     return {
@@ -528,6 +546,7 @@
       CR: nUsable ? crSum / nUsable : NaN,
       VR: nUsable ? vrSum / nUsable : NaN,
       classCoverage: classesAll ? 100 * classesCore / classesAll : NaN,
+      classesCaptured: classesCore, classesTotal: classesAll,
       perTrait, catDetail, nUsable,
     };
   }
@@ -546,6 +565,6 @@
     ibeta, betacf, tTest2, fTestVar,
     detectType, numOf, describe, gowerMatrix, jacobiEigen, pcoa,
     wardTree, cutTree, silhouette,
-    ALLOCATIONS, allocate, pickFromStratum, methodM, buildCore, validateCore, countMap,
+    ALLOCATIONS, allocate, pickFromStratum, methodM, buildCore, validateCore, countMap, VR_THRESHOLD,
   };
 })();

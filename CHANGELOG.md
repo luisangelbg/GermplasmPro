@@ -104,6 +104,54 @@
 - **Detalles:** el Bloque 3 escribe «En 1 accesión» en singular; los encabezados de `data/world.js` y
   `data/mexico-states.js` ya no hablan de las apps de donde se copiaron; Natural Earth (dominio público) queda
   declarado en `LICENSES-TERCEROS.md`. 914 pruebas, todas en verde.
+- **Vacíos de colecta (Bloque 6):**
+  - Cada accesión cuenta en la entidad donde cae su propio punto, no en la del centro de su celda (`gaps.js`
+    `fillCells`/`placePoint`): las accesiones de Puebla y del Estado de México ya no se le cargan a Tlaxcala. El déficit
+    por entidad es 1 − densidad / densidad máxima, con densidad = accesiones de la entidad ÷ su superficie
+    (`stateDeficits`); la tabla por entidad informa también cuántas celdas toca y a cuántas celdas completas equivale.
+  - Una celda pertenece al área si toca tierra: se prueban 25 puntos repartidos en ella (9 ó 4 con el mundo) y cada
+    entidad se queda con la fracción de tierra que ocupa (`areaGrid`). Las celdas de costa cuyo centro cae en el mar ya
+    existen (con 2°, MEX-SE-0016, MEX-VA-0025 y MEX-OF-0037 dejan de quedar «fuera del área»), una entidad que ninguna
+    muestra toca se ancla por su punto interior (las 32 tienen al menos una celda con 1° y con 2°), y la celda de una
+    accesión en el mar también se crea. En una celda compartida, el déficit es el de sus entidades pesado por tierra.
+  - Con «El mundo» como territorio, el déficit se calcula por país (`cellDeficit`); antes las celdas mexicanas recibían
+    20 puntos por ser de una entidad y las de otros países 10. Las diez prioridades numeradas ya no se enciman: si dos
+    chocan, una se aparta y una línea la une con su celda; el «Vacío más grande» dice de qué celda y de dónde es.
+  - Con todos los pesos en cero se avisa y no se calcula un ranking; a igual puntaje gana la celda con más riqueza
+    alrededor, luego la más lejana (documentado en el texto).
+  - La lista de riesgos cuenta «entidades o países» (la entidad si el punto cae en México, el país si no; claves
+    `st:`/`ct:` sin choque entre el Estado de México y el país), y el riesgo se llama «todo de una sola entidad o país».
+    Un tipo guardado sólo como ADN recibe su alerta («no regenera planta»), y el tipo vacío «—» ya no suma riqueza,
+    exclusividad ni complementariedad. La tabla dice «Se muestran 40 de N» cuando se corta, hay un CSV completo de los
+    tipos en riesgo y las cursivas sólo van cuando el tipo es especie o género.
+  - Figuras: los círculos de prioridad son claros con borde oscuro (ya no del mismo ocre que la rampa); la leyenda y la
+    rampa cambian con lo que se pinta y dicen mínimo y máximo; el mapa se abre lo necesario para que quepan las celdas de
+    la orilla; la curva de complementariedad dice «8 celdas ≥ 90 % (94 %)» dentro de la figura. Mapa y curva con
+    `role="img"` y nombre, la barra «Por qué» con su desglose como texto, tablas desplazables con foco y nombre.
+  - Textos: singular y plural en «accesiones caen fuera», en las etiquetas de las celdas y en la nota de altitudes
+    imposibles, que ahora manda a corregirlas en la ficha del Bloque 2 (también en la nota del gradiente del Bloque 5);
+    separador de miles en todas las cifras; los deslizadores de pesos ya no parten «40 (40 %)» en dos renglones.
+- **Caracterización y núcleo (Bloque 7):**
+  - El núcleo respeta el tamaño pedido (`charac.js` `allocate`/`buildCore`): con más estratos que plazas, las plazas
+    van por mayor resto a los estratos con más peso según la regla y la interfaz avisa cuántos se quedan sin
+    representante; «al menos 1 por estrato» es una casilla explícita y el aviso da el tamaño real (al 20 % por especie
+    salían 24 accesiones; ahora 9, con 15 especies sin representante, o 24 si se marca la casilla).
+  - Los estratos por entidad o país usan claves sin choque (`st:MEX` = Estado de México, `ct:MEX` = México sin entidad)
+    y se leen con su nombre en pantalla y en el CSV; el estrato único y la columna «núcleo» del CSV siguen el idioma.
+  - VR%: un solo umbral (≥ 100, `CHAR.VR_THRESHOLD`) en el letrero y en el semáforo; Hu et al. (2000) sólo fijan
+    MD% < 20 y CR% > 80. Las clases capturadas cuentan cualitativos y ordinales, que son los que persigue el método M, y
+    hay un «Detalle por carácter» desplegable con las pruebas t y F, CR%, VR% y las clases que faltan.
+  - Una columna vacía se ve como «vacía», con la casilla y el peso desactivados. La plantilla usa las claves del
+    catálogo (DIAS_FLORACION, ALTURA_PLANTA…) y el Bloque 2 la reconoce. Nombres recortados con «…» y el completo al
+    pasar el ratón. «Otra selección al azar» sólo se activa al elegir al azar, y con el método M se desactivan los
+    selectores que no usa. «Quitar la caracterización» pregunta antes. «1 fila repite» en singular.
+  - Figuras: la PCoA combina color y forma cuando hay más de ocho categorías (y junta en «otras» más allá de 32),
+    lleva marcas en los ejes y ya no deja un hueco bajo la leyenda; el árbol muestra todas sus hojas con letra de 11 px
+    junto a su nombre, escala de altura de fusión y botón «Árbol en SVG». Selectores y pesos con nombre accesible.
+- **CSV:** todos los que salen de la app llevan la marca BOM de UTF-8 (`IO.toCSV`), para que Excel lea bien los
+  acentos; la app la quita al volver a leerlos.
+- **Informe:** la tabla de prioridades de colecta muestra la entidad y la distancia (leía campos que no existían).
+  1102 pruebas, todas en verde.
 
 ## Después de la 1.0.0 — 2026-10-09
 

@@ -176,12 +176,17 @@
     const s = String(v ?? '');
     return /["\n\r]|^\s|\s$/.test(s) || s.includes(d) ? '"' + s.replace(/"/g, '""') + '"' : s;
   }
+  /* Todo CSV que sale de la app va a un archivo, y lleva la marca de orden de
+     bytes de UTF-8 al principio: sin ella, Excel en Windows lo abre como
+     Windows-1252 y «Pérez» sale «PÃ©rez». parseDelimited la quita al leer, de
+     modo que los CSV propios se vuelven a importar igual. */
+  const BOM = '﻿';
   function toCSV(rows, columns, delim) {
     const d = delim || ',';
     const cols = columns && columns.length ? columns : Object.keys(rows[0] || {});
     const head = cols.map(c => cell(c, d)).join(d);
     const body = rows.map(r => cols.map(c => cell(r[c], d)).join(d));
-    return [head, ...body].join('\r\n') + '\r\n';
+    return BOM + [head, ...body].join('\r\n') + '\r\n';
   }
 
   /* leer un archivo del disco, adivinando la codificación:
