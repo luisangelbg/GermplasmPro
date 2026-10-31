@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · Manual de usuario · Apéndices</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- reparte el contenido en hojas tamaño carta, con encabezados, números de página e índice -->
+<script src="../paginar.js"></script>
+<style>
+  .refs { list-style: none; padding: 0; margin: 0.06in 0 0; }
+  .refs li { margin: 0 0 0.09in 0.24in; text-indent: -0.24in; }
+  .columnas td:last-child { font-family: var(--mono); font-size: 7.8pt; }
+  .codigos td:last-child { font-size: 8.8pt; }
+  .codigos code { font-weight: 600; }
+</style>
+</head>
+<body>
+
+<section class="capitulo" id="cap-ap" data-pestana="Ap" data-orden="11" style="--acento: var(--bx)">
+  <div class="cap-apertura">
+    <div class="cap-num">A</div>
+    <div class="cap-etiqueta">Apéndices</div>
+    <h1>Apéndices</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">Lo que hace falta tener a la mano y no cabía en ningún capítulo: qué archivos lee y escribe la app, con los formatos y las listas de códigos del pasaporte; las reglas de decisión de los diez bloques reunidas en una sola lista; el vocabulario de los bancos de germoplasma; qué hacer cuando algo no sale; las referencias detrás de cada cálculo, y lo que hay que saber de la herramienta misma: los datos de ejemplo, qué guarda y dónde, el teclado, la licencia y cómo citarla.</p>
+    <ul class="cap-contenido">
+      <li><b>A</b>Los archivos que la app lee y escribe</li>
+      <li><b>B</b>Las reglas de decisión, reunidas</li>
+      <li><b>C</b>Glosario</li>
+      <li><b>D</b>Cuando algo no sale</li>
+      <li><b>E</b>Referencias</li>
+      <li><b>F</b>La herramienta: datos, privacidad, licencia y cita</li>
+    </ul>
+  </div>
+
+  <!-- A -->
+  <h2 id="ap-a"><span class="num">A</span>Los archivos que la app lee y escribe</h2>
+  <p class="lead">GermplasmPro corre en el navegador y no envía nada a ningún servidor: todos los archivos entran y salen de la carpeta de tu computadora. Este apéndice dice cuáles son, qué formato piden los datos del pasaporte y qué columnas trae cada tabla que se descarga.</p>
+  <h3>A.1 · Lo que la app lee</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:1.35in">Formato</th><th>Dónde y para qué</th></tr></thead>
+    <tbody>
+      <tr><td><b>.csv, .tsv, .txt</b></td><td>Bloque 2, <span class="ui">Abrir un archivo (CSV, TSV o proyecto)</span>: el pasaporte, una fila por accesión. Bloque 7, <span class="ui">Cargar mi caracterización (CSV)</span>: la caracterización, que se une al pasaporte por el número de accesión.</td></tr>
+      <tr><td><b>pegado</b></td><td>Bloques 2 y 7, <span class="ui">Pegar desde una hoja de cálculo</span>: un bloque de celdas copiado con su fila de encabezados. En el Bloque 2 la misma ventana trae la plantilla guiada para escribir la tabla desde cero (apartado 2.4).</td></tr>
+      <tr><td><b>.json</b> de proyecto</td><td>Bloque 2, el mismo botón de abrir: la colección y la caracterización guardadas antes por la app con <span class="ui">Guardar el proyecto (.json)</span>.</td></tr>
+      <tr><td>en pantalla</td><td>Bloque 8: las constantes de viabilidad de otras especies (<span class="ui">Añadir constantes de una especie</span>) y los registros de pruebas, regeneraciones, subcultivos, revisiones y visitas, que se escriben en la propia app y van directo al pasaporte.</td></tr>
+    </tbody>
+  </table>
+  <p>Al leer un texto, la app elige sola el separador —tabulador, punto y coma, coma o barra vertical— probando cuál parte todas las líneas en el mismo número de campos, no cuál aparece más. Respeta las comillas, las comas y los saltos de línea dentro de una celda entre comillas y la marca de orden de bytes al principio; si al decodificar como UTF-8 aparecen caracteres de reemplazo, vuelve a leer el archivo como Windows-1252, que es lo que suele guardar una hoja de cálculo en Windows. Las filas totalmente vacías se descartan, un encabezado repetido se numera para no perder la columna y una columna sin encabezado se llama como en la hoja: <span class="ruta">Columna A</span>, <span class="ruta">Columna B</span>…</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Un libro de cálculo no se lee, y es a propósito</div>
+    <p>Un <code>.xlsx</code>, <code>.xls</code> u <code>.ods</code> no se abre; guárdalo como .csv o copia y pega las celdas. Leerlo exigiría incorporar una biblioteca ajena de cientos de miles de líneas para un problema que se resuelve en dos clics. Se prefirió que la app no cargue una sola línea que no sea propia (apéndice F): es lo que le permite abrirse con doble clic, sin instalar nada, y funcionar sin internet.</p>
+  </div>
+
+  <h3>A.2 · Los formatos del pasaporte</h3>
+  <p>El capítulo 2 da la lista completa de los 49 descriptores —los 42 de MCPD v2.1 y los siete de la extensión GP_— con su nombre en la app y un ejemplo (tablas 2.2 y 2.3). Aquí va lo que la validación exige a cada clase de descriptor. Un <b>error</b> es un dato que no puede ser; un <b>aviso</b>, uno que conviene revisar.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:1.75in">Clase y descriptores</th><th>Formato que se pide</th></tr></thead>
+    <tbody>
+      <tr><td><b>Fechas</b> · <code>COLLDATE</code>, <code>ACQDATE</code>, <code>GP_GERMDATE</code>, <code>GP_REGENDATE</code></td><td><code>AAAAMMDD</code>, con guiones donde no se sepa: <code>201907--</code>, <code>2019----</code>. Error si no sigue ese molde, si el año queda antes de 1700 o después del actual, si el mes no va de 01 a 12, si el día no va de 01 a 31 o si ese día no existe en ese mes (el 30 de febrero).</td></tr>
+      <tr><td><b>Coordenadas decimales</b> · <code>DECLATITUDE</code>, <code>DECLONGITUDE</code></td><td>Grados decimales con signo: negativa la latitud al sur del ecuador y la longitud al oeste de Greenwich. Se acepta la coma decimal, que pasa a punto al importar. Error si no es un número, si sale de −90 a 90 o de −180 a 180, o si sólo viene una de las dos; aviso si es un cero exacto.</td></tr>
+      <tr><td><b>Grados, minutos y segundos</b> · <code>LATITUDE</code>, <code>LONGITUDE</code></td><td><code>GGMMSSH</code> para la latitud (<code>173832N</code>) y <code>GGGMMSSH</code> para la longitud (<code>0971952W</code>); minutos o segundos desconocidos, con guiones. Si sólo vienen éstas, la app calcula las decimales al importar; si vienen las dos y difieren en más de 0.02°, aviso.</td></tr>
+      <tr><td><b>Números</b> · <code>ELEVATION</code>, <code>COORDUNCERT</code>, <code>GP_STOCK</code>, <code>GP_GERMPCT</code></td><td>Un número, con punto o coma decimal. Error si la germinación sale de 0 a 100 o si la incertidumbre o las existencias son negativas; aviso si la altitud sale de −430 a 6 500 m.</td></tr>
+      <tr><td><b>País</b> · <code>ORIGCTY</code></td><td>Código ISO 3166-1 alfa-3 de tres letras (<code>MEX</code>, <code>GTM</code>, <code>PER</code>), que pasa a mayúsculas al importar. Error si no son tres letras; aviso si está bien formado pero no está en la lista que trae la app.</td></tr>
+      <tr><td><b>Institutos</b> · <code>INSTCODE</code>, <code>COLLCODE</code>, <code>BREDCODE</code>, <code>DONORCODE</code>, <code>DUPLSITE</code></td><td>Código WIEWS: tres letras de país y tres dígitos (<code>MEX006</code>). <code>DUPLSITE</code> admite varios, separados por punto y coma. Un código mal formado es sólo un aviso.</td></tr>
+      <tr><td><b>Listas cerradas</b> · <code>SAMPSTAT</code>, <code>COLLSRC</code>, <code>MLSSTAT</code>, <code>GEOREFMETH</code>, <code>GP_CONS</code></td><td>Uno de los códigos de la tabla de abajo, sin importar mayúsculas. Cualquier otro valor es error.</td></tr>
+      <tr><td><b>Lista con varios valores</b> · <code>STORAGE</code></td><td>Uno o varios códigos de la lista, separados por punto y coma (<code>13;40</code>). Error si alguno no existe.</td></tr>
+      <tr><td><b>Texto libre</b> · los demás</td><td>Sin formato. <code>ACCENAME</code> y <code>OTHERNUMB</code> separan varios valores con punto y coma.</td></tr>
+    </tbody>
+  </table>
+  <p>Los obligatorios vacíos —<code>INSTCODE</code>, <code>ACCENUMB</code> y <code>GENUS</code>— son error, y los doce muy recomendables vacíos, aviso. A un registro in situ o en la parcela no se le piden <code>STORAGE</code>, <code>ACQDATE</code>, <code>DUPLSITE</code> ni <code>INSTCODE</code>. Las reglas que cruzan dos campos —estatus contra fuente de colecta, orden de las fechas, ruta in situ contra almacenamiento, duplicado de seguridad en la misma institución— están en la tabla 2.6 del apartado 2.6.</p>
+
+  <h3>A.3 · Las listas de códigos</h3>
+  <p>Son las de MCPD v2.1 (Alercia, Diulgheroff y Mackay, 2015), con el nombre que les da la app; <code>GP_CONS</code> es de la extensión. No hace falta aprenderlas: al escribir en esas casillas, la tabla y la ficha del Bloque 2 despliegan la lista con su significado.</p>
+  <table class="compacta codigos">
+    <thead><tr><th style="width:1.15in">Descriptor</th><th>Códigos</th></tr></thead>
+    <tbody>
+      <tr><td><b>SAMPSTAT</b><br><span class="small">estatus biológico · 21</span></td><td><code>100</code> silvestre · <code>110</code> natural · <code>120</code> seminatural/silvestre · <code>130</code> seminatural/sembrada · <code>200</code> arvense o maleza · <code>300</code> variedad tradicional o criolla · <code>400</code> material de mejoramiento o investigación · <code>410</code> línea de mejorador · <code>411</code> población sintética · <code>412</code> híbrido · <code>413</code> población base o fundadora · <code>414</code> línea endogámica · <code>415</code> población segregante · <code>416</code> selección clonal · <code>420</code> acervo genético · <code>421</code> mutante · <code>422</code> acervo citogenético · <code>423</code> otro acervo genético · <code>500</code> cultivar avanzado o mejorado · <code>600</code> organismo genéticamente modificado · <code>999</code> otro</td></tr>
+      <tr><td><b>COLLSRC</b><br><span class="small">fuente de colecta · 22</span></td><td><code>10</code> hábitat silvestre · <code>11</code> bosque o matorral arbolado · <code>12</code> matorral · <code>13</code> pastizal · <code>14</code> desierto o tundra · <code>15</code> hábitat acuático · <code>20</code> hábitat cultivado · <code>21</code> parcela o campo · <code>22</code> huerta · <code>23</code> huerto familiar o solar · <code>24</code> terreno en descanso · <code>25</code> agostadero o potrero · <code>26</code> troje o almacén del agricultor · <code>27</code> era de trilla · <code>28</code> parque · <code>30</code> mercado o tienda · <code>40</code> instituto u organización de investigación · <code>50</code> empresa de semillas · <code>60</code> hábitat ruderal o perturbado · <code>61</code> orilla de camino · <code>62</code> orilla de parcela · <code>99</code> otro</td></tr>
+      <tr><td><b>STORAGE</b><br><span class="small">almacenamiento · 9</span></td><td><code>10</code> colección de semillas · <code>11</code> semillas, corto plazo · <code>12</code> mediano plazo · <code>13</code> largo plazo (los cuatro dan la ruta de semillas) · <code>20</code> colección de campo · <code>30</code> colección in vitro · <code>40</code> colección criopreservada · <code>50</code> colección de ADN · <code>99</code> otro (sin ruta)</td></tr>
+      <tr><td><b>MLSSTAT</b><br><span class="small">Sistema Multilateral · 3</span></td><td><code>0</code> no está en el Sistema Multilateral · <code>1</code> está · <code>99</code> otro</td></tr>
+      <tr><td><b>GEOREFMETH</b><br><span class="small">georreferencia · 4</span></td><td><code>GPS</code> · <code>determined from map</code> (leídas de un mapa) · <code>gazetteer</code> (tomadas de un nomenclátor) · <code>determined by locality description</code> (deducidas de la descripción del sitio)</td></tr>
+      <tr><td><b>GP_CONS</b><br><span class="small">ruta activa · 7</span></td><td><code>seed</code> banco de semillas · <code>field</code> banco de campo o colección viva · <code>invitro</code> cultivo in vitro · <code>cryo</code> criopreservación · <code>dna</code> banco de ADN (las cinco, ex situ) · <code>insitu</code> reserva genética · <code>onfarm</code> conservación en la parcela (las dos, in situ). Vacía, se deduce del primer código de <code>STORAGE</code> que tenga ruta.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>A.4 · Lo que la app escribe</h3>
+  <p>Todo CSV que sale de la app usa coma como separador y lleva al principio la marca de orden de bytes de UTF-8: sin ella, una hoja de cálculo en Windows lo abriría como Windows-1252 y «Pérez» saldría «PÃ©rez». La app la quita al leer, así que sus propios CSV se vuelven a importar igual. Los archivos del Bloque 10 llevan la fecha del informe en el nombre.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:0.5in">Bloque</th><th style="width:2.2in">Botón</th><th>Archivo y contenido</th></tr></thead>
+    <tbody>
+      <tr><td><span class="chip k2">2</span></td><td><span class="ui">Descargar la plantilla</span></td><td><span class="ruta">plantilla-pasaporte.csv</span>: los 49 descriptores con una fila de ejemplo. Desde la plantilla guiada, <span class="ui">Descargar esta plantilla en CSV</span> da <span class="ruta">plantilla-germplasmpro.csv</span>, sólo con las columnas marcadas.</td></tr>
+      <tr><td><span class="chip k2">2</span></td><td><span class="ui">Exportar MCPD (sólo el estándar)</span> · <span class="ui">Exportar todo (con la extensión)</span></td><td><span class="ruta">pasaporte-mcpd.csv</span>, con los 42 descriptores del estándar; <span class="ruta">pasaporte-completo.csv</span>, con los 49.</td></tr>
+      <tr><td><span class="chip k2">2</span></td><td><span class="ui">Guardar el proyecto (.json)</span></td><td><span class="ruta">coleccion-germplasmpro.json</span>: el pasaporte y la caracterización del Bloque 7.</td></tr>
+      <tr><td><span class="chip k3">3</span></td><td><span class="ui">Descargar el informe de calidad</span></td><td><span class="ruta">informe-calidad.csv</span>: una fila por hallazgo de geografía, consistencia, corrección, duplicado o validación del pasaporte.</td></tr>
+      <tr><td><span class="chip k4">4</span></td><td><span class="ui">Exportar SVG</span> · <span class="ui">Exportar PNG (2×)</span> · <span class="ui">Puntos en CSV (con entidad y celda)</span></td><td><span class="ruta">mapa-colecta.svg</span> y <span class="ruta">.png</span>; <span class="ruta">puntos-mapa.csv</span>, con las accesiones que se ven.</td></tr>
+      <tr><td><span class="chip k5">5</span></td><td><span class="ui">Tabla en CSV</span> · <span class="ui">Curva en SVG</span> · <span class="ui">Mapa de calor en SVG</span></td><td><span class="ruta">diversidad-geografica.csv</span>; <span class="ruta">curva-acumulacion.svg</span>; <span class="ruta">similitud-composicion.svg</span>.</td></tr>
+      <tr><td><span class="chip k6">6</span></td><td><span class="ui">Ruta de colecta en CSV</span> · <span class="ui">Tipos en riesgo en CSV</span> · <span class="ui">Mapa en SVG</span></td><td><span class="ruta">prioridades-colecta.csv</span>, con las primeras 200 celdas; <span class="ruta">tipos-en-riesgo.csv</span>; <span class="ruta">vacios-colecta.svg</span>.</td></tr>
+      <tr><td><span class="chip k7">7</span></td><td><span class="ui">Descargar la plantilla</span></td><td><span class="ruta">plantilla-caracterizacion.csv</span>: tus números de accesión y columnas vacías para seis descriptores.</td></tr>
+      <tr><td><span class="chip k7">7</span></td><td><span class="ui">Exportar el núcleo en CSV</span> · <span class="ui">Caracterización + grupo + núcleo</span> · <span class="ui">Matriz de distancias</span></td><td><span class="ruta">coleccion-nucleo.csv</span>; <span class="ruta">caracterizacion-completa.csv</span>; <span class="ruta">distancias-gower.csv</span>. Además <span class="ui">PCoA en SVG</span> y <span class="ui">Árbol en SVG</span>: <span class="ruta">pcoa-gower.svg</span> y <span class="ruta">arbol-gower.svg</span>.</td></tr>
+      <tr><td><span class="chip k8">8</span></td><td><span class="ui">Plan de trabajo en CSV</span></td><td><span class="ruta">plan-de-trabajo.csv</span>: una fila por accesión con alguna alerta. Si no hay ninguna, la app lo dice y no descarga nada.</td></tr>
+      <tr><td><span class="chip k9">9</span></td><td><span class="ui">Imprimir</span> · <span class="ui">Descargar en CSV</span></td><td>Las etiquetas, el vale de distribución y el libro de registro se imprimen (o se guardan en PDF desde el diálogo de impresión); la lista de siembra sale además como <span class="ruta">lista-de-siembra.csv</span>.</td></tr>
+      <tr><td><span class="chip k10">10</span></td><td><span class="ui">Imprimir o guardar en PDF</span> · <span class="ui">Descargar el informe (HTML)</span></td><td><span class="ruta">informe-AAAA-MM-DD.html</span>: el informe en un solo archivo, que se abre en cualquier navegador.</td></tr>
+      <tr><td><span class="chip k10">10</span></td><td><span class="ui">Pasaporte en Darwin Core</span> · <span class="ui">Pasaporte en MCPD</span></td><td><span class="ruta">darwin-core-AAAA-MM-DD.csv</span>, con 33 términos; <span class="ruta">pasaporte-mcpd-AAAA-MM-DD.csv</span>, con los 42 descriptores.</td></tr>
+      <tr><td><span class="chip k10">10</span></td><td><span class="ui">Descargar todo (ZIP)</span></td><td><span class="ruta">germplasmpro-AAAA-MM-DD.zip</span>: <span class="ruta">informe.html</span>, <span class="ruta">LEEME.txt</span>, la carpeta <span class="ruta">datos/</span> con los tres pasaportes (MCPD, completo y Darwin Core) y, si existen, <span class="ruta">calidad.csv</span> y <span class="ruta">plan-de-trabajo.csv</span>, y la carpeta <span class="ruta">figuras/</span> con las figuras en SVG (apartado 10.11).</td></tr>
+    </tbody>
+  </table>
+  <p>Las figuras que se abren en el estudio de figuras se exportan desde ahí en el formato y tamaño que elijas.</p>
+
+  <h3>A.5 · Las columnas de cada tabla</h3>
+  <table class="compacta columnas">
+    <thead><tr><th style="width:1.75in">Archivo</th><th>Columnas, en orden</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ruta">pasaporte-mcpd.csv</span></td><td>las claves MCPD en el orden de la tabla 2.2: PUID, INSTCODE, ACCENUMB … STORAGE, MLSSTAT, REMARKS</td></tr>
+      <tr><td><span class="ruta">pasaporte-completo.csv</span></td><td>las mismas 42 y, al final, GP_CONS, GP_SITEID, GP_KEEPER, GP_STOCK, GP_GERMPCT, GP_GERMDATE, GP_REGENDATE</td></tr>
+      <tr><td><span class="ruta">informe-calidad.csv</span></td><td>tipo, nivel, accesion, campo, detalle</td></tr>
+      <tr><td><span class="ruta">puntos-mapa.csv</span></td><td>ACCENUMB, ACCENAME, TAXON, CROPNAME, DECLATITUDE, DECLONGITUDE, ELEVATION, ENTIDAD, PAIS_PUNTO, PAIS_PASAPORTE, CELDA_1G, RUTA</td></tr>
+      <tr><td><span class="ruta">diversidad-geografica.csv</span></td><td>unidad, clave, accesiones, riqueza, rarificada, shannon, gini_simpson, pielou, hill_q1, exclusivos, altitud_media, lat, lon</td></tr>
+      <tr><td><span class="ruta">prioridades-colecta.csv</span></td><td>orden, latitud, longitud, entidad, pais, km_al_vecino, riqueza_vecindario, accesiones_vecindario, exclusivos_cerca, puntos, celda_grados</td></tr>
+      <tr><td><span class="ruta">tipos-en-riesgo.csv</span></td><td>tipo, accesiones, entidades_o_paises, rutas, duplicados, con_coordenadas, riesgos, peso</td></tr>
+      <tr><td><span class="ruta">plantilla-caracterizacion.csv</span></td><td>ACCENUMB, DIAS_FLORACION, ALTURA_PLANTA, LARGO_FRUTO, COLOR_EXTERNO, FORMA_FRUTO, HABITO</td></tr>
+      <tr><td><span class="ruta">coleccion-nucleo.csv</span></td><td>ACCENUMB, ACCENAME, TAXON, CROPNAME, grupo, estrato, nucleo, pcoa1, pcoa2; <span class="ruta">caracterizacion-completa.csv</span> trae todas las accesiones y añade los caracteres en uso</td></tr>
+      <tr><td><span class="ruta">distancias-gower.csv</span></td><td>accesion y una columna por accesión: la matriz completa</td></tr>
+      <tr><td><span class="ruta">plan-de-trabajo.csv</span></td><td>ACCENUMB, ACCENAME, TAXON, ruta, urgencia, existencias, unidad, germinacion_ultima, germinacion_proyectada, anios_desde_prueba, anios_al_umbral, acciones</td></tr>
+      <tr><td><span class="ruta">lista-de-siembra.csv</span></td><td>ACCENUMB, nombre, taxon, plantas, germinacion, germinacion_supuesta, semillas, existencias, parcela, fecha_siembra, observaciones</td></tr>
+      <tr><td><span class="ruta">darwin-core-….csv</span></td><td>occurrenceID, basisOfRecord, institutionCode, collectionCode, catalogNumber, otherCatalogNumbers, fieldNumber, recordedBy, eventDate, year, month, day, scientificName, genus, specificEpithet, infraspecificEpithet, scientificNameAuthorship, vernacularName, country, countryCode, locality, decimalLatitude, decimalLongitude, geodeticDatum, coordinateUncertaintyInMeters, georeferenceProtocol, minimumElevationInMeters, maximumElevationInMeters, samplingProtocol, degreeOfEstablishment, preparations, occurrenceRemarks, dynamicProperties</td></tr>
+    </tbody>
+  </table>
+  <p class="small">En el ZIP, <span class="ruta">datos/calidad.csv</span> lleva las mismas cinco columnas que el informe de calidad del Bloque 3, y <span class="ruta">datos/plan-de-trabajo.csv</span> una fila por alerta: accesion, taxon, ruta, nivel, alerta, detalle. Cómo se traduce cada descriptor a Darwin Core está en el apartado 10.12.</p>
+
+  <!-- B -->
+  <h2 id="ap-b"><span class="num">B</span>Las reglas de decisión, reunidas</h2>
+  <p>Las escalas y los umbrales que la app pone junto a cada número, en una sola lista; cuando son ajustables, va el valor de fábrica. Son guías para leer, no leyes: lo que sabes de tu especie, de tu banco y de tus sitios siempre manda. Lo que conviene <i>hacer</i> en cada caso está en el recuadro de regla de decisión que cierra cada capítulo.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:0.5in">Bloque</th><th style="width:2in">Magnitud</th><th>Escala o umbral</th></tr></thead>
+    <tbody>
+      <tr><td><span class="chip k2">2</span></td><td>Completitud de un descriptor</td><td>≥ 90 % barra verde · 50–90 % ocre · &lt; 50 % roja</td></tr>
+      <tr><td><span class="chip k2">2</span></td><td>Altitud del sitio de colecta</td><td>−430 a 6 500 m verosímil; fuera, aviso en el Bloque 2 · fuera de −500 a 7 000 m, imposible: queda fuera del color por altitud, las franjas y el gradiente (Bloques 4 a 6)</td></tr>
+      <tr><td><span class="chip k2">2</span></td><td>Coordenadas</td><td>cero exacto: aviso · decimales y en grados-minutos-segundos que difieren en más de 0.02°: aviso · una sola de las dos decimales: error</td></tr>
+      <tr><td><span class="chip k3">3</span></td><td>Punto contra su país</td><td>dentro del rectángulo del país con un grado de margen: sin problema · fuera: se prueban el cambio de signo y el intercambio · (0, 0): error sin corrección</td></tr>
+      <tr><td><span class="chip k3">3</span></td><td>Puntaje de un posible duplicado</td><td>umbral de fábrica 50 puntos (deslizador de 25 a 95) · ningún indicio basta solo; el número de colecta coincidente es casi una firma · bajar el umbral propone más pares y acierta menos</td></tr>
+      <tr><td><span class="chip k5">5</span></td><td>Prueba de Mantel (999 permutaciones)</td><td>p &lt; 0.05 con r positivo: la diversidad tiene estructura geográfica · p ≥ 0.05: sin evidencia a esa escala</td></tr>
+      <tr><td><span class="chip k5">5</span></td><td>Estimadores de riqueza</td><td>menos de tres dobletones: aviso <span class="ui">Cuidado con Chao1 en esta colección.</span>; lee el jackknife 1, el más estable</td></tr>
+      <tr><td><span class="chip k5">5</span></td><td>Cobertura de Good-Turing</td><td>probabilidad de que la próxima accesión sea de un tipo que ya tienes; su complemento, la de que traiga uno nuevo</td></tr>
+      <tr><td><span class="chip k6">6</span></td><td>Cobertura del territorio</td><td>&lt; 25 % de celdas con colectas: la cifra va en rojo</td></tr>
+      <tr><td><span class="chip k6">6</span></td><td>Índice de prioridad (0 a 100)</td><td>pesos de fábrica: lejanía 40 · riqueza del vecindario 25 · déficit de la entidad 20 · exclusivos cerca 15 · lejanía con techo de 250 km · vecindario de unos 220 km · prioridad robusta: la celda que sigue arriba al subir cada peso</td></tr>
+      <tr><td><span class="chip k6">6</span></td><td>Conjunto mínimo</td><td>las celdas que, por complementariedad, captan al menos el 90 % de los tipos</td></tr>
+      <tr><td><span class="chip k7">7</span></td><td>Silueta media</td><td>&gt; 0.25 los grupos son reales: estratifica por grupos · cerca de 0, corte casi arbitrario · negativa, la accesión estaría mejor en otro grupo</td></tr>
+      <tr><td><span class="chip k7">7</span></td><td>Validación del núcleo (Hu et al. 2000)</td><td>MD% &lt; 20 · VD% &lt; 20 · CR% &gt; 80 · VR% ≥ 100 · clases capturadas &gt; 80 % · los dos umbrales del artículo son los de MD% y CR%</td></tr>
+      <tr><td><span class="chip k7">7</span></td><td>Tamaño del núcleo</td><td>10 % de fábrica · menos de 10 accesiones: aviso de núcleo demasiado pequeño para juzgarlo</td></tr>
+      <tr><td><span class="chip k8">8</span></td><td>Germinación de un lote de semilla</td><td>umbral de regeneración 85 % · prueba o proyección bajo el umbral: en apuros · menos de 3 años para cruzarlo: pide atención · prueba cada 10 años</td></tr>
+      <tr><td><span class="chip k8">8</span></td><td>Existencias de semilla</td><td>&lt; 400 semillas: en apuros · &lt; 600 (1.5 veces el mínimo): pide atención</td></tr>
+      <tr><td><span class="chip k8">8</span></td><td>Las otras rutas, de fábrica</td><td>campo: resiembra cada 8 años, mínimo 25 plantas · in vitro: subcultivo cada 12 meses, mínimo 10 frascos · criopreservación: revisión cada 5 años, mínimo 20 criotubos · reserva genética: visita cada 2 años · parcela: cada año</td></tr>
+      <tr><td><span class="chip k8">8</span></td><td>Plantas para regenerar</td><td>P(conservar un alelo de frecuencia p) = 1 − (1 − p)<sup>k·n</sup>, k = 2 en alógamas y 1 en autógamas · con p = 5 % y 95 % de seguridad: 30 plantas en una alógama, 59 en una autógama</td></tr>
+      <tr><td><span class="chip k9">9</span></td><td>Barra más delgada del Code 128</td><td>≥ 0.25 mm la lee cualquier lector · 0.19–0.25 mm imprimible, pero conviene probar una · &lt; 0.19 mm aviso: impresora térmica</td></tr>
+      <tr><td><span class="chip k9">9</span></td><td>Módulo del QR</td><td>&lt; 0.4 mm: aviso en ocre · con el chayote en el centro, siempre nivel de corrección H</td></tr>
+    </tbody>
+  </table>
+
+  <!-- C -->
+  <h2 id="ap-c"><span class="num">C</span>Glosario</h2>
+  <table class="compacta glosario">
+    <thead><tr><th style="width:2.1in">Término</th><th>Qué es</th></tr></thead>
+    <tbody>
+      <tr><td><b>Accesión</b></td><td>Una muestra distinta de una especie que el banco conserva y maneja como unidad, con su número único (<code>ACCENUMB</code>), que no se repite ni se reutiliza.</td></tr>
+      <tr><td><b>Alógama / autógama</b></td><td>Especie que se cruza con otras plantas / que se autofecunda. En una regeneración, cada planta alógama aporta dos gametos independientes, y una autógama, en la práctica, uno solo; por eso la autógama pide casi el doble de plantas.</td></tr>
+      <tr><td><b>Banco de campo o colección viva</b></td><td>Plantas vivas en una parcela, un huerto o un arboreto. La ruta de los árboles, de las especies recalcitrantes y de los cultivos de propagación vegetativa; cara y expuesta.</td></tr>
+      <tr><td><b>Bloqueo</b></td><td>Comparar sólo los pares de accesiones que comparten alguna clave —el número de colecta o de donante, el principio del nombre, el género con la celda, el taxón con el año y mes de colecta— en vez de todos contra todos. Es lo que deja buscar duplicados en una colección grande.</td></tr>
+      <tr><td><b>Cobertura de Good-Turing</b></td><td>1 − f<sub>1</sub>/N: la probabilidad de que la próxima accesión que colectes sea de un tipo que ya tienes.</td></tr>
+      <tr><td><b>Code 128</b></td><td>Código de barras lineal que admite letras, números y signos; el de los sobres, frascos y envíos. Lo lee cualquier lector de mano, que escribe el número donde esté el cursor.</td></tr>
+      <tr><td><b>Código QR</b></td><td>Código bidimensional con corrección de errores Reed–Solomon. En el nivel H se recupera aun con el 30 % del símbolo tapado, lo que permite dibujar el chayote en el centro.</td></tr>
+      <tr><td><b>Código WIEWS</b></td><td>El código de una institución en el sistema mundial de información de la FAO: tres letras del país y tres dígitos (<code>MEX006</code>). Lo usan <code>INSTCODE</code>, <code>DUPLSITE</code> y los demás descriptores de institutos.</td></tr>
+      <tr><td><b>Colección núcleo</b></td><td>Un subconjunto pequeño que guarda, con el mínimo de repeticiones, la mayor parte de la diversidad de la colección entera (Frankel y Brown 1984); se caracteriza y evalúa a fondo en lugar de toda la colección.</td></tr>
+      <tr><td><b>Complementariedad</b></td><td>Elegir sitios uno a uno, cada vez el que añade más tipos que aún no se tienen. Da el conjunto mínimo de celdas que reúne la diversidad de la colección.</td></tr>
+      <tr><td><b>Comportamiento de la semilla</b></td><td><i>Ortodoxa</i>: tolera secarse al 3–7 % de humedad y congelarse. <i>Intermedia</i>: tolera secarse, pero no el frío profundo. <i>Recalcitrante</i>: no tolera ni secarse ni congelarse, y no se guarda en un banco de semillas.</td></tr>
+      <tr><td><b>Conservación en la parcela (on-farm)</b></td><td>Conservación in situ en el terreno de quien siembra, donde la variedad sigue bajo selección campesina. <code>GP_CONS</code> = <code>onfarm</code>; la persona o comunidad custodia va en <code>GP_KEEPER</code>.</td></tr>
+      <tr><td><b>Constantes de viabilidad</b></td><td>K<sub>E</sub>, C<sub>W</sub>, C<sub>H</sub> y C<sub>Q</sub>: las de la ecuación de Ellis y Roberts para una especie. La app trae las publicadas del maíz; las de otras especies se toman de la Seed Information Database de Kew o de la literatura.</td></tr>
+      <tr><td><b>Coordenadas principales (PCoA)</b></td><td>Un mapa en dos ejes cuyas distancias se parecen lo más posible a las de una matriz de distancias, aquí la de Gower (Gower 1966).</td></tr>
+      <tr><td><b>Criopreservación</b></td><td>Ápices, embriones o polen a −196 °C, en nitrógeno líquido. El respaldo de largo plazo del material clonal; se revisa descongelando un criotubo.</td></tr>
+      <tr><td><b>Cultivo in vitro de crecimiento lento</b></td><td>Plántulas o ápices en frascos, con el crecimiento frenado por frío o por el medio, que se subcultivan cada cierto número de meses.</td></tr>
+      <tr><td><b>Darwin Core</b></td><td>El estándar de términos para publicar registros de biodiversidad, el que piden GBIF y otros portales (Wieczorek et al. 2012).</td></tr>
+      <tr><td><b>Distancia de Gower</b></td><td>Una distancia entre accesiones para caracteres mixtos —numéricos, categóricos y ordinales— con celdas vacías: cada carácter aporta su diferencia relativa y se promedia sólo sobre lo que ambas tienen medido (Gower 1971).</td></tr>
+      <tr><td><b>Duplicado accidental</b></td><td>La misma colecta entrada dos veces al catálogo, casi siempre con el nombre escrito distinto. No protege nada: infla la colección y desordena los análisis. Lo busca el Bloque 3.</td></tr>
+      <tr><td><b>Duplicado de seguridad</b></td><td>Una muestra de la misma accesión guardada en otra institución, para que un desastre no se lleve el único ejemplar. Se registra en <code>DUPLSITE</code>; uno en la misma institución no cuenta.</td></tr>
+      <tr><td><b>Ecuación de viabilidad</b></td><td>La de Ellis y Roberts (1980): con la temperatura y la humedad de la semilla da la desviación σ del tiempo de vida, y con ella cuánto baja la germinación de un lote con los años.</td></tr>
+      <tr><td><b>Estimadores de riqueza</b></td><td>Chao1, Chao2, jackknife 1 y jackknife 2: cuántos tipos tendría la colección si se siguiera colectando, calculados a partir de los tipos raros (con una o con dos accesiones, o en una o en dos unidades).</td></tr>
+      <tr><td><b>Ex situ / in situ</b></td><td>Fuera de su lugar —en un banco de semillas, de campo, in vitro o criopreservada— / en su lugar, donde la población sigue evolucionando: la reserva genética y la parcela.</td></tr>
+      <tr><td><b>Extensión GP_</b></td><td>Los siete campos que GermplasmPro suma a MCPD para el manejo y la conservación in situ: ruta activa, sitio y custodio in situ, existencias, última germinación con su fecha y última regeneración. Nunca se confunden con el estándar y se exportan aparte.</td></tr>
+      <tr><td><b>Índice de prioridad</b></td><td>El puntaje de 0 a 100 de una celda vacía en el Bloque 6: la suma de lejanía, riqueza del vecindario, déficit de la entidad y tipos exclusivos cercanos, cada uno escalado de 0 a 1 por su peso.</td></tr>
+      <tr><td><b>Jaro-Winkler, Levenshtein</b></td><td>Dos medidas de parecido entre textos. Jaro-Winkler (Winkler 1990) compara nombres de accesiones y premia el comienzo común; Levenshtein cuenta las letras que hay que cambiar, y señala géneros mal escritos.</td></tr>
+      <tr><td><b>MCPD v2.1</b></td><td>Los descriptores multicultivo de pasaporte de FAO/Bioversity, versión 2.1 (Alercia, Diulgheroff y Mackay, 2015): 42 descriptores con clave fija, la forma común de escribir el pasaporte.</td></tr>
+      <tr><td><b>MD%, VD%, CR%, VR%</b></td><td>Los criterios de Hu et al. (2000) para juzgar un núcleo: medias que difieren, varianzas que difieren, rango conservado y variación relativa conservada frente a la colección.</td></tr>
+      <tr><td><b>Método M</b></td><td>Armar el núcleo persiguiendo, una por una, las clases de los caracteres cualitativos y ordinales que todavía no tiene (Schoen y Brown 1993).</td></tr>
+      <tr><td><b>Números de Hill</b></td><td>La diversidad expresada como «tipos efectivos»: q0 es la riqueza, q1 la exponencial de Shannon y q2 el inverso de Simpson (Jost 2006). Siempre q0 ≥ q1 ≥ q2.</td></tr>
+      <tr><td><b>Pasaporte</b></td><td>Lo que se sabe de una accesión: quién es, de dónde vino, quién y cuándo la colectó, qué material es y cómo se conserva. La entrada de todos los bloques.</td></tr>
+      <tr><td><b>Prueba de Mantel</b></td><td>Correlación entre dos matrices de distancias —aquí, la de composición y la geográfica— con su valor p por permutaciones (Mantel 1967).</td></tr>
+      <tr><td><b>Rarefacción</b></td><td>La riqueza que tendría una unidad con un número fijo de accesiones; compara unidades con distinto esfuerzo de colecta (Hurlbert 1971; Heck, van Belle y Simberloff 1975).</td></tr>
+      <tr><td><b>Regeneración</b></td><td>Sembrar una accesión para obtener semilla nueva cuando la germinación o las existencias bajan del mínimo. Cada una es un cuello de botella: se regenera pocas veces y con muchas plantas.</td></tr>
+      <tr><td><b>Reparto del núcleo (C, P, L, S)</b></td><td>Cuántas plazas del núcleo le tocan a cada estrato (Brown 1989): constante, que favorece a los estratos pequeños; proporcional, que reproduce el desequilibrio de la colección; logarítmico o raíz cuadrada, que quedan en medio.</td></tr>
+      <tr><td><b>Reserva genética</b></td><td>Un sitio protegido donde se conserva in situ una población silvestre, casi siempre de parientes silvestres de un cultivo. <code>GP_CONS</code> = <code>insitu</code>; su clave va en <code>GP_SITEID</code>.</td></tr>
+      <tr><td><b>Ruta de conservación</b></td><td>La forma con que se maneja hoy una accesión: semillas, campo, in vitro, criopreservación, ADN, reserva genética o parcela. Decide las alertas del Bloque 8.</td></tr>
+      <tr><td><b>Silueta</b></td><td>Para cada accesión, qué tan cerca está de su grupo frente al grupo vecino, de −1 a 1 (Rousseeuw 1987). Su media dice si los grupos son reales.</td></tr>
+      <tr><td><b>Sistema Multilateral</b></td><td>El del Tratado Internacional sobre los Recursos Fitogenéticos para la Alimentación y la Agricultura; su material se entrega con el Acuerdo Normalizado de Transferencia de Material (ANTM; en inglés, SMTA). Se registra en <code>MLSSTAT</code>.</td></tr>
+      <tr><td><b>Tipo exclusivo</b></td><td>Un tipo (especie, cultivo, taxón…) que sólo está en una unidad geográfica de la colección. Si esa unidad se pierde, el tipo se pierde con ella.</td></tr>
+      <tr><td><b>UPGMA, Ward.D2</b></td><td>Dos formas de construir un árbol de agrupamiento: UPGMA une los grupos con menor distancia media (Sokal y Michener 1958); Ward.D2, los que menos aumentan la suma de cuadrados dentro de los grupos (Murtagh y Legendre 2014).</td></tr>
+      <tr><td><b>Vacío de colecta</b></td><td>Una celda del territorio sin ninguna accesión. En GermplasmPro el análisis es geográfico y de colección, no ecogeográfico: no usa capas de clima ni de suelo.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- D -->
+  <h2 id="ap-d"><span class="num">D</span>Cuando algo no sale</h2>
+  <p>Cada capítulo cierra con su propia tabla de problemas del bloque. Éstos son los generales, los que tocan a la app entera.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2.6in">Lo que pasa</th><th>Qué hacer</th></tr></thead>
+    <tbody>
+      <tr><td>Un bloque dice <span class="ui">Primero carga tus accesiones en el Bloque 2.</span></td><td>No hay pasaporte en memoria. Carga tu colección, abre tu proyecto .json o usa la colección de ejemplo (capítulo 2).</td></tr>
+      <tr><td>Al abrir la app, la colección de ayer no está</td><td>Se guarda en el navegador de esa computadora: otro navegador, otra cuenta del sistema, una ventana privada o haber borrado los datos de navegación la dejan atrás. Abre el proyecto .json que guardaste.</td></tr>
+      <tr><td>La app no abre con doble clic, o abre en blanco</td><td>Tu institución bloquea las páginas locales. Usa <span class="ruta">Open GermplasmPro.bat</span> (o <span class="ruta">server.ps1</span>), que abre la app en <span class="ruta">http://localhost:9600</span>, o la versión en línea.</td></tr>
+      <tr><td>El archivo es un .xlsx y no se abre</td><td>Guárdalo como .csv o copia las celdas y usa <span class="ui">Pegar desde una hoja de cálculo</span> (apéndice A.1).</td></tr>
+      <tr><td>Los acentos salen como «Ã©» o «�»</td><td>El archivo no está ni en UTF-8 ni en Windows-1252. Guárdalo desde tu hoja como «CSV UTF-8» y vuelve a abrirlo.</td></tr>
+      <tr><td>El pegado dice <span class="ui">Todo quedó en una sola columna.</span></td><td>El separador no es el correcto: elígelo en la ventana de pegado. Si de verdad copiaste una sola columna, puedes seguir.</td></tr>
+      <tr><td>La primera fila de datos se tomó como encabezado, o al revés</td><td>Corrígelo con la casilla <span class="ui">La primera fila son los encabezados</span> de la ventana de pegado; si sólo hay una fila y es encabezado, la app avisa que no quedan datos que importar.</td></tr>
+      <tr><td>Las coordenadas llevan coma decimal (<code>19,149</code>)</td><td>Con tabuladores o punto y coma de separador, la app las entiende, avisa al pegar cuántos valores la usan y las pasa a punto al importar. En un archivo separado por comas, una coma decimal que no va entre comillas parte el número en dos columnas: guárdalo con punto y coma o copia y pega desde la hoja.</td></tr>
+      <tr><td>Al abrir un .json dice <span class="ui">Ese archivo no es un proyecto de GermplasmPro.</span></td><td>No lo escribió <span class="ui">Guardar el proyecto (.json)</span>. Si es una tabla, guárdala como .csv.</td></tr>
+      <tr><td>Abrí un proyecto en otra computadora y faltan mis constantes, mis supuestos del banco o los pares que descarté</td><td>El proyecto lleva el pasaporte y la caracterización; lo demás se queda en el navegador donde lo pusiste (apéndice F.3). Vuelve a ponerlo en la nueva.</td></tr>
+      <tr><td>Bajé varias tablas seguidas y sólo bajaron algunas</td><td>El navegador frena las descargas seguidas: permítelas para este sitio, o usa <span class="ui">Descargar todo (ZIP)</span> del Bloque 10.</td></tr>
+      <tr><td>El informe no se abre para imprimir</td><td>El navegador bloqueó la ventana, y la app lo dice: descarga el informe con <span class="ui">Descargar el informe (HTML)</span> y ábrelo con doble clic.</td></tr>
+      <tr><td>Las etiquetas impresas no miden lo que dice su formato</td><td>La escala del diálogo de impresión no está en 100 % o la impresora reduce la hoja. Ponla en 100 % o «tamaño real» (apartado 9.6).</td></tr>
+      <tr><td>Las cifras no coinciden con las del manual</td><td>El manual usa la colección de ejemplo sin corregir y los valores de fábrica; un ajuste guardado de antes (umbral, pesos, supuestos) cambia el resultado. Vuelve a los de fábrica o comprueba en qué estado parte el capítulo.</td></tr>
+      <tr><td>Quiero comprobar que los cálculos salen bien en este navegador</td><td>Abre <span class="ruta">tests/index.html</span>: son las pruebas del programa; todas deben salir en verde (con <span class="ruta">?all</span> al final de la dirección se listan también las que pasan).</td></tr>
+    </tbody>
+  </table>
+
+  <!-- E -->
+  <h2 id="ap-e"><span class="num">E</span>Referencias</h2>
+  <p>Las referencias de la portada de la app, las que arma el informe del Bloque 10 y las que citan los capítulos, por familia. El informe cita sólo las de los métodos que el estudio usó (apartado 10.9).</p>
+  <h3>Bancos de germoplasma y sus estándares</h3>
+  <ol class="refs">
+    <li>Alercia, A., Diulgheroff, S. y Mackay, M. (2015). <i>FAO/Bioversity multi-crop passport descriptors V.2.1 (MCPD V.2.1)</i>. Bioversity International y FAO.</li>
+    <li>Ellis, R.H. y Roberts, E.H. (1980). Improved equations for the prediction of seed longevity. <i>Annals of Botany</i> 45(1): 13–30.</li>
+    <li>Engels, J.M.M. y Ebert, A.W. (2021). A critical review of the current global ex situ conservation system for plant agrobiodiversity. <i>Plants</i> 10(9): 1904.</li>
+    <li>FAO (2014). <i>Genebank standards for plant genetic resources for food and agriculture</i>. Roma: FAO.</li>
+    <li>Maxted, N., Dulloo, M.E. y Ford-Lloyd, B.V. (eds.) (2016). <i>Enhancing crop genepool use: capturing wild relative and landrace diversity for crop improvement</i>. CABI.</li>
+    <li>Royal Botanic Gardens Kew. <i>Seed Information Database (SID)</i>. Consulta en línea.</li>
+    <li>Wieczorek, J., Bloom, D., Guralnick, R., Blum, S., Döring, M., Giovanni, R., Robertson, T. y Vieglais, D. (2012). Darwin Core: an evolving community-developed biodiversity data standard. <i>PLoS ONE</i> 7(1): e29715.</li>
+  </ol>
+  <h3>Calidad de los datos y cartografía</h3>
+  <ol class="refs">
+    <li>Winkler, W.E. (1990). String comparator metrics and enhanced decision rules in the Fellegi-Sunter model of record linkage. <i>Proceedings of the Section on Survey Research Methods</i>, American Statistical Association, 354–359.</li>
+    <li>Natural Earth (dominio público, naturalearthdata.com): contornos admin-1 de México a 1:10 millones y admin-0 del mundo a 1:110 millones.</li>
+  </ol>
+  <h3>Diversidad geográfica y vacíos de colecta</h3>
+  <ol class="refs">
+    <li>Bray, J.R. y Curtis, J.T. (1957). An ordination of the upland forest communities of southern Wisconsin. <i>Ecological Monographs</i> 27(4): 325–349.</li>
+    <li>Burnham, K.P. y Overton, W.S. (1978). Estimation of the size of a closed population when capture probabilities vary among animals. <i>Biometrika</i> 65(3): 625–633.</li>
+    <li>Chao, A. (1984). Nonparametric estimation of the number of classes in a population. <i>Scandinavian Journal of Statistics</i> 11(4): 265–270.</li>
+    <li>Chao, A. (1987). Estimating the population size for capture-recapture data with unequal catchability. <i>Biometrics</i> 43(4): 783–791.</li>
+    <li>Good, I.J. (1953). The population frequencies of species and the estimation of population parameters. <i>Biometrika</i> 40(3–4): 237–264.</li>
+    <li>Heck, K.L., van Belle, G. y Simberloff, D. (1975). Explicit calculation of the rarefaction diversity measurement and the determination of sufficient sample size. <i>Ecology</i> 56(6): 1459–1461.</li>
+    <li>Hurlbert, S.H. (1971). The nonconcept of species diversity: a critique and alternative parameters. <i>Ecology</i> 52(4): 577–586.</li>
+    <li>Jaccard, P. (1912). The distribution of the flora in the alpine zone. <i>New Phytologist</i> 11(2): 37–50.</li>
+    <li>Jost, L. (2006). Entropy and diversity. <i>Oikos</i> 113(2): 363–375.</li>
+    <li>Mantel, N. (1967). The detection of disease clustering and a generalized regression approach. <i>Cancer Research</i> 27(2): 209–220.</li>
+    <li>Ramírez-Villegas, J., Khoury, C., Jarvis, A., Debouck, D.G. y Guarino, L. (2010). A gap analysis methodology for collecting crop genepools: a case study with <i>Phaseolus</i> beans. <i>PLoS ONE</i> 5(10): e13497.</li>
+    <li>Sokal, R.R. y Michener, C.D. (1958). A statistical method for evaluating systematic relationships. <i>University of Kansas Science Bulletin</i> 38: 1409–1438.</li>
+    <li>Sørensen, T. (1948). A method of establishing groups of equal amplitude in plant sociology based on similarity of species content and its application to analyses of the vegetation on Danish commons. <i>Biologiske Skrifter, Kongelige Danske Videnskabernes Selskab</i> 5(4): 1–34.</li>
+  </ol>
+  <h3>Caracterización y colección núcleo</h3>
+  <ol class="refs">
+    <li>Brown, A.H.D. (1989). Core collections: a practical approach to genetic resources management. <i>Genome</i> 31(2): 818–824.</li>
+    <li>Frankel, O.H. y Brown, A.H.D. (1984). Plant genetic resources today: a critical appraisal. En Holden, J.H.W. y Williams, J.T. (eds.), <i>Crop genetic resources: conservation and evaluation</i>, pp. 249–257. Londres: George Allen &amp; Unwin.</li>
+    <li>Gower, J.C. (1966). Some distance properties of latent root and vector methods used in multivariate analysis. <i>Biometrika</i> 53(3–4): 325–338.</li>
+    <li>Gower, J.C. (1971). A general coefficient of similarity and some of its properties. <i>Biometrics</i> 27(4): 857–871.</li>
+    <li>Hu, J., Zhu, J. y Xu, H.M. (2000). Methods of constructing core collections by stepwise clustering with three sampling strategies based on the genotypic values of crops. <i>Theoretical and Applied Genetics</i> 101(1–2): 264–268.</li>
+    <li>Murtagh, F. y Legendre, P. (2014). Ward’s hierarchical agglomerative clustering method: which algorithms implement Ward’s criterion? <i>Journal of Classification</i> 31(3): 274–295.</li>
+    <li>Rousseeuw, P.J. (1987). Silhouettes: a graphical aid to the interpretation and validation of cluster analysis. <i>Journal of Computational and Applied Mathematics</i> 20: 53–65.</li>
+    <li>Schoen, D.J. y Brown, A.H.D. (1993). Conservation of allelic richness in wild crop relatives is aided by assessment of genetic markers. <i>Proceedings of the National Academy of Sciences of the USA</i> 90(22): 10623–10627.</li>
+  </ol>
+
+  <!-- F -->
+  <h2 id="ap-f"><span class="num">F</span>La herramienta: datos, privacidad, licencia y cita</h2>
+  <h3>F.1 · Qué lleva la app por dentro</h3>
+  <p>GermplasmPro está escrita en HTML, CSS y JavaScript sin bibliotecas de terceros: ni para leer los archivos, ni para las gráficas y los mapas, ni para escribir el .zip, el código QR o el Code 128, que se generan en el propio navegador según sus normas. No trae tipografías ni las pide a internet: usa las letras del sistema. Lo único ajeno son dos cosas, declaradas en <span class="ruta">LICENSES-TERCEROS.md</span>:</p>
+  <ul>
+    <li><b>Los íconos de Lucide</b> (versión 1.49.0) de la barra común, el estudio de figuras y el botón <span class="ui">Animaciones</span>, dibujados con un trazo más fino, bajo la licencia ISC; los que Lucide tomó del proyecto Feather llevan además la licencia MIT. Las dos son permisivas y compatibles con la GPL-3.0.</li>
+    <li><b>Los contornos de Natural Earth</b> de los países (escala 1:110 millones) y de las 32 entidades de México (1:10 millones), simplificados para la app, con los que se dibujan los mapas y se asigna cada accesión a su país y su entidad. Son de dominio público: no piden licencia ni atribución, y se declaran sólo para que se sepa de dónde salen.</li>
+  </ul>
+  <p>Las fórmulas son las de los artículos originales de cada método (apéndice E), y las listas de códigos, las de MCPD v2.1. Las constantes de viabilidad incluidas son las publicadas por Ellis y Roberts para <i>Zea mays</i>; en las demás especies las pones tú, con su fuente.</p>
+
+  <h3>F.2 · Los datos de ejemplo</h3>
+  <p>La colección de ejemplo del Bloque 2 es <b>ficticia</b>. Sus sitios de colecta son localidades reales con coordenadas y altitudes aproximadas, a las que el programa añade un pequeño desplazamiento con semilla fija; los números de accesión, los nombres de las personas, las existencias y las fechas son inventados. Trae 46 accesiones de 24 taxones y 18 géneros, de siete países, por las cinco rutas (apartado I.7). La caracterización de ejemplo del Bloque 7 es <b>sintética</b>: el programa la genera con semilla fija para las accesiones cargadas —seis caracteres cuantitativos sorteados alrededor de un perfil por género, cuatro cualitativos y dos ordinales, con alrededor de 8 % de celdas vacías—, así que sus grupos reflejan esos perfiles y no plantas medidas. Los errores se sembraron a propósito, uno por accesión, al final de la colección:</p>
+  <table class="compacta">
+    <thead><tr><th style="width:1.9in">Accesión</th><th>Error sembrado</th><th style="width:1.2in">Quién lo encuentra</th></tr></thead>
+    <tbody>
+      <tr><td>MEX-ZM-0039 · Tuxpeño de la costa</td><td>La longitud perdió el signo: 96.06 en vez de −96.06, y el punto cae fuera de México.</td><td>Bloque 3, con corrección</td></tr>
+      <tr><td>MEX-CU-0040 · Calabaza pipiana</td><td>Fecha de colecta 20190230, un 30 de febrero.</td><td>Bloque 2, error</td></tr>
+      <tr><td>MEX-PH-0041 · Frijol tepari</td><td>País escrito con dos letras (<code>MX</code>) y altitud de 25 000 m.</td><td>Bloque 2, error y aviso; Bloque 3 propone <code>MEX</code></td></tr>
+      <tr><td>MEX-CH-0042 · Chile costeño</td><td>Código de almacenamiento 15, que no existe; la accesión queda sin ruta.</td><td>Bloque 2, error</td></tr>
+      <tr><td>MEX-ZM-0043 · Maíz ancho de riego</td><td>Sin coordenadas; el sitio, «Por el rumbo de Guerrero», se anotó de memoria.</td><td>Bloque 2, avisos</td></tr>
+      <tr><td>MEX-ZM-0044 · Maíz reventador</td><td>Estatus silvestre (100) con fuente troje (26), y fecha de ingreso anterior a la de colecta.</td><td>Bloque 2, avisos</td></tr>
+      <tr><td>MEX-ZM-0045 · BOLITA&nbsp; AMARILLO</td><td>La misma colecta que MEX-ZM-0002 (LAB-2019-101), en mayúsculas y con un espacio de más.</td><td>Bloque 3, duplicado</td></tr>
+      <tr><td>MEX-SE-0046 · Chayote verde liso</td><td>La misma colecta que MEX-SE-0029 (LAB-2018-102), con un espacio al final del nombre.</td><td>Bloque 3, duplicado</td></tr>
+    </tbody>
+  </table>
+
+  <h3>F.3 · Privacidad: qué se guarda y dónde</h3>
+  <p>Todo se calcula en tu navegador. La app no hace ninguna petición a internet: no envía el pasaporte, no consulta catálogos ni portales y no carga nada de fuera; los mapas usan los contornos que trae dentro. Sólo dos enlaces de la barra superior salen a la red, y sólo si los pulsas: el del portal de la suite y el de <span class="ui">Reportar un problema</span>, que abre GitHub en otra pestaña.</p>
+  <p>Lo que la app recuerda se queda en el almacenamiento local de ese navegador, en esa computadora, con claves que empiezan por <span class="ruta">germplasmpro:</span>: la colección y la hora del último guardado; la caracterización; los supuestos del banco y las constantes propias del Bloque 8; el umbral de duplicados y los pares descartados del Bloque 3; los campos, el encabezado y el código de las etiquetas; el título, el banco y la firma del informe; el idioma y el tema. La barra común guarda aparte si la barra de bloques va contraída y si las animaciones están encendidas. Nada de eso sale de la computadora, y se borra al borrar los datos de navegación de ese sitio; <span class="ui">Vaciar</span>, en la tabla del Bloque 2, borra la colección después de pedir confirmación.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>El respaldo es tuyo</div>
+    <p>El almacenamiento del navegador es una comodidad, no un respaldo. El proyecto .json lleva el pasaporte y la caracterización; los supuestos del banco, las constantes propias y los pares descartados no viajan en él. Guarda el proyecto al terminar cada sesión, exporta el pasaporte cada temporada y anota las constantes de tus especies con su fuente.</p>
+  </div>
+
+  <h3>F.4 · Teclado y accesibilidad</h3>
+  <p>El botón <span class="ui">?</span> de la barra superior, o la tecla <span class="ui">?</span> fuera de un campo de texto, abre la lista de atajos con una nota de dónde estás:</p>
+  <table class="compacta">
+    <thead><tr><th style="width:1.6in">Teclas</th><th>Qué hacen</th></tr></thead>
+    <tbody>
+      <tr><td><kbd>Alt</kbd> + <kbd>←</kbd> · <kbd>Alt</kbd> + <kbd>→</kbd></td><td>Bloque anterior o siguiente. En el modo enfocado, sección anterior o siguiente, y en los extremos, el bloque.</td></tr>
+      <tr><td><kbd>←</kbd> <kbd>→</kbd> · <kbd>Inicio</kbd> <kbd>Fin</kbd></td><td>Con el foco en la barra de bloques, recorrerla; Inicio y Fin van al primero y al último.</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>K</kbd></td><td>Buscar bloques, secciones, controles y acciones, también desde un campo de texto.</td></tr>
+      <tr><td><kbd>[</kbd></td><td>Contraer o mostrar la barra de bloques.</td></tr>
+      <tr><td><kbd>?</kbd></td><td>Mostrar la lista de atajos.</td></tr>
+      <tr><td><kbd>Esc</kbd></td><td>Cerrar ventanas y paneles.</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>P</kbd></td><td>En el Bloque 9, imprimir la hoja de etiquetas a escala exacta, como el botón <span class="ui">Imprimir</span>.</td></tr>
+    </tbody>
+  </table>
+  <p>El primer <kbd>Tab</kbd> ofrece <span class="ui">Saltar al contenido</span>; los botones e íconos tienen nombre para los lectores de pantalla, y los mensajes de estado y el cambio de bloque se anuncian al lector de pantalla. Los semáforos no dependen sólo del color: llevan una palabra (<span class="ui">bien</span>, <span class="ui">revisar</span>) o su umbral escrito. Si tu sistema pide reducir el movimiento, las animaciones se quedan quietas, y el botón <span class="ui">Animaciones</span> las apaga en cualquier caso.</p>
+
+  <h3>F.5 · Licencia</h3>
+  <p>El programa se distribuye bajo la <b>Licencia Pública General de GNU, versión 3 o posterior</b> (GPL-3.0-or-later): se puede usar, copiar, estudiar y modificar libremente, con la condición de que las versiones modificadas se distribuyan bajo la misma licencia y conserven la atribución. El texto completo está en el archivo <span class="ruta">LICENSE</span>. Este manual es © 2026 Luis Ángel Barrera-Guzmán, todos los derechos reservados.</p>
+
+  <h3>F.6 · Cómo citarla</h3>
+  <div class="cita">Barrera-Guzmán, L.Á. (2026). GermplasmPro: el banco de germoplasma, accesión por accesión (versión 1.0.0) [software]. https://github.com/luisangelbg/GermplasmPro</div>
+  <div class="cita">Barrera-Guzmán, L. Á. (2026). <i>GermplasmPro. Manual de usuario</i> (1.ª ed.). Distribuido con GermplasmPro, versión 1.0.0. https://github.com/luisangelbg/GermplasmPro</div>
+  <p class="small">La cita del programa es la del botón <span class="ui">Cómo citar</span> de la portada de la app y la que va al final de cada informe del Bloque 10. GermplasmPro no tiene DOI: la cita lleva la dirección del repositorio, donde está el código fuente; la app se usa en línea en https://luisangelbg.github.io/GermplasmPro/. El archivo <span class="ruta">CITATION.cff</span> de la carpeta del programa da los mismos datos —autor, con su ORCID 0000-0001-8057-2583; versión 1.0.0, del 1 de octubre de 2026; licencia GPL-3.0-or-later— en el formato que leen los gestores de referencias y GitHub.</p>
+</section>
+
+</body>
+</html>
