@@ -1,4 +1,4 @@
-/* Bloque 7: la lista del núcleo del 25 % y los cuatro botones de exportación */
+/* Bloque 7: la lista del núcleo del 30 % y los cuatro botones de exportación */
 (async () => {
   const W = ms => new Promise(r => setTimeout(r, ms));
   const top = n => n.getBoundingClientRect().top + window.scrollY;
@@ -11,11 +11,11 @@
   /* la sección (h3) del Bloque 7 cuyo título empieza con el número dado, y los nodos que la siguen hasta la próxima */
   const seccion = num => { const h = [...document.querySelectorAll("#b7Body h3.section-title")].find(x => x.textContent.trim().startsWith(num)); const out = [h]; let n = h.nextElementSibling; while (n && n.tagName !== "H3") { out.push(n); n = n.nextElementSibling; } return out; };
   /* la colección de ejemplo del Bloque 2, la caracterización de ejemplo y el Bloque 7 con sus valores de fábrica */
-  const fabrica = { k: 4, tree: "ward", pct: 10, strata: "group", alloc: "L", pick: "distance", method: "strata", seed: 20260923, colorBy: "group" };
+  const fabrica = { k: 4, tree: "ward", pct: 10, strata: "group", alloc: "L", pick: "distance", method: "strata", seed: 20260923, colorBy: "group", atLeastOne: false };
   await W(1000); goStep(2); await W(400); document.getElementById("b2Example").click(); await W(2500);
   goStep(7); await W(1500); document.getElementById("b7Example").click(); await W(3500);
   const pon = async o => { Object.assign(B7.view, fabrica, o || {}); B7.run(); await W(800); };
-  await pon({ pct: 25 });
+  await pon({ pct: 30 });
   const s = seccion("3");
   const card = s.find(n => n.classList && n.classList.contains("card"));
   const wraps = [...card.children].filter(n => n.classList.contains("table-wrap") || n.classList.contains("imp-row"));
