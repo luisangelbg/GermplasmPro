@@ -11,7 +11,7 @@
   await W(1000); goStep(2); await W(400); document.getElementById("b2Example").click(); await W(2500);
   Prefs.set("labelHeader", ""); Prefs.set("labelFields", null);
   goStep(9); await W(2000);
-  Object.assign(B9.view, { fmt: "envelope", page: "letter", fields: ["ACCENAME", "TAXON", "COLLSITE"], barcode: true, codigo: "barras", logo: true, header: "", which: "all", sheet: "labels", plants: 100 });
+  Object.assign(B9.view, { fmt: "envelope", page: "letter", fields: ["ACCENAME", "TAXON", "COLLSITE"], barcode: true, codigo: "barras", logo: true, header: "", which: "all", sheet: "labels", plants: 100, plantsEdited: false });
   B9.view.selection.clear(); B9.view.q = "";
   Object.assign(B9.view, { fmt: "jar", codigo: "qr", header: "Banco de Germoplasma de Ejemplo" });
   B9.run(); await W(1000);

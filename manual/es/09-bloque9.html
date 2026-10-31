@@ -46,9 +46,9 @@
 
   <!-- 9.1 -->
   <h2 id="b9-1"><span class="num">9.1</span>Qué se imprime</h2>
-  <p class="lead">El bloque tiene dos secciones: <span class="ui">1 · Qué se imprime y en qué formato</span>, con los controles, y <span class="ui">2 · La hoja, tal como saldrá impresa</span>, con la vista previa. Lo que ves en la segunda sección es exactamente lo que manda el botón <span class="ui">Imprimir</span> a la impresora: la app esconde al imprimir el título, los controles y las notas. Si no hay accesiones, el bloque dice <span class="ui largo">Primero carga tus accesiones en el Bloque 2.</span></p>
+  <p class="lead">El bloque tiene dos secciones: <span class="ui">1 · Qué se imprime y en qué formato</span>, con los controles, y <span class="ui">2 · La hoja, tal como saldrá impresa</span>, con la vista previa. Lo que ves en la segunda sección es exactamente lo que manda el botón <span class="ui">Imprimir</span> a la impresora: la app esconde al imprimir el título, los controles y los avisos. Debajo de los controles aparecen, cuando hace falta, avisos en ocre sobre lo que conviene revisar antes de imprimir (apartados 9.3 a 9.5). Si no hay accesiones, el bloque dice <span class="ui largo">Primero carga tus accesiones en el Bloque 2.</span></p>
   <figure class="mediana">
-    <div class="marco"><img src="../img/b9-controles.png" alt="El título Bloque 9 · Etiquetas y registro, el párrafo de presentación y la sección 1: los selectores Qué imprimir en toda la colección (46), Hoja en etiquetas, Formato en Sobre de semilla · 90×54 mm, Papel en Carta (216 × 279 mm), el campo Encabezado con el texto de ayuda Nombre del banco (opcional), el selector Código en de barras (Code 128) y el botón Imprimir; debajo, once botones de campo con Nombre, Especie y Sitio de colecta encendidos, y la línea Caben 2 × 4 = 8 etiquetas por hoja, y para 46 accesiones hacen falta 6 hojas"></div>
+    <div class="marco"><img src="../img/b9-controles.png" alt="El título Bloque 9 · Etiquetas y registro, el párrafo de presentación y la sección 1: los selectores Qué imprimir en toda la colección (46), Hoja en etiquetas, Formato en Sobre de semilla · 90×54 mm, Papel en Carta (216 × 279 mm), el campo Encabezado con el texto de ayuda Nombre del banco (opcional), el selector Código en de barras (Code 128) y el botón Imprimir; debajo, once botones de campo con Nombre, Especie y Sitio de colecta encendidos, la línea Caben 2 × 4 = 8 etiquetas por hoja, y para 46 accesiones hacen falta 6 hojas, que termina pidiendo imprimir al 100 %, y la nota La barra más delgada del código mide 0.234 mm en este formato"></div>
     <figcaption><b>Figura 9.1.</b> La sección 1 con los valores de fábrica y la colección de ejemplo.</figcaption>
   </figure>
   <p>El selector <span class="ui">Qué imprimir</span> decide qué accesiones entran, y vale para las etiquetas y para las tres hojas de trabajo:</p>
@@ -57,20 +57,17 @@
     <thead><tr><th style="width:2.2in">Opción</th><th class="c" style="width:0.55in">Ej.</th><th>Qué accesiones toma</th></tr></thead>
     <tbody>
       <tr><td><span class="ui">toda la colección (46)</span></td><td class="c">46</td><td>Todo el pasaporte, en su orden. Es la opción de fábrica.</td></tr>
-      <tr><td><span class="ui">la colección núcleo del Bloque 7</span></td><td class="c">5</td><td>Las accesiones del núcleo, si ya lo armaste en el Bloque 7 (capítulo 7). Con la caracterización de ejemplo y el núcleo de fábrica del 10 %, son MEX-AG-0024, MEX-TC-0027, MEX-CU-0040, MEX-CH-0042 y MEX-ZM-0043.</td></tr>
-      <tr><td><span class="ui">los lotes en apuros del Bloque 8</span></td><td class="c">10</td><td>Las accesiones con al menos una alerta grave en el Bloque 8 (apartado 8.4): las mismas 10 del recuadro <span class="ui">Lotes en apuros</span>.</td></tr>
+      <tr><td><span class="ui">la colección núcleo del Bloque 7 (5)</span></td><td class="c">5</td><td>Las accesiones del núcleo que armaste en el Bloque 7 (capítulo 7). Con la caracterización de ejemplo y el núcleo de fábrica del 10 %, son MEX-AG-0024, MEX-TC-0027, MEX-CU-0040, MEX-CH-0042 y MEX-ZM-0043. Mientras no hay núcleo, la opción dice <span class="ui">(aún no calculada)</span> y está desactivada.</td></tr>
+      <tr><td><span class="ui">los lotes en apuros del Bloque 8 (10)</span></td><td class="c">10</td><td>Las accesiones con al menos una alerta grave en el Bloque 8 (apartado 8.4): las mismas 10 del recuadro <span class="ui">Lotes en apuros</span>. Si todavía no has abierto el Bloque 8, la opción no dice el número, pero al elegirla la app hace las cuentas del Bloque 8 y toma las mismas 10.</td></tr>
       <tr><td><span class="ui">mi selección (0)</span></td><td class="c">—</td><td>Las que marques a mano en la lista que aparece debajo (figura 9.2).</td></tr>
     </tbody>
   </table>
-  <div class="caja importante">
-    <div class="caja-t"><span class="ico">!</span>El núcleo sin Bloque 7 es la colección entera</div>
-    <p>Si eliges <span class="ui">la colección núcleo del Bloque 7</span> sin haber armado antes el núcleo, la app no te avisa: toma las 46 accesiones, y la hoja dice «46 accesiones». Antes de imprimir el núcleo, mira que el número de accesiones de la vista previa sea el de tu núcleo.</p>
-  </div>
-  <p>El selector <span class="ui">Hoja</span> elige qué se imprime: <span class="ui">etiquetas</span>, <span class="ui">lista de siembra</span>, <span class="ui">vale de distribución</span> o <span class="ui">libro de registro</span>. Los controles de formato, papel, encabezado, código y campos sólo aparecen con las etiquetas. El encabezado, sin embargo, también sale en la esquina de las tres hojas de trabajo: si quieres el nombre de tu banco en el vale, escríbelo primero con la hoja de etiquetas y luego cambia de hoja.</p>
+  <p>Si el núcleo se borra después de elegirlo —por ejemplo, al cargar otra caracterización—, la opción queda elegida sin accesiones: la vista previa dice <span class="ui">No hay accesiones en esta selección.</span>, el botón <span class="ui">Imprimir</span> se apaga y un aviso pide <span class="ui largo">Aún no hay núcleo: calcúlalo en el Bloque 7.</span></p>
+  <p>El selector <span class="ui">Hoja</span> elige qué se imprime: <span class="ui">etiquetas</span>, <span class="ui">lista de siembra</span>, <span class="ui">vale de distribución</span> o <span class="ui">libro de registro</span>. Los controles de formato, papel, código y campos sólo aparecen con las etiquetas. El <span class="ui">Encabezado</span> está con cualquier hoja: en las etiquetas va arriba de cada una, y en las tres hojas de trabajo, en la esquina superior derecha, sobre la fecha.</p>
   <h3>Escoger accesiones a mano</h3>
   <p>Con <span class="ui">mi selección</span> aparece debajo de la sección 1 una lista con casillas, una por accesión, con su número, los primeros 28 caracteres del nombre y la especie. El cuadro <span class="ui">Buscar</span> filtra por número, nombre, género, especie o sitio de colecta, sin distinguir mayúsculas; el botón <span class="ui">marcar las N de la lista</span> marca todas las que deja el filtro, y <span class="ui">desmarcar todo</span> vacía la selección. La lista enseña hasta 400 accesiones; si hay más, afina la búsqueda.</p>
   <figure class="mediana">
-    <div class="marco"><img src="../img/b9-seleccion.png" alt="La sección 1 con Qué imprimir en mi selección (3) y la línea Caben 2 × 4 = 8 etiquetas por hoja, y para 3 accesiones hacen falta 1 hoja; debajo, el recuadro de selección con Buscar chayote, los botones marcar las 3 de la lista y desmarcar todo, el texto 3 marcadas y tres casillas marcadas: MEX-SE-0029 Chayote verde liso, MEX-SE-0030 Chayote erizo (cuspidatum) y MEX-SE-0046 Chayote verde liso, las tres Sechium edule"></div>
+    <div class="marco"><img src="../img/b9-seleccion.png" alt="La sección 1 con Qué imprimir en mi selección (3) y la línea Caben 2 × 4 = 8 etiquetas por hoja, y para 3 accesiones hace falta 1 hoja; debajo, el recuadro de selección con Buscar chayote, los botones marcar las 3 de la lista y desmarcar todo, el texto 3 marcadas y tres casillas marcadas: MEX-SE-0029 Chayote verde liso, MEX-SE-0030 Chayote erizo (cuspidatum) y MEX-SE-0046 Chayote verde liso, las tres Sechium edule"></div>
     <figcaption><b>Figura 9.2.</b> Las tres accesiones de chayote, escogidas con el buscador para un envío.</figcaption>
   </figure>
   <p>La selección sigue marcada aunque cambies la búsqueda, y la opción del selector dice cuántas llevas: <span class="ui">mi selección (3)</span>. Vive sólo mientras la app está abierta: al recargar la página se pierde.</p>
@@ -110,7 +107,7 @@
     <div class="marco"><img src="../img/b9-sobres.png" alt="Cuatro etiquetas de sobre de semilla en dos columnas, cada una con el encabezado Banco de Germoplasma de Ejemplo, el número de accesión en negritas (MEX-ZM-0001 a MEX-ZM-0004), el nombre, Zea mays en cursivas y el sitio de colecta; abajo a la derecha, un código de barras con el número de accesión impreso debajo"></div>
     <figcaption><b>Figura 9.3.</b> Las cuatro primeras etiquetas de sobre, con los tres campos de fábrica, el encabezado <i>Banco de Germoplasma de Ejemplo</i> y el código de barras.</figcaption>
   </figure>
-  <p>Los once botones de campo se encienden y se apagan con un clic; los de fábrica son <span class="ui">Nombre</span>, <span class="ui">Especie</span> y <span class="ui">Sitio de colecta</span>. La app recuerda tu elección y el encabezado de una sesión a otra.</p>
+  <p>Los once botones de campo se encienden y se apagan con un clic; los de fábrica son <span class="ui">Nombre</span>, <span class="ui">Especie</span> y <span class="ui">Sitio de colecta</span>. La app recuerda de una sesión a otra los campos encendidos, el encabezado, el código y el chayote del QR.</p>
   <table class="compacta">
     <caption><b>Tabla 9.3.</b> Los campos que se pueden imprimir y cómo se escriben.</caption>
     <thead><tr><th style="width:1.5in">Botón</th><th style="width:1.35in">Campo</th><th>Cómo sale (MEX-ZM-0001)</th></tr></thead>
@@ -128,7 +125,7 @@
       <tr><td><span class="ui">Código del instituto</span></td><td><code>INSTCODE</code></td><td>el código FAO del instituto</td></tr>
     </tbody>
   </table>
-  <p>Un campo vacío no deja renglón en blanco: se salta. Los renglones se cortan, sin puntos suspensivos, cuando llegan al borde o al QR, con un cálculo aproximado del ancho de las letras. Y <b>sólo caben los que quepan</b>: si un renglón ya no entra antes del código de barras o del borde de abajo, la app lo omite sin avisar. La tabla 9.4 dice cuántos campos caben en cada formato; los que sobran son los últimos que encendiste.</p>
+  <p>Un campo vacío no deja renglón en blanco: se salta. Un texto que llega al borde o al QR se corta y termina en «…» —el encabezado, el número de accesión y cada campo—, con un cálculo aproximado del ancho de las letras. Y <b>sólo caben los que quepan</b>: si un renglón ya no entra antes del código de barras o del borde de abajo, se queda fuera, y la app lo dice en un aviso en ocre bajo los controles, con el nombre de los campos que no caben (figura 9.4). La tabla 9.4 dice cuántos renglones caben en cada formato; los que sobran son los últimos que encendiste.</p>
   <table class="compacta">
     <caption><b>Tabla 9.4.</b> Cuántos renglones de campo caben en cada etiqueta, además del número de accesión.</caption>
     <thead><tr><th>Formato</th><th class="c">Code 128</th><th class="c">QR o sin código</th><th class="c">Code 128 con encabezado</th><th class="c">QR con encabezado</th></tr></thead>
@@ -137,10 +134,10 @@
       <tr><td>Frasco de cámara</td><td class="c">4</td><td class="c">7</td><td class="c">3</td><td class="c">6</td></tr>
       <tr><td>Estaca de campo</td><td class="c">2</td><td class="c">4</td><td class="c">2</td><td class="c">3</td></tr>
       <tr><td>Criotubo</td><td class="c">1</td><td class="c">3</td><td class="c">0</td><td class="c">2</td></tr>
-      <tr><td>Etiqueta de envío</td><td class="c">9</td><td class="c">11</td><td class="c">9</td><td class="c">11</td></tr>
+      <tr><td>Etiqueta de envío</td><td class="c">9</td><td class="c">12</td><td class="c">9</td><td class="c">11</td></tr>
     </tbody>
   </table>
-  <p>Fíjate en la estaca: con código de barras sólo caben dos campos, así que de los tres de fábrica el sitio de colecta no sale. En el criotubo con código de barras sale un solo campo, y ninguno si además pones encabezado. El encabezado, en cambio, no se corta: un nombre largo invade el QR (apartado 9.5). Escríbelo corto, una sigla o el código del instituto.</p>
+  <p>En la etiqueta de envío con QR o sin código caben 12 renglones, más que los 11 campos que hay. Fíjate en la estaca: con código de barras sólo caben dos, así que de los tres de fábrica el sitio de colecta no sale, y la app avisa <span class="ui largo">Un campo no cabe en «Estaca de campo»: caben 2 renglones además del número, y queda fuera Sitio de colecta</span>. En el criotubo con código de barras sale un solo campo, y ninguno si además pones encabezado. Un encabezado largo se corta con «…» antes del QR: escríbelo corto, una sigla o el código del instituto.</p>
 
   <!-- 9.4 -->
   <h2 id="b9-4"><span class="num">9.4</span>El código de barras Code 128</h2>
@@ -175,20 +172,22 @@
       <tr><td>Etiqueta de envío</td><td class="c">42</td><td class="c">8.3</td><td class="c">0.290</td><td class="c">3.4</td></tr>
     </tbody>
   </table>
-  <p>Un número de accesión más largo hace el módulo más fino, porque el ancho no cambia. A la derecha del código queda el margen de la etiqueta, de 1.6 a 3.5 mm, que en todos los formatos es mayor que los diez módulos de zona en blanco que pide la norma; a la izquierda no hay nada. En el criotubo, con menos de dos puntos por módulo, el redondeo de la impresora engorda o adelgaza las barras: imprime ahí con una impresora térmica de 300 ppp o más, y prueba el lector antes de seguir. Para un código que la norma no puede escribir —un número de accesión con ñ, acentos u otros caracteres fuera del ASCII— la app imprime la etiqueta sin código y sin avisar.</p>
+  <p>Un número de accesión más largo hace el módulo más fino, porque el ancho no cambia; por eso la app mide el módulo con el número más largo de lo que vas a imprimir. A la derecha del código queda el margen de la etiqueta, de 1.6 a 3.5 mm, que en todos los formatos es mayor que los diez módulos de zona en blanco que pide la norma; a la izquierda no hay nada.</p>
+  <p>Bajo los controles, la app dice cuánto mide la barra más delgada y si alcanza. De 0.25 mm para arriba lo lee cualquiera: en la etiqueta de envío dice <span class="ui largo">La barra más delgada del código mide 0.290 mm en este formato, de sobra para cualquier lector.</span> Entre 0.19 y 0.25 mm —el sobre y la estaca— la nota añade que es imprimible pero conviene probar una. Por debajo de 0.19 mm —el frasco, con 0.179 mm, y el criotubo, con 0.152 mm— pone un aviso en ocre: una impresora de oficina ya no dibuja parejas las barras ni un lector de mano las separa. En esas etiquetas imprime con una impresora térmica de 300 ppp o más y prueba el lector antes de seguir, o usa el QR.</p>
+  <figure>
+    <div class="marco"><img src="../img/b9-avisos.png" alt="Dos avisos en ocre del criotubo con código de barras: En este formato la barra más delgada del código queda en 0.152 mm (con MEX-ZM-0001), por debajo de los 0.19 mm que una impresora de oficina dibuja parejo y un lector de mano separa; de 0.25 mm para arriba lee cualquiera. Imprime una y pruébala, usa un formato más ancho o un número más corto. Y: 2 campos no caben en «Criotubo»: cabe 1 renglón además del número, y quedan fuera Especie, Sitio de colecta (salvo en las etiquetas donde un campo anterior venga vacío). Quita campos, o usa un formato más grande."></div>
+    <figcaption><b>Figura 9.4.</b> Los dos avisos del criotubo con código de barras y los tres campos de fábrica: la barra es demasiado delgada y dos campos no caben.</figcaption>
+  </figure>
+  <p>El Code 128 sólo escribe caracteres del ASCII imprimible. Si un número de accesión lleva ñ, acentos u otros caracteres fuera de él, esa etiqueta sale sin código de barras: en la vista previa la app la enmarca con una línea roja punteada, que no se imprime, y un aviso dice cuántas etiquetas salen así y sugiere usar el QR, que admite cualquier carácter, o corregir el número en el Bloque 2.</p>
 
   <!-- 9.5 -->
   <h2 id="b9-5"><span class="num">9.5</span>El código QR y el chayote del centro</h2>
-  <p>Con <span class="ui">Código</span> en <span class="ui">QR</span>, cada etiqueta lleva a la derecha un código QR cuadrado con el número de accesión, y aparece el botón <span class="ui">chayote en el centro</span>, encendido de fábrica, que dibuja un chayote en un disco blanco en medio del código. Con <span class="ui">sin código</span> la etiqueta lleva sólo texto. La app no recuerda esta elección: al volver a abrirla regresa al código de barras.</p>
+  <p>Con <span class="ui">Código</span> en <span class="ui">QR</span>, cada etiqueta lleva a la derecha un código QR cuadrado con el número de accesión, y aparece el botón <span class="ui">chayote en el centro</span>, encendido de fábrica, que dibuja un chayote en un disco blanco en medio del código. Con <span class="ui">sin código</span> la etiqueta lleva sólo texto.</p>
   <div class="caja teoria">
     <div class="caja-t"><span class="ico">θ</span>Teoría en breve · cómo se escribe un QR</div>
     <p>Un QR es una matriz cuadrada de módulos claros y oscuros. La <b>versión</b> fija su tamaño: la versión <i>v</i> mide 17 + 4<i>v</i> módulos por lado. Tres <b>buscadores</b> en las esquinas, las líneas de sincronía y, desde la versión 2, los patrones de alineación orientan al lector; el resto lleva el mensaje en <b>bytes</b> (codewords) más bytes de <b>corrección de errores Reed–Solomon</b>. Hay cuatro niveles de corrección, que recuperan aproximadamente el 7 % (L), 15 % (M), 25 % (Q) y 30 % (H) de los bytes. Al final se aplica una de ocho <b>máscaras</b>, que invierte módulos para evitar manchas y rayas que confundan al lector; la app prueba las ocho, las califica con las cuatro reglas de penalización de la norma y se queda con la de menor puntaje. El nivel y la máscara viajan en 15 bits de formato, protegidos con su propio código.</p>
     <p>La app escribe el texto en modo byte (UTF-8), siempre con el nivel H, en las versiones 1 a 10. En el nivel H caben 7 bytes en la versión 1, 14 en la 2, 24 en la 3 y 119 en la 10; un número de accesión de 8 a 14 caracteres va en la versión 2.</p>
   </div>
-  <figure class="mediana">
-    <div class="marco"><img src="../img/b9-qr.png" alt="Seis etiquetas de frasco de cámara en tres columnas, de MEX-ZM-0001 a MEX-ZM-0006, cada una con el encabezado Banco de Germoplasma de Ejemplo, el número de accesión, el nombre, Zea mays y el sitio de colecta, cortado en las más largas, como Oaxaca, San Pablo Villa de; a la derecha, un código QR con un chayote verde en el centro"></div>
-    <figcaption><b>Figura 9.4.</b> Etiquetas de frasco con QR y el chayote en el centro. El sitio de colecta se corta donde empieza el código.</figcaption>
-  </figure>
   <div class="caja ejemplo">
     <div class="caja-t"><span class="ico">▸</span>Ejemplo a mano · el QR de MEX-ZM-0001</div>
     <table class="compacta cuenta"><tbody>
@@ -198,27 +197,32 @@
       <tr><td colspan="2">28 bytes de corrección → recupera hasta 14 bytes dañados de 44 (32 %)</td></tr>
       <tr><td colspan="2">máscara elegida: 1 · bits de formato (H, máscara 1) = 001001110111110</td></tr>
     </tbody></table>
-    <p>Las 46 accesiones de ejemplo quedan en la versión 2. El chayote ocupa un hueco de 7 × 7 módulos en el centro (el 26 % del lado redondeado: 25 × 0.26 = 6.5 → 7), 49 de los 625 módulos, el 7.8 % del área. En las 46, el hueco borra de 14 a 29 módulos oscuros, y el lector propio de la app, que no corrige errores, todavía recupera los 46 números: el hueco cae sobre bytes de relleno y de corrección, no sobre los del número. Por eso el dibujo sólo se permite con el nivel H.</p>
+    <p>Las 46 accesiones de ejemplo quedan en la versión 2. El chayote ocupa un hueco de 7 × 7 módulos en el centro (el 26 % del lado redondeado: 25 × 0.26 = 6.5 → 7), 49 de los 625 módulos, el 7.8 % del área, y el disco blanco no sale del hueco. En las 46, el lector propio de la app, que no corrige errores, todavía recupera el número con el hueco en blanco: el hueco cae sobre bytes de relleno y de corrección, no sobre los del número. Aun si cayera sobre ellos, el nivel H tiene corrección de sobra; por eso el dibujo va siempre con el nivel H.</p>
   </div>
-  <p>El lado del QR es el alto de la etiqueta menos sus márgenes, sin pasar de un tercio del ancho; el texto se detiene 1 mm antes del código. Alrededor del código la app deja 2 módulos en blanco, la mitad de los 4 que pide la norma; el margen de la etiqueta completa la zona en blanco a la derecha, arriba y abajo, pero no a la izquierda, donde el texto queda a entre 1.7 mm (criotubo) y 3.3 mm (etiqueta de envío) de los primeros módulos.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/b9-qr.png" alt="Seis etiquetas de frasco de cámara en tres columnas, de MEX-ZM-0001 a MEX-ZM-0006, cada una con el encabezado Banco de Germoplasma de Ejemplo, el número de accesión, el nombre, Zea mays y el sitio de colecta, cortado con puntos suspensivos en las más largas, como Oaxaca, San Pablo Villa de…; a la derecha, un código QR con un chayote verde en el centro"></div>
+    <figcaption><b>Figura 9.5.</b> Etiquetas de frasco con QR y el chayote en el centro. El sitio de colecta se corta con «…» antes del código.</figcaption>
+  </figure>
+  <p>El hueco nunca tapa los módulos que orientan al lector. En la versión 1 (números de hasta 7 caracteres) se achica hasta no rozar la información de formato y queda de 3 × 3 módulos; de la versión 7 en adelante (textos de más de 58 caracteres) el patrón de alineación cae justo en el centro y ningún hueco lo esquiva, así que el QR sale sin chayote aunque el botón esté encendido.</p>
+  <p>El lado del QR es el alto de la etiqueta menos sus márgenes, sin pasar de un tercio del ancho; el texto se detiene 1 mm antes del cuadro del código. Dentro de ese cuadro la app deja, alrededor de los módulos, los <b>4 módulos en blanco</b> que pide la norma.</p>
   <table class="compacta">
-    <caption><b>Tabla 9.6.</b> El QR en cada formato (versión 2: 25 módulos más 2 en blanco por lado, 29 en total).</caption>
+    <caption><b>Tabla 9.6.</b> El QR en cada formato (versión 2: 25 módulos más 4 en blanco por lado, 33 en total).</caption>
     <thead><tr><th>Formato</th><th class="c">Lado del QR (mm)</th><th class="c">Módulo (mm)</th><th>Lo que dice la app</th></tr></thead>
     <tbody>
-      <tr><td>Sobre de semilla</td><td class="c">30.6</td><td class="c">1.06</td><td rowspan="4"><span class="ui largo">Cada módulo del QR mide N mm en este formato, de sobra para cualquier lector. Versión 2, nivel H.</span></td></tr>
-      <tr><td>Frasco de cámara</td><td class="c">21.4</td><td class="c">0.74</td></tr>
-      <tr><td>Estaca de campo</td><td class="c">28.4</td><td class="c">0.98</td></tr>
-      <tr><td>Etiqueta de envío</td><td class="c">34.0</td><td class="c">1.17</td></tr>
-      <tr><td>Criotubo</td><td class="c">9.8</td><td class="c">0.34</td><td>Un aviso en ocre (abajo).</td></tr>
+      <tr><td>Sobre de semilla</td><td class="c">30.6</td><td class="c">0.93</td><td rowspan="4"><span class="ui largo">Cada módulo del QR mide N mm en este formato, de sobra para cualquier lector. Versión 2, nivel H, con la zona en blanco de 4 módulos por lado que pide la norma.</span></td></tr>
+      <tr><td>Frasco de cámara</td><td class="c">21.4</td><td class="c">0.65</td></tr>
+      <tr><td>Estaca de campo</td><td class="c">28.4</td><td class="c">0.86</td></tr>
+      <tr><td>Etiqueta de envío</td><td class="c">34.0</td><td class="c">1.03</td></tr>
+      <tr><td>Criotubo</td><td class="c">9.8</td><td class="c">0.30</td><td>Un aviso en ocre (abajo).</td></tr>
     </tbody>
   </table>
   <p>Por debajo de 0.4 mm por módulo la app pone un aviso en ocre. Con el criotubo dice:</p>
-  <p><span class="ui largo">En esta etiqueta cada módulo del QR queda en 0.34 mm, por debajo de los 0.4 mm que una impresora láser y la cámara de un teléfono resuelven con holgura. Imprime una y pruébala antes de hacer el resto; si no lee, usa el código de barras, que en tan poco espacio aguanta mejor.</span></p>
-  <p>Sólo el criotubo cae por debajo con números como los de ejemplo. El cálculo del aviso se hace con la primera accesión de la lista; si las demás tienen números más largos, su módulo puede ser más chico.</p>
+  <p><span class="ui largo">En esta etiqueta cada módulo del QR queda en 0.30 mm, por debajo de los 0.4 mm que una impresora láser y la cámara de un teléfono resuelven con holgura (ya con la zona en blanco de 4 módulos por lado). Imprime una y pruébala antes de hacer el resto; si no lee, usa el código de barras, que en tan poco espacio aguanta mejor.</span></p>
+  <p>Sólo el criotubo cae por debajo con números como los de ejemplo. El aviso se calcula con el número más largo de lo que vas a imprimir, que es el que da el QR más denso.</p>
   <figure>
     <div class="marco"><img src="../img/b9-criotubo.png" alt="Cinco etiquetas de criotubo, de MEX-ZM-0001 a MEX-ZM-0005, cada una con el número de accesión, el nombre y un código de barras sin texto debajo"></div>
-    <div class="marco"><img src="../img/b9-criotubo-qr.png" alt="Las mismas cinco etiquetas de criotubo con QR: número de accesión, nombre, Zea mays y el sitio de colecta cortado, como Oaxaca, Santiago Ap, y un QR pequeño con el chayote en el centro"></div>
-    <figcaption><b>Figura 9.5.</b> Etiquetas de criotubo (33 × 13 mm) con código de barras, arriba, y con QR, abajo. Con el código de barras cabe un solo campo; con el QR, tres, pero cada módulo mide 0.34 mm.</figcaption>
+    <div class="marco"><img src="../img/b9-criotubo-qr.png" alt="Las mismas cinco etiquetas de criotubo con QR: número de accesión, nombre, Zea mays y el sitio de colecta cortado con puntos suspensivos, como Oaxaca, Santiago A…, y un QR pequeño con el chayote en el centro"></div>
+    <figcaption><b>Figura 9.6.</b> Etiquetas de criotubo (33 × 13 mm) con código de barras, arriba, y con QR, abajo. Con el código de barras cabe un solo campo; con el QR, tres, pero cada módulo mide 0.30 mm. Los textos que no caben terminan en «…».</figcaption>
   </figure>
   <div class="caja nota">
     <div class="caja-t"><span class="ico">i</span>¿Barras o QR?</div>
@@ -227,29 +231,30 @@
 
   <!-- 9.6 -->
   <h2 id="b9-6"><span class="num">9.6</span>Imprimir y comprobar</h2>
-  <p>El botón <span class="ui">Imprimir</span> abre el diálogo de impresión del navegador con la vista previa: una hoja de papel por hoja de etiquetas, o la hoja de trabajo completa, que sigue en las hojas que haga falta. Al pie del bloque, una nota resume lo que hay que cuidar: <span class="ui largo">Comprueba la primera hoja antes de imprimir cien.</span></p>
+  <p>El botón <span class="ui">Imprimir</span> abre el diálogo de impresión del navegador con la vista previa; el botón se apaga si no hay accesiones que imprimir. Con las etiquetas, la app prepara la impresión a escala exacta: cada hoja mide lo mismo que el papel elegido, trae sus propios márgenes de 8 mm, y la página se declara del tamaño del papel y sin margen del navegador. Así nada se encoge ni sobra una hoja en blanco al final. Lo mismo pasa si imprimes con <span class="ui">Ctrl + P</span> mientras estás en el Bloque 9.</p>
+  <div class="caja dato">
+    <div class="caja-t"><span class="ico">#</span>Lo que medimos</div>
+    <p>Impresas a PDF las 46 etiquetas de sobre, salieron 6 hojas en carta y 5 en A4, sin hoja en blanco. El borde gris de cada sobre midió 89.6 mm de ancho en los dos papeles —el borde va 0.2 mm por dentro de cada orilla de los 90 mm—, y la primera columna empezó a 8 mm de la orilla del papel.</p>
+  </div>
+  <p>Las hojas de trabajo se imprimen como un documento: las tablas se parten entre hojas y repiten su fila de títulos arriba de cada hoja. Con toda la colección de ejemplo en carta, la lista de siembra ocupa 2 hojas, el libro de registro 3 y el vale 2. Al pie del bloque, una nota resume lo que hay que cuidar: <span class="ui largo">Comprueba la primera hoja antes de imprimir cien.</span></p>
   <ol>
-    <li>En el diálogo pon la escala en <b>100 %</b>, no «ajustar a la página», y desactiva los encabezados y pies de página del navegador.</li>
-    <li>Imprime <b>una</b> hoja y mide una etiqueta con una regla: el sobre debe medir 90 × 54 mm.</li>
+    <li>En el diálogo pon la escala en <b>100 %</b>, no «ajustar a la página», como pide también la línea de la sección 1, y desactiva los encabezados y pies de página del navegador.</li>
+    <li>Imprime <b>una</b> hoja y mide una etiqueta con una regla: el sobre debe medir 90 × 54 mm. Algunos controladores de impresora reducen la hoja por su cuenta; si la etiqueta sale más chica, busca en sus opciones «tamaño real» o «100 %».</li>
     <li>Pásale el lector al código. Si el número que lee es el que dice la etiqueta, imprime el resto.</li>
   </ol>
   <p>Para el campo y la cámara fría, el papel importa tanto como la tinta: usa etiqueta de poliéster o papel resistente al agua, y tóner láser o transferencia térmica; la tinta de inyección se corre con la condensación al sacar un frasco del frío.</p>
-  <div class="caja importante">
-    <div class="caja-t"><span class="ico">!</span>Mide antes de confiar en la medida</div>
-    <p>La app dibuja la hoja de etiquetas del ancho completo del papel, y el navegador le pone además sus márgenes de 10 mm al imprimir; para que quepa, la encoge. En nuestra prueba con hoja carta, el sobre de 90 mm salió de unos 80 mm, y la impresión terminó con una hoja en blanco. El código se sigue leyendo, porque se encoge parejo, pero las etiquetas no miden lo que dice el formato. Por eso el paso 2 no es opcional.</p>
-  </div>
 
   <!-- 9.7 -->
   <h2 id="b9-7"><span class="num">9.7</span>La lista de siembra</h2>
   <p>Con <span class="ui">Hoja</span> en <span class="ui">lista de siembra</span>, la vista previa se convierte en la hoja que se lleva al invernadero o al campo para una regeneración: una fila por accesión con cuántas semillas hay que sembrar, y tres columnas en blanco para escribir a mano la parcela, la fecha y las observaciones. Arriba van el título, una línea con el número de accesiones y de plantas, y, a la derecha, el encabezado y la fecha de hoy. Lo natural es combinarla con <span class="ui">los lotes en apuros del Bloque 8</span>.</p>
   <figure class="mediana">
-    <div class="marco"><img src="../img/b9-siembra.png" alt="La hoja Lista de siembra para regeneración, con la línea 10 accesiones · 100 plantas por accesión · las semillas a sembrar salen de la germinación de cada lote y la fecha 30/10/2026; la tabla con las columnas Accesión, Nombre, Especie, Germ., Semillas, Parcela, Fecha y Observaciones: MEX-ZP-0011 Teocintle de Balsas 81 % 138; MEX-SE-0013 Frijol vaquita 84 % 133; PER-ST-0021 Papa nativa Huayro 85 % 131; MEX-VA-0025 Vainilla de Papantla 85 % 131; MEX-PA-0026, MEX-TC-0027, COL-MA-0035 y MEX-SE-0046 también con 85 % y 131; MEX-PH-0041 Frijol tepari 79 % 141; MEX-ZM-0043 Maíz ancho de riego 72 % 155; debajo, el campo Plantas por accesión con 100 y el botón Descargar en CSV"></div>
-    <figcaption><b>Figura 9.6.</b> La lista de siembra de los 10 lotes en apuros del Bloque 8, con 100 plantas por accesión. Seis de las filas no son lotes de semilla.</figcaption>
+    <div class="marco"><img src="../img/b9-siembra.png" alt="La hoja Lista de siembra para regeneración, con la línea 10 accesiones · 100 plantas por accesión · las semillas a sembrar salen de la germinación de cada lote y la fecha 31/10/2026; la tabla con las columnas Accesión, Nombre, Especie, Germ., Semillas, Parcela, Fecha y Observaciones: MEX-ZP-0011 Teocintle de Balsas 81 % 138; MEX-SE-0013 Frijol vaquita 84 % 133; PER-ST-0021 Papa nativa Huayro 85 %* 131; MEX-VA-0025 Vainilla de Papantla 85 %* 131; MEX-PA-0026, MEX-TC-0027, COL-MA-0035 y MEX-SE-0046 también con 85 %* y 131; MEX-PH-0041 Frijol tepari 79 % 141; MEX-ZM-0043 Maíz ancho de riego 72 % 155; debajo, la nota * Supuesto: estas 6 accesiones no tienen prueba de germinación registrada; se usa el 85 % de la calculadora del Bloque 8, y el campo Plantas por accesión con 100, la aclaración las de una regeneración en los supuestos del Bloque 8 y el botón Descargar en CSV"></div>
+    <figcaption><b>Figura 9.7.</b> La lista de siembra de los 10 lotes en apuros del Bloque 8, con 100 plantas por accesión. Las seis filas con asterisco no son lotes de semilla y no tienen prueba de germinación.</figcaption>
   </figure>
-  <p>Las semillas salen de la misma cuenta que el Bloque 8 (apartado 8.7): las plantas que quieres, entre la germinación del lote y un establecimiento en campo fijo de 90 %. Las plantas por accesión se cambian con el campo <span class="ui">Plantas por accesión</span>, de 10 a 500 en pasos de 10, y valen para todas las filas.</p>
+  <p>Las semillas salen de la misma cuenta que el Bloque 8 (apartado 8.7): las plantas que quieres, entre la germinación del lote y un establecimiento en campo fijo de 90 %. Las plantas por accesión son, de entrada, las de una regeneración en los supuestos del Bloque 8 (el deslizador <span class="ui">Plantas por regeneración</span>, 100 de fábrica), y lo dice la aclaración junto al campo. Si las cambias en el campo <span class="ui">Plantas por accesión</span>, de 10 a 500 en pasos de 10, valen para todas las filas y la aclaración desaparece.</p>
   <div class="formula">semillas = ⌈ plantas / (germinación/100 × 0.9) ⌉</div>
   <div class="caja ejemplo">
-    <div class="caja-t"><span class="ico">▸</span>Ejemplo a mano · tres filas de la figura 9.6</div>
+    <div class="caja-t"><span class="ico">▸</span>Ejemplo a mano · tres filas de la figura 9.7</div>
     <table class="compacta cuenta"><tbody>
       <tr><td colspan="2">MEX-ZM-0043, 72 %: 100 / (0.72 × 0.9) = 100 / 0.648 = 154.3 → 155 semillas</td></tr>
       <tr><td colspan="2">MEX-ZP-0011, 81 %: 100 / 0.729 = 137.2 → 138 · MEX-PH-0041, 79 %: 100 / 0.711 = 140.6 → 141</td></tr>
@@ -257,16 +262,18 @@
     </tbody></table>
   </div>
   <div class="caja importante">
-    <div class="caja-t"><span class="ico">!</span>El 85 % que nadie midió</div>
-    <p>Si una accesión no tiene <code>GP_GERMPCT</code>, la lista supone 85 % y lo escribe en la columna <span class="ui">Germ.</span> como si fuera un dato. Le pasa a toda accesión que no es de semilla: en la figura 9.6, la papa y la vainilla in vitro, el aguacate, el cacao, la yuca y el chayote de campo aparecen con «85 %» y 131 semillas, aunque se regeneran por resiembra o subcultivo. Con <span class="ui">toda la colección</span> les pasa también a las poblaciones in situ y en parcela. Usa la lista sólo con lotes de semilla, y tacha esas filas antes de llevarla al campo.</p>
+    <div class="caja-t"><span class="ico">!</span>La germinación supuesta y el 0 % medido</div>
+    <p>Si una accesión no tiene <code>GP_GERMPCT</code>, la lista usa el supuesto de la calculadora del Bloque 8 (<span class="ui">Germinación del lote</span>, 85 % de fábrica, apartado 8.7), lo escribe con asterisco —<span class="ui">85 %*</span>— y lo explica en una nota al pie de la tabla. Con toda la colección de ejemplo son 17 accesiones: todas las que no son lotes de semilla, porque las rutas de campo, in vitro, criopreservación, in situ y parcela no llevan prueba de germinación. Usa la lista con lotes de semilla, y tacha las filas con asterisco que se regeneran por resiembra o subcultivo.</p>
+    <p>Un 0 % medido, en cambio, es un dato: ese lote no tiene semilla viable. La fila lleva una raya en <span class="ui">Semillas</span> y una nota en ocre lo nombra y sugiere recurrir al duplicado de seguridad o volver a colectar.</p>
   </div>
-  <p>El botón <span class="ui">Descargar en CSV</span> guarda <span class="ruta">lista-de-siembra.csv</span>, en UTF-8 con separador de coma, con diez columnas de nombre fijo: <code>ACCENUMB</code>, <code>nombre</code>, <code>taxon</code>, <code>plantas</code>, <code>germinacion</code>, <code>semillas</code>, <code>existencias</code> (<code>GP_STOCK</code>), y las tres vacías <code>parcela</code>, <code>fecha_siembra</code> y <code>observaciones</code>. A diferencia de la hoja, el nombre va completo.</p>
+  <p>El botón <span class="ui">Descargar en CSV</span> guarda <span class="ruta">lista-de-siembra.csv</span>, en UTF-8 con separador de coma, con once columnas de nombre fijo: <code>ACCENUMB</code>, <code>nombre</code>, <code>taxon</code>, <code>plantas</code>, <code>germinacion</code>, <code>germinacion_supuesta</code> («sí» cuando es el supuesto, vacía cuando es medida), <code>semillas</code> (vacía con un 0 % medido), <code>existencias</code> (<code>GP_STOCK</code>), y las tres vacías <code>parcela</code>, <code>fecha_siembra</code> y <code>observaciones</code>. A diferencia de la hoja, el nombre va completo.</p>
   <table class="compacta csv">
-    <caption><b>Tabla 9.7.</b> Las dos primeras filas de <span class="ruta">lista-de-siembra.csv</span> con toda la colección.</caption>
-    <thead><tr><th>ACCENUMB</th><th>nombre</th><th>taxon</th><th>plantas</th><th>germinacion</th><th>semillas</th><th>existencias</th></tr></thead>
+    <caption><b>Tabla 9.7.</b> Tres filas de <span class="ruta">lista-de-siembra.csv</span> con toda la colección (sin las tres columnas vacías).</caption>
+    <thead><tr><th>ACCENUMB</th><th>nombre</th><th>taxon</th><th>plantas</th><th>germinacion</th><th>germinacion_supuesta</th><th>semillas</th><th>existencias</th></tr></thead>
     <tbody>
-      <tr><td>MEX-ZM-0001</td><td>Maíz azul de Apoala</td><td>Zea mays</td><td>100</td><td>88</td><td>127</td><td>1800</td></tr>
-      <tr><td>MEX-ZM-0002</td><td>Bolita amarillo</td><td>Zea mays</td><td>100</td><td>89</td><td>125</td><td>1930</td></tr>
+      <tr><td>MEX-ZM-0001</td><td>Maíz azul de Apoala</td><td>Zea mays</td><td>100</td><td>88</td><td></td><td>127</td><td>1800</td></tr>
+      <tr><td>MEX-ZM-0002</td><td>Bolita amarillo</td><td>Zea mays</td><td>100</td><td>89</td><td></td><td>125</td><td>1930</td></tr>
+      <tr><td>MEX-ZP-0012</td><td>Población silvestre de teocintle, reserva</td><td>Zea mays</td><td>100</td><td>85</td><td>sí</td><td>131</td><td>1200</td></tr>
     </tbody>
   </table>
   <p>Compara la columna <code>semillas</code> con <code>existencias</code> antes de sembrar: si el lote no tiene las semillas que pide la lista, siembra las que haya y anótalo en las observaciones.</p>
@@ -275,10 +282,10 @@
   <h2 id="b9-8"><span class="num">9.8</span>El vale de distribución</h2>
   <p>El <span class="ui">vale de distribución</span> es la hoja que acompaña a un envío. Arriba lleva el título, una nota sobre el Tratado Internacional, el encabezado y la fecha; luego cuatro líneas para llenar a mano —<span class="ui">Solicitante</span>, <span class="ui">Institución</span>, <span class="ui">Uso previsto</span> y <span class="ui">Fecha de envío</span>—, la tabla de accesiones y dos líneas de firma: <span class="ui">Entrega (nombre y firma)</span> y <span class="ui">Recibe (nombre y firma)</span>.</p>
   <figure class="mediana">
-    <div class="marco"><img src="../img/b9-vale.png" alt="El Vale de distribución de germoplasma con la nota Este material se entrega con las condiciones del Tratado Internacional cuando la accesión está en el Sistema Multilateral (MLSSTAT = 1), el encabezado Banco de Germoplasma de Ejemplo y la fecha 30/10/2026; las líneas Solicitante, Institución, Uso previsto y Fecha de envío; la tabla con Accesión, Nombre, Especie, Origen, Cantidad y SMTA para MEX-SE-0029 Chayote verde liso, MEX-SE-0030 Chayote erizo (cuspidatu, MEX-SE-0046 Chayote verde liso, las tres Sechium edule, México, con la cantidad en blanco y una raya en SMTA; y las líneas de firma Entrega y Recibe"></div>
-    <figcaption><b>Figura 9.7.</b> El vale de las tres accesiones de chayote de la figura 9.2.</figcaption>
+    <div class="marco"><img src="../img/b9-vale.png" alt="El Vale de distribución de germoplasma con la nota Este material se entrega con las condiciones del Tratado Internacional cuando la accesión está en el Sistema Multilateral (MLSSTAT = 1), el encabezado Banco de Germoplasma de Ejemplo y la fecha 31/10/2026; las líneas Solicitante, Institución, Uso previsto y Fecha de envío; la tabla con Accesión, Nombre, Especie, Origen, Cantidad y SMTA para MEX-SE-0029 Chayote verde liso, MEX-SE-0030 Chayote erizo (cuspidat…, MEX-SE-0046 Chayote verde liso, las tres Sechium edule, México, con la cantidad en blanco y una raya en SMTA; y las líneas de firma Entrega y Recibe"></div>
+    <figcaption><b>Figura 9.8.</b> El vale de las tres accesiones de chayote de la figura 9.2.</figcaption>
   </figure>
-  <p>La tabla tiene una fila por accesión: el número, los primeros 24 caracteres del nombre, la especie, el país de origen por su nombre, la <span class="ui">Cantidad</span> en blanco para escribir lo que se manda (semillas, gramos, frascos o estacas) y la columna <span class="ui">SMTA</span>, que sale de <code>MLSSTAT</code>: <span class="ui">sí</span> si la accesión está en el Sistema Multilateral (1), <span class="ui">no</span> si no lo está (0) y una raya si el campo está vacío. Con toda la colección de ejemplo hay 21 «sí», 4 «no» y 21 rayas.</p>
+  <p>La tabla tiene una fila por accesión: el número, el nombre (cortado con «…» si pasa de 24 caracteres), la especie, el país de origen por su nombre, la <span class="ui">Cantidad</span> en blanco para escribir lo que se manda (semillas, gramos, frascos o estacas) y la columna <span class="ui">SMTA</span>, que sale de <code>MLSSTAT</code>: <span class="ui">sí</span> si la accesión está en el Sistema Multilateral (1), <span class="ui">no</span> si no lo está (0) y una raya si el campo está vacío. Con toda la colección de ejemplo hay 21 «sí», 4 «no» y 21 rayas.</p>
   <div class="caja nota">
     <div class="caja-t"><span class="ico">i</span>El vale no sustituye al acuerdo</div>
     <p>El Acuerdo Normalizado de Transferencia de Material (SMTA, por sus siglas en inglés) del Tratado Internacional sobre los Recursos Fitogenéticos para la Alimentación y la Agricultura es un contrato que se firma o se acepta aparte, por cada envío de material del Sistema Multilateral. El vale de la app es el registro interno de qué salió, cuánto y a quién; la columna <span class="ui">SMTA</span> sólo te recuerda en qué accesiones hace falta el acuerdo. Una raya quiere decir que no lo sabes: llena <code>MLSSTAT</code> en el Bloque 2 antes de enviar.</p>
@@ -286,15 +293,15 @@
 
   <!-- 9.9 -->
   <h2 id="b9-9"><span class="num">9.9</span>El libro de registro</h2>
-  <p>El <span class="ui">libro de registro</span> es el inventario impreso de la colección: el título, la línea <span class="ui">46 accesiones al 30/10/2026</span> y una tabla por ruta de conservación, cada una con su subtítulo y su número de accesiones. Las rutas salen en el orden en que aparece su primera accesión en el pasaporte; con la colección de ejemplo son Banco de semillas · 28, Reserva genética (in situ) · 2, Cultivo in vitro · 3, Criopreservación · 1, Banco de campo o colección viva · 8, Conservación en la parcela (on-farm) · 3 y sin declarar · 1, que es el chile costeño (apartado 8.9).</p>
+  <p>El <span class="ui">libro de registro</span> es el inventario impreso de la colección: el título, la línea <span class="ui">46 accesiones al 31/10/2026</span> y una tabla por ruta de conservación, cada una con su subtítulo y su número de accesiones. Las rutas salen en el orden en que aparece su primera accesión en el pasaporte; con la colección de ejemplo son Banco de semillas · 28, Reserva genética (in situ) · 2, Cultivo in vitro · 3, Criopreservación · 1, Banco de campo o colección viva · 8, Conservación en la parcela (on-farm) · 3 y sin declarar · 1, que es el chile costeño (apartado 8.9).</p>
   <table class="compacta">
     <caption><b>Tabla 9.8.</b> Las columnas del libro de registro.</caption>
     <thead><tr><th style="width:1.3in">Columna</th><th>Qué muestra</th></tr></thead>
     <tbody>
       <tr><td><span class="ui">Accesión</span></td><td><code>ACCENUMB</code>.</td></tr>
-      <tr><td><span class="ui">Nombre</span></td><td>Los primeros 22 caracteres de <code>ACCENAME</code>.</td></tr>
+      <tr><td><span class="ui">Nombre</span></td><td><code>ACCENAME</code>, cortado con «…» si pasa de 22 caracteres.</td></tr>
       <tr><td><span class="ui">Especie</span></td><td>Género y especie, en cursivas.</td></tr>
-      <tr><td><span class="ui">Sitio</span></td><td>Los primeros 26 caracteres de <code>COLLSITE</code>.</td></tr>
+      <tr><td><span class="ui">Sitio</span></td><td><code>COLLSITE</code>, cortado con «…» si pasa de 26 caracteres.</td></tr>
       <tr><td><span class="ui">Ingreso</span></td><td><code>ACQDATE</code>, la fecha en que la accesión entró al banco, como día/mes/año.</td></tr>
       <tr><td><span class="ui">Existencias</span></td><td><code>GP_STOCK</code>, en las unidades de la ruta.</td></tr>
       <tr><td><span class="ui">Últ. germ.</span></td><td><code>GP_GERMPCT</code> con «%», o vacío.</td></tr>
@@ -302,26 +309,25 @@
     </tbody>
   </table>
   <figure class="mediana">
-    <div class="marco"><img src="../img/b9-registro.png" alt="El Libro de registro de la colección, con la línea 46 accesiones al 30/10/2026 y la fecha a la derecha; el subtítulo Banco de semillas · 28 y la tabla con las columnas Accesión, Nombre, Especie, Sitio, Ingreso, Existencias, Últ. germ. y Respaldo, con las seis primeras filas, de MEX-ZM-0001 Maíz azul de Apoala, Zea mays, Oaxaca, Santiago Apoala, 04/11/2019, 1800, 88 %, sin respaldo, a MEX-ZM-0006 Cacahuacintle de Cholu, 2450, 93 %, sin respaldo; las demás con NOR051"></div>
-    <figcaption><b>Figura 9.8.</b> El principio del libro de registro de la colección de ejemplo.</figcaption>
+    <div class="marco"><img src="../img/b9-registro.png" alt="El Libro de registro de la colección, con la línea 46 accesiones al 31/10/2026 y la fecha a la derecha; el subtítulo Banco de semillas · 28 y la tabla con las columnas Accesión, Nombre, Especie, Sitio, Ingreso, Existencias, Últ. germ. y Respaldo, con las seis primeras filas, de MEX-ZM-0001 Maíz azul de Apoala, Zea mays, Oaxaca, Santiago Apoala, 04/11/2019, 1,800, 88 %, sin respaldo, a MEX-ZM-0006 Cacahuacintle de Chol…, 2,450, 93 %, sin respaldo; las demás con NOR051"></div>
+    <figcaption><b>Figura 9.9.</b> El principio del libro de registro de la colección de ejemplo.</figcaption>
   </figure>
-  <p>Los nombres y sitios se cortan sin aviso a mitad de palabra («Maíz blanco de tempora»). El libro no guarda historia: refleja el pasaporte del día en que lo imprimes, con las pruebas y regeneraciones que hayas registrado en el Bloque 8. Imprímelo al cerrar cada temporada, fírmalo y archívalo junto con la exportación del pasaporte del Bloque 2: así la colección tiene un registro en papel de cada año.</p>
+  <p>Los nombres y sitios demasiado largos se cortan y terminan en «…» («Maíz blanco de tempor…»), y las existencias llevan coma de millares, como en el resto de la app. El libro no guarda historia: refleja el pasaporte del día en que lo imprimes, con las pruebas y regeneraciones que hayas registrado en el Bloque 8. Imprímelo al cerrar cada temporada, fírmalo y archívalo junto con la exportación del pasaporte del Bloque 2: así la colección tiene un registro en papel de cada año.</p>
 
   <h3>Cuando algo no sale</h3>
   <table class="compacta">
     <thead><tr><th style="width:40%">Lo que ves</th><th>Por qué pasa y qué hacer</th></tr></thead>
     <tbody>
       <tr><td><span class="ui largo">Primero carga tus accesiones en el Bloque 2.</span></td><td>No hay pasaporte. Carga tu colección o la de ejemplo (capítulo 2).</td></tr>
-      <tr><td><span class="ui">No hay accesiones en esta selección.</span></td><td>Elegiste <span class="ui">mi selección</span> sin marcar ninguna. Márcalas en la lista (apartado 9.1).</td></tr>
-      <tr><td>Pedí el núcleo y salen todas las accesiones</td><td>No has armado el núcleo en el Bloque 7: la app toma la colección entera. Ve al Bloque 7 y vuelve.</td></tr>
-      <tr><td>Un campo encendido no aparece en la etiqueta</td><td>No cupo (tabla 9.4) o está vacío en el pasaporte. Apaga otros campos, quita el encabezado, usa QR o un formato más grande.</td></tr>
-      <tr><td>El encabezado se monta sobre el QR</td><td>El encabezado no se corta. Escribe uno más corto.</td></tr>
-      <tr><td>Al escribir el encabezado o las plantas por accesión, el cursor se sale del campo</td><td>La vista previa se rehace con cada tecla y el campo pierde el foco. Escribe el valor completo dando clic en el campo antes de cada carácter, o pégalo de una sola vez.</td></tr>
-      <tr><td>Una etiqueta sale sin código</td><td>El número de accesión está vacío, o lleva caracteres que el Code 128 no admite (ñ, acentos). Cambia a QR, que acepta cualquier texto.</td></tr>
-      <tr><td>Aviso ocre del tamaño del módulo del QR</td><td>El formato es muy chico para el QR (apartado 9.5). Imprime una de prueba, o usa el código de barras.</td></tr>
-      <tr><td>La etiqueta impresa mide menos que su formato</td><td>El navegador encogió la hoja para que cupiera entre sus márgenes (apartado 9.6). No uses hojas precortadas; mide y recorta por el borde gris.</td></tr>
-      <tr><td>La primera hoja impresa de una lista lleva sólo el título</td><td>El navegador no quiere partir la tabla y la pasa entera a la hoja siguiente. Es un defecto de la impresión de esta versión; la tabla sale completa en las hojas que siguen.</td></tr>
-      <tr><td>La lista de siembra pide semillas para un clon o una población in situ</td><td>Esas accesiones no tienen germinación y la lista supone 85 % (apartado 9.7). Usa la lista sólo con lotes de semilla.</td></tr>
+      <tr><td><span class="ui">No hay accesiones en esta selección.</span> y el botón <span class="ui">Imprimir</span> apagado</td><td>Elegiste <span class="ui">mi selección</span> sin marcar ninguna, o el núcleo del Bloque 7 ya no existe. Márcalas en la lista o vuelve a calcular el núcleo (apartado 9.1).</td></tr>
+      <tr><td>La opción del núcleo dice <span class="ui">(aún no calculada)</span> y no se puede elegir</td><td>No has armado el núcleo. Ve al Bloque 7, cárgale la caracterización y vuelve.</td></tr>
+      <tr><td>Aviso en ocre de que uno o más campos no caben</td><td>La etiqueta no tiene renglones para todos (tabla 9.4). Apaga campos, quita el encabezado, usa QR o un formato más grande.</td></tr>
+      <tr><td>Una etiqueta con borde rojo punteado en la vista previa</td><td>Su número tiene caracteres que el Code 128 no admite (ñ, acentos) y sale sin código. Cambia a QR o corrige el número en el Bloque 2.</td></tr>
+      <tr><td>Aviso en ocre de la barra más delgada</td><td>El módulo del Code 128 queda bajo 0.19 mm (apartado 9.4). Imprime una de prueba, usa un formato más ancho o el QR.</td></tr>
+      <tr><td>Aviso en ocre del módulo del QR</td><td>El formato es muy chico para el QR (apartado 9.5). Imprime una de prueba, o usa el código de barras.</td></tr>
+      <tr><td>La etiqueta impresa mide menos que su formato</td><td>La escala del diálogo no está en 100 %, o el controlador de la impresora reduce la hoja. Ponla en 100 % o «tamaño real» (apartado 9.6).</td></tr>
+      <tr><td>Una fila de la lista de siembra dice <span class="ui">85 %*</span></td><td>La accesión no tiene prueba de germinación y la lista usa el supuesto del Bloque 8 (apartado 9.7). Si es un lote de semilla, haz la prueba; si no lo es, tacha la fila.</td></tr>
+      <tr><td>Una fila de la lista de siembra tiene una raya en <span class="ui">Semillas</span></td><td>Su última prueba dio 0 %: no hay semilla viable. Recurre al duplicado de seguridad o vuelve a colectar.</td></tr>
     </tbody>
   </table>
 
@@ -331,7 +337,6 @@
       <tr><td style="width:44%"><b>Si</b> rotulas sobres, frascos o envíos</td><td><b>entonces</b> usa el Code 128: lo lee cualquier lector de mano y escribe el número donde esté el cursor.</td></tr>
       <tr><td><b>Si</b> rotulas estacas de campo o quieres leer con el teléfono</td><td><b>entonces</b> usa el QR: deja más renglones de texto y lo lee la cámara.</td></tr>
       <tr><td><b>Si</b> rotulas criotubos</td><td><b>entonces</b> prueba los dos códigos con tu impresora antes de imprimir el resto; el módulo queda en el límite.</td></tr>
-      <tr><td><b>Si</b> el material va al frío o al campo</td><td><b>entonces</b> imprime en poliéster o papel resistente al agua, con láser o transferencia térmica.</td></tr>
       <tr><td><b>Si</b> vas a imprimir una tanda</td><td><b>entonces</b> imprime una hoja, mide una etiqueta con regla y pásale el lector; sólo entonces imprime el resto.</td></tr>
       <tr><td><b>Si</b> preparas una regeneración</td><td><b>entonces</b> usa los lotes en apuros del Bloque 8 con la lista de siembra, y tacha las accesiones que no se regeneran por semilla.</td></tr>
       <tr><td><b>Si</b> sale material del banco</td><td><b>entonces</b> imprime el vale, revisa la columna SMTA y llena <code>MLSSTAT</code> donde haya una raya.</td></tr>
