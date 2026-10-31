@@ -258,9 +258,9 @@
             <option value="distance">${T('distancia al vecino más cercano', 'distance to nearest collection')}</option>
             <option value="richness">${T('riqueza de las celdas ocupadas', 'richness of occupied cells')}</option>
           </select></label>
-          <span class="hint">${T(
+          ${nOut > 0 ? `<span class="hint">${T(
             `${fmtInt(nOut)} ${pl(nOut, 'accesión cae', 'accesiones caen')} fuera del área analizada`,
-            `${fmtInt(nOut)} ${pl(nOut, 'accession falls', 'accessions fall')} outside the analysed area`)}</span>
+            `${fmtInt(nOut)} ${pl(nOut, 'accession falls', 'accessions fall')} outside the analysed area`)}</span>` : ''}
         </div>
         <div class="map-wrap">${gapMap(900, 520)}</div>
         <div class="map-legends"><div class="map-legend">
