@@ -221,6 +221,49 @@
     presentación del bloque menciona el QR.
 - **Recetas del manual:** `b7-detalle` ya no ensancha a mano el detalle por carácter (ahora ocupa todo el ancho).
   1182 pruebas, todas en verde.
+- **Informe (Bloque 10), lo hallado al escribir el manual:**
+  - Calidad: el informe contaba un nivel `bad` que `QC.audit` no produce («coordenadas imposibles» siempre en 0). Ahora
+    usa `error`, `warn` e `info`, como el Bloque 3: «coordenadas con error claro» (1 con el ejemplo, MEX-ZM-0039) y
+    «coordenadas sospechosas»; el resumen dice «1 coordenada no concuerda con el país declarado» y aparte las de error
+    sin corrección (punto 0, 0).
+  - Resumen: el duplicado de seguridad se cuenta como en el Bloque 8, sólo en lo que está ex situ (21, no 26), y lo dice.
+  - «Cómo se conserva» lleva el renglón «Sin declarar»: la tabla suma las 46 accesiones y el 100 %.
+  - Diversidad: la columna «Exclusivos» leía `DIV.exclusives` como objeto (es un `Map`) y salía en 0; ahora toma los de
+    cada unidad (Puebla 4, Veracruz 4, Chiapas 3, Michoacán, Estado de México, Jalisco y Sonora 1).
+  - Manejo: la tabla de alertas tiene un renglón por tipo con un nombre genérico (`MANAGE.ALERT_NAMES`), ya no el
+    mensaje del primer lote con sus cifras; van primero las críticas, luego los avisos y lo informativo.
+  - Al apagar «figuras» la distribución geográfica conserva sus tablas y su nota; sólo se va el mapa. El mapa lleva su
+    leyenda y `REPORT.CSS` da estilo a las leyendas en HTML de las figuras (`.map-legend`, `.lg-item`, `.legend-scale`…),
+    que salían deshechas en la vista previa, el HTML descargado y la impresión. El pie de la PCoA dice que el color es
+    el grupo (o lo elegido en «Colorear por») y el símbolo grande con borde el núcleo.
+  - Las figuras se dibujan en el idioma del informe (`REPORT.inLang`, que devuelve el de la app aunque una figura
+    truene), también los SVG del ZIP, que ahora llevan sólo el `<svg>` (la leyenda en HTML los dejaba inválidos).
+  - Métodos: el párrafo de caracterización toma los ajustes del Bloque 7 (tamaño pedido y real, estratos, reparto,
+    elección, método M, Ward o UPGMA, k elegido a mano y la silueta media obtenida, «al menos 1 por estrato», estratos
+    sin representante); antes decía siempre 10 %, Ward, silueta y estratos. «Siete campos propios» enumera los siete;
+    «diversidad de especies»; la disimilitud nombrada es la que se usó; el de manejo dice las condiciones y umbrales de
+    la configuración del banco.
+  - Referencias: cada párrafo declara las que cita y la bibliografía se arma con ellas, así que cada cita está en la
+    bibliografía y cada entrada está citada (la suite lo comprueba con `REPORT.CITES`). Se citan FAO (2014), Kew,
+    Mantel (1967) y Murtagh y Legendre (2014), y se añaden Chao (1987), Burnham y Overton (1978), Good (1953), Jaccard
+    (1912), Sørensen (1948), Bray y Curtis (1957), Sokal y Michener (1958), Rousseeuw (1987), Schoen y Brown (1993),
+    Darwin Core (Wieczorek et al., 2012, que nunca salía) y GermplasmPro 1.0.0. Títulos completos de Heck et al. (1975),
+    Hu et al. (2000) y Ramírez-Villegas et al. (2010). En inglés, autores con «and» y «Rome».
+  - Impresión: `h3` y `h4` no quedan solos al pie de una hoja, las figuras van al 82 % del ancho para que quepan donde
+    caen (el mapa de vacíos ya no deja media hoja en blanco), los números de accesión no se parten y el anexo da el país
+    por su nombre. El informe del ejemplo sale en 13 hojas carta.
+  - Accesibilidad: `aria-pressed` en los botones de sección y de figuras, `#b10Msg` con `aria-live="polite"`; Resumen,
+    La colección, Métodos y Referencias (`always`) no se pueden apagar.
+  - Darwin Core: `recordedBy` ya no toma `COLLCODE` (código de un instituto) cuando falta `COLLNAME`; país, protocolos y
+    preparación en el idioma del informe, con `countryCode` ISO.
+  - La presentación del bloque explica qué se calcula solo (calidad, mapa, diversidad, vacíos y manejo) y que la
+    caracterización es lo único que puede faltar; el mapa sólo cuenta como hecho si hay coordenadas.
+- **Manejo del banco (Bloque 8):** las marcas del eje de la carga de trabajo son enteras (0, 13, 25; no «12.5»);
+  cancelar la pregunta de las semillas usadas cancela el registro de la prueba; la lista va primero por nivel (en
+  apuros, piden atención, falta un dato, al día) y luego por puntaje, y lo explica.
+- **Etiquetas (Bloque 9):** «los lotes en apuros del Bloque 8 (10)» lleva su número aunque no se haya visitado el
+  Bloque 8.
+- 1258 pruebas, todas en verde.
 
 ## Después de la 1.0.0 — 2026-10-09
 

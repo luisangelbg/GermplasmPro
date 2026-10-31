@@ -103,7 +103,9 @@
     }
     const s = LABELS.sheet(rows, view.fmt, view.page);
     const lang = I18N.lang;
-    const A = coreAnalysis(), M = window.B8 ? B8.analysis() : null;
+    /* el número de lotes en apuros se sabe aunque todavía no se haya visitado
+       el Bloque 8: si no hay análisis, se corre aquí */
+    const A = coreAnalysis(), M = workAnalysis();
     const nCore = A ? A.core.core.length : null, nWork = M ? enApuros(M).length : null;
     const nAll = state.acc.length, nSel = view.selection.size;
     const opciones = [

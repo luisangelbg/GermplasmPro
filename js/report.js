@@ -59,14 +59,47 @@
       (m, name, alt) => cssValue(name) || (alt ? alt.trim() : '#888'));
   }
 
-  /* llama a la función de dibujo de un bloque sin que un tropiezo tire todo */
+  /* Las funciones de dibujo de los bloques escriben sus letreros con T(), es
+     decir, en el idioma de la app; el informe puede ir en otro. Mientras se
+     dibuja se cambia el idioma —sin avisar a nadie: no es un cambio de la
+     interfaz— y se devuelve el de antes pase lo que pase. */
+  function inLang(lang, fn) {
+    if (!window.I18N || (lang !== 'es' && lang !== 'en') || I18N.lang === lang) return fn();
+    const prev = I18N.lang;
+    I18N.lang = lang;
+    try { return fn(); } finally { I18N.lang = prev; }
+  }
+
+  /* llama a la función de dibujo de un bloque sin que un tropiezo tire todo.
+     El mapa del Bloque 4 devuelve un objeto: se le añade su leyenda, que en la
+     app vive en otro lugar de la página. */
   function figure(fn, W, H) {
     try {
       const out = fn(W, H);
-      const svg = out && out.svg ? out.svg : out;
+      let svg = out && out.svg ? out.svg : out;
       if (typeof svg !== 'string' || svg.indexOf('<svg') < 0) return '';
+      if (out && out.cinfo && window.B4 && typeof B4.legendHTML === 'function') {
+        const leg = B4.legendHTML(out.cinfo) + (typeof B4.choroLegend === 'function' ? B4.choroLegend() : '');
+        if (leg.trim()) svg += `<div class="map-legends">${leg}</div>`;
+      }
       return resolveVars(svg);
     } catch (e) { return ''; }
+  }
+
+  /* sólo el primer <svg>…</svg> de una figura, sin la leyenda en HTML que
+     algunas llevan debajo: lo que va a un archivo .svg tiene que ser SVG */
+  function svgOnly(s) {
+    const str = String(s || '');
+    const start = str.indexOf('<svg');
+    if (start < 0) return '';
+    const re = /<svg\b|<\/svg>/g;
+    re.lastIndex = start;
+    let depth = 0, m;
+    while ((m = re.exec(str))) {
+      depth += m[0] === '</svg>' ? -1 : 1;
+      if (depth === 0) return str.slice(start, m.index + 6);
+    }
+    return '';
   }
 
   /* ================= Darwin Core ================= */
@@ -102,7 +135,11 @@
     return '';
   }
 
-  function dwcRow(row) {
+  /* Los textos (país, protocolos, preparación) salen en el idioma del informe;
+     el país viaja además con su código ISO de dos letras en countryCode, que es
+     lo que de verdad lee GBIF. */
+  function dwcRow(row, lang) {
+    const en = lang === 'en';
     const route = MCPD.consRoute(row);
     const inSitu = route === 'insitu' || route === 'onfarm';
     const d = String(row.COLLDATE || '').replace(/-/g, '');
@@ -126,7 +163,9 @@
       catalogNumber: String(row.ACCENUMB || ''),
       otherCatalogNumbers: String(row.OTHERNUMB || ''),
       fieldNumber: String(row.COLLNUMB || ''),
-      recordedBy: String(row.COLLNAME || row.COLLCODE || ''),
+      /* quien colectó; COLLCODE es el código de un instituto, no una persona:
+         sin COLLNAME se deja vacío y el código viaja en dynamicProperties */
+      recordedBy: String(row.COLLNAME || ''),
       eventDate: isoDate(d),
       year: /^\d{4}/.test(d) ? d.slice(0, 4) : '',
       month: /^\d{6}/.test(d) && d.slice(4, 6) !== '00' ? String(Number(d.slice(4, 6))) : '',
@@ -137,27 +176,27 @@
       infraspecificEpithet: String(row.SUBTAXA || ''),
       scientificNameAuthorship: String(row.SPAUTHOR || ''),
       vernacularName: String(row.CROPNAME || row.ACCENAME || ''),
-      country: cty ? cty.es : '',
+      country: cty ? (en ? cty.en : cty.es) : '',
       countryCode: cty && GEO.A3_TO_A2 ? (GEO.A3_TO_A2[String(row.ORIGCTY || '').toUpperCase()] || '') : '',
       locality: String(row.COLLSITE || ''),
       decimalLatitude: String(row.DECLATITUDE ?? ''),
       decimalLongitude: String(row.DECLONGITUDE ?? ''),
       geodeticDatum: row.DECLATITUDE === '' || row.DECLATITUDE == null ? '' : 'EPSG:4326',
       coordinateUncertaintyInMeters: String(row.COORDUNCERT || ''),
-      georeferenceProtocol: gr ? gr.es : '',
+      georeferenceProtocol: gr ? (en ? gr.en : gr.es) : '',
       minimumElevationInMeters: String(row.ELEVATION || ''),
       maximumElevationInMeters: String(row.ELEVATION || ''),
-      samplingProtocol: src ? src.es : '',
+      samplingProtocol: src ? (en ? src.en : src.es) : '',
       /* «cultivated» es un valor del vocabulario de Darwin Core; lo silvestre
          no tiene término propio, así que se deja vacío y el código SAMPSTAT
          completo viaja en dynamicProperties */
       degreeOfEstablishment: stNum >= 300 && stNum < 600 ? 'cultivated' : '',
-      preparations: cons ? cons.es : '',
+      preparations: cons ? (en ? cons.en : cons.es) : '',
       occurrenceRemarks: String(row.REMARKS || ''),
       dynamicProperties: Object.keys(extra).length ? JSON.stringify(extra) : '',
     };
   }
-  function darwinCore(rows) { return (rows || []).map(dwcRow); }
+  function darwinCore(rows, lang) { return (rows || []).map(r => dwcRow(r, lang)); }
 
   /* ================= juntar lo que hay ================= */
   function gather(opts) {
@@ -190,39 +229,55 @@
       D.manage = window.B8 ? B8.analysis() : null;
       D.charac = window.B7 ? B7.analysis() : null;
     }
-    D.hasMap = !!(window.B4 && window.GEO);
+    /* los ajustes con que se corrieron la caracterización y el manejo, para
+       que los métodos digan exactamente lo que se hizo */
+    D.characView = D.charac && window.B7 && B7.view ? Object.assign({}, B7.view) : null;
+    D.manageCfg = D.manage && window.B8 && typeof B8.cfg === 'function' ? B8.cfg() : null;
+    /* sin una sola coordenada no hay mapa que dibujar ni tablas que llenar */
+    D.hasMap = !!(window.B4 && window.GEO) && !!(D.summary && D.summary.withCoords > 0);
     D.traits = (state.traits || []).length;
     return D;
   }
 
   /* ================= métodos redactados ================= */
   /* Un párrafo por análisis que de verdad se corrió, con los ajustes que se
-     usaron. Lo que no se corrió no aparece. */
+     usaron. Lo que no se corrió no aparece. Cada párrafo lleva la lista de las
+     referencias que cita (refs): la bibliografía se arma con esas listas, y así
+     cada cita está en la bibliografía y cada entrada de la bibliografía está
+     citada. */
+
+  /* la cita de la propia aplicación: la misma de la portada y de CITATION.cff */
+  const APP = {
+    version: '1.0.0', year: 2026,
+    title: 'GermplasmPro: el banco de germoplasma, accesión por accesión',
+    url: 'https://github.com/luisangelbg/GermplasmPro',
+  };
+
   function methods(D, lang) {
     const L = (es, en) => (lang === 'en' ? en : es);
     const out = [];
     const nm = n => String(n);
 
     out.push({
-      id: 'data', title: L('Datos de pasaporte', 'Passport data'),
+      id: 'data', title: L('Datos de pasaporte', 'Passport data'), refs: ['mcpd', 'dwc'],
       text: L(
-        `La colección se describió con los descriptores multicultivo de pasaporte MCPD v2.1 (Alercia et al., 2015), ampliados con siete campos propios para lo que el estándar, pensado para bancos ex situ, no cubre: la ruta de conservación activa, el sitio in situ, la persona custodia, las existencias y las fechas de la última germinación y la última regeneración. Se registraron ${nm(D.n)} accesiones. Cada valor se validó contra la lista de códigos de su descriptor y, además, contra los demás campos del mismo registro (fechas coherentes entre sí, coordenadas dentro del país declarado, almacenamiento compatible con la ruta).`,
-        `The collection was described with the FAO/Bioversity multi-crop passport descriptors MCPD v2.1 (Alercia et al., 2015), extended with seven local fields for what the standard, written for ex-situ banks, does not cover: the active conservation route, the in-situ site, the keeper, the stock and the dates of the last germination test and the last regeneration. ${nm(D.n)} accessions were recorded. Every value was validated against its descriptor's code list and against the rest of the record (dates consistent with one another, coordinates inside the declared country, storage compatible with the route).`),
+        `La colección se describió con los descriptores multicultivo de pasaporte MCPD v2.1 (Alercia et al., 2015), ampliados con siete campos propios para lo que el estándar, pensado para bancos ex situ, no cubre: la ruta de conservación activa, el sitio in situ, la persona custodia, las existencias, el porcentaje de germinación de la última prueba y las fechas de la última prueba de germinación y de la última regeneración. Se registraron ${nm(D.n)} accesiones. Cada valor se validó contra la lista de códigos de su descriptor y, además, contra los demás campos del mismo registro (fechas coherentes entre sí, coordenadas dentro del país declarado, almacenamiento compatible con la ruta). Para compartirlo con GBIF, el pasaporte se exporta también en Darwin Core (Wieczorek et al., 2012); los descriptores que no tienen término propio en ese estándar viajan en dynamicProperties con su nombre original.`,
+        `The collection was described with the FAO/Bioversity multi-crop passport descriptors MCPD v2.1 (Alercia et al., 2015), extended with seven local fields for what the standard, written for ex-situ banks, does not cover: the active conservation route, the in-situ site, the keeper, the stock, the germination percentage of the last test and the dates of the last germination test and the last regeneration. ${nm(D.n)} accessions were recorded. Every value was validated against its descriptor's code list and against the rest of the record (dates consistent with one another, coordinates inside the declared country, storage compatible with the route). To share it with GBIF, the passport is also exported in Darwin Core (Wieczorek et al., 2012); descriptors without a term of their own in that standard travel in dynamicProperties under their original name.`),
     });
 
     if (D.quality) {
       const nd = D.quality.dup && D.quality.dup.pairs ? D.quality.dup.pairs.length : 0;
       out.push({
-        id: 'quality', title: L('Control de calidad y duplicados', 'Quality control and duplicates'),
+        id: 'quality', title: L('Control de calidad y duplicados', 'Quality control and duplicates'), refs: ['winkler'],
         text: L(
-          `Las coordenadas se contrastaron con la caja envolvente del país declarado para detectar las tres equivocaciones clásicas —longitud sin signo, latitud invertida y latitud y longitud intercambiadas—, cada una con su corrección propuesta, que sólo se aplicó tras revisarla. Los nombres científicos y los sitios se revisaron con distancia de Levenshtein para agrupar variantes de escritura. Los duplicados se buscaron con un esquema de bloqueo (número de colecta, números de donante, prefijo del nombre, celda de medio grado y taxón con fecha) y se puntuaron con una combinación ponderada de similitud de nombres por Jaro-Winkler (Winkler, 1990), distancia geográfica por la fórmula del semiverseno y coincidencia de números y fechas; los pares por encima del umbral se revisaron uno por uno. Se examinaron ${nm(nd)} pares candidatos.`,
-          `Coordinates were checked against the bounding box of the declared country to detect the three classic mistakes —unsigned longitude, flipped latitude and latitude and longitude swapped—, each with a proposed fix that was applied only after review. Scientific names and site names were screened with Levenshtein distance to group spelling variants. Duplicates were searched with a blocking scheme (collecting number, donor numbers, name prefix, half-degree cell and taxon with date) and scored with a weighted combination of Jaro-Winkler name similarity (Winkler, 1990), haversine geographic distance and agreement of numbers and dates; pairs above the threshold were reviewed one by one. ${nm(nd)} candidate pairs were examined.`),
+          `Las coordenadas se contrastaron con la caja envolvente del país declarado para detectar las tres equivocaciones clásicas —longitud sin signo, latitud invertida y latitud y longitud intercambiadas—, cada una con su corrección propuesta, que sólo se aplicó tras revisarla. Los nombres científicos y los sitios se revisaron con distancia de Levenshtein para agrupar variantes de escritura. Los duplicados se buscaron con un esquema de bloqueo (número de colecta, números de donante, prefijo del nombre, celda de medio grado y taxón con fecha) y se puntuaron con una combinación ponderada de similitud de nombres por Jaro-Winkler (Winkler, 1990), distancia geográfica por la fórmula del semiverseno y coincidencia de números y fechas; los pares por encima del umbral se revisaron uno por uno. Se examinaron ${nm(nd)} ${nd === 1 ? 'par candidato' : 'pares candidatos'}.`,
+          `Coordinates were checked against the bounding box of the declared country to detect the three classic mistakes —unsigned longitude, flipped latitude and latitude and longitude swapped—, each with a proposed fix that was applied only after review. Scientific names and site names were screened with Levenshtein distance to group spelling variants. Duplicates were searched with a blocking scheme (collecting number, donor numbers, name prefix, half-degree cell and taxon with date) and scored with a weighted combination of Jaro-Winkler name similarity (Winkler, 1990), haversine geographic distance and agreement of numbers and dates; pairs above the threshold were reviewed one by one. ${nm(nd)} candidate ${nd === 1 ? 'pair was' : 'pairs were'} examined.`),
       });
     }
 
     if (D.hasMap) {
       out.push({
-        id: 'map', title: L('Cartografía', 'Cartography'),
+        id: 'map', title: L('Cartografía', 'Cartography'), refs: ['ne'],
         text: L(
           'Los mapas se dibujaron sin conexión a internet, con los contornos de dominio público de Natural Earth incluidos en la aplicación (admin-1 de México a 1:10 millones y admin-0 del mundo a 1:110 millones), en proyección equirrectangular con corrección por el coseno de la latitud. La entidad y el país de cada accesión se asignaron por inclusión del punto en el polígono, no por el texto del campo correspondiente, de modo que el mapa delata las coordenadas que no concuerdan con lo declarado.',
           'Maps were drawn offline from the public-domain Natural Earth outlines bundled with the application (Mexican admin-1 at 1:10 million and world admin-0 at 1:110 million), in an equirectangular projection corrected by the cosine of the latitude. The state and country of each accession were assigned by point-in-polygon, not from the text of the corresponding field, so that the map exposes coordinates that disagree with what was declared.'),
@@ -230,14 +285,36 @@
     }
 
     if (D.diversity) {
-      const A = D.diversity;
-      const unit = { state: L('entidad federativa', 'state'), country: L('país', 'country'), cell: L('celda de la rejilla', 'grid cell'), band: L('franja altitudinal', 'elevation belt') }[A.unitMode] || A.unitMode;
-      const cls = { species: L('especie', 'species'), crop: L('cultivo', 'crop'), genus: L('género', 'genus'), name: L('nombre de accesión', 'accession name') }[A.classMode] || A.classMode;
+      const A = D.diversity, o = A.opts || {};
+      const unit = {
+        state: L('entidad federativa', 'state'), country: L('país', 'country'),
+        cell: L(`celda de una rejilla de ${nm(o.grid || 1)}°`, `cell of a ${nm(o.grid || 1)}° grid`),
+        grid: L(`celda de una rejilla de ${nm(o.grid || 1)}°`, `cell of a ${nm(o.grid || 1)}° grid`),
+        band: L(`franja altitudinal de ${nm(o.band || 500)} m`, `${nm(o.band || 500)} m elevation belt`),
+      }[A.unitMode] || A.unitMode;
+      const cls = { species: L('especies', 'species'), crop: L('cultivos', 'crops'), genus: L('géneros', 'genera'), name: L('nombres de accesión', 'accession names') }[A.classMode] || A.classMode;
+      const refs = ['jost', 'hurlbert', 'heck', 'chao', 'chao87', 'burnham', 'good'];
+      let comp = '';
+      if (A.D) {
+        const dist = {
+          jaccard: [L('el índice de disimilitud de Jaccard (Jaccard, 1912)', 'the Jaccard dissimilarity index (Jaccard, 1912)'), 'jaccard'],
+          sorensen: [L('el índice de disimilitud de Sørensen (Sørensen, 1948)', 'the Sørensen dissimilarity index (Sørensen, 1948)'), 'sorensen'],
+          bray: [L('la disimilitud de Bray-Curtis (Bray y Curtis, 1957)', 'the Bray-Curtis dissimilarity (Bray and Curtis, 1957)'), 'bray'],
+        }[o.dist] || null;
+        if (dist) refs.push(dist[1]);
+        refs.push('sokal');
+        const m = A.mantel && isFinite(A.mantel.r) ? A.mantel : null;
+        if (m) refs.push('mantel');
+        const contra = m ? (m.dist === 'elev' ? L('la diferencia de altitud entre franjas', 'the elevation difference between belts') : L('la distancia geográfica', 'geographic distance')) : '';
+        comp = L(
+          ` La composición de las unidades con al menos dos accesiones se comparó con ${dist ? dist[0] : 'una disimilitud'}, se ordenó con agrupamiento UPGMA (Sokal y Michener, 1958)${m ? ` y se contrastó con ${contra} mediante una prueba de Mantel (Mantel, 1967) con ${nm(m.perms)} permutaciones` : ''}.`,
+          ` The composition of units with at least two accessions was compared with ${dist ? dist[0] : 'a dissimilarity'}, ordered with UPGMA clustering (Sokal and Michener, 1958)${m ? ` and contrasted against ${contra} with a Mantel test (Mantel, 1967) using ${nm(m.perms)} permutations` : ''}.`);
+      }
       out.push({
-        id: 'diversity', title: L('Diversidad geográfica', 'Geographic diversity'),
+        id: 'diversity', title: L('Diversidad geográfica', 'Geographic diversity'), refs,
         text: L(
-          `Las accesiones se agruparon por ${unit} y se contó la diversidad de ${cls}. Para cada unidad se calcularon la riqueza observada, el índice de Shannon, el de Gini-Simpson, la equidad de Pielou y los números de Hill de orden 0, 1 y 2 (Jost, 2006). Como el número de accesiones cambia mucho de una unidad a otra, y la riqueza crece con el esfuerzo, la comparación se hizo sobre la riqueza rarefactada de Hurlbert (1971) a un esfuerzo común, con la varianza de Heck et al. (1975). Lo que falta por colectar se estimó con Chao1 (Chao, 1984), Chao2 y los estimadores de navaja de primer y segundo orden, y la cobertura del muestreo con el estimador de Good-Turing. La composición entre unidades se comparó con los índices de Jaccard, Sørensen y Bray-Curtis, se ordenó con agrupamiento UPGMA y se contrastó con la distancia geográfica mediante una prueba de Mantel con ${nm((A.opts && A.opts.perms) || 999)} permutaciones.`,
-          `Accessions were grouped by ${unit} and the diversity of ${cls} was counted. For each unit we computed observed richness, the Shannon index, the Gini-Simpson index, Pielou's evenness and Hill numbers of order 0, 1 and 2 (Jost, 2006). Because the number of accessions differs greatly between units, and richness grows with effort, comparisons were made on Hurlbert (1971) rarefied richness at a common effort, with the variance of Heck et al. (1975). What remains to be collected was estimated with Chao1 (Chao, 1984), Chao2 and first- and second-order jackknife estimators, and sampling coverage with the Good-Turing estimator. Composition between units was compared with the Jaccard, Sørensen and Bray-Curtis indices, ordered with UPGMA clustering and contrasted against geographic distance with a Mantel test using ${nm((A.opts && A.opts.perms) || 999)} permutations.`),
+          `Las accesiones se agruparon por ${unit} y se contó la diversidad de ${cls}. Para cada unidad se calcularon la riqueza observada, el índice de Shannon, el de Gini-Simpson, la equidad de Pielou y los números de Hill de orden 0, 1 y 2 (Jost, 2006). Como el número de accesiones cambia mucho de una unidad a otra, y la riqueza crece con el esfuerzo, la comparación se hizo sobre la riqueza rarefactada de Hurlbert (1971) a un esfuerzo común, con la varianza de Heck et al. (1975). Lo que falta por colectar se estimó con Chao1 (Chao, 1984), Chao2 (Chao, 1987) y los estimadores de navaja de primer y segundo orden (Burnham y Overton, 1978), y la cobertura del muestreo con el estimador de Good-Turing (Good, 1953).${comp}`,
+          `Accessions were grouped by ${unit} and the diversity of ${cls} was counted. For each unit we computed observed richness, the Shannon index, the Gini-Simpson index, Pielou's evenness and Hill numbers of order 0, 1 and 2 (Jost, 2006). Because the number of accessions differs greatly between units, and richness grows with effort, comparisons were made on Hurlbert (1971) rarefied richness at a common effort, with the variance of Heck et al. (1975). What remains to be collected was estimated with Chao1 (Chao, 1984), Chao2 (Chao, 1987) and first- and second-order jackknife estimators (Burnham and Overton, 1978), and sampling coverage with the Good-Turing estimator (Good, 1953).${comp}`),
       });
     }
 
@@ -245,7 +322,7 @@
       const G = D.gaps;
       const w = (G.opts && G.opts.weights) || GAPS.DEFAULT_WEIGHTS;
       out.push({
-        id: 'gaps', title: L('Vacíos de colecta', 'Collecting gaps'),
+        id: 'gaps', title: L('Vacíos de colecta', 'Collecting gaps'), refs: ['gap'],
         text: L(
           `El territorio se dividió en una rejilla de ${nm((G.opts && G.opts.size) || 1)}° y se marcaron las celdas con y sin accesiones. Para cada celda vacía se midió la distancia al punto colectado más cercano y se calculó un índice de prioridad con cuatro componentes explícitos y pesos ajustables —lejanía (${nm(w.distance)}), riqueza del vecindario (${nm(w.richness)}), déficit de la entidad (${nm(w.state)}) y tipos exclusivos cercanos (${nm(w.exclusive)})—, de modo que cada renglón del resultado enseña de dónde sale su número. El conjunto mínimo de sitios que recogería todos los tipos presentes se obtuvo por complementariedad voraz. Conviene decir qué NO es esto: un análisis geográfico y de composición de la colección, en la línea de Ramírez-Villegas et al. (2010) pero sin su componente ecogeográfico, que exigiría capas ambientales que esta aplicación no incluye ni descarga.`,
           `The territory was divided into a ${nm((G.opts && G.opts.size) || 1)}° grid and cells with and without accessions were mapped. For every empty cell we measured the distance to the nearest collected point and computed a priority index from four explicit, adjustable components —remoteness (${nm(w.distance)}), neighbourhood richness (${nm(w.richness)}), state deficit (${nm(w.state)}) and nearby exclusive types (${nm(w.exclusive)})—, so that each row of the result shows where its number comes from. The minimum set of sites that would capture every type present was obtained by greedy complementarity. It is worth saying what this is NOT: it is a geographic and collection-composition analysis, in the spirit of Ramírez-Villegas et al. (2010) but without their ecogeographic component, which would require environmental layers that this application neither bundles nor downloads.`),
@@ -254,65 +331,172 @@
 
     if (D.charac) {
       const A = D.charac;
-      const core = A.core || {};
+      const V = D.characView || {};
+      const core = A.core || { core: [], target: 0 };
+      const nC = A.pairs ? A.pairs.length : 0;
+      const nU = A.used ? A.used.length : 0;
+      const k = A.groups ? new Set(A.groups).size : (V.k || 0);
+      const sil = A.sil && isFinite(A.sil.mean) ? A.sil.mean : null;
+      const refs = ['gower'];
+      const upgma = V.tree === 'upgma';
+      refs.push(upgma ? 'sokal' : 'ward');
+      if (sil != null) refs.push('rousseeuw');
+      refs.push('brown');
+      const pct = V.pct != null ? V.pct : (nC ? Math.round(100 * core.target / nC) : 0);
+      const real = core.core.length;
+      const arbol = upgma
+        ? L('El agrupamiento jerárquico se hizo por UPGMA, el promedio no ponderado entre grupos (Sokal y Michener, 1958)',
+          'Hierarchical clustering used UPGMA, the unweighted pair-group average (Sokal and Michener, 1958)')
+        : L('El agrupamiento jerárquico se hizo por el método de Ward en su variante D2 (Murtagh y Legendre, 2014)',
+          "Hierarchical clustering used Ward's method in its D2 variant (Murtagh and Legendre, 2014)");
+      const corte = L(
+        `, y el árbol se cortó en ${nm(k)} grupos, un número elegido a mano${sil != null ? `; la silueta media de ese corte fue de ${fmt(sil, 2)} (Rousseeuw, 1987)` : ''}.`,
+        `, and the tree was cut into ${nm(k)} groups, a number chosen by hand${sil != null ? `; the mean silhouette of that cut was ${fmt(sil, 2)} (Rousseeuw, 1987)` : ''}.`);
+      const pedido = L(
+        `La colección núcleo, en el sentido de Brown (1989), se pidió del ${nm(pct)} % de las accesiones caracterizadas (${nm(core.target)} de ${nm(nC)}) y quedó con ${nm(real)}${core.exceeds ? ', más de las pedidas porque se exigió al menos una por estrato' : ''}.`,
+        `The core collection, in the sense of Brown (1989), was requested at ${nm(pct)} % of the characterized accessions (${nm(core.target)} of ${nm(nC)}) and ended up with ${nm(real)}${core.exceeds ? ', more than requested because at least one per stratum was required' : ''}.`);
+      let como;
+      if (core.method === 'M') {
+        refs.push('schoen');
+        como = L(
+          ' Se construyó con el método M de máximas clases (Schoen y Brown, 1993), que no estratifica: en cada paso entra la accesión que aporta más clases todavía no cubiertas de los descriptores cualitativos y ordinales.',
+          ' It was built with the M (maximization) method (Schoen and Brown, 1993), which does not stratify: at each step it adds the accession contributing the most classes of the qualitative and ordinal descriptors not yet covered.');
+      } else {
+        const strata = core.strata || [];
+        const nS = strata.length;
+        const al = CHAR.ALLOCATIONS[core.method] || null;
+        const reparto = al ? L(`con reparto ${al.adj} del tamaño entre estratos`, `with ${al.en.toLowerCase()} allocation of the size among strata`) : '';
+        const dentro = core.pick === 'random'
+          ? L(`al azar (semilla ${nm(V.seed)})`, `at random (seed ${nm(V.seed)})`)
+          : L('las accesiones más distintas entre sí por la distancia de Gower', 'the accessions most distinct from one another by Gower distance');
+        const cuales = {
+          group: L(`los ${nm(k)} grupos del agrupamiento`, `the ${nm(k)} clusters`),
+          state: L('la entidad o el país de origen', 'the state or country of origin'),
+          crop: L('el cultivo', 'the crop'),
+          taxon: L('la especie', 'the species'),
+        }[V.strata];
+        if (V.strata === 'none' || !cuales) {
+          como = L(` Se construyó sin estratificar, tomando ${dentro} de toda la colección caracterizada.`,
+            ` It was built without strata, taking ${dentro} from the whole characterized collection.`);
+        } else {
+          const un = core.unrepresented || 0;
+          /* con los grupos del agrupamiento ya se dijo cuántos son */
+          const cuantos = V.strata === 'group' ? ['', ''] : [`, ${nm(nS)} en total`, `, ${nm(nS)} in all`];
+          como = L(
+            ` Se construyó por estratos —${cuales}${cuantos[0]}—, ${reparto}, y dentro de cada estrato se eligieron ${dentro}.${core.atLeastOne ? ' Se pidió al menos una accesión por estrato.' : ''} ${un ? `${nm(un)} de ${nm(nS)} estratos ${un === 1 ? 'se quedó' : 'se quedaron'} sin representante, porque había más estratos que plazas.` : 'Todos los estratos quedaron representados.'}`,
+            ` It was built by strata —${cuales}${cuantos[1]}—, ${reparto}, picking within each stratum ${dentro}.${core.atLeastOne ? ' At least one accession per stratum was required.' : ''} ${un ? `${nm(un)} of ${nm(nS)} strata ${un === 1 ? 'was' : 'were'} left without a representative, because there were more strata than places.` : 'Every stratum was represented.'}`);
+        }
+      }
+      refs.push('hu');
       out.push({
-        id: 'charac', title: L('Caracterización y colección núcleo', 'Characterization and core collection'),
+        id: 'charac', title: L('Caracterización y colección núcleo', 'Characterization and core collection'), refs,
         text: L(
-          `Se caracterizaron ${nm(A.pairs ? A.pairs.length : 0)} accesiones con ${nm(A.used ? A.used.length : 0)} descriptores de tipo mixto (cuantitativos, ordinales y cualitativos). La distancia entre accesiones se calculó con el coeficiente general de similitud de Gower (1971), que admite datos faltantes y mezcla tipos de variable, y se ordenó por análisis de coordenadas principales. El agrupamiento se hizo por el método de Ward (criterio D2) y el número de grupos se eligió con el ancho de silueta. La colección núcleo se construyó reteniendo el ${nm(core.pct || 10)} % de las accesiones repartidas entre estratos según los criterios de Brown (1989), y se validó con los indicadores de Hu et al. (2000): porcentaje de medias distintas (MD%), de varianzas distintas (VD%), razón de amplitudes (CR%) y razón de coeficientes de variación (VR%), con pruebas t de Welch y F por descriptor.`,
-          `${nm(A.pairs ? A.pairs.length : 0)} accessions were characterized with ${nm(A.used ? A.used.length : 0)} mixed-type descriptors (quantitative, ordinal and qualitative). Distances between accessions were computed with Gower's (1971) general coefficient of similarity, which admits missing data and mixes variable types, and were ordered by principal coordinates analysis. Clustering used Ward's method (D2 criterion) and the number of groups was chosen by silhouette width. The core collection retained ${nm(core.pct || 10)} % of the accessions allocated among strata following Brown (1989), and was validated with the indicators of Hu et al. (2000): percentage of significantly different means (MD%), of different variances (VD%), the coincidence rate of ranges (CR%) and the variable rate of coefficients of variation (VR%), using per-descriptor Welch t and F tests.`),
+          `Se caracterizaron ${nm(nC)} accesiones con ${nm(nU)} descriptores de tipo mixto (cuantitativos, ordinales y cualitativos). La distancia entre accesiones se calculó con el coeficiente general de similitud de Gower (1971), que admite datos faltantes y mezcla tipos de variable, y se ordenó por análisis de coordenadas principales. ${arbol}${corte} ${pedido}${como} El núcleo se validó con los indicadores de Hu et al. (2000): porcentaje de medias distintas (MD%), de varianzas distintas (VD%), razón de amplitudes (CR%) y razón de coeficientes de variación (VR%), con pruebas t de Welch y F por descriptor.`,
+          `${nm(nC)} accessions were characterized with ${nm(nU)} mixed-type descriptors (quantitative, ordinal and qualitative). Distances between accessions were computed with Gower's (1971) general coefficient of similarity, which admits missing data and mixes variable types, and were ordered by principal coordinates analysis. ${arbol}${corte} ${pedido}${como} The core was validated with the indicators of Hu et al. (2000): percentage of significantly different means (MD%), of different variances (VD%), the coincidence rate of ranges (CR%) and the variable rate of coefficients of variation (VR%), using per-descriptor Welch t and F tests.`),
       });
     }
 
     if (D.manage) {
+      const c = (D.manageCfg && D.manageCfg.seed) || MANAGE.DEFAULT_CONFIG.seed;
+      const t = String(c.temp).replace('-', '−');
       out.push({
-        id: 'manage', title: L('Viabilidad y manejo', 'Viability and management'),
+        id: 'manage', title: L('Viabilidad y manejo', 'Viability and management'), refs: ['ellis', 'kew', 'fao'],
         text: L(
-          'La viabilidad de cada lote de semilla se proyectó con la ecuación mejorada de longevidad de Ellis y Roberts (1980), v = K_i − p/σ, con log σ = K_E − C_W·log₁₀ m − C_H·t − C_Q·t², usando el contenido de humedad y la temperatura de la instalación y las constantes publicadas de la especie. En los taxones sin constantes publicadas no se proyectó nada: se informó únicamente la fecha de la última prueba. El número de plantas necesario para conservar un alelo de frecuencia p se calculó como 1 − (1 − p)^(2n) en especies alógamas y 1 − (1 − p)^n en autógamas, y de ahí, con la germinación del lote, las semillas que hay que sembrar. Ninguna proyección sustituye a una prueba de germinación, y así se declara en la aplicación.',
-          "Seed lot viability was projected with the improved longevity equation of Ellis and Roberts (1980), v = K_i − p/σ, with log σ = K_E − C_W·log₁₀ m − C_H·t − C_Q·t², using the moisture content and temperature of the facility and the published constants for the species. For taxa without published constants nothing was projected: only the date of the last test was reported. The number of plants needed to retain an allele of frequency p was computed as 1 − (1 − p)^(2n) for outcrossing species and 1 − (1 − p)^n for selfing species, and from that, with the lot's germination, the seeds to sow. No projection replaces a germination test, and the application says so."),
+          `La viabilidad de cada lote de semilla se proyectó con la ecuación mejorada de longevidad de Ellis y Roberts (1980), v = K_i − p/σ, con log σ = K_E − C_W·log₁₀ m − C_H·t − C_Q·t², usando la temperatura de la cámara (${t} °C) y el contenido de humedad de la semilla (${fmt(c.moisture, 1).replace(/\.0$/, '')} %) y las constantes de viabilidad de la especie: las del maíz vienen con la aplicación y las de otras especies se toman de la Seed Information Database (Royal Botanic Gardens Kew) o de la literatura, con su fuente anotada. En los taxones sin constantes no se proyectó nada: se informó únicamente la fecha de la última prueba. Un lote se marcó para regenerar por debajo del ${nm(c.threshold)} % de germinación, y la prueba se dio por vencida a los ${nm(c.testInterval)} años; los valores de partida de la aplicación siguen las normas para bancos de germoplasma de la FAO (2014), y los de este informe son los de la configuración del banco. El número de plantas necesario para conservar un alelo de frecuencia p se calculó como 1 − (1 − p)^(2n) en especies alógamas y 1 − (1 − p)^n en autógamas, y de ahí, con la germinación del lote, las semillas que hay que sembrar. Ninguna proyección sustituye a una prueba de germinación, y así se declara en la aplicación.`,
+          `Seed lot viability was projected with the improved longevity equation of Ellis and Roberts (1980), v = K_i − p/σ, with log σ = K_E − C_W·log₁₀ m − C_H·t − C_Q·t², using the store temperature (${t} °C), the seed moisture content (${fmt(c.moisture, 1).replace(/\.0$/, '')} %) and the viability constants of the species: those for maize ship with the application and those for other species are taken from the Seed Information Database (Royal Botanic Gardens Kew) or from the literature, with their source recorded. For taxa without constants nothing was projected: only the date of the last test was reported. A lot was flagged for regeneration below ${nm(c.threshold)} % germination, and a test was considered overdue after ${nm(c.testInterval)} years; the application's starting values follow the FAO (2014) genebank standards, and those in this report are the genebank's own settings. The number of plants needed to retain an allele of frequency p was computed as 1 − (1 − p)^(2n) for outcrossing species and 1 − (1 − p)^n for selfing species, and from that, with the lot's germination, the seeds to sow. No projection replaces a germination test, and the application says so.`),
       });
     }
 
     out.push({
-      id: 'software', title: L('Programa', 'Software'),
+      id: 'software', title: L('Programa', 'Software'), refs: ['app'],
       text: L(
-        'Todos los cálculos y todas las figuras se hicieron con GermplasmPro, una aplicación que corre entera en el navegador, sin servidor y sin bibliotecas de terceros: ningún dato de la colección sale de la computadora donde se trabaja.',
-        'All computations and figures were produced with GermplasmPro, an application that runs entirely in the browser, with no server and no third-party libraries: no collection data leaves the computer where the work is done.'),
+        `Todos los cálculos y todas las figuras se hicieron con GermplasmPro, versión ${APP.version} (Barrera-Guzmán, ${APP.year}), una aplicación que corre entera en el navegador, sin servidor y sin bibliotecas de terceros: ningún dato de la colección sale de la computadora donde se trabaja.`,
+        `All computations and figures were produced with GermplasmPro, version ${APP.version} (Barrera-Guzmán, ${APP.year}), an application that runs entirely in the browser, with no server and no third-party libraries: no collection data leaves the computer where the work is done.`),
     });
     return out;
   }
 
   /* ================= referencias ================= */
+  /* Fichas completas. Las que cambian de idioma (los «y» entre autores, la
+     ciudad, la versión) tienen las dos formas; las demás son iguales en los dos. */
   const REFS = {
-    mcpd: 'Alercia, A., Diulgheroff, S. y Mackay, M. (2015). <i>FAO/Bioversity multi-crop passport descriptors V.2.1</i>. Bioversity International y FAO.',
-    fao: 'FAO (2014). <i>Genebank standards for plant genetic resources for food and agriculture</i>. Roma.',
+    mcpd: { es: 'Alercia, A., Diulgheroff, S. y Mackay, M. (2015). <i>FAO/Bioversity multi-crop passport descriptors V.2.1</i>. Bioversity International y FAO.',
+      en: 'Alercia, A., Diulgheroff, S. and Mackay, M. (2015). <i>FAO/Bioversity multi-crop passport descriptors V.2.1</i>. Bioversity International and FAO.' },
+    fao: { es: 'FAO (2014). <i>Genebank standards for plant genetic resources for food and agriculture</i>. Roma: FAO.',
+      en: 'FAO (2014). <i>Genebank standards for plant genetic resources for food and agriculture</i>. Rome: FAO.' },
     winkler: 'Winkler, W.E. (1990). String comparator metrics and enhanced decision rules in the Fellegi-Sunter model of record linkage. <i>Proceedings of the Section on Survey Research Methods</i>, American Statistical Association, 354–359.',
-    ne: 'Natural Earth (dominio público, naturalearthdata.com): contornos admin-1 de México a 1:10 millones y admin-0 del mundo a 1:110 millones.',
+    ne: { es: 'Natural Earth (dominio público, naturalearthdata.com): contornos admin-1 de México a 1:10 millones y admin-0 del mundo a 1:110 millones.',
+      en: 'Natural Earth (public domain, naturalearthdata.com): Mexican admin-1 outlines at 1:10 million and world admin-0 outlines at 1:110 million.' },
     hurlbert: 'Hurlbert, S.H. (1971). The nonconcept of species diversity: a critique and alternative parameters. <i>Ecology</i> 52(4): 577–586.',
-    heck: 'Heck, K.L., van Belle, G. y Simberloff, D. (1975). Explicit calculation of the rarefaction diversity measurement. <i>Ecology</i> 56(6): 1459–1461.',
-    chao: 'Chao, A. (1984). Nonparametric estimation of the number of classes in a population. <i>Scandinavian Journal of Statistics</i> 11: 265–270.',
+    heck: { es: 'Heck, K.L., van Belle, G. y Simberloff, D. (1975). Explicit calculation of the rarefaction diversity measurement and the determination of sufficient sample size. <i>Ecology</i> 56(6): 1459–1461.',
+      en: 'Heck, K.L., van Belle, G. and Simberloff, D. (1975). Explicit calculation of the rarefaction diversity measurement and the determination of sufficient sample size. <i>Ecology</i> 56(6): 1459–1461.' },
+    chao: 'Chao, A. (1984). Nonparametric estimation of the number of classes in a population. <i>Scandinavian Journal of Statistics</i> 11(4): 265–270.',
+    chao87: 'Chao, A. (1987). Estimating the population size for capture-recapture data with unequal catchability. <i>Biometrics</i> 43(4): 783–791.',
+    burnham: { es: 'Burnham, K.P. y Overton, W.S. (1978). Estimation of the size of a closed population when capture probabilities vary among animals. <i>Biometrika</i> 65(3): 625–633.',
+      en: 'Burnham, K.P. and Overton, W.S. (1978). Estimation of the size of a closed population when capture probabilities vary among animals. <i>Biometrika</i> 65(3): 625–633.' },
+    good: 'Good, I.J. (1953). The population frequencies of species and the estimation of population parameters. <i>Biometrika</i> 40(3–4): 237–264.',
+    jaccard: 'Jaccard, P. (1912). The distribution of the flora in the alpine zone. <i>New Phytologist</i> 11(2): 37–50.',
+    sorensen: 'Sørensen, T. (1948). A method of establishing groups of equal amplitude in plant sociology based on similarity of species content and its application to analyses of the vegetation on Danish commons. <i>Biologiske Skrifter, Kongelige Danske Videnskabernes Selskab</i> 5(4): 1–34.',
+    bray: { es: 'Bray, J.R. y Curtis, J.T. (1957). An ordination of the upland forest communities of southern Wisconsin. <i>Ecological Monographs</i> 27(4): 325–349.',
+      en: 'Bray, J.R. and Curtis, J.T. (1957). An ordination of the upland forest communities of southern Wisconsin. <i>Ecological Monographs</i> 27(4): 325–349.' },
+    sokal: { es: 'Sokal, R.R. y Michener, C.D. (1958). A statistical method for evaluating systematic relationships. <i>University of Kansas Science Bulletin</i> 38: 1409–1438.',
+      en: 'Sokal, R.R. and Michener, C.D. (1958). A statistical method for evaluating systematic relationships. <i>University of Kansas Science Bulletin</i> 38: 1409–1438.' },
     jost: 'Jost, L. (2006). Entropy and diversity. <i>Oikos</i> 113(2): 363–375.',
     mantel: 'Mantel, N. (1967). The detection of disease clustering and a generalized regression approach. <i>Cancer Research</i> 27(2): 209–220.',
-    gap: 'Ramírez-Villegas, J., Khoury, C., Jarvis, A., Debouck, D.G. y Guarino, L. (2010). A gap analysis methodology for collecting crop genepools. <i>PLoS ONE</i> 5(10): e13497.',
+    gap: { es: 'Ramírez-Villegas, J., Khoury, C., Jarvis, A., Debouck, D.G. y Guarino, L. (2010). A gap analysis methodology for collecting crop genepools: a case study with <i>Phaseolus</i> beans. <i>PLoS ONE</i> 5(10): e13497.',
+      en: 'Ramírez-Villegas, J., Khoury, C., Jarvis, A., Debouck, D.G. and Guarino, L. (2010). A gap analysis methodology for collecting crop genepools: a case study with <i>Phaseolus</i> beans. <i>PLoS ONE</i> 5(10): e13497.' },
     gower: 'Gower, J.C. (1971). A general coefficient of similarity and some of its properties. <i>Biometrics</i> 27(4): 857–871.',
-    ward: 'Murtagh, F. y Legendre, P. (2014). Ward’s hierarchical agglomerative clustering method: which algorithms implement Ward’s criterion? <i>Journal of Classification</i> 31: 274–295.',
+    ward: { es: 'Murtagh, F. y Legendre, P. (2014). Ward’s hierarchical agglomerative clustering method: which algorithms implement Ward’s criterion? <i>Journal of Classification</i> 31(3): 274–295.',
+      en: 'Murtagh, F. and Legendre, P. (2014). Ward’s hierarchical agglomerative clustering method: which algorithms implement Ward’s criterion? <i>Journal of Classification</i> 31(3): 274–295.' },
+    rousseeuw: 'Rousseeuw, P.J. (1987). Silhouettes: a graphical aid to the interpretation and validation of cluster analysis. <i>Journal of Computational and Applied Mathematics</i> 20: 53–65.',
     brown: 'Brown, A.H.D. (1989). Core collections: a practical approach to genetic resources management. <i>Genome</i> 31(2): 818–824.',
-    hu: 'Hu, J., Zhu, J. y Xu, H.M. (2000). Methods of constructing core collections by stepwise clustering with three sampling strategies. <i>Theoretical and Applied Genetics</i> 101: 264–268.',
-    ellis: 'Ellis, R.H. y Roberts, E.H. (1980). Improved equations for the prediction of seed longevity. <i>Annals of Botany</i> 45(1): 13–30.',
-    kew: 'Royal Botanic Gardens Kew. <i>Seed Information Database (SID)</i>.',
-    dwc: 'Wieczorek, J., Bloom, D., Guralnick, R., Blum, S., Döring, M., Giovanni, R., Robertson, T. y Vieglais, D. (2012). Darwin Core: an evolving community-developed biodiversity data standard. <i>PLoS ONE</i> 7(1): e29715.',
+    schoen: { es: 'Schoen, D.J. y Brown, A.H.D. (1993). Conservation of allelic richness in wild crop relatives is aided by assessment of genetic markers. <i>Proceedings of the National Academy of Sciences of the USA</i> 90(22): 10623–10627.',
+      en: 'Schoen, D.J. and Brown, A.H.D. (1993). Conservation of allelic richness in wild crop relatives is aided by assessment of genetic markers. <i>Proceedings of the National Academy of Sciences of the USA</i> 90(22): 10623–10627.' },
+    hu: { es: 'Hu, J., Zhu, J. y Xu, H.M. (2000). Methods of constructing core collections by stepwise clustering with three sampling strategies based on the genotypic values of crops. <i>Theoretical and Applied Genetics</i> 101(1–2): 264–268.',
+      en: 'Hu, J., Zhu, J. and Xu, H.M. (2000). Methods of constructing core collections by stepwise clustering with three sampling strategies based on the genotypic values of crops. <i>Theoretical and Applied Genetics</i> 101(1–2): 264–268.' },
+    ellis: { es: 'Ellis, R.H. y Roberts, E.H. (1980). Improved equations for the prediction of seed longevity. <i>Annals of Botany</i> 45(1): 13–30.',
+      en: 'Ellis, R.H. and Roberts, E.H. (1980). Improved equations for the prediction of seed longevity. <i>Annals of Botany</i> 45(1): 13–30.' },
+    kew: { es: 'Royal Botanic Gardens Kew. <i>Seed Information Database (SID)</i>. Consulta en línea.',
+      en: 'Royal Botanic Gardens Kew. <i>Seed Information Database (SID)</i>. Online database.' },
+    dwc: { es: 'Wieczorek, J., Bloom, D., Guralnick, R., Blum, S., Döring, M., Giovanni, R., Robertson, T. y Vieglais, D. (2012). Darwin Core: an evolving community-developed biodiversity data standard. <i>PLoS ONE</i> 7(1): e29715.',
+      en: 'Wieczorek, J., Bloom, D., Guralnick, R., Blum, S., Döring, M., Giovanni, R., Robertson, T. and Vieglais, D. (2012). Darwin Core: an evolving community-developed biodiversity data standard. <i>PLoS ONE</i> 7(1): e29715.' },
+    app: { es: `Barrera-Guzmán, L.Á. (${APP.year}). <i>${APP.title}</i> (versión ${APP.version}) [software]. ${APP.url}`,
+      en: `Barrera-Guzmán, L.Á. (${APP.year}). <i>${APP.title}</i> (version ${APP.version}) [software]. ${APP.url}` },
   };
-  function references(D, withDwc) {
-    const ids = ['mcpd', 'fao'];
-    if (D.quality) ids.push('winkler');
-    if (D.hasMap) ids.push('ne');
-    if (D.diversity) ids.push('hurlbert', 'heck', 'chao', 'jost', 'mantel');
-    if (D.gaps) ids.push('gap');
-    if (D.charac) ids.push('gower', 'ward', 'brown', 'hu');
-    if (D.manage) ids.push('ellis', 'kew');
-    if (withDwc) ids.push('dwc');
-    return [...new Set(ids)].map(k => REFS[k]).sort((a, b) => a.localeCompare(b, 'es'));
+  /* cómo se reconoce en el texto de los métodos la cita de cada referencia:
+     el apellido (o el nombre) y el año, a no más de unas palabras de distancia */
+  const CITES = {
+    mcpd: ['Alercia', 2015], fao: ['FAO', 2014], winkler: ['Winkler', 1990], ne: ['Natural Earth', null],
+    hurlbert: ['Hurlbert', 1971], heck: ['Heck', 1975], chao: ['Chao', 1984], chao87: ['Chao', 1987],
+    burnham: ['Burnham', 1978], good: ['Good', 1953], jaccard: ['Jaccard', 1912], sorensen: ['Sørensen', 1948],
+    bray: ['Bray', 1957], sokal: ['Sokal', 1958], jost: ['Jost', 2006], mantel: ['Mantel', 1967],
+    gap: ['Ramírez-Villegas', 2010], gower: ['Gower', 1971], ward: ['Murtagh', 2014], rousseeuw: ['Rousseeuw', 1987],
+    brown: ['Brown', 1989], schoen: ['Schoen', 1993], hu: ['Hu', 2000], ellis: ['Ellis', 1980],
+    kew: ['Royal Botanic Gardens Kew', null], dwc: ['Wieczorek', 2012], app: ['Barrera-Guzmán', APP.year],
+  };
+  function citeRegex(key) {
+    const c = CITES[key];
+    if (!c) return null;
+    const who = c[0].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return c[1] == null ? new RegExp(who) : new RegExp(`${who}[^()]{0,40}?[ (]${c[1]}\\b`);
   }
-
+  function refText(k, lang) {
+    const r = REFS[k];
+    if (!r) return '';
+    return typeof r === 'string' ? r : (lang === 'en' ? r.en : r.es);
+  }
+  /* la bibliografía sale de las citas de los métodos que de verdad se
+     redactaron: ni una de más, ni una de menos */
+  function refKeys(D, lang) {
+    const ks = [];
+    methods(D, lang || 'es').forEach(m => (m.refs || []).forEach(k => { if (!ks.includes(k)) ks.push(k); }));
+    return ks;
+  }
+  function references(D, lang) {
+    const L = typeof lang === 'string' ? lang : 'es';
+    return refKeys(D, L).map(k => refText(k, L))
+      .sort((a, b) => a.replace(/<[^>]+>/g, '').localeCompare(b.replace(/<[^>]+>/g, ''), 'es'));
+  }
 
   /* ================= las secciones, una por una ================= */
   /* Cada sección devuelve HTML que sirve igual para la vista previa dentro de
@@ -340,7 +524,10 @@
     const fig = (svg, caption) => svg
       ? `<figure class="rfig">${svg}<figcaption>${esc2(caption)}</figcaption></figure>`
       : '';
+    /* las figuras se dibujan en el idioma del informe y con los colores del papel */
+    const draw = (fn, w, h) => inLang(lang, () => inLight(() => figure(fn, w, h)));
     const S = D.summary;
+    const ctyName = c => { const h = MCPD.COUNTRY_MAP[c]; return h ? (lang === 'en' ? h.en : h.es) : (c || '—'); };
 
     /* ---------- resumen ---------- */
     /* Los hallazgos se cuentan, y contar obliga a concordar: «1 accesión no
@@ -348,11 +535,16 @@
     const pl = (n, uno, varios) => (n === 1 ? uno : varios).replace('#', fmtInt(n));
     const hallazgos = [];
     if (D.quality) {
-      const ng = D.quality.geo.filter(p => p.level === 'bad').length;
+      /* los niveles de QC.audit son error, warn e info, igual que en el Bloque 3 */
+      const conFix = D.quality.geo.filter(p => p.level === 'error' && p.fix).length;
+      const sinFix = D.quality.geo.filter(p => p.level === 'error' && !p.fix).length;
       const nd = D.quality.dup.pairs.length;
-      if (ng) hallazgos.push(L(
-        pl(ng, '# coordenada no concuerda con el país declarado, y trae corrección propuesta.', '# coordenadas no concuerdan con el país declarado, y traen corrección propuesta.'),
-        pl(ng, '# coordinate disagrees with the declared country, and comes with a proposed fix.', '# coordinates disagree with the declared country, and come with a proposed fix.')));
+      if (conFix) hallazgos.push(L(
+        pl(conFix, '# coordenada no concuerda con el país declarado, y trae corrección propuesta.', '# coordenadas no concuerdan con el país declarado, y traen corrección propuesta.'),
+        pl(conFix, '# coordinate disagrees with the declared country, and comes with a proposed fix.', '# coordinates disagree with the declared country, and come with a proposed fix.')));
+      if (sinFix) hallazgos.push(L(
+        pl(sinFix, '# coordenada tiene un error claro sin corrección automática.', '# coordenadas tienen un error claro sin corrección automática.'),
+        pl(sinFix, '# coordinate has a clear error with no automatic fix.', '# coordinates have a clear error with no automatic fix.')));
       if (nd) hallazgos.push(L(
         pl(nd, '# par de accesiones se parece lo bastante como para revisarlo por duplicado.', '# pares de accesiones se parecen lo bastante como para revisarlos por duplicado.'),
         pl(nd, '# accession pair is similar enough to be reviewed as a duplicate.', '# accession pairs are similar enough to be reviewed as duplicates.')));
@@ -362,10 +554,12 @@
       if (sinCoord) hallazgos.push(L(
         pl(sinCoord, '# accesión no tiene coordenadas, y por eso no entra en los mapas ni en el análisis de vacíos.', '# accesiones no tienen coordenadas, y por eso no entran en los mapas ni en el análisis de vacíos.'),
         pl(sinCoord, '# accession has no coordinates, so it is absent from the maps and from the gap analysis.', '# accessions have no coordinates, so they are absent from the maps and from the gap analysis.')));
-      const sinDup = S.n - S.withDupl;
+      /* como en el Bloque 8: el duplicado de seguridad se pide a lo que está
+         ex situ; a una población in situ o en finca no se le pide */
+      const sinDup = D.rows.filter(r => !['insitu', 'onfarm'].includes(MCPD.consRoute(r)) && !MCPD.hasSafetyDup(r)).length;
       if (sinDup) hallazgos.push(L(
-        pl(sinDup, '# accesión no tiene duplicado de seguridad en otra institución.', '# accesiones no tienen duplicado de seguridad en otra institución.'),
-        pl(sinDup, '# accession has no safety duplicate in another institution.', '# accessions have no safety duplicate in another institution.')));
+        pl(sinDup, '# accesión conservada ex situ no tiene duplicado de seguridad en otra institución (a las in situ y en finca no se les pide).', '# accesiones conservadas ex situ no tienen duplicado de seguridad en otra institución (a las in situ y en finca no se les pide).'),
+        pl(sinDup, '# accession conserved ex situ has no safety duplicate in another institution (in-situ and on-farm ones are not expected to).', '# accessions conserved ex situ have no safety duplicate in another institution (in-situ and on-farm ones are not expected to).')));
     }
     if (D.manage) {
       const crit = D.manage.lots.filter(l => l.st.levelName === 'crit').length;
@@ -391,8 +585,12 @@
 
     /* ---------- la colección ---------- */
     if (S) {
-      const routeName = c => { const h = MCPD.GPCONS.find(x => x.c === c); return h ? (lang === 'en' ? h.en : h.es) : L('sin declarar', 'not declared'); };
-      const ctyName = c => { const h = MCPD.COUNTRY_MAP[c]; return h ? (lang === 'en' ? h.en : h.es) : (c || '—'); };
+      const routeName = c => { const h = MCPD.GPCONS.find(x => x.c === c); return h ? (lang === 'en' ? h.en : h.es) : L('Sin declarar', 'Not declared'); };
+      /* MCPD.summarize no cuenta las accesiones sin ruta: van en su renglón,
+         para que la tabla sume la colección entera y el 100 % */
+      const rutas = S.routes.slice();
+      const sinRuta = D.n - rutas.reduce((a, t) => a + t[1], 0);
+      if (sinRuta > 0) rutas.push(['', sinRuta]);
       const peor = D.completeness.filter(c => c.field.req === 'must' || c.field.req === 'should')
         .sort((a, b) => a.pct - b.pct).slice(0, 8);
       out.push({
@@ -408,7 +606,7 @@
         </div>
         <h4>${L('Cómo se conserva', 'How it is conserved')}</h4>
         ${tbl([L('Ruta', 'Route'), L('Accesiones', 'Accessions'), '%'],
-          S.routes.map(t => [esc2(routeName(t[0])), fmtInt(t[1]), fmt(100 * t[1] / D.n, 1)]), { num: [1, 2] })}
+          rutas.map(t => [esc2(routeName(t[0])), fmtInt(t[1]), fmt(100 * t[1] / D.n, 1)]), { num: [1, 2] })}
         <h4>${L('Descriptores obligatorios o recomendados peor llenados', 'Worst filled mandatory or recommended descriptors')}</h4>
         ${tbl([L('Descriptor', 'Descriptor'), L('Con dato', 'Filled'), '%'],
           peor.map(c => [esc2(lang === 'en' ? c.field.en : c.field.es), fmtInt(c.n), fmt(c.pct, 0)]), { num: [1, 2] })}`,
@@ -423,7 +621,8 @@
       out.push({
         id: 'quality', title: L('Calidad de los datos', 'Data quality'),
         html: `${stats([
-          [fmtInt(porNivel('bad')), L('coordenadas imposibles', 'impossible coordinates')],
+          /* los niveles de QC.audit: error (diagnóstico claro), warn e info */
+          [fmtInt(porNivel('error')), L('coordenadas con error claro', 'coordinates with a clear error')],
           [fmtInt(porNivel('warn')), L('coordenadas sospechosas', 'suspicious coordinates')],
           [fmtInt(q.consistency.length), L('avisos de consistencia', 'consistency warnings')],
           [fmtInt(q.fixes.length), L('correcciones propuestas', 'proposed fixes')],
@@ -444,8 +643,10 @@
     }
 
     /* ---------- mapa ---------- */
-    if (D.hasMap && o.figures) {
-      const svg = inLight(() => figure(B4.drawMap, W, Math.round(W * 0.62)));
+    /* las tablas y la nota van siempre que haya coordenadas; sólo la figura
+       depende de «figuras» */
+    if (D.hasMap) {
+      const svg = o.figures ? draw(B4.drawMap, W, Math.round(W * 0.62)) : '';
       const pts = GEO.pointsOf ? GEO.pointsOf(D.rows) : [];
       /* countByState y countByCountry devuelven Map, no arreglo */
       const porEnt = [...GEO.countByState(pts).values()].sort((a, b) => b.n - a.n);
@@ -487,8 +688,9 @@
         ])}
         ${tbl([L('Unidad', 'Unit'), 'n', L('Riqueza', 'Richness'), 'Shannon', 'Pielou', L('Exclusivos', 'Exclusive')],
           uni.map(u => [esc2(u.label), fmtInt(u.N), fmtInt(u.S), fmt(u.H, 2), isFinite(u.pielou) ? fmt(u.pielou, 2) : '—',
-            fmtInt((A.exclusives && A.exclusives[u.key] ? A.exclusives[u.key].length : 0))]), { num: [1, 2, 3, 4, 5] })}
-        ${o.figures ? fig(inLight(() => figure(B5.curvePlot, W, 260)), L('Curva de acumulación de tipos con el número de accesiones.',
+            /* cada unidad trae ya contados sus exclusivos (DIV.exclusives devuelve un Map) */
+            fmtInt(u.exclusive || 0)]), { num: [1, 2, 3, 4, 5] })}
+        ${o.figures ? fig(draw(B5.curvePlot, W, 260), L('Curva de acumulación de tipos con el número de accesiones.',
           'Accumulation curve of types against the number of accessions.')) : ''}
         ${A.chao1 && A.chao1.reliable === false ? `<p class="rnote">${L('El estimador Chao1 se apoya en el número de tipos vistos dos veces, y aquí hay muy pocos: tómese como una cota grosera y préstese más atención a Chao2 y a la navaja.',
           'The Chao1 estimator leans on the number of types seen twice, and here there are very few: treat it as a rough bound and give more weight to Chao2 and the jackknife.')}</p>` : ''}
@@ -516,7 +718,7 @@
           [fmtInt(G.empty.length), L('celdas vacías', 'empty cells')],
           G.complementarity ? [fmtInt(G.complementarity.order ? G.complementarity.order.length : 0), L('sitios del conjunto mínimo', 'sites in the minimum set')] : null,
         ])}
-        ${o.figures ? fig(inLight(() => figure(B6.gapMap, W, Math.round(W * 0.62))), L('Celdas sin colectar y las diez prioridades mejor puntuadas.',
+        ${o.figures ? fig(draw(B6.gapMap, W, Math.round(W * 0.62)), L('Celdas sin colectar y las diez prioridades mejor puntuadas.',
           'Uncollected cells and the ten highest scoring priorities.')) : ''}
         ${pr.length ? `<h4>${L('Prioridades de colecta', 'Collecting priorities')}</h4>${
           tbl(['#', L('Coordenada', 'Coordinate'), L('Entidad', 'State'), L('Distancia', 'Distance'), L('Puntaje', 'Score')],
@@ -534,6 +736,10 @@
     /* ---------- caracterización ---------- */
     if (D.charac) {
       const A = D.charac, v = A.val || {};
+      /* el color de la figura es lo que se eligió en «Colorear por» del Bloque 7 */
+      const cb = (D.characView && D.characView.colorBy) || 'group';
+      const colorEs = { group: 'el grupo del agrupamiento', crop: 'el cultivo', taxon: 'la especie', core: 'si la accesión está en el núcleo' }[cb] || 'el grupo del agrupamiento';
+      const colorEn = { group: 'the cluster', crop: 'the crop', taxon: 'the species', core: 'whether the accession is in the core' }[cb] || 'the cluster';
       out.push({
         id: 'charac', title: L('Caracterización y colección núcleo', 'Characterization and core collection'),
         html: `${stats([
@@ -542,8 +748,8 @@
           [fmtInt(A.core.core.length), L('accesiones en el núcleo', 'accessions in the core')],
           isFinite(A.sil && A.sil.mean) ? [fmt(A.sil.mean, 2), L('silueta media', 'mean silhouette')] : null,
         ])}
-        ${o.figures ? fig(inLight(() => figure(B7.pcoaPlot, W, 340)), L('Coordenadas principales sobre la distancia de Gower; en color, las accesiones del núcleo.',
-          'Principal coordinates on Gower distance; coloured, the core accessions.')) : ''}
+        ${o.figures ? fig(draw(B7.pcoaPlot, W, 340), L(`Coordenadas principales sobre la distancia de Gower; el color es ${colorEs} y el símbolo grande con borde marca las accesiones del núcleo.`,
+          `Principal coordinates on Gower distance; colour shows ${colorEn} and the large outlined symbol marks the core accessions.`)) : ''}
         ${tbl([L('Indicador', 'Indicator'), L('Valor', 'Value'), L('Qué dice', 'What it says')], [
           ['MD%', isFinite(v.MD) ? fmt(v.MD, 1) : '—', L('descriptores cuya media cambió; conviene que sea bajo', 'descriptors whose mean changed; low is good')],
           ['VD%', isFinite(v.VD) ? fmt(v.VD, 1) : '—', L('descriptores cuya varianza cambió', 'descriptors whose variance changed')],
@@ -558,12 +764,14 @@
     /* ---------- manejo ---------- */
     if (D.manage) {
       const M = D.manage;
-      const crit = M.codes.filter(c => c.level === 'crit');
+      /* una fila por tipo de alerta, con un nombre genérico: el mensaje de un
+         lote trae las cifras de ese lote y no sirve para los demás */
       const codeName = c => {
-        const l = M.lots.find(x => x.st.alerts.some(a => a.code === c.code));
-        const a = l ? l.st.alerts.find(a => a.code === c.code) : null;
-        return a ? (lang === 'en' ? a.msg.en : a.msg.es) : c.code;
+        const h = MANAGE.ALERT_NAMES && MANAGE.ALERT_NAMES[c.code];
+        return h ? (lang === 'en' ? h.en : h.es) : c.code;
       };
+      const rank = { crit: 0, warn: 1, info: 2 };
+      const codes = M.codes.slice().sort((a, b) => (rank[a.level] ?? 3) - (rank[b.level] ?? 3) || b.n - a.n);
       out.push({
         id: 'manage', title: L('Manejo del banco', 'Genebank management'),
         html: `${stats([
@@ -573,9 +781,9 @@
           [fmtInt(M.lots.filter(l => l.st.alerts.some(a => a.code === 'noConstants')).length), L('sin constantes publicadas', 'without published constants')],
         ])}
         ${tbl([L('Alerta', 'Alert'), L('Lotes', 'Lots')],
-          M.codes.slice(0, 12).map(c => [
+          codes.map(c => [
             `<span class="lvl lvl-${c.level}"></span>${esc2(codeName(c))}`, fmtInt(c.n)]), { num: [1] })}
-        ${o.figures ? fig(inLight(() => figure(B8.workPlot, W, 240)), L('Trabajo que cae cada año en los próximos 25 (el año +0 incluye lo atrasado): pruebas, regeneraciones, resiembras y subcultivos.',
+        ${o.figures ? fig(draw(B8.workPlot, W, 240), L('Trabajo que cae cada año en los próximos 25 (el año +0 incluye lo atrasado): pruebas, regeneraciones, resiembras y subcultivos.',
           'Work falling due each year over the next 25 (year +0 includes overdue work): tests, regenerations, replantings and subcultures.')) : ''}
         <p class="rnote">${L('Una proyección de viabilidad no sustituye a una prueba de germinación: dice lo que debería pasarle al lote en esas condiciones, no lo que le pasó.',
           'A viability projection does not replace a germination test: it says what should happen to the lot under those conditions, not what did happen.')}</p>`,
@@ -589,7 +797,7 @@
     });
     out.push({
       id: 'refs', title: L('Referencias', 'References'),
-      html: `<ol class="rrefs">${references(D, o.dwc).map(r => `<li>${r}</li>`).join('')}</ol>`,
+      html: `<ol class="rrefs">${references(D, lang).map(r => `<li>${r}</li>`).join('')}</ol>`,
     });
 
     /* ---------- anexo ---------- */
@@ -601,7 +809,7 @@
           L('Sitio', 'Site'), L('Ruta', 'Route'), L('Existencias', 'Stock')],
         D.rows.map(r => [
           `<span class="mono">${esc2(r.ACCENUMB)}</span>`, esc2(r.ACCENAME), `<i>${esc2([r.GENUS, r.SPECIES].filter(Boolean).join(' '))}</i>`,
-          esc2(r.ORIGCTY), esc2(r.COLLSITE), esc2(routeName(MCPD.consRoute(r))), (MANAGE.optNum(r.GP_STOCK) != null ? fmtInt(MANAGE.optNum(r.GP_STOCK)) : '—'),
+          esc2(ctyName(r.ORIGCTY)), esc2(r.COLLSITE), esc2(routeName(MCPD.consRoute(r))), (MANAGE.optNum(r.GP_STOCK) != null ? fmtInt(MANAGE.optNum(r.GP_STOCK)) : '—'),
         ]), { num: [6] }),
       });
     }
@@ -635,18 +843,38 @@ table.rt td.num, table.rt th.num { text-align: right; font-variant-numeric: tabu
 .rcols { display: flex; flex-wrap: wrap; gap: 0 26px; }
 .rcols > div { flex: 1 1 280px; }
 .rfig { margin: 14px 0 18px; padding: 0; }
-.rfig svg { width: 100%; height: auto; display: block; border: 1px solid #e3e3e3; border-radius: 4px; background: #fff; }
+.rfig > svg { width: 100%; height: auto; display: block; border: 1px solid #e3e3e3; border-radius: 4px; background: #fff; }
 .rfig figcaption { font: italic 12.5px/1.45 Georgia, serif; color: #555; margin-top: 5px; }
 .rnote { font-size: .88rem; color: #444; background: #f6f2fa; border-left: 3px solid #6b4a8f; padding: 7px 11px; margin: 10px 0; }
 .rrefs { font-size: .88rem; padding-left: 20px; }
 .rrefs li { margin-bottom: 5px; }
+/* las leyendas en HTML que algunas figuras llevan debajo (mapa, PCoA, carga de trabajo) */
+.map-legends { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 6px; }
+.map-legend { font: 11.5px/1.35 system-ui, sans-serif; color: #555; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin-top: 6px; }
+.map-legend b { color: #1b1b1b; font-size: 11.5px; width: 100%; }
+.map-legend .lg-item { display: inline-flex; align-items: center; gap: 5px; }
+.map-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; border: 1px solid #c8c8c8; }
+.map-legend .lg-shape svg { flex: none; display: block; width: 13px; height: 13px; border: 0; }
+.legend-ramp { display: flex; }
+.legend-ramp i { width: 26px; height: 11px; border-radius: 0; border-left: 0; }
+.legend-ramp i:first-child { border-radius: 3px 0 0 3px; border-left: 1px solid #c8c8c8; }
+.legend-ramp i:last-child { border-radius: 0 3px 3px 0; }
+.legend-scale { display: inline-flex; flex-direction: column; gap: 2px; }
+.legend-ends { display: flex; justify-content: space-between; gap: 12px; font-size: 10.5px; line-height: 1.2; }
+.legend-title { font-size: 10.5px; line-height: 1.2; color: #555; }
+.muted { color: #777; }
+table.rt .mono { white-space: nowrap; }
 .lvl { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: #999; }
 .lvl-crit { background: #b23b3b; } .lvl-warn { background: #c5761c; } .lvl-info { background: #5a7fa8; }
 .rfoot { margin-top: 36px; padding-top: 10px; border-top: 1px solid #ddd; font-size: .8rem; color: #666; }
 @media print {
   body { max-width: none; padding: 0; font-size: 10.5pt; }
-  h2 { page-break-after: avoid; }
-  table.rt, .rfig { page-break-inside: avoid; }
+  h2, h3, h4 { page-break-after: avoid; break-after: avoid; }
+  .rfig, .rstats, table.rt tr { page-break-inside: avoid; break-inside: avoid; }
+  /* una figura que no cabe salta entera a la hoja siguiente: en papel van
+     más chicas, para que quepan donde caen y no dejen media hoja en blanco */
+  .rfig > svg { width: 82%; margin: 0 auto; }
+  .rfig figcaption { text-align: center; }
   thead { display: table-header-group; }
 }`;
 
@@ -678,6 +906,6 @@ ${body}
   window.REPORT = {
     SECTIONS, REFS, DWC_COLUMNS, DWC_MAPPED, DWC_LEFTOVER,
     inLight, cssValue, resolveVars, figure, isoDate, dwcRow, darwinCore, sections, buildHTML, CSS,
-    gather, methods, references,
+    gather, methods, references, inLang, svgOnly, APP, CITES, citeRegex, refKeys, refText,
   };
 })();

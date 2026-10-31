@@ -1953,6 +1953,207 @@ const sinFig = REPORT.buildHTML(D10, { lang: 'es', figures: false });
 ok((sinFig.match(/<svg/g) || []).length === 0 && (htmlRep.match(/<svg/g) || []).length >= 4,
   'las figuras se pueden quitar, y cuando están son varias');
 ok(REPORT.buildHTML(D10, { lang: 'es', annex: false }).indexOf('id="s-annex"') < 0, 'y el anexo también');
+
+/* ---------- el informe, lo hallado al escribir el manual ---------- */
+const secDe = (D, id, lang, opts) => REPORT.sections(D, lang || 'es', opts).find(s => s.id === id);
+const docDe = html => new DOMParser().parseFromString(`<div>${html}</div>`, 'text/html');
+const filasDe = html => [...docDe(html).querySelectorAll('table.rt tbody tr')].map(tr => [...tr.children].map(td => td.textContent.trim()));
+const statsDe = html => [...docDe(html).querySelectorAll('.rstat')].map(d => [d.querySelector('b').textContent.trim(), d.querySelector('span').textContent.trim()]);
+
+/* 1. los niveles de la calidad son los de QC.audit (error, warn, info), como en el Bloque 3 */
+const errGeo = D10.quality.geo.filter(p => p.level === 'error');
+ok(errGeo.some(p => state.acc[p.i].ACCENUMB === 'MEX-ZM-0039'), 'la calidad del informe ve la coordenada de MEX-ZM-0039 que marca el Bloque 3');
+const stCal = statsDe(secDe(D10, 'quality').html);
+ok(stCal[0][0] === String(errGeo.length) && errGeo.length >= 1, `el recuadro de coordenadas con error claro cuenta las del Bloque 3 (${stCal[0][0]}), ya no sale en 0`);
+ok(stCal[1][0] === String(D10.quality.geo.filter(p => p.level === 'warn').length), 'y el de coordenadas sospechosas cuenta los avisos (warn)');
+const htmlRes = secDe(D10, 'summary').html;
+ok(htmlRes.includes(`${errGeo.filter(p => p.fix).length} coordenada${errGeo.filter(p => p.fix).length === 1 ? '' : 's'} no concuerda`), 'el resumen dice cuántas coordenadas no concuerdan con su país');
+ok(!/level === 'bad'/.test(REPORT.sections.toString()), 'el informe ya no cuenta un nivel «bad» que QC.audit no produce');
+
+/* 9. «Cómo se conserva» suma la colección entera, con las que no declaran ruta */
+const htmlCol = secDe(D10, 'passport').html;
+const tablasCol = [...docDe(htmlCol).querySelectorAll('table.rt')];
+const filasRuta = [...tablasCol[2].querySelectorAll('tbody tr')].map(tr => [...tr.children].map(td => td.textContent.trim()));
+ok(filasRuta.reduce((a, f) => a + Number(f[1]), 0) === 46, 'la tabla de rutas suma las 46 accesiones');
+near(filasRuta.reduce((a, f) => a + Number(f[2]), 0), 100, 0.15, 'y sus porcentajes suman 100');
+ok(filasRuta.some(f => f[0] === 'Sin declarar' && f[1] === '1'), 'con su renglón «Sin declarar»');
+
+/* 10. el duplicado de seguridad se cuenta como en el Bloque 8: sólo lo ex situ */
+const sinRespaldo8 = D10.manage.lots.filter(l => l.st.alerts.some(a => a.code === 'noBackup')).length;
+ok(sinRespaldo8 === 21 && htmlRes.includes('21 accesiones conservadas ex situ no tienen duplicado de seguridad'),
+  'el resumen cuenta 21 accesiones ex situ sin duplicado, las mismas que el Bloque 8, no 26');
+ok(htmlRes.includes('a las in situ y en finca no se les pide'), 'y dice por qué deja fuera las in situ y en finca');
+
+/* 3. los exclusivos de cada unidad, como en el Bloque 5 */
+const filasDiv = filasDe(secDe(D10, 'diversity').html);
+const exclDe = n => (filasDiv.find(f => f[0] === n) || [])[5];
+ok(exclDe('Puebla') === '4' && exclDe('Veracruz') === '4' && exclDe('Chiapas') === '3',
+  `la columna «Exclusivos» ya no sale en 0: Puebla ${exclDe('Puebla')}, Veracruz ${exclDe('Veracruz')}, Chiapas ${exclDe('Chiapas')}`);
+ok(['Michoacán', 'México', 'Jalisco', 'Sonora'].every(n => exclDe(n) === '1') && exclDe('Oaxaca') === '0', 'y 1 en Michoacán, Estado de México, Jalisco y Sonora, como el Bloque 5');
+ok(filasDiv.every(f => Number(f[5]) === (D10.diversity.units.find(u => u.label === f[0]) || {}).exclusive), 'cada renglón cuadra con los exclusivos que calcula el análisis');
+
+/* 4. las alertas de manejo, una por tipo y sin las cifras de un lote */
+const filasMan = filasDe(secDe(D10, 'manage').html);
+ok(filasMan.length === D10.manage.codes.length, 'la tabla de alertas tiene un renglón por cada tipo de alerta');
+ok(filasMan.every(f => !/\d/.test(f[0])), 'y ningún renglón lleva las cifras de un lote («81 %», «138 semillas»)');
+const nombresAl = Object.values(MANAGE.ALERT_NAMES).map(h => h.es);
+ok(filasMan.every(f => nombresAl.includes(f[0])), 'cada tipo de alerta se nombra con su nombre genérico');
+ok(D10.manage.codes.every(c => MANAGE.ALERT_NAMES[c.code]), 'todos los códigos de alerta del ejemplo tienen nombre');
+const filaBajo = filasMan.find(f => f[0] === MANAGE.ALERT_NAMES.measuredLow.es);
+ok(!!filaBajo && filaBajo[1] === String(D10.manage.codes.find(c => c.code === 'measuredLow').n), 'el renglón de la germinación baja cuenta sus lotes');
+const nivelesMan = filasMan.map(f => D10.manage.codes.find(c => MANAGE.ALERT_NAMES[c.code].es === f[0]).level);
+ok(nivelesMan.every((l, i) => i === 0 || ['crit', 'warn', 'info'].indexOf(l) >= ['crit', 'warn', 'info'].indexOf(nivelesMan[i - 1])), 'las críticas van primero, luego los avisos y al final lo informativo');
+ok(secDe(D10, 'manage', 'en').html.includes(MANAGE.ALERT_NAMES.noBackup.en), 'y en inglés el nombre sale en inglés');
+
+/* 5. sin figuras, la distribución geográfica conserva sus tablas */
+const mapaSinFig = secDe(D10, 'map', 'es', { figures: false });
+ok(!!mapaSinFig && !mapaSinFig.html.includes('<svg') && filasDe(mapaSinFig.html).length > 5,
+  'al apagar las figuras, la sección del mapa se queda con sus tablas y su nota, sin la figura');
+ok(REPORT.buildHTML(D10, { lang: 'es', figures: false }).includes('id="s-map"'), 'y sigue en el informe');
+const mapaFig = secDe(D10, 'map').html;
+ok(mapaFig.includes('<svg') && mapaFig.includes('class="map-legend'), 'con figuras, el mapa lleva su leyenda');
+
+/* 6 y 7. las leyendas en HTML tienen estilos en el informe, y el pie de la PCoA dice qué es el color */
+['.map-legend', '.lg-item', '.legend-scale', '.legend-ramp', '.legend-ends', '.map-legends'].forEach(c =>
+  ok(REPORT.CSS.includes(c + ' '), `REPORT.CSS da estilo a ${c}`));
+const htmlCar = secDe(D10, 'charac').html;
+ok(htmlCar.includes('el color es el grupo del agrupamiento') && htmlCar.includes('símbolo grande con borde'), 'el pie de la PCoA dice que el color es el grupo y el símbolo con borde el núcleo');
+
+/* 8. las figuras se dibujan en el idioma del informe y la app vuelve al suyo */
+I18N.lang = 'es';
+const htmlEnFig = REPORT.buildHTML(D10, { lang: 'en' });
+ok(htmlEnFig.includes('large outlined symbol = in the core') && !htmlEnFig.includes('símbolo grande y con borde'), 'en el informe en inglés, los letreros de las figuras salen en inglés');
+ok(I18N.lang === 'es', 'y después de dibujar, la app sigue en su idioma');
+ok((() => { try { REPORT.inLang('en', () => { throw new Error('x'); }); } catch (e) { /* esperado */ } return I18N.lang === 'es'; })(), 'aunque una figura truene a medio dibujo');
+ok(REPORT.svgOnly('<svg a><svg b></svg></svg><div class="map-legend"></div>') === '<svg a><svg b></svg></svg>', 'al ZIP va sólo el <svg>, sin la leyenda en HTML');
+
+/* 12. los siete campos y «diversidad de especies» */
+const metD = REPORT.methods(D10, 'es');
+const datosT = metD.find(m => m.id === 'data').text;
+ok(datosT.includes('siete campos propios') && datosT.includes('el porcentaje de germinación de la última prueba'), 'los siete campos propios se enumeran todos, con el porcentaje de germinación');
+ok(metD.find(m => m.id === 'diversity').text.includes('la diversidad de especies'), '«la diversidad de especies», en plural');
+
+/* 2. el párrafo de caracterización dice exactamente lo que se eligió en el Bloque 7 */
+const charT = metD.find(m => m.id === 'charac').text;
+ok(charT.includes('método de Ward') && charT.includes('cortó en 4 grupos, un número elegido a mano') && !charT.includes('ancho de silueta'),
+  'con los ajustes de fábrica: Ward, 4 grupos elegidos a mano');
+ok(charT.includes(`la silueta media de ese corte fue de ${fmt(D10.charac.sil.mean, 2)} (Rousseeuw, 1987)`), 'y la silueta media que se obtuvo, con su referencia');
+ok(charT.includes('se pidió del 10 % de las accesiones caracterizadas (5 de 46) y quedó con 5') && charT.includes('reparto logarítmico'),
+  'el tamaño pedido y el real, y la regla de reparto');
+const vista7 = Object.assign({}, B7.view);
+Object.assign(B7.view, { tree: 'upgma', pct: 20, alloc: 'P', pick: 'random', strata: 'crop' });
+const D10b = REPORT.gather({ run: true });
+const charB = REPORT.methods(D10b, 'es').find(m => m.id === 'charac').text;
+ok(charB.includes('UPGMA') && charB.includes('Sokal y Michener, 1958') && !charB.includes('Ward'), 'con UPGMA el texto dice UPGMA, no Ward');
+ok(charB.includes('se pidió del 20 % de las accesiones caracterizadas (9 de 46)') && charB.includes('reparto proporcional') && charB.includes('al azar (semilla'),
+  'y el tamaño de 20 %, el reparto proporcional y la elección al azar');
+ok(charB.includes('el cultivo') && (D10b.charac.core.unrepresented ? charB.includes('sin representante') : charB.includes('Todos los estratos quedaron representados')),
+  'los estratos por cultivo y si alguno se quedó sin representante');
+Object.assign(B7.view, { tree: 'ward', pct: 10, alloc: 'L', pick: 'distance', strata: 'taxon', atLeastOne: true });
+const D10c = REPORT.gather({ run: true });
+const charC = REPORT.methods(D10c, 'es').find(m => m.id === 'charac').text;
+ok(charC.includes('Se pidió al menos una accesión por estrato') && charC.includes(`quedó con ${D10c.charac.core.core.length}, más de las pedidas`),
+  'con «al menos 1 por estrato» lo dice, y dice que el núcleo creció');
+Object.assign(B7.view, { method: 'M', atLeastOne: false, strata: 'group' });
+const D10d = REPORT.gather({ run: true });
+const charD = REPORT.methods(D10d, 'es').find(m => m.id === 'charac').text;
+ok(charD.includes('método M') && charD.includes('Schoen y Brown, 1993') && !charD.includes('estratos') && !charD.includes('repartidas'),
+  'con el método M no se habla de estratos ni de reparto');
+const charDen = REPORT.methods(D10d, 'en').find(m => m.id === 'charac').text;
+ok(charDen.includes('M (maximization) method') && !charDen.includes('strata —'), 'y en inglés igual');
+
+/* 11. cada cita está en la bibliografía y cada entrada de la bibliografía está citada */
+function coherencia(D, lang) {
+  const txt = REPORT.methods(D, lang).map(m => m.text).join(' ');
+  const keys = REPORT.refKeys(D, lang);
+  const sinCita = keys.filter(k => !REPORT.citeRegex(k).test(txt));
+  const sinFicha = Object.keys(REPORT.CITES).filter(k => !keys.includes(k) && REPORT.citeRegex(k).test(txt));
+  return { keys, sinCita, sinFicha, n: REPORT.references(D, lang).length };
+}
+[[D10, 'Ward, estratos'], [D10b, 'UPGMA, al azar'], [D10d, 'método M']].forEach(([D, nom]) => ['es', 'en'].forEach(lang => {
+  const c = coherencia(D, lang);
+  ok(c.sinCita.length === 0 && c.sinFicha.length === 0 && c.n === c.keys.length,
+    `bibliografía y citas cuadran (${nom}, ${lang}): ${c.n} referencias` + (c.sinCita.length ? '; sin cita: ' + c.sinCita.join(', ') : '') + (c.sinFicha.length ? '; sin ficha: ' + c.sinFicha.join(', ') : ''));
+}));
+const keys10 = REPORT.refKeys(D10, 'es');
+ok(['fao', 'kew', 'mantel', 'ward', 'rousseeuw', 'chao87', 'burnham', 'good', 'jaccard', 'sokal', 'dwc', 'app'].every(k => keys10.includes(k)),
+  'con el ejemplo se citan FAO, Kew, Mantel, Murtagh y Legendre, Rousseeuw, Chao 1987, Burnham y Overton, Good, Jaccard, Sokal y Michener, Darwin Core y la propia app');
+ok(!keys10.includes('sorensen') && !keys10.includes('bray') && !keys10.includes('schoen'), 'y no las de lo que no se usó (Sørensen, Bray-Curtis, método M)');
+ok(Object.keys(REPORT.CITES).every(k => REPORT.REFS[k]) && Object.keys(REPORT.REFS).every(k => REPORT.CITES[k]), 'cada referencia tiene su forma de cita y cada cita su ficha');
+ok(Object.keys(REPORT.REFS).every(k => ['es', 'en'].every(l => REPORT.refText(k, l).length > 30)), 'y cada ficha está completa en los dos idiomas');
+const refsEn = REPORT.references(D10, 'en').join(' ');
+ok(!/ y [A-Z]/.test(refsEn.replace(/<[^>]+>/g, '')) && refsEn.includes('Rome: FAO') && refsEn.includes('(version 1.0.0)'), 'la bibliografía en inglés junta los autores con «and»');
+ok(REPORT.references(D10, 'es').some(r => r.includes(`GermplasmPro: el banco de germoplasma, accesión por accesión</i> (versión ${REPORT.APP.version}) [software]`)),
+  'la bibliografía cita GermplasmPro con su versión, como la portada');
+ok(REPORT.buildHTML(D10, { lang: 'es' }).includes('Wieczorek'), 'Darwin Core ya sale en la bibliografía del informe');
+Object.assign(B7.view, vista7);
+REPORT.gather({ run: true });
+
+/* 15. Darwin Core: quién colectó e idioma */
+ok(REPORT.dwcRow(filaDwc).recordedBy === '', 'sin COLLNAME, recordedBy queda vacío: COLLCODE es un instituto, no quien colectó');
+ok(REPORT.dwcRow(Object.assign({}, filaDwc, { COLLNAME: 'L. Pérez' })).recordedBy === 'L. Pérez', 'con COLLNAME, recordedBy lo lleva');
+ok(JSON.parse(REPORT.dwcRow(filaDwc).dynamicProperties)['mcpd:COLLCODE'] === 'MEX006', 'y el código del instituto colector viaja en dynamicProperties');
+const dwcEn = REPORT.dwcRow(Object.assign({}, filaDwc, { COLLSRC: '10', GEOREFMETH: 'GPS' }), 'en');
+const fSrc = MCPD.COLLSRC.find(x => x.c === '10'), fCons = MCPD.GPCONS.find(x => x.c === 'seed');
+ok(dwcEn.country === 'Mexico' && dwcEn.countryCode === 'MX', 'en inglés el país sale en inglés y el código ISO sigue igual');
+ok(dwcEn.samplingProtocol === fSrc.en && dwcEn.preparations === fCons.en, 'y el protocolo de muestreo y la preparación también');
+ok(REPORT.dwcRow(filaDwc, 'es').country === 'México' && REPORT.dwcRow(filaDwc, 'es').preparations === fCons.es, 'en español, en español');
+
+/* 14. accesibilidad de los controles del Bloque 10 */
+const p10 = document.createElement('div'); p10.id = 'panel-10';
+const b10b = document.createElement('div'); b10b.id = 'b10Body'; p10.appendChild(b10b);
+document.body.appendChild(p10);
+B10.view.pick = null;
+B10.run();
+const chips10 = [...b10b.querySelectorAll('[data-sec]')];
+ok(chips10.length === REPORT.SECTIONS.length && chips10.every(b => b.getAttribute('aria-pressed') === 'true' || b.getAttribute('aria-pressed') === 'false'),
+  'cada botón de sección dice si está encendido (aria-pressed)');
+ok(el('b10Figs').getAttribute('aria-pressed') === 'true', 'y el de las figuras también');
+ok(el('b10Msg').getAttribute('aria-live') === 'polite', 'los mensajes se anuncian a quien usa lector de pantalla');
+const siempre = chips10.filter(b => REPORT.SECTIONS.find(s => s.id === b.dataset.sec).always);
+ok(siempre.length === 4 && siempre.every(b => b.getAttribute('aria-pressed') === 'true' && b.getAttribute('aria-disabled') === 'true'),
+  'resumen, la colección, métodos y referencias se ven encendidos y no se pueden apagar');
+siempre.forEach(b => b.click());
+ok(B10.view.pick === null, 'y pulsarlos no quita nada del informe');
+p10.remove();
+
+/* 17. la carga de trabajo cuenta tareas: marcas enteras */
+const marcas8 = [...B8.workPlot(500, 240).matchAll(/text-anchor="end"[^>]*>([^<]*)</g)].map(m => m[1]);
+ok(marcas8.length >= 2 && marcas8.every(t => /^[\d,]+$/.test(t)), `las marcas del eje de la carga de trabajo son enteras (${marcas8.join(', ')})`);
+
+/* 18. cancelar la segunda pregunta de «Registrar prueba» cancela todo */
+const promptViejo = window.prompt;
+const filaP = state.acc.find(r => MCPD.consRoute(r) === 'seed');
+const antesP = [filaP.GP_GERMPCT, filaP.GP_GERMDATE, filaP.GP_STOCK].join('|');
+let preguntas8 = 0;
+window.prompt = () => (++preguntas8 === 1 ? '77' : null);
+B8.recordTest(state.acc.indexOf(filaP));
+window.prompt = promptViejo;
+ok(preguntas8 === 2 && [filaP.GP_GERMPCT, filaP.GP_GERMDATE, filaP.GP_STOCK].join('|') === antesP, 'cancelar la pregunta de las semillas usadas no registra la prueba');
+
+/* 19. la lista del Bloque 8: primero el nivel, luego el puntaje */
+const orden8 = D10.manage.lots.slice().sort(B8.byUrgency);
+ok(orden8.every((l, i) => i === 0 || l.st.level <= orden8[i - 1].st.level), 'la lista va por nivel: en apuros antes que los que piden atención');
+ok(orden8.every((l, i) => i === 0 || l.st.level !== orden8[i - 1].st.level || l.st.score <= orden8[i - 1].st.score), 'y dentro de cada nivel, por puntaje');
+const critBajo = Math.min(...D10.manage.lots.filter(l => l.st.levelName === 'crit').map(l => l.st.score));
+const warnAlto = Math.max(...D10.manage.lots.filter(l => l.st.levelName === 'warn').map(l => l.st.score));
+ok(critBajo <= warnAlto ? orden8.findIndex(l => l.st.levelName === 'warn') > orden8.map(l => l.st.levelName).lastIndexOf('crit') : true,
+  'un lote en apuros con poco puntaje va antes que uno que pide atención con más');
+
+/* 20. el Bloque 9 sabe cuántos lotes están en apuros sin pasar por el Bloque 8 */
+const accGuard = state.acc;
+state.acc = []; B8.run();
+ok(B8.analysis() === null, 'sin colección, el Bloque 8 no tiene análisis');
+state.acc = accGuard;
+const p9 = document.createElement('div'); p9.id = 'panel-9';
+const b9b = document.createElement('div'); b9b.id = 'b9Body'; p9.appendChild(b9b);
+document.body.appendChild(p9);
+B9.view.which = 'all';
+B9.run();
+const optWork = b9b.querySelector('#b9Which option[value="work"]');
+const nApuros = B8.analysis() ? B8.analysis().lots.filter(l => l.st.alerts.some(a => a.level === 'crit')).length : -1;
+ok(!!optWork && nApuros === 10 && optWork.textContent.includes('(10)'), `la opción de los lotes en apuros lleva su número aunque no se haya visitado el Bloque 8 (${optWork ? optWork.textContent : '—'})`);
+p9.remove();
 state.acc = [];
 state.traits = [];
 

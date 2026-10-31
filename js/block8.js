@@ -62,6 +62,16 @@
     return fmt(x, 2);
   }
 
+  /* el orden de la lista: primero el nivel (en apuros, luego los que piden
+     atención, los que tienen un dato faltante y los que están al día) y, dentro
+     de cada nivel, el puntaje (la suma de sus alertas); a igual puntaje, por
+     número de accesión */
+  function byUrgency(a, b) {
+    if (view.sort !== 'score') return String(a.row.ACCENUMB).localeCompare(String(b.row.ACCENUMB), 'es');
+    return b.st.level - a.st.level || b.st.score - a.st.score
+      || String(a.row.ACCENUMB).localeCompare(String(b.row.ACCENUMB), 'es');
+  }
+
   function run() {
     if (!cfg) loadCfg();
     A = state.acc.length ? MANAGE.analyse(state.acc, cfg, viab) : null;
@@ -107,8 +117,7 @@
     if (view.filter !== 'all') lots = lots.filter(l => l.st.levelName === view.filter);
     /* la ruta vacía se agrupa y se filtra con la misma clave (MANAGE.NO_ROUTE) */
     if (view.route) lots = lots.filter(l => (l.st.route || MANAGE.NO_ROUTE) === view.route);
-    lots.sort((a, b) => view.sort === 'score' ? b.st.score - a.st.score || b.st.level - a.st.level
-      : String(a.row.ACCENUMB).localeCompare(String(b.row.ACCENUMB), 'es'));
+    lots.sort(byUrgency);
 
     const nK = Object.keys(viab).length, nOwn = Object.keys(MANAGE.customConstants(viab)).length;
 
@@ -148,6 +157,9 @@
       </div>
 
       <h3 class="section-title">${T('2 · Qué hay que hacer', '2 · What needs doing')}</h3>
+      <p class="section-sub">${T(
+        'La lista va por urgencia: primero los lotes en apuros, luego los que piden atención, los que tienen un dato faltante y, al final, los que están al día. Dentro de cada grupo van primero los que suman más alertas (una crítica cuenta 3, un aviso 2 y un dato faltante 1) y, a igual puntaje, por número de accesión.',
+        'The list goes by urgency: lots in trouble first, then those needing attention, those missing a datum and, last, those up to date. Within each group, those adding up the most alerts come first (a critical one counts 3, a warning 2 and a missing datum 1) and, on equal score, by accession number.')}</p>
       <div class="card">
         <div class="imp-row">
           <label class="inline-label">${T('Mostrar', 'Show')}<select class="sel" id="b8Filter">
@@ -312,10 +324,12 @@
     const pad = { l: 38, r: 12, t: 12, b: 28 };
     const bw = (W - pad.l - pad.r) / w.length;
     const g = [];
-    [0, 0.5, 1].forEach(f => {
-      const y = H - pad.b - f * (H - pad.t - pad.b);
+    /* el eje cuenta tareas: sus marcas son números enteros (0, la mitad
+       redondeada y el máximo), nunca «12.5» */
+    [...new Set([0, Math.round(maxV / 2), maxV])].forEach(v => {
+      const y = H - pad.b - (v / maxV) * (H - pad.t - pad.b);
       g.push(`<line x1="${pad.l}" y1="${y.toFixed(1)}" x2="${W - pad.r}" y2="${y.toFixed(1)}" stroke="${cv('--grid')}"/>`);
-      g.push(`<text x="${pad.l - 5}" y="${(y + 3.5).toFixed(1)}" text-anchor="end" font-size="9.5" fill="${cv('--text-muted')}">${fmt(f * maxV, Number.isInteger(f * maxV) ? 0 : 1)}</text>`);
+      g.push(`<text x="${pad.l - 5}" y="${(y + 3.5).toFixed(1)}" text-anchor="end" font-size="9.5" fill="${cv('--text-muted')}">${fmtInt(v)}</text>`);
     });
     w.forEach((x, i) => {
       const x0 = pad.l + i * bw;
@@ -349,7 +363,10 @@
     if (pct == null) return;
     const v = Number(String(pct).replace(',', '.'));
     if (String(pct).trim() === '' || !isFinite(v) || v < 0 || v > 100) { alert(T('Ese porcentaje no es válido.', 'That percentage is not valid.')); return; }
-    const used = MANAGE.optNum(prompt(T('¿Cuántas semillas se usaron en la prueba? (0 si no descuentas)', 'How many seeds were used for the test? (0 for no deduction)'), String(cfg.seed.testSeeds)));
+    const usedS = prompt(T('¿Cuántas semillas se usaron en la prueba? (0 si no descuentas)', 'How many seeds were used for the test? (0 for no deduction)'), String(cfg.seed.testSeeds));
+    /* cancelar la segunda pregunta cancela todo: no se registra media prueba */
+    if (usedS == null) return;
+    const used = MANAGE.optNum(usedS);
     MANAGE.recordTest(r, v, MANAGE.todayStamp(), has(used) ? used : 0);
     persist();
   }
@@ -423,5 +440,5 @@
   document.addEventListener('langchange', () => { if (el('panel-8')) run(); });
   document.addEventListener('themechange', () => { if (el('panel-8') && A) render(); });
 
-  window.B8 = { run, view, analysis: () => A, cfg: () => cfg, viab: () => viab, workPlot };
+  window.B8 = { run, view, analysis: () => A, cfg: () => cfg, viab: () => viab, workPlot, byUrgency, recordTest };
 })();

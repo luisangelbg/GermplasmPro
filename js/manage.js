@@ -394,7 +394,35 @@
     };
   }
 
+  /* ---------- el nombre genérico de cada tipo de alerta ----------
+     El mensaje de una alerta trae las cifras de su lote («la última prueba dio
+     81 %»); para hablar de todas las del mismo tipo juntas (el informe del
+     Bloque 10) hace falta un nombre sin cifras de nadie. */
+  const ALERT_NAMES = {
+    measuredLow: { es: 'Última prueba de germinación por debajo del umbral', en: 'Last germination test below the threshold' },
+    belowThreshold: { es: 'Germinación proyectada por debajo del umbral', en: 'Projected germination below the threshold' },
+    nearThreshold: { es: 'A menos de tres años de caer del umbral', en: 'Less than three years from dropping below the threshold' },
+    noConstants: { es: 'Sin constantes de viabilidad: no se proyecta', en: 'No viability constants: not projected' },
+    neverTested: { es: 'Nunca se le ha hecho una prueba de germinación', en: 'Never had a germination test' },
+    testDue: { es: 'Prueba de germinación vencida', en: 'Germination test overdue' },
+    lowStock: { es: 'Existencias por debajo del mínimo', en: 'Stock below the minimum' },
+    stockWarn: { es: 'Existencias cerca del mínimo', en: 'Stock close to the minimum' },
+    noStock: { es: 'Sin existencias registradas', en: 'No stock recorded' },
+    neverReplanted: { es: 'Sin fecha de la última resiembra', en: 'No date for the last replanting' },
+    replantDue: { es: 'Resiembra de campo vencida', en: 'Field replanting overdue' },
+    fewPlants: { es: 'Menos plantas en campo que el mínimo', en: 'Fewer field plants than the minimum' },
+    neverSub: { es: 'Sin fecha del último subcultivo', en: 'No date for the last subculture' },
+    subDue: { es: 'Subcultivo in vitro vencido', en: 'In-vitro subculture overdue' },
+    fewJars: { es: 'Menos frascos que el mínimo', en: 'Fewer jars than the minimum' },
+    neverChecked: { es: 'Sin fecha de la última revisión de los criotubos', en: 'No date for the last cryovial check' },
+    checkDue: { es: 'Revisión de los criotubos vencida', en: 'Cryovial check overdue' },
+    fewVials: { es: 'Menos criotubos que el mínimo', en: 'Fewer cryovials than the minimum' },
+    visitDue: { es: 'Visita al sitio vencida', en: 'Site visit overdue' },
+    noBackup: { es: 'Sin duplicado de seguridad en otra institución', en: 'No safety duplicate in another institution' },
+  };
+
   window.MANAGE = {
+    ALERT_NAMES,
     DEFAULT_CONFIG, NO_ROUTE, STOCK_UNITS, stockUnit, optNum, PUBLISHED, customConstants,
     config, viabilityTable, taxonOf, parseDate, yearsSince,
     lotStatus, plantsNeeded, retentionProb, seedsToSow, workload,

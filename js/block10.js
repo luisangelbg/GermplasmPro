@@ -21,7 +21,7 @@
     const lang = view.lang || I18N.lang;
     html = REPORT.buildHTML(D, {
       lang, title: view.title, bank: view.bank, author: view.author,
-      pick: view.pick, figures: view.figures, annex: view.annex, dwc: false,
+      pick: view.pick, figures: view.figures, annex: view.annex,
     });
     return html;
   }
@@ -62,11 +62,15 @@
 
         <div class="chips" style="margin-top:10px">
           ${REPORT.SECTIONS.map(s => {
-            const on = !view.pick || view.pick.includes(s.id);
             const hay = hechos[s.id];
-            return `<button class="chip${on && hay ? ' on' : ''}" data-sec="${s.id}"${hay ? '' : ' disabled title="' + esc(T('ese bloque no se ha corrido', 'that block has not been run')) + '"'}>${esc(T(s.es, s.en))}</button>`;
+            /* las secciones «always» (resumen, la colección, métodos y
+               referencias) van siempre: su botón se ve encendido y no se apaga */
+            const on = hay && (s.always || !view.pick || view.pick.includes(s.id));
+            const why = !hay ? T('ese bloque no se ha corrido', 'that block has not been run')
+              : s.always ? T('esta sección va siempre en el informe', 'this section is always in the report') : '';
+            return `<button class="chip${on ? ' on' : ''}" data-sec="${s.id}" aria-pressed="${on}"${s.always && hay ? ' aria-disabled="true"' : ''}${hay ? '' : ' disabled'}${why ? ` title="${esc(why)}"` : ''}>${esc(T(s.es, s.en))}</button>`;
           }).join('')}
-          <button class="chip${view.figures ? ' on' : ''}" id="b10Figs">${T('figuras', 'figures')}</button>
+          <button class="chip${view.figures ? ' on' : ''}" id="b10Figs" aria-pressed="${view.figures}">${T('figuras', 'figures')}</button>
         </div>
 
         <div class="imp-row" style="margin-top:12px">
@@ -75,7 +79,7 @@
           <button class="btn btn-ghost btn-sm" id="b10Zip">${T('Descargar todo (ZIP)', 'Download everything (ZIP)')}</button>
           <button class="btn btn-ghost btn-sm" id="b10Dwc">${T('Pasaporte en Darwin Core', 'Passport in Darwin Core')}</button>
           <button class="btn btn-ghost btn-sm" id="b10Mcpd">${T('Pasaporte en MCPD', 'Passport in MCPD')}</button>
-          <span class="hint" id="b10Msg"></span>
+          <span class="hint" id="b10Msg" role="status" aria-live="polite"></span>
         </div>
       </div>
 
@@ -91,10 +95,13 @@
     el('b10Figs').addEventListener('click', () => { view.figures = !view.figures; inWork(render); });
     els('[data-sec]', el('b10Body')).forEach(b => b.addEventListener('click', () => {
       if (b.disabled) return;
+      const sec = REPORT.SECTIONS.find(s => s.id === b.dataset.sec);
+      if (!sec || sec.always) return;
       const all = REPORT.SECTIONS.filter(s => hechos[s.id]).map(s => s.id);
       const cur = view.pick ? view.pick.slice() : all.slice();
       const i = cur.indexOf(b.dataset.sec);
       if (i >= 0) cur.splice(i, 1); else cur.push(b.dataset.sec);
+      REPORT.SECTIONS.forEach(s => { if (s.always && !cur.includes(s.id)) cur.push(s.id); });
       view.pick = cur.length === all.length ? null : cur;
       view.annex = !view.pick || view.pick.includes('annex');
       inWork(render);
@@ -106,7 +113,7 @@
     }));
     el('b10Zip').addEventListener('click', e => gpBusy(e.currentTarget, downloadZip));
     el('b10Dwc').addEventListener('click', e => gpBusy(e.currentTarget, () => {
-      const rows = REPORT.darwinCore(state.acc);
+      const rows = REPORT.darwinCore(state.acc, view.lang || I18N.lang);
       download(IO.toCSV(rows, REPORT.DWC_COLUMNS), fileName('darwin-core', 'csv'), 'text/csv;charset=utf-8');
       say(T(`${rows.length} registros en Darwin Core.`, `${rows.length} records in Darwin Core.`));
     }));
@@ -178,7 +185,7 @@
     const cols = MCPD.MCPD_FIELDS.map(f => f.k);
     files.push({ name: 'datos/pasaporte-mcpd.csv', data: IO.toCSV(state.acc, cols) });
     files.push({ name: 'datos/pasaporte-completo.csv', data: IO.toCSV(state.acc, MCPD.FIELDS.map(f => f.k)) });
-    files.push({ name: 'datos/darwin-core.csv', data: IO.toCSV(REPORT.darwinCore(state.acc), REPORT.DWC_COLUMNS) });
+    files.push({ name: 'datos/darwin-core.csv', data: IO.toCSV(REPORT.darwinCore(state.acc, view.lang || I18N.lang), REPORT.DWC_COLUMNS) });
 
     if (D.quality) {
       const q = D.quality, filas = [];
@@ -200,11 +207,13 @@
       if (plan.length) files.push({ name: 'datos/plan-de-trabajo.csv', data: IO.toCSV(plan, ['accesion', 'taxon', 'ruta', 'nivel', 'alerta', 'detalle']) });
     }
 
-    /* las figuras, sueltas y en SVG, para meterlas en otro documento */
+    /* las figuras, sueltas y en SVG, para meterlas en otro documento: en el
+       idioma del informe, y sólo el <svg> (la leyenda en HTML de algunas no
+       es SVG y dejaría el archivo inservible) */
     if (view.figures) {
-      const W = 900;
+      const W = 900, lang = view.lang || I18N.lang;
       const add = (name, fn, h) => {
-        const svg = REPORT.inLight(() => REPORT.figure(fn, W, h));
+        const svg = REPORT.svgOnly(REPORT.inLang(lang, () => REPORT.inLight(() => REPORT.figure(fn, W, h))));
         if (svg) files.push({ name: `figuras/${name}.svg`, data: svg });
       };
       if (D.hasMap) add('mapa-de-colecta', B4.drawMap, 560);
@@ -242,7 +251,8 @@ Sobre los dos formatos del pasaporte:
                         que es el formato con el que hablan los bancos entre sí.
   pasaporte-completo.csv lo mismo más los siete campos de extensión de esta app (GP_*), que
                         guardan la ruta de conservación activa, el sitio in situ, la persona
-                        custodia, las existencias y las fechas de germinación y regeneración.
+                        custodia, las existencias, el porcentaje de la última germinación y
+                        las fechas de la última germinación y la última regeneración.
   darwin-core.csv       la traducción a los términos de Darwin Core, que es como habla GBIF.
                         Lo que MCPD guarda y Darwin Core no tiene dónde poner (SAMPSTAT,
                         STORAGE, MLSSTAT, DUPLSITE y los GP_*) no se pierde: viaja en la

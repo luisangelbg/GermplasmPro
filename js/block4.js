@@ -589,5 +589,5 @@
   document.addEventListener('langchange', () => { if (el('panel-4')) { syncControls(); render(); } });
   document.addEventListener('themechange', () => { cssCache = {}; cssTheme = ''; if (el('panel-4')) render(); });
 
-  window.B4 = { render, view, drawMap, colorInfo, legendHTML, placeLabels, valueOf, exportSVG, exportPNG, cssVar, paint, forFile, ramp, speciesIn, points: () => pts };
+  window.B4 = { render, view, drawMap, colorInfo, legendHTML, choroLegend, placeLabels, valueOf, exportSVG, exportPNG, cssVar, paint, forFile, ramp, speciesIn, points: () => pts };
 })();
