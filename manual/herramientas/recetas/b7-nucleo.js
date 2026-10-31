@@ -20,5 +20,5 @@
   const card = s.find(n => n.classList && n.classList.contains("card"));
   const grid = card.querySelector(".sum-grid");
   await irA(s[0]);
-  return caja([s[0], s[1], card.querySelector(".imp-row"), card.querySelector(".note-warn"), grid], 8);
+  return caja([s[0], s[1], card.querySelector(".imp-row"), card.querySelector(".note-warn"), grid, card.querySelector("details.b7-detail")], 8);
 })()
