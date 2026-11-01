@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · User’s Manual · Chapter 4</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- splits the content into letter-size sheets, with running heads, page numbers and table of contents -->
+<script src="../paginar.js"></script>
+<style>
+  .formula { font-family: var(--mono); font-size: 9pt; background: var(--marino-suave); border-radius: 5px; padding: 0.07in 0.12in; margin: 0.08in 0; }
+  .cuenta td { font-family: var(--mono); font-size: 8.6pt; }
+  .csv td { font-family: var(--mono); font-size: 7.6pt; }
+  figure.reducida { width: 74%; margin-left: auto; margin-right: auto; }
+  figure.mediana { width: 86%; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<section class="capitulo" id="cap-b4" data-pestana="4" data-orden="4" style="--acento: var(--b4)">
+  <div class="cap-apertura">
+    <div class="cap-num">4</div>
+    <div class="cap-etiqueta">Chapter four · Block 4 · Collecting map</div>
+    <h1 data-corto="Collecting map">The collecting map</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">Block 4 puts every accession at the site where it was collected. The map is drawn inside the app, with outlines that travel with it, so it works offline and no coordinate ever leaves your computer. It lets you see the collection at a glance—what there is, in which conservation route, at what elevation—, spot the point that landed where it should not, and count how many accessions fall in each state, each country or each cell of a grid, which is the gateway to Blocks 5 and 6.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>4.1</b>A map that needs no internet</li>
+      <li><b>4.2</b>From the sphere to the screen: the projection</li>
+      <li><b>4.3</b>Which state and which country does each point fall in?</li>
+      <li><b>4.4</b>The extent: your data, Mexico, the world or a single state</li>
+      <li><b>4.5</b>Colour, size and filters of the points</li>
+      <li><b>4.6</b>The choropleth and the grid</li>
+      <li><b>4.7</b>The counts by state and by country</li>
+      <li><b>4.8</b>Taking the map and the points with you</li>
+    </ul>
+  </div>
+
+  <!-- 4.1 -->
+  <h2 id="b4-1"><span class="num">4.1</span>A map that needs no internet</h2>
+  <p class="lead">Block 4 takes the accessions you loaded in Block 2 (Chapter 2), with whatever you corrected in Block 3 (Chapter 3), and draws one point for each accession that has decimal latitude and longitude. There is nothing to click when you open it: the map, its legend, the summary boxes and the tables are rebuilt every time you open the block. If there is no passport data yet, instead of the map you see <span class="ui">Load your accessions in Block 2 first.</span></p>
+  <figure style="width:64%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b4-mexico.png" alt="Section 1 of Block 4: the controls Extent set to All of Mexico, Point colour set to Conservation route, Choropleth, Grid, Size, Crop, Route, the state codes button and the Map title field; below, the map of Mexico with its 32 states labelled with their codes, the points coloured by route, the north arrow and a 500 km scale bar; the legend with Seed bank (27), Field genebank or living collection (8), In vitro culture (3), On-farm conservation (3), Genetic reserve (in situ) (2), Cryopreservation (1) and Not declared (1); and the buttons Export SVG, Export PNG (2×) and Points as CSV"></div>
+    <figcaption><b>Figure 4.1.</b> Section <span class="ui">1 · The accessions on the map</span> with the example collection and the extent set to <span class="ui">All of Mexico</span>. Each point is an accession, coloured by its conservation route.</figcaption>
+  </figure>
+  <p>The block has two sections. The first, <span class="ui">1 · The accessions on the map</span>, gathers the controls, the map, the legend and the export buttons on one card (Figure 4.1). The second, <span class="ui">2 · How many fall in each state and each country</span>, gives five summary boxes and two tables (Section 4.7). At the end, a box reminds you where the outlines come from.</p>
+  <h3>Where the outlines come from</h3>
+  <p>The outlines come from <b>Natural Earth</b>, a <b>public-domain</b> map data set, and are stored inside the app, in two files in the <span class="ruta">data/</span> folder:</p>
+  <table class="compacta">
+    <thead><tr><th style="width:1.45in">File</th><th style="width:1.9in">Natural Earth data set</th><th>What it holds</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ruta">mexico-states.js</span></td><td>admin-1 (states and provinces) at 1:10 million</td><td>The <b>32 federal entities</b> of Mexico, simplified with the Douglas–Peucker algorithm at a tolerance of 0.004° (about 400 m), with coordinates rounded to four decimals. Each state carries its name and its three-letter code (<i>OAX</i>, <i>PUE</i>, <i>CMX</i>…).</td></tr>
+      <tr><td><span class="ruta">world.js</span></td><td>admin-0 (countries) at 1:110 million</td><td>The outlines of <b>174 countries</b>, simplified to two decimals and without Antarctica.</td></tr>
+    </tbody>
+  </table>
+  <p>The difference in scale is deliberate. Mexico is drawn with the detail a state-level map calls for; the rest of the world, with the coarse line that is enough to place a collection in its country. Neither is fit to decide whether a point falls on one side or the other of a municipal boundary, or a hundred metres from the coast.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Why it matters that the map never leaves your computer</div>
+    <p>An online viewer asks a server for the tiles of the area you are looking at; here there is no request at all. That lets you work in the field without a signal, and it is no small matter when the coordinates belong to populations of crop wild relatives, to species prone to illegal collection or to the plots of custodian families (Section I.3)—data that many collections do not publish with all their decimals.</p>
+  </div>
+
+  <!-- 4.2 -->
+  <h2 id="b4-2"><span class="num">4.2</span>From the sphere to the screen: the projection</h2>
+  <p>A coordinate is an angle on a sphere; the screen is flat. The app uses the simplest projection that gives a reasonable map of a country: the <b>equirectangular</b> projection (or <i>plate carrée</i>), in which meridians and parallels are straight lines at equal spacing, with one correction: the width of each degree of longitude is multiplied by the <b>cosine of the central latitude</b> of the extent.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · the equirectangular projection with cosine correction</div>
+    <p>A degree of latitude measures almost the same everywhere on Earth (about 111 km), but a degree of longitude shrinks towards the poles: it measures 111 km × cos φ at latitude φ. With an extent running from longitude λ<sub>0</sub> to λ<sub>1</sub> and from latitude φ<sub>0</sub> to φ<sub>1</sub>, the central latitude is φ<sub>m</sub> = (φ<sub>0</sub> + φ<sub>1</sub>)/2, and each point is taken to the screen with:</p>
+    <div class="formula">k = cos φ<sub>m</sub>  ·  x = o<sub>x</sub> + (λ − λ<sub>0</sub>) · k · s  ·  y = o<sub>y</sub> + (φ<sub>1</sub> − φ) · s</div>
+    <p>where s is the number of pixels per degree of latitude, the largest value at which the extent fits in the 900 × 560 canvas leaving a 10 px margin, and o<sub>x</sub>, o<sub>y</sub> centre the drawing. The <b>y</b> coordinate grows downwards, which is why the latitude is subtracted from the maximum: north stays at the top. The shape is faithful near φ<sub>m</sub>; for a country or a region, that is enough.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Worked example · the blue maize from Apoala on the map of Mexico</div>
+    <p>The <span class="ui">All of Mexico</span> extent runs from −118.5 to −86.6 in longitude and from 14.3 to 32.8 in latitude. MEX-ZM-0001 lies at 17.6871, −97.2788.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td style="width:50%">φ<sub>m</sub> = (14.3 + 32.8)/2 = 23.55°</td><td>k = cos 23.55° = 0.91671</td></tr>
+      <tr><td>width = 31.9° × 0.91671 = 29.243</td><td>height = 32.8 − 14.3 = 18.5°</td></tr>
+      <tr><td colspan="2">s = min(880/29.243, 540/18.5) = min(30.09, 29.189) = 29.189 px per degree</td></tr>
+      <tr><td colspan="2">o<sub>x</sub> = 10 + (880 − 29.243 × 29.189)/2 = 23.21 · o<sub>y</sub> = 10</td></tr>
+      <tr><td colspan="2">x = 23.21 + (−97.2788 + 118.5) × 0.91671 × 29.189 = 23.21 + 567.84 = 591.0</td></tr>
+      <tr><td colspan="2">y = 10 + (32.8 − 17.6871) × 29.189 = 10 + 441.13 = 451.1, the centre of the circle in the app’s SVG</td></tr>
+    </tbody></table>
+    <p>Without the correction, the width would be 31.9° and Mexico would come out 9% wider than it really is at that latitude.</p>
+  </div>
+  <h3>The scale bar, the north arrow and the graticule</h3>
+  <p>In the lower right corner, the <b>scale bar</b> shows a round distance—1, 2, 5, 10, 25, 50, 100, 200, 250, 500, 1,000, 2,000 or 5,000 km—that fits in 140 pixels of the canvas. It is measured at the central latitude: on the map of Mexico, 1° of longitude at 23.55° of latitude measures 101.93 km by the haversine formula (Section 3.5) and takes up 26.76 px, so each pixel is worth 3.81 km and the bar chosen is the <b>500 km</b> one, 131 px long. That measure is exact only at the central latitude: at latitude φ, a horizontal pixel measures cos φ / cos φ<sub>0</sub> times what the bar says. That is why the app works out how much the horizontal scale changes within the extent and decides which bar is honest: if it changes by less than 10% (Mexico, which runs from 14° to 33° and stays under 9%, or any single state), the bar stands alone; if it changes by up to 35%, the bar says at which latitude it holds, such as <i>2,000 km at 7° N</i> in the automatic extent of Figure 4.2; beyond that, as with the whole world, no bar is drawn and the map says <span class="ui">No scale bar: it varies with latitude</span> instead (Figure 4.6). In the lower left corner is the <b>north arrow</b>, which always points up. Behind the land, a graticule of meridians and parallels is drawn every 20° if the extent spans more than 60° of longitude, every 5° if it spans more than 14°, every 2° if it spans more than 4°, and every degree in smaller extents.</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>The scale is exact only at the centre</div>
+    <p>On a map of a single state or of Mexico, the bar holds for the whole map with a small error. In a tall extent it no longer does: the bar that says “at 7° N” is true at that latitude and, away from it, east–west distances are exaggerated, more and more towards the poles; over the whole world the error would exceed 80%, which is why there is no bar there. To measure the distance between two collecting sites, do not use the bar; use the distance column of the duplicates (Chapter 3) or the calculations of Blocks 5 and 6, which work on the sphere.</p>
+  </div>
+
+  <!-- 4.3 -->
+  <h2 id="b4-3"><span class="num">4.3</span>Which state and which country does each point fall in?</h2>
+  <p>The app does not trust the passport text to tell where an accession is. It does not read the state written in <code>COLLSITE</code> or the country in <code>ORIGCTY</code>: it looks at <b>where the point falls</b> and searches for the state or the country whose outline contains it. This is called a <b>point-in-polygon</b> test.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · the even–odd rule</div>
+    <p>A ray is cast eastwards from the point, and the number of times it crosses the polygon’s boundary is counted. If it crosses an odd number of times, the point is inside; if even, outside. The rule respects holes: a point inside a hole crosses the outer boundary and the hole’s boundary, twice, and ends up outside; and it works equally for states with islands, which are several rings. To avoid testing all 32 full outlines against every point, the app first discards the states whose bounding rectangle does not contain the point, and runs the fine test only on those that remain. The same goes for countries.</p>
+  </div>
+  <p>With the example collection, the test assigns a state to the 36 accessions that fall in Mexico, and for all of them it matches the state written at the start of their collecting site. Those that do not match their passport are two, and both are seeded errors (Section I.7):</p>
+  <table class="compacta">
+    <thead><tr><th style="width:1.05in">Accession</th><th style="width:1.55in">What the passport says</th><th style="width:1.2in">Where the point falls</th><th>What the app does</th></tr></thead>
+    <tbody>
+      <tr><td>MEX-ZM-0039<br><i>Tuxpeño de la costa</i></td><td><code>ORIGCTY</code> = MEX; site “Veracruz, Tlalixcoyan”; 18.8100, 96.0600</td><td>Myanmar (Burma), no state</td><td>It counts it in Myanmar, not in Mexico or in Veracruz. It is the longitude without its sign that Block 3 diagnoses (Section 3.2).</td></tr>
+      <tr><td>MEX-PH-0041<br><i>Frijol tepari</i></td><td><code>ORIGCTY</code> = MX; site “Sonora, Álamos”</td><td>Mexico, Sonora</td><td>It counts it in Mexico and in Sonora: the point is right, even though the country code is misspelled.</td></tr>
+    </tbody>
+  </table>
+  <p>The accession without coordinates, MEX-ZM-0043 (<i>Maíz ancho de riego</i>, site “Por el rumbo de Guerrero”), does not appear on the map or in the counts, even though its site names a state: the <span class="ui">Without coordinates</span> box shows 1. Points at (0, 0) and out-of-range coordinates (latitude beyond 90° or longitude beyond 180°) are not drawn either.</p>
+  <figure>
+    <div class="marco"><img src="../img/en/b4-ajuste.png" alt="The map with the Fit to my data extent and the freshly loaded collection: it spans from the Americas to Southeast Asia; the points of Mexico, Guatemala, Colombia, Peru and Bolivia on the left, one in Ethiopia, one in India and one in Myanmar; a scale bar of 2,000 km at 7° N"></div>
+    <figcaption><b>Figure 4.2.</b> The automatic extent with the freshly loaded collection. The point on the right, in Myanmar, is the maize from Veracruz with the unsigned longitude: it stretches the extent all the way to Southeast Asia.</figcaption>
+  </figure>
+  <p>The map is the fastest way to see a coordinate error: a maize from the Gulf coast shows up on the other side of the world (Figure 4.2). Correct it in Block 3—<span class="ui">Fix</span> in section 2—and return to Block 4: the point lands in Veracruz, at 18.81, −96.06, the country table loses Myanmar and Mexico rises from 36 to 37 accessions, Veracruz rises from 6 to 7 accessions and from 4 to 5 species (<i>Zea mays</i> is added), and the <span class="ui">Countries</span> box drops from 8 to 7. What does not change is the automatic extent, which still spans from the Americas to India, because those accessions really are from Ethiopia and India.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Two checks that complement each other</div>
+    <p>Block 3 compares the point with the rectangle of the declared country, with a one-degree margin; it catches errors of hundreds or thousands of kilometres (Section 3.2). Block 4 assigns the point to the outline of a state, and that is where the fine error shows: a point of a maize “from Puebla” that falls in Tlaxcala, or one “from Oaxaca” that falls in the sea, passes the Block 3 check and gives itself away here, in the state table or in the point’s record.</p>
+  </div>
+
+  <!-- 4.4 -->
+  <h2 id="b4-4"><span class="num">4.4</span>The extent: your data, Mexico, the world or a single state</h2>
+  <p>The <span class="ui">Extent</span> menu decides which part of the Earth fills the canvas. Points outside the extent are not drawn, but they still count in the summary boxes, the tables and the points file (Sections 4.7 and 4.8).</p>
+  <table class="compacta">
+    <thead><tr><th style="width:1.45in">Option</th><th>What it shows</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Fit to my data</span></td><td>The default. The rectangle that contains all the points, with a 15% margin on each side (at least 0.4°), and never less than 1.5° wide or high, so that a collection from a single municipality does not end up as a close-up with no landmarks. With the example collection it runs from −139.7 to 126.8 in longitude and from −22.7 to 36.4 in latitude (Figure 4.2).</td></tr>
+      <tr><td><span class="ui">All of Mexico</span></td><td>The rectangle of Mexico, from −118.5 to −86.6 and from 14.3 to 32.8: it draws 38 of the 45 points (Figure 4.1).</td></tr>
+      <tr><td><span class="ui">The world</span></td><td>From −180 to 180 in longitude and from −60 to 84 in latitude (Figure 4.6).</td></tr>
+      <tr><td><span class="ui">A single state</span> (the 32, by name)</td><td>The rectangle of the state, with an 8% margin. The neighbouring states and their points are drawn too; the chosen one gets the thick outline, in purple (Figure 4.3).</td></tr>
+    </tbody>
+  </table>
+  <p>You can also reach a state without the menu: <b>tap the state on the map</b> to zoom into it, and tap it again to go back to All of Mexico. The buttons with the name of each state in the state table do the same (Section 4.7).</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/en/b4-entidad.png" alt="The extent set to Puebla with the points coloured by crop: Puebla with a thick purple outline and, around it, Hidalgo, Tlaxcala, the State of Mexico, Mexico City, Morelos, Guerrero, Oaxaca and Veracruz; points of maize, squash, amaranth and chayote; a 50 km bar; the Crop legend with Maíz (14), Calabaza (3), Chile (3), Chayote (3), Teocintle (2), Frijol (2), Amaranto (2), Frijol ayocote (1), Tomate de cáscara (1), Papa (1), Papa amarga (1) and the rest"></div>
+    <figcaption><b>Figure 4.3.</b> The extent set to Puebla, with the points coloured by crop. The bar drops to 50 km. The points of Veracruz, Tlaxcala and Oaxaca that fall inside the rectangle are drawn too.</figcaption>
+  </figure>
+  <h3>When the states are drawn</h3>
+  <p>The 32 states are drawn only when the extent spans <b>45° of longitude or less</b> and touches the rectangle of Mexico. In a wider extent, Mexico is drawn as one more country, with the 1:110 million outline, and the state codes disappear. That is why, with the example collection, the automatic extent shows no states: the accessions from Ethiopia and India make it as wide as the world. If your collection comes from Mexico and other countries, choose <span class="ui">All of Mexico</span> to see the states.</p>
+  <p>The <span class="ui">state codes</span> button, on by default, labels each state with its three-letter code at the point of its interior farthest from the edge (in its largest part, if the state has islands, so that the code of Colima does not land in the sea). If two codes overlap, the app shifts one of them by a few pixels; a code without a count that fits nowhere is left out. The codes carry a halo in the background colour so that they can be read over points and lines; with a state choropleth, the code also carries the count in parentheses (Figure 4.5). Turn it off when the map is going into a publication and the labels get in the way. Watch out for two codes: <i>MEX</i> is the State of Mexico and <i>CMX</i> is Mexico City, not the country.</p>
+  <h3>Hovering over and tapping a point</h3>
+  <p>When you hover over a point, the point grows and, below the map, a line summarizes the accession: number, name, taxon, site, the state where the point falls, the elevation and the route. For MEX-ZM-0001 it reads <i>MEX-ZM-0001 · Maíz azul de Apoala · Zea mays · Oaxaca, Santiago Apoala · Oaxaca · 1993 m · Seed bank</i>. <b>Tapping</b> the point opens its record in Block 2, to review or correct it. The foot of the card reminds you: <span class="ui">Tap a point to open its record; tap a state to zoom into it.</span></p>
+
+  <!-- 4.5 -->
+  <h2 id="b4-5"><span class="num">4.5</span>Colour, size and filters of the points</h2>
+  <p>The <span class="ui">Point colour</span> menu chooses which passport variable colours the points. There are eight, plus <span class="ui">A single colour</span>:</p>
+  <table class="compacta">
+    <caption><b>Table 4.1.</b> The variables that colour the points and their legend with the example collection (45 points).</caption>
+    <thead><tr><th style="width:1.5in">Option · descriptor</th><th style="width:0.75in">Type</th><th>Legend with the example collection</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Conservation route</span> · active route</td><td>categorical</td><td>The default. Seed bank (27), field genebank or living collection (8), in vitro culture (3), on-farm conservation (3), genetic reserve (2), cryopreservation (1) and <i>not declared</i> (1). The route is the one declared in <code>GP_CONS</code> or, if there is none, the one deduced from <code>STORAGE</code>, as in Chapter 2.</td></tr>
+      <tr><td><span class="ui">Crop</span> · <code>CROPNAME</code></td><td>categorical</td><td>Maíz (14), Calabaza, Chile and Chayote (3 each)…, and <i>the rest</i>.</td></tr>
+      <tr><td><span class="ui">Species</span> · genus and epithet</td><td>categorical</td><td><i>Zea mays</i> (17), <i>Capsicum annuum</i> and <i>Sechium edule</i> (3)…, and <i>the rest</i>.</td></tr>
+      <tr><td><span class="ui">Biological status</span> · <code>SAMPSTAT</code></td><td>categorical</td><td>Traditional cultivar/landrace (38), wild (4), natural (2), breeder’s line (1).</td></tr>
+      <tr><td><span class="ui">Country of origin</span> · <code>ORIGCTY</code></td><td>categorical</td><td>Mexico (36), Guatemala and Peru (2), Bolivia, Ethiopia, India, Colombia and <i>MX</i> (1). Here the passport text does rule, not where the point lies.</td></tr>
+      <tr><td><span class="ui">Collecting source</span> · <code>COLLSRC</code></td><td>categorical</td><td>Field (23), backyard, kitchen or home garden (6), farm store (5)… ten sources in all.</td></tr>
+      <tr><td><span class="ui">Elevation</span> · <code>ELEVATION</code></td><td>continuous</td><td>From 20 to 3,797 m; the 25,000 m one stays grey, off the scale (Figure 4.4).</td></tr>
+      <tr><td><span class="ui">Collecting year</span> · year of <code>COLLDATE</code></td><td>continuous</td><td>From 2014 to 2022.</td></tr>
+    </tbody>
+  </table>
+  <p>With a <b>categorical</b> variable, the app counts how many points there are of each value and gives a colour from its palette to the <b>eleven most frequent values</b>; the rest go in grey, under the label <i>the rest</i>. The legend lists each value with its number of points in parentheses. Crop and Species have more than eleven values in the example collection (23 crop names as written and 24 taxa), so in those two the grey lumps several together. Note that the crop counts what is written: <i>Maíz</i> (14) and <i>Maiz</i> without the accent, the one of the seeded duplicate, are two different values until you resolve the duplicate in Block 3.</p>
+  <p>With a <b>continuous</b> variable, the colour comes from a ramp that runs from pale gold to gold, ochre and purple, linear between the minimum and the maximum of the points. The pale gold at the low end stands apart from the greyish blue of the sea and the white of the land. Points with no value go in grey and off the scale. For elevation, an empty field means <i>no data</i>, not 0 m, and an elevation that is impossible on land—below −500 m or above 7,000 m—also goes in grey, so that a data-entry error does not stretch the scale. The legend shows the ramp in six steps with the minimum and the maximum below its ends (years without a thousands separator: <i>2014</i>, <i>2022</i>) and, if there are grey points, how many: for elevation, <span class="ui">no data or outside −500 to 7,000 m (1)</span>.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/en/b4-altitud.png" alt="The map of Mexico with the points coloured by elevation: those in the lowlands of Veracruz and Yucatán in pale gold, those in central Mexico, Chihuahua, Oaxaca and Chiapas in gold and ochre, and one in grey in Sonora; the Elevation legend from 20 to 3,797 and no data or outside −500 to 7,000 m (1)"></div>
+    <figcaption><b>Figure 4.4.</b> The points coloured by elevation with the freshly loaded collection. The tepary bean from Sonora, with its elevation of 25,000 m (a seeded error), stays grey, off the scale, which runs from 20 to 3,797 m. There are no purple points in Mexico: the maximum is in the Andes, outside the extent, because the scale is computed with all the points and not only with those in view.</figcaption>
+  </figure>
+  <p>Figure 4.4 is the counterpart of the elevation histogram in Block 2 (Figure 2.7), where the same absurd value stretches the axis until almost all the bars sit in the first two classes. Here the impossible value does not enter the scale: the 20 to 3,797 m range is shared among the remaining 44 points, and the grey point in Sonora stays in view as a pending task. Tap it, correct the elevation in its Block 2 record and, when you come back, the point takes its colour and the legend stops counting it in grey.</p>
+  <h3>Size by stock</h3>
+  <p>The <span class="ui">Size</span> menu has two options. With <span class="ui">fixed size</span>, the default, every point has a 4 px radius. With <span class="ui">size by stock</span>, the radius grows with the square root of the stock (<code>GP_STOCK</code>): r = 2.5 + 5.5 √(stock / maximum). With the square root, the <b>area</b> of the circle, which is what the eye compares, grows in proportion to the stock. In the example collection the maximum is 3,200 seeds, and the radii range from 2.8 to 8 px. It is the way to see at a glance where the scarce material is, the material that should be regenerated (Chapter 8).</p>
+  <h3>The crop and route filters</h3>
+  <p>The <span class="ui">Crop</span> and <span class="ui">Route</span> menus leave on the map a single crop (from those written in <code>CROPNAME</code>, in alphabetical order) or a single route (from those in use). Unlike the extent, the filter does change everything else: the summary boxes, the tables, the choropleth, the grid and the points file count only what is filtered. With the crop <i>Maíz</i>, 14 points remain; with the route <i>Field genebank or living collection</i>, 8. To go back to everything, choose <span class="ui">all crops</span> and <span class="ui">all routes</span>.</p>
+
+  <!-- 4.6 -->
+  <h2 id="b4-6"><span class="num">4.6</span>The choropleth and the grid</h2>
+  <p>The points say where each accession is; when there are many, they overlap and no longer say how many there are in each place. That is what the choropleth, which paints each unit by its count, and the grid, which counts in equal cells, are for.</p>
+  <h3>The choropleth</h3>
+  <p>The <span class="ui">Choropleth</span> menu has three options, besides <span class="ui">no choropleth</span>:</p>
+  <ul>
+    <li><span class="ui">accessions per state</span>: each Mexican state painted by how many points fall in it;</li>
+    <li><span class="ui">species per state</span>: by how many distinct species (genus and epithet) there are among those points;</li>
+    <li><span class="ui">accessions per country</span>: each country, by how many points fall in it. If the map shows the states, they are all painted with the value of Mexico.</li>
+  </ul>
+  <p>The colour comes from the same ramp as the points, but starts at 15% so that a unit with a single accession stands apart from empty land: a unit with n accessions is painted with the shade 0.15 + 0.85 × n / maximum. Units without accessions stay white. The legend only says <i>few</i> and <i>many</i>; the figures are in the codes on the map and in the tables (Section 4.7). Over a choropleth or a grid, each point carries a thick white border and a thin dark ring, so that it shows even when it has the same colour as the unit that contains it.</p>
+  <figure style="width:80%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b4-coropleta.png" alt="The map of Mexico with the accessions per state choropleth: Oaxaca and Puebla in purple with 7, Veracruz in reddish brown with 6, Chiapas in orange with 4, Michoacán with 3, Chihuahua, Jalisco, the State of Mexico and Yucatán in ochre with 2 and Sonora in light ochre with 1; the other states in white; the codes with their count in parentheses"></div>
+    <figcaption><b>Figure 4.5.</b> The accessions per state choropleth, with <span class="ui">A single colour</span> for the points. Ten states have collections; Oaxaca and Puebla, with 7 each, carry the purple of the maximum.</figcaption>
+  </figure>
+  <p>With the example collection, the accessions per state choropleth paints ten states: Oaxaca and Puebla with 7, Veracruz with 6, Chiapas with 4, Michoacán with 3, Chihuahua, Yucatán, the State of Mexico and Jalisco with 2, and Sonora with 1 (Figure 4.5). The species choropleth changes the order: Puebla comes out on top with 5 species, Veracruz and Chiapas with 4, and Oaxaca drops to 3, because four of its seven accessions are maize. The two readings answer different questions: where most has been collected, and where the most collected diversity is—the diversity that Block 5 measures properly.</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>A count choropleth favours large units</div>
+    <p>Chihuahua, with two accessions from the same site, is painted as strongly as Jalisco with two of two species, and its huge area draws more attention than that of Tlaxcala. A choropleth of absolute counts corrects neither for the size of the unit nor for collecting effort. To compare regions, use the grid, with equal cells, or the rarefied indices of Block 5 (Chapter 5).</p>
+  </div>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/en/b4-mundo.png" alt="The world map with the accessions per country choropleth: Mexico in purple; Guatemala, Colombia, Peru, Bolivia, Ethiopia, India and Myanmar in light ochre; instead of the scale bar, the notice No scale bar: it varies with latitude; legends for the conservation route and for accessions per country"></div>
+    <figcaption><b>Figure 4.6.</b> The <span class="ui">The world</span> extent with the accessions per country choropleth and the freshly loaded collection. Myanmar is painted because of the maize from Veracruz with the unsigned longitude.</figcaption>
+  </figure>
+  <p>The country choropleth makes the error of Figure 4.2 even more visible: a whole country painted by a single misplaced point (Figure 4.6). With 36 accessions against 2 at most in the others, Mexico takes the purple and every other country the lightest shade; in a collection like this one, the country choropleth only tells “Mexico” from “the rest”.</p>
+  <h3>The grid</h3>
+  <p>The <span class="ui">Grid</span> menu lays square cells of <span class="ui">0.25°</span>, <span class="ui">0.5°</span>, <span class="ui">1°</span> or <span class="ui">2°</span> over the map, aligned with whole degrees: the 1° cell containing the point (λ, φ) runs from ⌊λ⌋ to ⌊λ⌋ + 1 and from ⌊φ⌋ to ⌊φ⌋ + 1. Only cells with at least one point are drawn, semi-transparent, in the shade of the ramp that matches their count (from 25% of the ramp, so that a single-point cell shows). When you hover over a cell, the app shows its number of accessions.</p>
+  <p>The cell size changes the answer (Table 4.2): with small cells nearly every cell holds a single point; with large cells, different sites are lumped together. Correcting the maize from Veracruz does not change the number of 1° cells: its point leaves a cell in Myanmar and occupies another in Veracruz. A 1° cell measures about 111 km from north to south and, at the latitude of central Mexico, about 105 km from east to west; its area in square kilometres changes with latitude, which is worth remembering when comparing cells in Chihuahua and Chiapas. The grid in this block is for looking; the cell-based analysis is done in Blocks 5 and 6 (Chapters 5 and 6), with their own cell size.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/en/b4-rejilla.png" alt="The map of Mexico with the 1 degree grid: ochre and brown cells in Chihuahua, Jalisco, Michoacán, central Mexico, Veracruz, Oaxaca, Chiapas and Yucatán; the darkest one, in purple, over Puebla and the State of Mexico"></div>
+    <figcaption><b>Figure 4.7.</b> The 1° grid over the map of Mexico. The purple cell, from −99° to −98° and from 19° to 20°, holds the 6 accessions from Cholula and Texcoco.</figcaption>
+  </figure>
+  <table class="compacta">
+    <caption><b>Table 4.2.</b> The occupied cells at each size, with the 45 points of the freshly loaded example collection.</caption>
+    <thead><tr><th class="c" style="width:0.8in">Cell</th><th class="c" style="width:0.85in">Occupied</th><th class="c" style="width:0.95in">With a single point</th><th class="c" style="width:0.85in">Maximum</th><th>The most populated cell</th></tr></thead>
+    <tbody>
+      <tr><td class="c">0.25°</td><td class="c">29</td><td class="c">18</td><td class="c">4</td><td>A tie: San Pablo Villa de Mitla, Oaxaca, and San Andrés Cholula, Puebla.</td></tr>
+      <tr><td class="c">0.5°</td><td class="c">26</td><td class="c">14</td><td class="c">4</td><td>A tie between Mitla, Cholula and the cell of Coatepec and Huatusco, Veracruz.</td></tr>
+      <tr><td class="c">1°</td><td class="c">21</td><td class="c">9</td><td class="c">6</td><td>−99° to −98°, 19° to 20°: Cholula and Texcoco.</td></tr>
+      <tr><td class="c">2°</td><td class="c">18</td><td class="c">7</td><td class="c">7</td><td>−98° to −96°, 16° to 18°: the seven points of Oaxaca.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 4.7 -->
+  <h2 id="b4-7"><span class="num">4.7</span>The counts by state and by country</h2>
+  <p>Section <span class="ui">2 · How many fall in each state and each country</span> opens with five summary boxes and goes on with two tables. Everything is counted with the points left by the crop and route filters, regardless of the extent, and by the place where each point falls (Section 4.3).</p>
+  <table class="compacta">
+    <caption><b>Table 4.3.</b> The five summary boxes, before and after correcting the longitude of MEX-ZM-0039 in Block 3.</caption>
+    <thead><tr><th style="width:1.5in">Box</th><th class="c" style="width:0.6in">Before</th><th class="c" style="width:0.65in">After</th><th>What it counts</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">On the map</span></td><td class="c">45</td><td class="c">45</td><td>The accessions with usable coordinates, <i>of 46 accessions</i>.</td></tr>
+      <tr><td><span class="ui">Without coordinates</span></td><td class="c">1</td><td class="c">1</td><td>Those that cannot be mapped (MEX-ZM-0043). The box turns ochre while there is any.</td></tr>
+      <tr><td><span class="ui">Mexican states</span></td><td class="c">10</td><td class="c">10</td><td>The states with at least one point. The corrected maize falls in Veracruz, which already had collections.</td></tr>
+      <tr><td><span class="ui">Countries</span></td><td class="c">8</td><td class="c">7</td><td>The countries <i>according to where the point falls</i>: Myanmar drops out after the correction.</td></tr>
+      <tr><td><span class="ui">Mapped species</span></td><td class="c">24</td><td class="c">24</td><td>The taxa (genus and epithet) with at least one point.</td></tr>
+    </tbody>
+  </table>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/en/b4-tablas.png" alt="Section 2: the boxes On the map 45 of 46 accessions, Without coordinates 1, Mexican states 10, Countries 8 and Mapped species 24; the table Mexico, by state with Oaxaca 7 accessions and 3 species, Puebla 7 and 5, Veracruz 6 and 4, Chiapas 4 and 4, with their crops; and the table The world, by country with Mexico 36 and 18, Guatemala 2 and 1, Peru 2 and 2, and Bolivia, Ethiopia, India, Colombia and Myanmar with 1"></div>
+    <figcaption><b>Figure 4.8.</b> The summary boxes and the tables with the freshly loaded collection. The state table scrolls to show the remaining six states.</figcaption>
+  </figure>
+  <p>The <span class="ui">Mexico, by state</span> table gives, for each state with collections, from the one with the most to the one with the fewest, the number of accessions, of species and up to three crops. The state name is a button that zooms the map into it. With the example collection, Oaxaca and Puebla lead with 7 accessions; after the correction, Veracruz catches up with 7 and 5 species (Table 4.4). If no accession falls in Mexico, the table says so: <span class="ui">No accession falls in Mexico.</span></p>
+  <table class="compacta">
+    <caption><b>Table 4.4.</b> The state table of the example collection, after correcting MEX-ZM-0039.</caption>
+    <thead><tr><th>State</th><th class="c" style="width:0.85in">Accessions</th><th class="c" style="width:0.75in">Species</th><th>Crops (up to three)</th></tr></thead>
+    <tbody>
+      <tr><td>Oaxaca</td><td class="c">7</td><td class="c">3</td><td>Maíz, Frijol, Chile</td></tr>
+      <tr><td>Puebla</td><td class="c">7</td><td class="c">5</td><td>Maíz, Calabaza, Amaranto</td></tr>
+      <tr><td>Veracruz</td><td class="c">7 <span class="muted">(was 6)</span></td><td class="c">5 <span class="muted">(was 4)</span></td><td>Calabaza, Vainilla, Café</td></tr>
+      <tr><td>Chiapas</td><td class="c">4</td><td class="c">4</td><td>Maíz, Frijol ayocote, Cacao</td></tr>
+      <tr><td>Michoacán</td><td class="c">3</td><td class="c">3</td><td>Teocintle, Aguacate, Frijol</td></tr>
+      <tr><td>Chihuahua · Yucatán · México · Jalisco</td><td class="c">2 each</td><td class="c">1 · 2 · 2 · 2</td><td>Maíz · Maíz, Chile · Teocintle, Trigo · Chile, Agave</td></tr>
+      <tr><td>Sonora</td><td class="c">1</td><td class="c">1</td><td>Frijol tepari</td></tr>
+    </tbody>
+  </table>
+  <p>The <span class="ui">The world, by country</span> table gives accessions and species for each country, with the country name in the interface language. Before the correction: Mexico 36 (18 species), Guatemala 2, Peru 2, and Bolivia, Ethiopia, India, Colombia and Myanmar with 1; afterwards, Mexico 37 and Myanmar disappears. The tepary bean counts in Mexico even though its passport says <i>MX</i>, because the point rules. If a point does not fall inside any country on the map—in the sea, for example—, the app counts it in the country declared in its passport; if no country is declared either, it is left out of the table and a note below says how many there are: <i>usually points at sea, that is, coordinates with an error</i>.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>What these counts are for</div>
+    <p>They are the first geographic portrait of the collection: where collecting effort is concentrated and which states or countries are missing. The state table is the starting point for Block 5, which computes the diversity of each state, and for Block 6, which looks for uncollected areas. If a state shows fewer accessions than you expected, check the records of its points: one of them probably falls in the neighbouring state.</p>
+  </div>
+
+  <!-- 4.8 -->
+  <h2 id="b4-8"><span class="num">4.8</span>Taking the map and the points with you</h2>
+  <p>The <span class="ui">Map title (optional)</span> field writes a title in bold in the upper left corner of the map; it shows on screen and goes into the exports. Below the map, three buttons save what you see:</p>
+  <table class="compacta">
+    <thead><tr><th style="width:1.85in">Button · file</th><th>What it saves</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Export SVG</span><br><span class="ruta">mapa-colecta.svg</span></td><td>The vector map, 900 × 560 units, with everything in view: extent, colours, choropleth, grid, codes, title, scale and north arrow. It enlarges without losing sharpness and can be edited in any vector drawing program. The legend is not included: it sits on the page, outside the drawing.</td></tr>
+      <tr><td><span class="ui">Export PNG (2×)</span><br><span class="ruta">mapa-colecta.png</span></td><td>The same map as an image, at twice the resolution: 1,800 × 1,120 pixels, with a background. If the browser fails to convert it, the app warns <i>Could not convert to PNG; download the SVG instead.</i></td></tr>
+      <tr><td><span class="ui">Points as CSV (with state and cell)</span><br><span class="ruta">puntos-mapa.csv</span></td><td>One row per point, with the crop and route filters applied but regardless of the extent: with the example collection, 45 rows plus the header.</td></tr>
+    </tbody>
+  </table>
+  <p>The SVG and the PNG are redrawn for the file with the <b>fixed colours of the light theme</b>, even if you are working in the dark theme: on screen the map uses the theme colours, which change with it, and a file has to look the same everywhere, on white paper or on a slide. That is why the exported SVG carries no colour variables, only literal values.</p>
+  <table class="compacta csv">
+    <caption><b>Table 4.5.</b> The twelve columns of <span class="ruta">puntos-mapa.csv</span> and three rows of the freshly loaded example collection (the accession name omitted).</caption>
+    <thead><tr><th>ACCENUMB</th><th>TAXON</th><th>CROPNAME</th><th>DECLATITUDE</th><th>DECLONGITUDE</th><th>ELEVATION</th><th>ENTIDAD</th><th>PAIS_PUNTO</th><th>PAIS_PASAPORTE</th><th>CELDA_1G</th><th>RUTA</th></tr></thead>
+    <tbody>
+      <tr><td>MEX-ZM-0001</td><td>Zea mays</td><td>Maíz</td><td>17.6871</td><td>-97.2788</td><td>1993</td><td>Oaxaca</td><td>MEX</td><td>MEX</td><td>-98|17</td><td>seed</td></tr>
+      <tr><td>MEX-ZM-0039</td><td>Zea mays</td><td>Maíz</td><td>18.81</td><td>96.06</td><td>20</td><td></td><td>MMR</td><td>MEX</td><td>96|18</td><td>seed</td></tr>
+      <tr><td>MEX-PH-0041</td><td>Phaseolus acutifolius</td><td>Frijol tepari</td><td>27.028</td><td>-108.937</td><td>25000</td><td>Sonora</td><td>MEX</td><td>MX</td><td>-109|27</td><td>seed</td></tr>
+    </tbody>
+  </table>
+  <p>The columns the block adds are the valuable ones (their names are the same in both interface languages): <code>ENTIDAD</code>, the state where the point falls (empty outside Mexico); <code>PAIS_PUNTO</code>, the country where it falls, in three letters, next to <code>PAIS_PASAPORTE</code>, the one declared in <code>ORIGCTY</code>; <code>CELDA_1G</code>, the 1° cell as “longitude|latitude” of its south-west corner (<i>-98|17</i> is the cell from −98° to −97° and from 17° to 18°); and <code>RUTA</code>, the conservation route with its internal code (<i>seed</i>, <i>field</i>, <i>invitro</i>, <i>cryo</i>, <i>insitu</i>, <i>onfarm</i>). Sorting the file by the two country columns, or filtering the rows where they differ, is the fastest way to find, in a large collection, the points that do not fall where the passport says: in the example, exactly the two accessions of Section 4.3 stand out.</p>
+  <h3>The figure studio</h3>
+  <p>When you hover over the map, the figure studio button appears in its corner, the same one as for the Block 2 charts (Section I.6); the <span class="ui">In this block</span> index also offers it next to section 1. The studio opens the map in split screen to adjust the text size and the line width, change the palette and export to PNG, SVG, PDF or TIFF in millimetres or inches, at 300, 600 or 1,200 dpi, which is what journals usually ask for. Since the on-screen map uses the theme colours, the studio can export it with those of the light theme even if you work in the dark one.</p>
+
+  <h3>When something goes wrong</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:40%">What you see</th><th>Why it happens and what to do</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Load your accessions in Block 2 first.</span></td><td>There is no passport data. Load your collection or the example one (Chapter 2).</td></tr>
+      <tr><td>An accession does not appear on the map</td><td>It lacks the decimal latitude or longitude, they are (0, 0) or out of range; or a crop or route filter left it out. If it only has degrees, minutes and seconds, Block 3 offers to convert them (Section 3.4).</td></tr>
+      <tr><td>The automatic map shows half the world</td><td>Some point lies far from the rest: another continent or a lost sign. Look at where the isolated point falls; if it is an error, correct it in Block 3. If it is real, choose <span class="ui">All of Mexico</span> or a single state.</td></tr>
+      <tr><td>The states and their codes are not shown</td><td>The extent spans more than 45° of longitude or does not touch Mexico. Choose <span class="ui">All of Mexico</span> or a single state; also check that <span class="ui">state codes</span> is on.</td></tr>
+      <tr><td>An accession counts in another state or another country</td><td>The point falls there, whatever the passport says. Tap the point, check the coordinate in the record and compare it with the collecting site.</td></tr>
+      <tr><td>With elevation, a point comes out grey</td><td>It has no elevation, or the one it has is impossible (outside −500 to 7,000 m), as in Figure 4.4. Tap it and correct the value in its record.</td></tr>
+      <tr><td>A value comes out grey as <i>the rest</i></td><td>Only the eleven most frequent values get their own colour. Filter by crop or by route.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja regla">
+    <div class="caja-t"><span class="ico">✓</span>Decision rule · what to do in Block 4</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:44%"><b>If</b> you have just loaded or corrected the collection</td><td><b>then</b> look at the automatic extent first: an isolated point on the other side of the map is almost always a lost sign.</td></tr>
+      <tr><td><b>If</b> the point falls in a state or country other than the passport’s</td><td><b>then</b> tap it, check the coordinate in its record and decide whether the error is in the coordinate or in the text.</td></tr>
+      <tr><td><b>If</b> you want to see where collecting effort is concentrated</td><td><b>then</b> use the grid, with equal cells, rather than the accessions choropleth.</td></tr>
+      <tr><td><b>If</b> you are looking for scarce material</td><td><b>then</b> use <span class="ui">size by stock</span> and filter by the route you are interested in.</td></tr>
+      <tr><td><b>If</b> the map is going into a publication</td><td><b>then</b> give it a title, decide whether to keep the state codes and export it as SVG or from the figure studio; save the points CSV as well.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">The map does not modify the passport; Blocks 5 and 6 use the same points and states.</p>
+  </div>
+
+</section>
+
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · User’s Manual · Chapter 6</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- splits the content into letter-size sheets, with running heads, page numbers and table of contents -->
+<script src="../paginar.js"></script>
+<style>
+  .formula { font-family: var(--mono); font-size: 9pt; background: var(--marino-suave); border-radius: 5px; padding: 0.07in 0.12in; margin: 0.08in 0; }
+  .cuenta td { font-family: var(--mono); font-size: 8.6pt; }
+  .csv td { font-family: var(--mono); font-size: 7.6pt; }
+  figure.reducida { width: 74%; margin-left: auto; margin-right: auto; }
+  figure.mediana { width: 86%; margin-left: auto; margin-right: auto; }
+  figure.chica { width: 72%; margin-left: auto; margin-right: auto; }
+  .dos-figs { display: flex; gap: 0.18in; align-items: flex-start; margin: 0.1in 0; }
+  .dos-figs > figure { flex: 1 1 0; margin: 0; }
+</style>
+</head>
+<body>
+
+<section class="capitulo" id="cap-b6" data-pestana="6" data-orden="6" style="--acento: var(--b6)">
+  <div class="cap-apertura">
+    <div class="cap-num">6</div>
+    <div class="cap-etiqueta">Chapter six · Block 6 · Collecting gaps</div>
+    <h1 data-corto="Collecting gaps">Collecting gaps</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">Block 5 measured what the collection holds; Block 6 looks at what it lacks. It throws a grid over the territory, marks the cells without any collection and ranks them with a priority index whose four components you can see and weight as you like, so that the next field trip goes where it pays off most. Separately, it reviews the gaps a map does not show—types with a single accession, without a safety duplicate, only in a field genebank, only in situ or only as DNA—and looks for the smallest set of localities that brings together all the diversity. Everything comes from the passport and from geography: it is a geographic and collection gap analysis, not an ecogeographic one.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>6.1</b>The territory, the grid and the block summary</li>
+      <li><b>6.2</b>The map of what is missing</li>
+      <li><b>6.3</b>The priority index, component by component</li>
+      <li><b>6.4</b>Moving the weights: what you are after on the next trip</li>
+      <li><b>6.5</b>The collecting route for the GPS</li>
+      <li><b>6.6</b>What you already have and could lose</li>
+      <li><b>6.7</b>The indispensable minimum: complementarity</li>
+      <li><b>6.8</b>How everything changes with the cell, the territory and the type</li>
+    </ul>
+  </div>
+
+
+  <!-- 6.1 -->
+  <h2 id="b6-1"><span class="num">6.1</span>The territory, the grid and the block summary</h2>
+  <p class="lead">A <b>collecting gap</b> is a part of the territory, or of a crop’s diversity, that the collection does not hold. Block 6 looks for them with what is already in the passport (Chapter 2): the coordinates, the species, the conservation route and the safety duplicate. When you open it, or when you change any selector, it recomputes everything behind the animated wait <i>Searching for collecting gaps</i>. If there are no accessions, the block says <span class="ui">Load your accessions in Block 2 first.</span></p>
+  <figure class="chica">
+    <div class="marco"><img src="../img/en/b6-controles.png" alt="The header of Block 6: the title, the introductory paragraph, the selectors Territory set to Mexico, Cell size set to 1 degree and What counts as a type set to Species (genus + epithet), and five summary boxes: territory covered 5.5 % with 13 of 236 cells of 1 degree, 223 cells with no collection, largest gap 1,026 km from cell 32.50, -117.50 (Baja California) to the nearest collection, 8 cells holding at least 90% (together they hold 94% of 18 types) and 21 types at risk"></div>
+    <figcaption><b>Figure 6.1.</b> The block header with the example collection and the default values.</figcaption>
+  </figure>
+  <p>Three selectors govern the analysis; the other controls are inside each section.</p>
+  <table class="compacta">
+    <caption><b>Table 6.1.</b> The three header selectors (the default option in bold).</caption>
+    <thead><tr><th style="width:1.6in">Selector</th><th>Options and what they do</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Territory</span></td><td><b><span class="ui">Mexico</span></b>: the grid keeps the cells that touch the land of some state. <span class="ui">The world</span>: those that touch the land of some country, between 60° south and 84° north; the deficit in the index is then computed by country (Section 6.8).</td></tr>
+      <tr><td><span class="ui">Cell size</span></td><td><span class="ui">0.5°</span>, <b><span class="ui">1°</span></b> or <span class="ui">2°</span>. The cells are laid out as in Blocks 4 and 5: squares aligned with the meridians and parallels that are multiples of the size.</td></tr>
+      <tr><td><span class="ui">What counts as a type</span></td><td><b><span class="ui">Species (genus + epithet)</span></b>, <span class="ui">Crop</span>, <span class="ui">Genus</span> or <span class="ui">Accession name</span>, with the same criterion as Block 5 (Table 5.1). It decides what “richness” is, what “exclusive” is and which types are reviewed in section 3. An empty value does not count as a type in this block.</td></tr>
+    </tbody>
+  </table>
+  <p>The five summary boxes sum up the result. With the example collection:</p>
+  <table class="compacta">
+    <caption><b>Table 6.2.</b> The summary boxes with the example collection.</caption>
+    <thead><tr><th style="width:1.85in">Box</th><th class="c" style="width:0.6in">Example</th><th>What it says</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Territory covered</span></td><td class="c">5.5 %</td><td>The proportion of cells with at least one collection: 13 of 236 cells of 1°. Below 25% the figure turns red.</td></tr>
+      <tr><td><span class="ui">Cells with no collection</span></td><td class="c">223</td><td>The empty cells: the territory the collection does not represent (Section 6.2).</td></tr>
+      <tr><td><span class="ui">Largest gap</span></td><td class="c">1,026 km</td><td>The greatest distance from an empty cell to the nearest collection; below, which cell it is: 32.50, −117.50, in Baja California.</td></tr>
+      <tr><td><span class="ui">Cells holding ≥ 90%</span></td><td class="c">8</td><td>How many cells, chosen by complementarity, are enough to bring together at least 90% of the types; below, how much they really hold (94%) and the total number of types within the territory (18; Section 6.7).</td></tr>
+      <tr><td><span class="ui">Types at risk</span></td><td class="c">21</td><td>The types whose risk adds up to 3 points or more: a single accession, only in situ, only as DNA, or no duplicate together with another signal (Section 6.6).</td></tr>
+    </tbody>
+  </table>
+  <p>Next to the map’s <span class="ui">Paint</span> selector, the app reports how many accessions fall outside the analysed area. With the territory set to Mexico there are <b>9</b>: the two maizes from Guatemala, the two potatoes from Peru, the oca from Bolivia, the barley from Ethiopia, the amaranth from India, the cassava from Colombia and the maize <i>Tuxpeño de la costa</i>, whose unsigned longitude sends it to Myanmar. The other 36 of the 45 accessions with coordinates come in; the one without coordinates (MEX-ZM-0043) enters no geographic calculation, though it does enter section 3.</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>A geographic and collection analysis, not an ecogeographic one</div>
+    <p>An ecogeographic analysis, such as that of Ramírez-Villegas et al. (2010), asks which combinations of climate, soil and vegetation the collection is missing; that requires environmental layers, and GermplasmPro neither bundles nor downloads them, because nothing it does leaves your computer. Block 6 answers with what the passport and geography provide: where there are no collections, how far away the nearest one is, what lies around it and which types depend on a single accession. The note at the foot of the panel says so (Figure 6.2). If you need the environmental step, export the route of Section 6.5 and take it to a modelling tool; the elevation belt (Section 6.6) is the only environmental variable the block looks at.</p>
+  </div>
+  <figure>
+    <div class="marco"><img src="../img/en/b6-nota.png" alt="The note How far this analysis goes: this is a geographic and collection gap analysis, not an ecogeographic one; knowing which combinations of climate, soil and vegetation are missing requires environmental layers, which GermplasmPro neither bundles nor downloads; if you need that step, export the coordinates and take them to an environmental modelling tool"></div>
+    <figcaption><b>Figure 6.2.</b> The note that closes the Block 6 panel.</figcaption>
+  </figure>
+
+  <!-- 6.2 -->
+  <h2 id="b6-2"><span class="num">6.2</span>The map of what is missing</h2>
+  <p>Section <span class="ui">1 · The map of what is missing</span> draws the grid over the outlines of Block 4 (Chapter 4). Each square is a cell that touches the land of the territory or that holds some accession. Cells with collections are green, with a dot at their centre; empty ones are painted according to the <span class="ui">Paint</span> selector, and ten white circles with a dark border and number mark the top ten priorities of the index (Section 6.3). If two circles would overlap, one is moved aside and a line joins it to its cell.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/en/b6-mapa.png" alt="Section 1: the Paint selector set to collecting priority, the note 9 accessions fall outside the analysed area and the map of Mexico covered with 1 degree cells, including those of the coast and the islands; most in ochre, those of the centre and south darker, thirteen green cells with a dot and ten numbered white circles: 3, 1 and 4 in the band at 21.5 degrees north, 10 and 8 below them in Hidalgo, 2 and 7 in Guerrero, 5 and 9 in southern Veracruz and 6 in Campeche; below, the legend cell with collections, numbered priority and the ramp priority points of the empty cell, min 32, max 87"></div>
+    <figcaption><b>Figure 6.3.</b> The gap map painted by priority, with the example collection. The darkest cells surround the area where the collections are concentrated, but without touching it.</figcaption>
+  </figure>
+  <p>At the lower right there is a scale bar in kilometres, with the same criterion as in Block 4 (Section 4.2): on its own for Mexico, with the latitude at which it holds if the extent is tall and, for the whole world, replaced by the notice <span class="ui">No scale bar: it varies with latitude</span>. When you hover over a cell, a label gives its centre and, if it is empty, the distance to the nearest collection and its priority points (for example, <i>29.50, -118.50 · empty · 976 km · 60 pts</i>, the cell of Guadalupe Island); if it is occupied, how many accessions and types it holds. The legend changes with the mode: it says what the ramp measures and writes its minimum and maximum.</p>
+  <table class="compacta">
+    <caption><b>Table 6.3.</b> The three ways of painting the map, with their ramp in the example collection.</caption>
+    <thead><tr><th style="width:1.9in">Paint</th><th>What the ramp colours</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">collecting priority</span> (default)</td><td><span class="ui">priority points of the empty cell</span>, from 32 to 87; the darkest is the one with the most points. Occupied cells in green.</td></tr>
+      <tr><td><span class="ui">distance to nearest collection</span></td><td><span class="ui">km from the empty cell to the nearest collection</span>, from 59 to 1,026: light next to the collections, purple at the extremes (Figure 6.4).</td></tr>
+      <tr><td><span class="ui">richness of occupied cells</span></td><td><span class="ui">types per occupied cell</span>, from 1 to 5; empty cells stay uncoloured and the legend says so (Figure 6.5).</td></tr>
+    </tbody>
+  </table>
+  <div class="dos-figs">
+  <figure>
+    <div class="marco"><img src="../img/en/b6-distancia.png" alt="The map painted by distance: the cells near the collections of the centre and south in light yellow, the north in ochre and the cells of north-western Baja California and the Pacific islands in purple, the farthest"></div>
+    <figcaption><b>Figure 6.4.</b> Painted by distance. The purple in the north-west is the largest gap, 1,026 km from the nearest collection.</figcaption>
+  </figure>
+  <figure>
+    <div class="marco"><img src="../img/en/b6-riqueza.png" alt="The map painted by richness: only the thirteen occupied cells are coloured; the darkest, in purple, in the centre of the country, with five species; the others in ochre and yellow; the empty cells without fill and the ten priority circles"></div>
+    <figcaption><b>Figure 6.5.</b> Painted by richness. The purple cell, 19.50, −98.50, holds five species.</figcaption>
+  </figure>
+  </div>
+  <p>The map is exported with the <span class="ui">Map as SVG</span> button (Section 6.5) and, like the other maps, it can be opened in the figure studio (Section I.6). For screen readers, the map and the curve of section 4 carry a description with their main figures.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · the grid, the edge cells and the distance</div>
+    <p>With cells of size <i>t</i> degrees, an accession with longitude λ and latitude φ falls in the cell with indices <i>i</i> = ⌊λ / <i>t</i>⌋ and <i>j</i> = ⌊φ / <i>t</i>⌋, whose centre is ((<i>i</i> + ½)<i>t</i>, (<i>j</i> + ½)<i>t</i>). To know whether the cell belongs to the territory, the app does not look only at its centre: it tests a 5 × 5 = 25 point lattice spread over it (with <span class="ui">The world</span>, 9 points with 1° and 2°, and 4 with 0.5°) and keeps the cells where some point falls on land. The fraction of points that falls in each state is its <b>land share</b> of the cell. This is how coastal cells whose centre lies in the sea exist, and a state smaller than the cell still gets its own cell: if no sample point touches it, the app anchors it to the cell of an interior point of the state. All 32 states have at least one cell at any size.</p>
+    <p>The distance from an empty cell to the nearest collection is the smallest great-circle distance (haversine, Section 3.5) between its centre and all the accessions with coordinates, including those that fall outside the area.</p>
+    <div class="formula">d = 2R · arcsin √[ sin²(Δφ/2) + cos φ<sub>1</sub> cos φ<sub>2</sub> sin²(Δλ/2) ]    with R = 6,371.0088 km</div>
+  </div>
+  <p>Each accession counts in the state where <b>its own point</b> falls, not in that of its cell’s centre. In the example, the cell 19.50, −98.50 is shared by the State of Mexico (32% of its land), Hidalgo, Puebla (24% each) and Tlaxcala (20%); its six accessions count four for Puebla and two for the State of Mexico, which is where they were collected. An accession that falls in the sea next to the coast counts in its cell, which exists even though its centre also falls in the sea. With the territory set to Mexico, only an accession that falls in another country is left out.</p>
+
+  <!-- 6.3 -->
+  <h2 id="b6-3"><span class="num">6.3</span>The priority index, component by component</h2>
+  <p>Not all empty cells are worth the same for the next field trip. Section <span class="ui">2 · Where to go next time</span> gives them a score that adds up four components, each scaled between 0 and 1 and multiplied by its weight. The default weights add up to 100, so the score runs from 0 to 100.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · the priority index of an empty cell</div>
+    <div class="formula">P = w<sub>d</sub> · min(d, 250) / min(d<sub>max</sub>, 250) + w<sub>r</sub> · R<sub>v</sub> / R<sub>max</sub> + w<sub>e</sub> · δ<sub>cell</sub> + w<sub>x</sub> · X<sub>v</sub> / X<sub>max</sub></div>
+    <p><b>Distance</b> (w<sub>d</sub> = 40): the distance <i>d</i> to the nearest collection, capped at 250 km—beyond that, the territory is equally unknown—and divided by the greatest distance among the empty cells (also capped). <b>Neighbourhood richness</b> (w<sub>r</sub> = 25): R<sub>v</sub>, the distinct types in the cell’s neighbourhood (with 1°, the 5 × 5 block of cells centred on it), divided by the largest R<sub>v</sub> in the grid. <b>Exclusive types nearby</b> (w<sub>x</sub> = 15): X<sub>v</sub>, the types in the neighbourhood that occur in only one cell of the whole grid, divided by the largest X<sub>v</sub>.</p>
+    <p><b>State deficit</b> (w<sub>e</sub> = 20). The collecting density of a state is ρ<sub>e</sub> = accessions whose point falls in it ÷ its area in km²; its deficit, δ<sub>e</sub> = 1 − ρ<sub>e</sub> / ρ<sub>max</sub>: the best covered state is worth 0 and those with nothing are worth 1. A cell shared by several states takes the mean of their deficits weighted by the land share of each:</p>
+    <div class="formula">δ<sub>cell</sub> = Σ<sub>e</sub> a<sub>e</sub> δ<sub>e</sub> / Σ<sub>e</sub> a<sub>e</sub>    (a<sub>e</sub>: land share of state <i>e</i> in the cell)</div>
+    <p>The neighbourhood is the cells within about 220 km on each side, whatever the cell size: 2 cells with 1°, 4 with 0.5° and 1 with 2°. The section says so: <i>within about 220 km (2 cells of 1° each way)</i>. On equal scores, the cell with more richness around goes first; if still tied, the farthest one, and then the northernmost and the westernmost.</p>
+  </div>
+  <figure style="width:62%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b6-prioridades.png" alt="Section 2: four sliders, each with its name above and its value on the right: Distance to nearest collection 40 (40 %), Neighbourhood richness 25 (25 %), State deficit 20 (20 %) and Exclusive types nearby 15 (15 %); the table with the first ten cells: 1, 21.500, -99.500, San Luis Potosí +3, 228 km, richness 9, score 87; 2, 17.500, -100.500, Guerrero, 254 km, 7, 83; 3, Guanajuato +1, 250 km, 7, 83; 4, Veracruz +2, 170 km, 10, 79; 5, 18.500, -94.500, Veracruz, 261 km, 8, 77; up to 10, 20.500, -99.500, Hidalgo +2, 127 km, 9, 70; each row with a four-colour bar; below, the legend and the buttons Collecting route as CSV and Map as SVG"></div>
+    <figcaption><b>Figure 6.6.</b> The weights and the first ten rows of the priority table (the table holds 25 and scrolls).</figcaption>
+  </figure>
+  <p>The table lists the 25 cells with the most points. Its columns are the priority number, the <span class="ui">Cell centre</span> (latitude, longitude, with three decimals), the <span class="ui">State</span> with the most land in the cell—followed by “+<i>n</i>” if it touches others, which show when you hover (<i>Also touches: Querétaro, Hidalgo, Guanajuato</i>)—, the distance <span class="ui">To nearest</span> collection, the <span class="ui">Richness nearby</span> (R<sub>v</sub>), the <span class="ui">Score</span> rounded to a whole number and, under <span class="ui">Why</span>, a bar that splits the score among the four components with their colours: purple for distance, green for richness, ochre for the deficit and magenta for exclusive types. The bar also carries the breakdown as text, for screen readers, and the table can be navigated with the keyboard.</p>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Worked example · why the cell 21.50, −99.50 comes first</div>
+    <p>It is a cell of San Luis Potosí (56% of its land) that also touches Querétaro, Hidalgo and Guanajuato. Its 5 × 5 cell neighbourhood (from −101.5° to −97.5° in longitude and from 19.5° to 23.5° in latitude) contains four occupied cells: the one at 19.50, −98.50 with 6 accessions and 5 species, one in Puebla with 2 (maize and husk tomato), one in Veracruz with 3 (squash, vanilla and maize) and one in Michoacán with 1 bean.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">Distance: the nearest accession is MEX-ZP-0012, at 19.5523, −98.8155: Δφ = 1.948° ≈ 216.6 km, Δλ·cos φ ≈ 71.3 km → d = 228.0 km</td></tr>
+      <tr><td colspan="2">d<sub>max</sub> = 1,026 km &gt; 250 → 40 × 228.0 / 250 = 40 × 0.912 = 36.48</td></tr>
+      <tr><td colspan="2">Richness: R<sub>v</sub> = 9 species (12 accessions); R<sub>max</sub> = 12 → 25 × 9/12 = 18.75</td></tr>
+      <tr><td style="width:50%">Deficit: the four states it touches have no accessions → δ = 1 → 20 × 1 = 20</td><td>Exclusive: X<sub>v</sub> = 4 + 1 + 2 = 7; X<sub>max</sub> = 9 → 15 × 7/9 = 11.67</td></tr>
+      <tr><td colspan="2">P = 36.48 + 18.75 + 20 + 11.67 = 86.90  →  the table writes 87</td></tr>
+    </tbody></table>
+    <p>The seven exclusive types are the four species of the cell 19.50, −98.50 found nowhere else (<i>Cucurbita pepo</i>, <i>Amaranthus hypochondriacus</i>, <i>Triticum aestivum</i> and <i>Cucurbita argyrosperma</i>), the husk tomato from Puebla, and the squash (<i>C. moschata</i>) and the vanilla from Veracruz. The cells that reach R<sub>max</sub> = 12 and X<sub>max</sub> = 9 are three empty ones in the band at 18.5° of latitude, between Puebla and Oaxaca, which have almost the whole collection of central Mexico in their neighbourhood.</p>
+  </div>
+  <p><b>How to read it.</b> The first three cells lie some 230 to 250 km from any collection and in states without a single accession, but with a rich neighbourhood: unknown territory next to a diverse area, the typical case in which a trip is worth it. The eighth, 20.50, −98.50, in Hidalgo, is only 110 km from a collection, but surrounded by 10 species and 9 exclusive types: it rises because of richness, not distance, and its bar shows it with more green and magenta than purple. The 223 empty cells range from 86.90 points down to 31.83, the cell at 16.50, −97.50, in Oaxaca, at the bottom of the list.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>The state deficit, with this collection</div>
+    <p>Puebla is the best covered: 7 accessions in 34,689 km², 2.02 per 10,000 km², so its deficit is 0. The others are measured against it: State of Mexico 0.548 (2 accessions), Veracruz 0.582 (6), Oaxaca 0.626 (7), Chiapas 0.732 (4), Yucatán 0.743 (2), Michoacán 0.749 (3), Jalisco 0.877 (2), Chihuahua 0.960 (2) and Sonora 0.973 (1); the remaining 22 states, Tlaxcala included, have no accessions and are worth 1. The cell 21.50, −98.50, fourth on the list, is 48% Veracruz, 32% San Luis Potosí and 20% Hidalgo: δ = 0.48 × 0.582 + 0.32 + 0.20 = 0.799, and its deficit contributes 20 × 0.799 = 15.99 points.</p>
+  </div>
+
+  <!-- 6.4 -->
+  <h2 id="b6-4"><span class="num">6.4</span>Moving the weights: what you are after on the next trip</h2>
+  <p>The four sliders run from 0 to 60 in steps of 5. Each has its name above it and, to its right, the weight and, in parentheses, the share it represents of the total: with the default weights, 40 (40 %), 25 (25 %), 20 (20 %) and 15 (15 %). The calculation is redone when you release the slider. The weights do not need to add up to 100: if you raise one to 60, the points can exceed 100 and the percentages are redistributed.</p>
+  <table class="compacta">
+    <caption><b>Table 6.4.</b> The first five cells when a single weight is raised to 60 (the other three at their defaults).</caption>
+    <thead><tr><th style="width:1.6in">Weight raised to 60</th><th>First five cells (points)</th></tr></thead>
+    <tbody>
+      <tr><td>None (defaults)</td><td>San Luis Potosí 86.9 · Guerrero 82.9 · Guanajuato 82.9 · Veracruz (21.50, −98.50) 79.0 · Veracruz (18.50, −94.50) 76.6</td></tr>
+      <tr><td>Distance (60, 50%)</td><td>San Luis Potosí 105.1 · Guerrero 102.9 · Guanajuato 102.9 · Veracruz (18.50, −94.50) 96.6 · Campeche 95.1</td></tr>
+      <tr><td>Neighbourhood richness (44%)</td><td>San Luis Potosí 113.1 · Veracruz (21.50, −98.50) 108.1 · Guerrero 103.3 · Guanajuato 103.3 · Veracruz (18.50, −94.50) 100.0</td></tr>
+      <tr><td>State deficit (43%)</td><td>San Luis Potosí 126.9 · Guerrero 122.9 · Guanajuato 122.9 · Campeche 115.2 · Guerrero (17.50, −99.50) 114.7</td></tr>
+      <tr><td>Exclusive types nearby (41%)</td><td>Veracruz (21.50, −98.50) 124.0 · San Luis Potosí 121.9 · Hidalgo (20.50, −98.50) 115.2 · Veracruz (21.50, −97.50) 111.2 · Veracruz (18.50, −96.50) 109.7</td></tr>
+    </tbody>
+  </table>
+  <p>The San Luis Potosí cell appears in every case: it is remote, next to a rich area and to states without accessions, so no reasonable weight removes it. That is the robust conclusion. Raising the exclusive types pulls the list towards central Mexico, to empty cells between diverse collections, where finding more of the same good material is likely; raising the distance or the deficit pushes it towards unexplored territory, such as Campeche or the Isthmus.</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>The extremes: a single weight, or none</div>
+    <p>If you keep only the distance (the other three at 0), the 127 empty cells at 250 km or more tie at 60 points, because the cap levels them; they are ordered by the tie-break—more richness around, then farther away—, which puts 18.50, −94.50, in southern Veracruz, first. Always combine at least two components. If you set all four to 0, the app does not invent an order: instead of the table it writes <i>All the weights are zero. With nothing to weigh there is no priority index, and ordering the cells that way would invent a ranking: raise at least one of the four sliders.</i>, the percentages stay at 0 % and the CSV button is disabled.</p>
+  </div>
+
+  <!-- 6.5 -->
+  <h2 id="b6-5"><span class="num">6.5</span>The collecting route for the GPS</h2>
+  <p>Below the priority table there are two buttons (Figure 6.6):</p>
+  <ul>
+    <li><span class="ui">Collecting route as CSV</span> saves <span class="ruta">prioridades-colecta.csv</span>, in UTF-8 with a byte-order mark (so that a spreadsheet reads the accents correctly), with up to 200 empty cells ordered by priority; with the example collection, the first 200 of the 223. The centre coordinates carry four decimals, ready to load into a GPS or a route sheet.</li>
+    <li><span class="ui">Map as SVG</span> saves <span class="ruta">vacios-colecta.svg</span>, the map in the painting mode you have chosen, with the light theme colours.</li>
+  </ul>
+  <table class="compacta csv">
+    <caption><b>Table 6.5.</b> The header and the first three rows of the CSV with the example collection.</caption>
+    <thead><tr><th>orden</th><th>latitud</th><th>longitud</th><th>entidad</th><th>pais</th><th>km_al_vecino</th><th>riqueza_vecindario</th><th>accesiones_vecindario</th><th>exclusivos_cerca</th><th>puntos</th><th>celda_grados</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>21.5</td><td>-99.5</td><td>San Luis Potosí</td><td>MEX</td><td>228</td><td>9</td><td>12</td><td>7</td><td>86.9</td><td>1</td></tr>
+      <tr><td>2</td><td>17.5</td><td>-100.5</td><td>Guerrero</td><td>MEX</td><td>254</td><td>7</td><td>9</td><td>5</td><td>82.9</td><td>1</td></tr>
+      <tr><td>3</td><td>21.5</td><td>-100.5</td><td>Guanajuato</td><td>MEX</td><td>250</td><td>7</td><td>9</td><td>5</td><td>82.9</td><td>1</td></tr>
+    </tbody>
+  </table>
+  <p>The file and column names are the same in both interface languages: <code>orden</code> (rank), <code>latitud</code>, <code>longitud</code>, <code>entidad</code> (state), <code>pais</code> (country), <code>km_al_vecino</code> (km to the nearest collection), <code>riqueza_vecindario</code> (neighbourhood richness), <code>accesiones_vecindario</code> (neighbourhood accessions), <code>exclusivos_cerca</code> (exclusive types nearby, X<sub>v</sub>), <code>puntos</code> (score) and <code>celda_grados</code> (cell size in degrees). Three of them are not shown on screen: <code>pais</code> (the ISO alpha-3 code), <code>accesiones_vecindario</code> and <code>exclusivos_cerca</code>. The points carry one decimal and the distance whole kilometres. The <code>entidad</code> column is the state with the most land in the cell. The file does not store the weights, and the cell size only in <code>celda_grados</code>: write down which weights you used.</p>
+  <p>The centre of a cell is a reference point, not a collecting site: with 1° cells, the square is about 110 km on a side and its centre may fall on a hill, in a reservoir, in an urban area or, in edge cells, in the sea. Use it to plan the route and choose in the field, within the square, the sites where the crop or the wild species you are looking for actually grows.</p>
+
+  <!-- 6.6 -->
+  <h2 id="b6-6"><span class="num">6.6</span>What you already have and could lose</h2>
+  <p>Section <span class="ui">3 · What you already have and could lose</span> reviews the gaps a map does not show. It does not look at the territory but at each type in the collection—<b>all 46 accessions</b>, with or without coordinates—and gives it risk labels according to how many accessions it has, through which routes it is conserved and whether it has a safety duplicate.</p>
+  <table class="compacta">
+    <caption><b>Table 6.6.</b> The seven risk signals and the weight of each.</caption>
+    <thead><tr><th style="width:2.2in">Label</th><th class="c" style="width:0.5in">Weight</th><th>When it appears</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">a single accession</span></td><td class="c">3</td><td>The type has a single accession in the whole passport.</td></tr>
+      <tr><td><span class="ui">only in situ, no ex-situ backup</span></td><td class="c">3</td><td>All its accessions are in a genetic reserve or in on-farm conservation.</td></tr>
+      <tr><td><span class="ui">only as DNA: cannot regrow a plant</span></td><td class="c">3</td><td>It has a DNA bank, but no route from which a plant can be regenerated (seeds, field, in vitro or cryopreservation), with or without in situ records.</td></tr>
+      <tr><td><span class="ui">no safety duplicate</span></td><td class="c">2</td><td>None of its accessions has in <code>DUPLSITE</code> an institution other than the one that conserves it (the same rule as the Block 2 validation, Section 2.6).</td></tr>
+      <tr><td><span class="ui">only in a field collection</span></td><td class="c">2</td><td>Of the routes that regenerate a plant, the only one it has is the field genebank or living collection.</td></tr>
+      <tr><td><span class="ui">no coordinates</span></td><td class="c">1</td><td>None of its accessions has coordinates.</td></tr>
+      <tr><td><span class="ui">all from one state or country</span></td><td class="c">1</td><td>It has several accessions, but they all fall in the same Mexican state or in the same country.</td></tr>
+    </tbody>
+  </table>
+  <p>The route of each accession is the one in <code>GP_CONS</code> or, if missing, the one deduced from <code>STORAGE</code> (Chapter 2). The <span class="ui">States or countries</span> column counts where the point of each accession falls: the state if it falls in Mexico, the country if it falls elsewhere (or the one in <code>ORIGCTY</code> if it falls in the sea). The table orders the types from the highest to the lowest total risk, at equal risk from fewer to more accessions, and then alphabetically. The weight is not shown in the table: you can tell it from the order and the colours, red for the serious labels and ochre for the rest. If more than 40 types have some label, the table shows the 40 most serious and says so (<i>Showing 40 of 45 types with some risk…</i>). The type name is in italics only when the type is a species or a genus. The <span class="ui">Types at risk</span> box counts those that add up to 3 or more.</p>
+  <figure style="width:62%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b6-riesgos.png" alt="Section 3: the table of types at risk with the columns Type, Accessions, States or countries, Routes and Risks; Quercus crassifolia, 1 accession, 1, Genetic reserve (in situ), with a single accession, no safety duplicate and only in situ; Agave angustifolia, Coffea arabica, Oxalis tuberosa and Theobroma cacao, 1, 1, Field genebank or living collection, with a single accession, no safety duplicate and only in a field collection; Amaranthus caudatus, 1, 1, Seed bank, a single accession and no safety duplicate; the Types at risk as CSV button and the note Empty elevation belts: between 0 and 4,000 m there is 1 500 m belt with no accession at all: 3,000–3,500 m; 1 impossible elevation was left out; fix it in the accession record, in Block 2"></div>
+    <figcaption><b>Figure 6.7.</b> The first six rows of the risk table (it has 22), the CSV button and the note on the empty elevation belts.</figcaption>
+  </figure>
+  <p><b>How to read it for a decision.</b> Each label suggests a different action: <i>a single accession</i> calls for recollecting or requesting another sample; <i>no safety duplicate</i>, for sending a copy to another institution (Block 8, Chapter 8); <i>only in a field collection</i>, for an in vitro or cryopreserved backup, because a pest or a frost can wipe out the whole living collection; <i>only in situ</i>, for an ex situ backup, because the population depends on the reserve or the plot continuing to exist; <i>only as DNA</i>, for obtaining living material, because a plant cannot be regenerated from DNA.</p>
+  <p>The <span class="ui">Types at risk as CSV</span> button saves <span class="ruta">tipos-en-riesgo.csv</span> with every type that has some label—22 in the example, even when the table is cut at 40—, with the columns <code>tipo</code> (type), <code>accesiones</code>, <code>entidades_o_paises</code> (states or countries), <code>rutas</code> (routes, by name, as in the table), <code>duplicados</code> (duplicates), <code>con_coordenadas</code> (with coordinates), <code>riesgos</code> (risks) and <code>peso</code> (weight). It is the work list for Block 8.</p>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Example · the oak, the chayote and the bean</div>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2"><i>Quercus crassifolia</i>: 1 accession, only in a genetic reserve, no duplicate → 3 + 3 + 2 = 8, first on the list</td></tr>
+      <tr><td colspan="2"><i>Theobroma cacao</i>: 1 accession, only in a field genebank, no duplicate → 3 + 2 + 2 = 7</td></tr>
+      <tr><td colspan="2"><i>Sechium edule</i>: 3 accessions, only in a field genebank, no duplicate, all in Veracruz (“all from one state or country”) → 2 + 2 + 1 = 5</td></tr>
+      <tr><td colspan="2"><i>Phaseolus vulgaris</i>: 2 accessions, in seeds and on farm, no duplicate → 2: it appears in the table, but does not count as “at risk”</td></tr>
+    </tbody></table>
+    <p>Of the 24 species, 22 have at least one label and 21 add up to 3 or more. Only maize (18 accessions, 10 with a duplicate, in 9 states or countries) and chili (3 accessions, 2 with a duplicate) have none. The oak is the most fragile case: a recalcitrant acorn, conserved only in a reserve, with no copy in another institution.</p>
+  </div>
+  <h3>The empty elevation belts</h3>
+  <p>Below the table, when needed, there is a note with the intermediate elevation belts that have no accession at all. The app sorts the elevations of the mapped accessions into 500 m belts—always 500, whatever the Block 5 selector says—, from the belt of the lowest to that of the highest, and lists those left empty. It leaves out impossible elevations, below −500 m or above 7,000 m (the same range as in Block 5), so that a single mistyped elevation does not invent dozens of empty belts; at least three valid elevations are needed.</p>
+  <p>With the example collection, 44 elevations come in, from 20 to 3,797 m (belts from 0 to 4,000 m), and the note says that there is <b>1 500 m belt with no accession at all: 3,000–3,500 m</b>; it adds <i>1 impossible elevation was left out; fix it in the accession record, in Block 2</i>: the 25,000 m of the tepary bean. It is the same belt that was missing from the Block 5 gradient (Section 5.8). The empty intermediate belt is a coarse environmental gap, the only one the block can see without climate layers: no accession lies between 3,000 and 3,500 m, between the potato at 2,997 m and the bitter potato at 3,797 m, both from Peru. It is the zone of the potato and the Andean tubers, and the collection skips it.</p>
+
+  <!-- 6.7 -->
+  <h2 id="b6-7"><span class="num">6.7</span>The indispensable minimum: complementarity</h2>
+  <p>Section <span class="ui">4 · The indispensable minimum</span> answers a different question: if you could only conserve—or revisit—a few localities, which ones would bring together the most diversity? On the left, the curve <span class="ui">Types captured by number of cells kept</span>; on the right, the table <span class="ui">The indispensable cells, in order</span>, with the cell, what it <span class="ui">Adds</span> and the <span class="ui">Cumulative</span> total in types and as a percentage (up to 20 rows).</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · complementarity by the greedy method</div>
+    <p>It starts from all the occupied cells and the set of types they hold together. At each step it chooses the cell that adds the most types <b>not yet covered</b>—not the richest, but the one that best complements those already chosen—; if two tie, the one with more types in total wins and, if they are still tied, the one that comes first in the grid. Its types are marked as covered and the step is repeated until all are covered. Cells that add nothing do not enter the list. The greedy method does not guarantee the exact minimum, but it usually stays within one cell of it and is the method used to choose reserves.</p>
+  </div>
+  <figure>
+    <div class="marco"><img src="../img/en/b6-minimo.png" alt="Section 4: on the left, the curve rises from 0 to 28% with one cell, 44% with two, 78% with five and 100% with nine, with a dashed line at the eighth cell and the label 8 cells ≥ 90% (94%); on the right, the table of nine cells: 19.50, -98.50 +5, 5 (28 %); 16.50, -92.50 +3, 8 (44 %); 20.50, -97.50 +2, 10 (56 %); 16.50, -96.50 +2, 12 (67 %); 19.50, -96.50 +2, 14 (78 %); 20.50, -103.50 +1, 15 (83 %); 19.50, -102.50 +1, 16 (89 %); 19.50, -97.50 +1, 17 (94 %); 27.50, -108.50 +1, 18 (100 %)"></div>
+    <figcaption><b>Figure 6.8.</b> The complementarity curve and the nine indispensable cells. The dashed line marks the first cell with which 90% is reached, and its label says how much is actually brought together.</figcaption>
+  </figure>
+  <p>The total is <b>18</b> and not 24 because, with the territory set to Mexico, only the cells of Mexico count: the six species found only outside it—the two potatoes, the oca, the barley, the Andean amaranth and the cassava—do not come in. With the territory set to <span class="ui">The world</span>, all 24 come in and 15 cells are needed to cover them; 13 bring together 92% (Section 6.8).</p>
+  <p><b>How to read it.</b> A curve that rises slowly and almost in a straight line, like this one, says that each locality holds something of its own: there is no redundancy, and closing any of the nine cells takes at least one species away from the collection. If the curve reaches 90% early, a few localities are enough and the rest are backup. Complementarity uses only presences, not how many accessions there are: a cell with a single envelope of an exclusive type is worth as much as one with twenty.</p>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Example · the nine cells of the example collection</div>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">1. 19.50, −98.50 (Puebla and State of Mexico): <i>Zea mays</i>, <i>Cucurbita pepo</i>, amaranth, wheat, <i>C. argyrosperma</i> → +5 = 5 of 18</td></tr>
+      <tr><td colspan="2">2. 16.50, −92.50 (Chiapas): runner bean, cacao, oak (maize is already in) → +3 = 8</td></tr>
+      <tr><td colspan="2">3–5. 20.50, −97.50: <i>C. moschata</i> and vanilla · 16.50, −96.50: bean and chili · 19.50, −96.50: coffee and chayote → +2 each = 14</td></tr>
+      <tr><td colspan="2">6–9. agave · avocado · husk tomato · tepary bean → +1 each = 18 (100%)</td></tr>
+    </tbody></table>
+    <p>Cells 3 and 4 tie on everything (they add 2 and have 3 species); the first in the grid wins. The remaining four of the 13 occupied cells—the one with the maizes of Chihuahua, the one in Oaxaca with 3 maizes, the one in Yucatán and the one with the bean from Michoacán—add nothing the others do not have. With 7 cells, 16 of 18 types are reached (89%); with 8, 17 (94%): that is why the box says 8 and “together hold 94%”.</p>
+  </div>
+
+  <!-- 6.8 -->
+  <h2 id="b6-8"><span class="num">6.8</span>How everything changes with the cell, the territory and the type</h2>
+  <p>Everything above depends on the three header selectors. With the example collection:</p>
+  <table class="compacta">
+    <caption><b>Table 6.7.</b> What changes with the territory and the cell size (type: species; default weights).</caption>
+    <thead><tr><th style="width:1.15in">Territory · cell</th><th class="c">Cells</th><th class="c">Occupied</th><th class="c">Coverage</th><th class="c">Largest gap</th><th class="c">≥ 90%</th><th class="c">Outside</th><th>First priority</th></tr></thead>
+    <tbody>
+      <tr><td>Mexico · 0.5°</td><td class="c">831</td><td class="c">18</td><td class="c">2.2%</td><td class="c">1,143 km</td><td class="c">10 of 18</td><td class="c">9</td><td>21.25, −98.75 (Hidalgo), 83.6</td></tr>
+      <tr><td>Mexico · 1°</td><td class="c">236</td><td class="c">13</td><td class="c">5.5%</td><td class="c">1,026 km</td><td class="c">8 of 18</td><td class="c">9</td><td>21.50, −99.50 (San Luis Potosí), 86.9</td></tr>
+      <tr><td>Mexico · 2°</td><td class="c">69</td><td class="c">11</td><td class="c">15.9%</td><td class="c">1,021 km</td><td class="c">7 of 18</td><td class="c">9</td><td>17, −101 (Guerrero), 82.9</td></tr>
+      <tr><td>The world · 1°</td><td class="c">17,012</td><td class="c">21</td><td class="c">0.1%</td><td class="c">10,581 km</td><td class="c">13 of 24</td><td class="c">0</td><td>−13.50, −69.50 (Peru), 69.6</td></tr>
+      <tr><td>The world · 2°</td><td class="c">4,549</td><td class="c">18</td><td class="c">0.4%</td><td class="c">10,640 km</td><td class="c">11 of 24</td><td class="c">0</td><td>−13, −69 (Peru), 69.8</td></tr>
+    </tbody>
+  </table>
+  <p>A fine cell spreads the collection over more squares, leaves less territory “covered” and separates collections that a coarse one lumps together; the coarse cell gives a more optimistic coverage. The nine accessions outside the area are the same at any size: those from other countries. Since the neighbourhood is measured in kilometres (about 220 km on each side), the index gives almost the same result at any size: the first cells fall in the same zone, between the Huasteca, northern Guerrero and the Bajío. With 0.5°, the first five are Hidalgo (21.25, −98.75) 83.6 · Guerrero (17.75, −100.25) 82.0 · Guanajuato (21.25, −100.25) 81.2 · Querétaro (21.25, −99.25) 79.4 · Hidalgo (20.75, −98.75) 77.2, and the ramp runs from 25 to 84 points; with 2°, Guerrero (17, −101) 82.9 · Hidalgo (21, −99) 82.5 · Veracruz (19, −95) 81.1 · Guanajuato (21, −101) 76.8 · Campeche (19, −91) 75.4, with the ramp from 42 to 83. The fine cell pinpoints the place; the coarse one gives fewer cells that are easier to cover.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/en/b6-mundo.png" alt="The gap map with the territory set to The world and 2 degree cells: every continent except Antarctica covered with cells of almost the same reddish shade; around Mexico, the central Andes and northern India, ochre and yellow cells; eighteen occupied cells in Mexico, Guatemala, Colombia, Peru, Bolivia, Ethiopia, India and Myanmar; the priority circles 1, 3 and 10 in Peru and Bolivia, 2 and 4 in Mexico and 5 to 9 in northern India, moved aside with a line to their cell; the ramp from 24 to 70 points and, instead of the scale bar, the notice No scale bar: it varies with latitude"></div>
+    <figcaption><b>Figure 6.9.</b> The territory set to <span class="ui">The world</span> with 2° cells: the priorities are split among the Andes, Mexico and India. Priorities that would overlap are moved aside and a line joins them to their cell.</figcaption>
+  </figure>
+  <p>With <span class="ui">The world</span>, the deficit is computed by country, with the same density per area: Guatemala, with 2 accessions in a small territory, is the best covered (0) and Mexico ends up almost the same (0.004); Peru is worth 0.917, Myanmar 0.921, Bolivia 0.950, Ethiopia 0.952, Colombia 0.953 and India 0.983, and the countries without accessions, 1. That is why the first priority moves to southern Peru, near the potatoes: −13.50, −69.50 with 69.6 points with 1° cells, and −13, −69 with 69.8 with 2° cells. The table gives the <span class="ui">Country</span> instead of the state, and the slider is called <span class="ui">Country deficit</span>. Coverage and the largest gap stop being useful—the largest gap, at 10,581 km, is in New Zealand, and the card says so—; this territory serves for the complementarity of an international collection, where all 24 species come in, and for planning trips outside Mexico by filtering the CSV route on the <code>pais</code> column.</p>
+  <p>The type changes the richness, the exclusive types, the complementarity and section 3, but not the grid or the coverage. With <span class="ui">Genus</span> there are 14 types in Mexico, 6 cells bring together at least 90% and 12 types are at risk; with <span class="ui">Crop</span>, 18 types, 8 cells and 17 at risk; with <span class="ui">Accession name</span>, 35 names, 11 cells and 45 at risk, because almost every accession is a type with a single accession. In that mode the risk table warns that it shows 40 of 45, and the names are not in italics.</p>
+
+  <h3>When something goes wrong</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:40%">What you see</th><th>Why it happens and what to do</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Load your accessions in Block 2 first.</span></td><td>There is no passport data. Load your collection or the example one (Chapter 2).</td></tr>
+      <tr><td><span class="ui">N accessions fall outside the analysed area</span></td><td>With the territory set to Mexico, their points fall in another country, through an error or because they come from abroad. Check the coordinates in Block 3 or change the territory to <span class="ui">The world</span>.</td></tr>
+      <tr><td>“+2” appears next to the state</td><td>The cell touches two other states; hover to see which. The cell is labelled with the one with the most land, and its deficit blends those of all of them.</td></tr>
+      <tr><td>Many cells with the same points</td><td>All the weight is on a single component: with distance alone, cells at 250 km or more tie, and with the deficit alone, those of states without accessions. Combine at least two weights (Section 6.4).</td></tr>
+      <tr><td><span class="ui">All the weights are zero…</span></td><td>The four sliders are at 0. Raise at least one: the table and the CSV come back.</td></tr>
+      <tr><td><span class="ui">more occupied cells are needed</span> in section 4</td><td>Fewer than two cells contribute types: there is no curve to draw. Use a finer cell or the <span class="ui">The world</span> territory.</td></tr>
+      <tr><td>A type appears “at risk” although you know it has a copy</td><td><code>DUPLSITE</code> is missing, or it names the same institution as <code>INSTCODE</code>. Complete it in Block 2.</td></tr>
+      <tr><td><span class="ui">Showing 40 of N types with some risk</span></td><td>More than 40 types have labels; the table shows the most serious. Save the CSV to see them all.</td></tr>
+      <tr><td>The belt note says it left out impossible elevations</td><td>There are elevations below −500 m or above 7,000 m. Correct them in the accession record, in Block 2.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja regla">
+    <div class="caja-t"><span class="ico">✓</span>Decision rule · what to do in Block 6</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:44%"><b>If</b> you are going to plan a collecting trip</td><td><b>then</b> first correct the coordinates (Block 3): a lost sign moves an accession out of the territory and opens a gap that does not exist.</td></tr>
+      <tr><td><b>If</b> a cell stays at the top with the default weights and with each weight raised</td><td><b>then</b> it is a robust priority: put it on the route.</td></tr>
+      <tr><td><b>If</b> you are after new, little-known material</td><td><b>then</b> raise the distance and the state deficit; if you are after diversity close to what you already know, raise richness and exclusive types.</td></tr>
+      <tr><td><b>If</b> you want to pinpoint where to go within a priority zone</td><td><b>then</b> go down to 0.5° cells: the neighbourhood is still about 220 km and the index points to the same zone, but in squares half as wide.</td></tr>
+      <tr><td><b>If</b> a type has <i>a single accession</i>, is <i>only in situ</i> or <i>only as DNA</i></td><td><b>then</b> put it at the top of the work list: collect another sample or obtain living material for an ex situ backup.</td></tr>
+      <tr><td><b>If</b> a type has <i>no safety duplicate</i> or is <i>only in a field collection</i></td><td><b>then</b> send a duplicate to another institution or make an in vitro or cryopreserved backup (Block 8).</td></tr>
+      <tr><td><b>If</b> there is an empty intermediate elevation belt</td><td><b>then</b> include cells at that elevation in the route, even if they are not among the top of the index.</td></tr>
+      <tr><td><b>If</b> the complementarity curve rises almost in a straight line</td><td><b>then</b> no locality is expendable: protect all the cells in the table and keep the one of each exclusive type.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">Block 6 does not change the passport: it only says where and what is missing. The CSV route is the bridge to the field; whatever comes back from the trip enters again through Block 2.</p>
+  </div>
+
+</section>
+
+</body>
+</html>

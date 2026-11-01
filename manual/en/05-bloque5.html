@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · User’s Manual · Chapter 5</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- splits the content into letter-size sheets, with running heads, page numbers and table of contents -->
+<script src="../paginar.js"></script>
+<style>
+  .formula { font-family: var(--mono); font-size: 9pt; background: var(--marino-suave); border-radius: 5px; padding: 0.07in 0.12in; margin: 0.08in 0; }
+  .cuenta td { font-family: var(--mono); font-size: 8.6pt; }
+  .csv td { font-family: var(--mono); font-size: 7.6pt; }
+  figure.reducida { width: 74%; margin-left: auto; margin-right: auto; }
+  figure.mediana { width: 86%; margin-left: auto; margin-right: auto; }
+  .dos-figs { display: flex; gap: 0.18in; align-items: flex-start; margin: 0.1in 0; }
+  .dos-figs > figure { flex: 1 1 0; margin: 0; }
+  figure.chica { width: 72%; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<section class="capitulo" id="cap-b5" data-pestana="5" data-orden="5" style="--acento: var(--b5)">
+  <div class="cap-apertura">
+    <div class="cap-num">5</div>
+    <div class="cap-etiqueta">Chapter five · Block 5 · Geographic diversity</div>
+    <h1 data-corto="Geographic diversity">Geographic diversity</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">A collection is not worth how many envelopes it has, but how many distinct things it holds and where. Block 5 counts that diversity by region, by grid cell or by elevation belt; it compares it at equal effort, so that the state with the most field trips does not look the most diverse for that reason alone; it estimates how much is still left to collect; and it asks whether nearby regions hold the same things. Everything comes from the passport: there is nothing else to enter.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>5.1</b>Units, types and the block summary</li>
+      <li><b>5.2</b>The diversity indices, unit by unit</li>
+      <li><b>5.3</b>Rarefaction: comparing at the same effort</li>
+      <li><b>5.4</b>How much is missing? Accumulation, estimators and coverage</li>
+      <li><b>5.5</b>Exclusive types and the index map</li>
+      <li><b>5.6</b>Do the regions resemble each other? Similarity and clustering</li>
+      <li><b>5.7</b>The Mantel test and turnover between units</li>
+      <li><b>5.8</b>The elevation gradient</li>
+      <li><b>5.9</b>Exporting, and how everything changes with the unit</li>
+    </ul>
+  </div>
+
+  <!-- 5.1 -->
+  <h2 id="b5-1"><span class="num">5.1</span>Units, types and the block summary</h2>
+  <p class="lead">Block 5 works on the passport accessions that have coordinates (Chapter 2): when you open it, or when you change any selector, it computes everything behind the animated wait <i>Computing diversity and the Mantel test</i>. With the example collection, <b>45 of the 46 accessions</b> come in; the one without coordinates (MEX-ZM-0043) stays out of the whole block. If there are no accessions, the block says <span class="ui">Load your accessions in Block 2 first.</span></p>
+  <figure class="chica">
+    <div class="marco"><img src="../img/en/b5-controles.png" alt="The header of Block 5: the title, the introductory paragraph, the selectors Geographic unit set to Mexican state, What counts as a type set to Species (genus + epithet), Elevation belt set to 500 m, Rarefy set to at the first quartile (recommended) and Compositional distance set to Jaccard, and six summary boxes: 36 accessions analysed of 45 with coordinates in 10 units, 18 observed types, estimated richness Chao1 116.0 with 98.0 still to be collected, sample coverage 61.1 %, turnover between units 5.67 with gamma 18 and mean alpha 2.7, and effective diversity 10.3"></div>
+    <figcaption><b>Figure 5.1.</b> The block header with the example collection and the default values. The <span class="ui">Cell size</span> selector appears only when the unit is <span class="ui">Grid cell</span>.</figcaption>
+  </figure>
+  <p>Two decisions govern everything that follows: <b>how the territory is divided</b> (the unit) and <b>what counts as distinct</b> (the type). The other selectors fine-tune details.</p>
+  <table class="compacta">
+    <caption><b>Table 5.1.</b> The six selectors of the block and their options (the default in bold).</caption>
+    <thead><tr><th style="width:1.6in">Selector</th><th>Options and what they do</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Geographic unit</span></td><td><b><span class="ui">Mexican state</span></b>: each point goes to the state whose outline contains it, and points outside Mexico form no unit. <span class="ui">Country</span>: the country where the point falls (if it falls in none, the one in <code>ORIGCTY</code>). <span class="ui">Grid cell</span>: squares of 0.25°, 0.5°, 1° or 2°. <span class="ui">Elevation belt</span>: elevation bands according to <code>ELEVATION</code>; accessions without elevation do not come in.</td></tr>
+      <tr><td><span class="ui">What counts as a type</span></td><td><b><span class="ui">Species (genus + epithet)</span></b>, <span class="ui">Crop</span> (<code>CROPNAME</code>), <span class="ui">Genus</span> or <span class="ui">Accession name</span> (<code>ACCENAME</code>). The species does not distinguish subspecies: teosinte counts as <i>Zea mays</i>. An empty value counts as the type “—”.</td></tr>
+      <tr><td><span class="ui">Cell size</span></td><td><span class="ui">0.25°</span>, <span class="ui">0.5°</span>, <b><span class="ui">1°</span></b> or <span class="ui">2°</span>; only with the unit set to grid cells. The cells are the same ones the Block 4 map draws (Chapter 4).</td></tr>
+      <tr><td><span class="ui">Elevation belt</span></td><td><span class="ui">100 m</span>, <span class="ui">250 m</span>, <b><span class="ui">500 m</span></b> or <span class="ui">1000 m</span>. It is used for the belt unit and, always, for the gradient section (Section 5.8).</td></tr>
+      <tr><td><span class="ui">Rarefy</span></td><td>The common effort at which richness is compared (Section 5.3): <b><span class="ui">at the first quartile (recommended)</span></b>, <span class="ui">at the median</span>, <span class="ui">at the smallest unit</span> or at 5, 10 or 20 accessions.</td></tr>
+      <tr><td><span class="ui">Compositional distance</span></td><td><b><span class="ui">Jaccard</span></b>, <span class="ui">Sørensen</span> or <span class="ui">Bray-Curtis</span> (Section 5.6).</td></tr>
+    </tbody>
+  </table>
+  <p>The six summary boxes summarize all the units taken together, not a single one. All the totals come from the same accessions: those that fall in some unit. With the unit set to states, the example collection distributes 36 of its 45 accessions with coordinates among 10 states. The other nine—the two maizes from Guatemala, the two potatoes, the oca, the barley, the amaranth from India, the cassava and the maize whose longitude lost its sign—enter no calculation, and a note at the start of section 1 says so: <i>9 of the 45 with coordinates are left out because they fall outside Mexico.</i> With another unit the note gives another reason (belts, for example, leave out the accessions without a valid elevation).</p>
+  <table class="compacta">
+    <caption><b>Table 5.2.</b> The summary boxes with the example collection.</caption>
+    <thead><tr><th style="width:1.85in">Box</th><th class="c" style="width:0.6in">Example</th><th>What it says</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Accessions analysed</span></td><td class="c">36</td><td>Those that fall in some unit; below, out of how many with coordinates (45) and in how many units (10).</td></tr>
+      <tr><td><span class="ui">Observed types</span></td><td class="c">18</td><td>The distinct types among the accessions analysed, the γ richness: here, 18 species.</td></tr>
+      <tr><td><span class="ui">Estimated richness (Chao1)</span></td><td class="c">116.0</td><td>How many types there would be in total according to Chao1, and how many would still be left to collect (98.0). With this collection, unreliable (Section 5.4).</td></tr>
+      <tr><td><span class="ui">Sample coverage</span></td><td class="c">61.1 %</td><td>The Good–Turing coverage (Section 5.4).</td></tr>
+      <tr><td><span class="ui">Turnover between units (β)</span></td><td class="c">5.67</td><td>Whittaker’s beta; below, γ = 18 types and the mean richness per unit, α = 2.7 (Section 5.7).</td></tr>
+      <tr><td><span class="ui">Effective diversity</span></td><td class="c">10.3</td><td>The Hill number of order 1 of the accessions analysed (Section 5.2).</td></tr>
+    </tbody>
+  </table>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Clean before you measure</div>
+    <p>Block 5 counts what is in the passport, errors included. In the uncorrected example collection, the maize <i>Tuxpeño de la costa</i>, with its unsigned longitude, does not fall in Veracruz (it falls in Myanmar, which appears as a “country” if you choose that unit) and stays out of the states; the tepary bean, at 25,000 m, stays out of the belts and the gradient, because the app only accepts elevations from −500 to 7,000 m; and the two duplicates count twice. Sort out Blocks 2 and 3 first (Chapters 2 and 3). The figures in this chapter are those of the freshly loaded collection, so that you can reproduce them; where cleaning changes something important, it is said.</p>
+  </div>
+
+  <!-- 5.2 -->
+  <h2 id="b5-2"><span class="num">5.2</span>The diversity indices, unit by unit</h2>
+  <p>Section <span class="ui">2 · Where is it?</span> is a table with one row per unit and ten columns. A click on a header sorts by that column—from highest to lowest the first time, except for <span class="ui">Unit</span>, which goes in alphabetical order—and another click reverses the order; the arrow marks the active column, and cells with “—” always go last, in both directions. By default, the units run from the one with the most accessions to the one with the fewest (belts, from the lowest to the highest).</p>
+  <figure>
+    <div class="marco"><img src="../img/en/b5-tabla.png" alt="The section 2 table with ten states: Oaxaca 7 accessions, richness 3, rarefied to 2 1.52, H 0.80, 1 minus D 0.449, J 0.72, Hill q1 2.22, 0 exclusive, 1,836 m; Puebla 7, 5, 1.86, 1.48, 0.735, 0.92, 4.37, 4, 1,661 m; Veracruz 6, 4, 1.80, 1.24, 0.667, 0.90, 3.46, 4, 939 m; Chiapas 4, 4, 2.00, 1.39, 0.750, 1.00, 4.00, 3; Michoacán, Chihuahua, Yucatán, México, Jalisco and Sonora; Chihuahua and Sonora, with a single type, show a dash for J′, and Sonora, with 1 accession, has no rarefied value or mean elevation"></div>
+    <figcaption><b>Figure 5.2.</b> The table of indices by state with the example collection. Sonora has no mean elevation: its only accession, the tepary bean, carries the impossible elevation of 25,000 m.</figcaption>
+  </figure>
+  <table class="compacta">
+    <caption><b>Table 5.3.</b> The columns of the table.</caption>
+    <thead><tr><th style="width:1.35in">Column</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Accessions</span></td><td><i>N</i>: how many accessions fall in the unit.</td></tr>
+      <tr><td><span class="ui">Richness S</span></td><td><i>S</i>: how many distinct types it holds.</td></tr>
+      <tr><td><span class="ui">Rarefied to 2</span></td><td>The types that would be expected with the same number of accessions in every unit; the number in the header is that effort (Section 5.3).</td></tr>
+      <tr><td><span class="ui">H′</span>, <span class="ui">1 − D</span>, <span class="ui">J′</span>, <span class="ui">Hill q1</span></td><td>Shannon, Gini–Simpson, Pielou’s evenness and effective diversity (below); J′ shows “—” with a single type. Richness S is the Hill number q0; q2 has no column, but it equals 1 / (1 − (1 − D)).</td></tr>
+      <tr><td><span class="ui">Exclusive</span></td><td>The types found in no other unit (Section 5.5).</td></tr>
+      <tr><td><span class="ui">Mean elevation</span></td><td>The mean of <code>ELEVATION</code> over the unit’s accessions. Empty or impossible elevations (outside −500 to 7,000 m) do not count; if none is left, “—”.</td></tr>
+    </tbody>
+  </table>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · Shannon, Gini–Simpson and Pielou</div>
+    <p>In a unit with <i>N</i> accessions spread over <i>S</i> types, let <i>p<sub>i</sub></i> = <i>N<sub>i</sub></i>/<i>N</i> be the proportion of type <i>i</i>. The classic indices are:</p>
+    <div class="formula">H′ = −Σ p<sub>i</sub> ln p<sub>i</sub>  ·  1 − D = 1 − Σ p<sub>i</sub>²  ·  J′ = H′ / ln S</div>
+    <p><b>Shannon</b> (H′) grows with the number of types and with how even their distribution is; it uses the natural logarithm. <b>Gini–Simpson</b> (1 − D) is the probability that two accessions drawn at random, with replacement, are of different types. <b>Pielou</b> (J′) runs from 0 to 1 and measures evenness alone: 1 means that all types have the same number of accessions. With a single type, J′ = 0/0 is undefined: the app writes “—” (and leaves the cell empty in the CSV).</p>
+  </div>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · Hill numbers</div>
+    <p>Shannon, Gini–Simpson and Pielou are on different scales and cannot be compared with one another. <b>Hill numbers</b> translate them to a single scale, that of <b>effective types</b>: how many equally abundant types would give the same diversity.</p>
+    <div class="formula">q0 = S  ·  q1 = exp(H′)  ·  q2 = 1 / Σ p<sub>i</sub>²</div>
+    <p>q0 counts all types equally; q1 weights them by their proportion; q2 gives even more weight to the abundant ones. Always q0 ≥ q1 ≥ q2, and the gap between them tells how dominated the unit is by a few types.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Worked example · the seven envelopes from Oaxaca</div>
+    <p>Oaxaca has 7 accessions: 5 of <i>Zea mays</i>, 1 of <i>Phaseolus vulgaris</i> and 1 of <i>Capsicum annuum</i>, so <i>p</i> = 5/7, 1/7, 1/7.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">H′ = −(5/7 · ln 5/7 + 2 · 1/7 · ln 1/7) = 0.24034 + 0.55597 = 0.7963  →  the app writes 0.80</td></tr>
+      <tr><td style="width:50%">Σ p² = (25 + 1 + 1)/49 = 27/49 = 0.5510</td><td>1 − D = 22/49 = 0.449</td></tr>
+      <tr><td>J′ = 0.7963 / ln 3 = 0.7963 / 1.0986 = 0.72</td><td>q1 = e<sup>0.7963</sup> = 2.22</td></tr>
+      <tr><td colspan="2">q0 = 3  ·  q2 = 49/27 = 1.81  →  3 types, but “worth” 2.2 even ones, or 1.8 if the abundant ones weigh more</td></tr>
+    </tbody></table>
+  </div>
+  <p>How to read it for a decision: Oaxaca and Puebla have the same 7 accessions, but Puebla holds 5 species with J′ = 0.92 and Oaxaca 3 with J′ = 0.72: in Oaxaca, five of seven envelopes are maize. Oaxaca is well represented for maize and poorly for everything else. At the other extreme, Chiapas has 4 accessions and 4 species (J′ = 1, q1 = 4): every collection brought something new, a sign that the collection has not started repeating itself there and that more effort would keep yielding new types.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>The whole collection has indices too</div>
+    <p>The same formulas, applied to the 36 accessions analysed, give H′ = 2.336, 1 − D = 0.821, J′ = 0.808, q1 = 10.34 and q2 = 5.59. The <span class="ui">Effective diversity</span> box shows q1 = 10.3: there are 18 species, but the weight of maize (14 of the 36 accessions) makes them equivalent to about 10 equally represented species.</p>
+  </div>
+
+  <!-- 5.3 -->
+  <h2 id="b5-3"><span class="num">5.3</span>Rarefaction: comparing at the same effort</h2>
+  <p>Richness grows with the number of accessions examined: a state with thirty collections will almost always have more types than one with three, even if its territory is not more diverse. The app itself reminds you of this at the foot of the panel: <span class="ui">Why rarefaction is not a whim.</span> <b>Hurlbert’s rarefaction</b> (1971) answers how many types you would expect in each unit if you had taken the same number <i>n</i> of accessions from all of them.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · Hurlbert’s rarefaction and its variance</div>
+    <p>If <i>n</i> of <i>N</i> accessions are taken without replacement, the probability of not seeing type <i>i</i>, which has <i>N<sub>i</sub></i>, is π<sub>i</sub> = C(N − N<sub>i</sub>, n) / C(N, n), where C is the number of combinations. The expected richness is the sum of the probabilities of seeing it:</p>
+    <div class="formula">E[S<sub>n</sub>] = Σ (1 − π<sub>i</sub>)  ·  Var = Σ π<sub>i</sub>(1 − π<sub>i</sub>) + 2 Σ<sub>i&lt;j</sub> (π<sub>ij</sub> − π<sub>i</sub>π<sub>j</sub>)</div>
+    <p>The variance is that of Heck, van Belle and Simberloff (1975); π<sub>ij</sub> = C(N − N<sub>i</sub> − N<sub>j</sub>, n) / C(N, n) is the probability of seeing neither of the two. The app computes the combinations with the logarithm of the gamma function, so that they do not overflow with large collections. With <i>n</i> = <i>N</i>, rarefaction gives <i>S</i> with zero variance.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Worked example · Oaxaca rarefied to 2 accessions</div>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">C(7, 2) = 21  ·  π<sub>maize</sub> = C(2, 2)/21 = 1/21  ·  π<sub>bean</sub> = π<sub>chili</sub> = C(6, 2)/21 = 15/21</td></tr>
+      <tr><td colspan="2">E[S<sub>2</sub>] = (1 − 1/21) + 2 × (1 − 15/21) = 0.9524 + 0.5714 = 1.5238  →  1.52, as in the table</td></tr>
+      <tr><td colspan="2">Var = 0.4535 − 0.2041 = 0.2494  ·  standard deviation = 0.50</td></tr>
+    </tbody></table>
+    <p>It can be checked by hand: with two envelopes there is only 1 type if both are maize, C(5, 2)/21 = 10/21; in the other 11 cases out of 21 there are 2 types. P(S = 2) = 0.5238, and the variance of such a variable is 0.5238 × 0.4762 = 0.2494.</p>
+  </div>
+  <p>The <span class="ui">Rarefy</span> selector chooses <i>n</i>. Units with fewer than <i>n</i> accessions are left with “—”, because, as the note under the table says, <span class="ui">rarefying upwards would be making things up</span>. The relative options never go below 2.</p>
+  <table class="compacta">
+    <caption><b>Table 5.4.</b> The common effort with the example collection (10 states, from 1 to 7 accessions).</caption>
+    <thead><tr><th style="width:2in">Option</th><th class="c" style="width:0.4in">n</th><th>What remains</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">at the first quartile (recommended)</span></td><td class="c">2</td><td>Nine states; only Sonora, with one accession, is left blank. It is a value that three out of four units reach.</td></tr>
+      <tr><td><span class="ui">at the median</span></td><td class="c">3</td><td>Five: Chiapas and Michoacán 3.00, Puebla 2.60, Veracruz 2.45, Oaxaca 1.86.</td></tr>
+      <tr><td><span class="ui">at the smallest unit</span></td><td class="c">2</td><td>The same as the quartile: the smallest has 1, and the app does not go below 2.</td></tr>
+      <tr><td><span class="ui">at 5 accessions</span></td><td class="c">5</td><td>Three: Puebla 3.86, Veracruz 3.50, Oaxaca 2.43 (Figure 5.3).</td></tr>
+      <tr><td><span class="ui">at 10</span> or <span class="ui">at 20 accessions</span></td><td class="c">10, 20</td><td>None: the whole column shows “—”.</td></tr>
+    </tbody>
+  </table>
+  <figure>
+    <div class="marco"><img src="../img/en/b5-rarefaccion.png" alt="The table of indices with the header Rarefied to 5: only Oaxaca 2.43, Puebla 3.86 and Veracruz 3.50 have a value; the other states show a dash"></div>
+    <figcaption><b>Figure 5.3.</b> The table with <span class="ui">Rarefy</span> set to <span class="ui">at 5 accessions</span>: only the three states with 5 or more accessions can be compared at that effort.</figcaption>
+  </figure>
+  <p>The trade-off is clear: a small <i>n</i> lets you compare almost every unit, but discriminates little (with <i>n</i> = 2 the largest possible value is 2); a large one compares better, but fewer units. Look at two or three efforts and check whether the order of the units holds. In the example it does: at 2, 3 and 5 accessions, Oaxaca always stays below Puebla and Veracruz, even though it has as many accessions or more. That is the robust conclusion.</p>
+
+  <!-- 5.4 -->
+  <h2 id="b5-4"><span class="num">5.4</span>How much is missing? Accumulation, estimators and coverage</h2>
+  <p>Section <span class="ui">1 · How much is there and how much is missing?</span> looks at all the units together. On the left is the <b>accumulation curve</b>: the rarefaction of the accessions analysed for <i>n</i> = 1, 2…, 36, with a band of ±1.96 standard deviations (Heck’s variance from the previous section), and four dashed lines with the estimators of total richness. On the right, <span class="ui">Richness against effort, unit by unit</span>: each unit as a point (accessions against types), with its least-squares line and Pearson’s coefficient.</p>
+  <figure>
+    <div class="marco"><img src="../img/en/b5-acumulacion.png" alt="The warning Careful with Chao1 in this collection and section 1: the accumulation curve rises almost in a straight line up to 18 types with 36 accessions, with the dashed lines Chao2 119, Chao1 116, Jackknife 2 43 and Jackknife 1 32; on the right, the scatter of richness against accessions by state with the fitted line and r = 0.83"></div>
+    <figcaption><b>Figure 5.4.</b> The note on the accessions analysed, the warning about Chao1 and section 1 with the example collection. The curve shows no flattening at all: each new accession still brings, on average, almost 0.4 new species.</figcaption>
+  </figure>
+  <p><b>How to read the curve.</b> If it flattens at the end, collecting more of the same hardly brings new types any more; if it ends still rising, as here, the collection is far from saturated. The example one goes from 17.22 expected types with 34 accessions to 18 with 36. The scatter on the right answers another question: with r = 0.83, the richness of each state is explained mostly by how many accessions it has, and that is why the table carries the rarefied column.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · the estimators of total richness</div>
+    <p>They all use the rare types, because those are the trace of what you have not seen yet (Chao, 1984, 1987; Burnham and Overton, 1978; Good, 1953). With <b>abundances</b> (accessions per type, over all units together), f<sub>1</sub> is the number of types with a single accession (<i>singletons</i>) and f<sub>2</sub> those with two (<i>doubletons</i>). With <b>incidences</b> (in how many units each type occurs, out of <i>m</i> units), Q<sub>1</sub> and Q<sub>2</sub> are the types present in one and in two units.</p>
+    <div class="formula">Chao1 = S + f<sub>1</sub>² / (2 f<sub>2</sub>)    (if f<sub>2</sub> = 0: S + f<sub>1</sub>(f<sub>1</sub> − 1)/2)<br>Chao2 = S + ((m − 1)/m) · Q<sub>1</sub>² / (2 Q<sub>2</sub>)<br>Jackknife 1 = S + Q<sub>1</sub>(m − 1)/m  ·  Jackknife 2 = S + Q<sub>1</sub>(2m − 3)/m − Q<sub>2</sub>(m − 2)² / (m(m − 1))<br>Good–Turing coverage = 1 − f<sub>1</sub> / N</div>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Worked example · the estimators of the example collection</div>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">Abundances: N = 36, S = 18, f<sub>1</sub> = 14 (14 species with one accession), f<sub>2</sub> = 1 (<i>Phaseolus vulgaris</i>)</td></tr>
+      <tr><td style="width:50%">Chao1 = 18 + 14² / (2 × 1) = 116</td><td>coverage = 1 − 14/36 = 0.611 = 61.1%</td></tr>
+      <tr><td colspan="2">Incidences in the m = 10 states: S = 18, Q<sub>1</sub> = 15, Q<sub>2</sub> = 1 (<i>P. vulgaris</i>, in Oaxaca and Michoacán)</td></tr>
+      <tr><td>Chao2 = 18 + 0.9 × 225/2 = 119.25</td><td>Jackknife 1 = 18 + 15 × 0.9 = 31.5</td></tr>
+      <tr><td colspan="2">Jackknife 2 = 18 + 15 × 17/10 − 1 × 64/90 = 18 + 25.5 − 0.71 = 42.79</td></tr>
+    </tbody></table>
+    <p>On the curve, the labels are rounded: Chao2 119, Chao1 116, Jackknife 2 43, Jackknife 1 32. <b>Coverage</b> is the probability that the next accession you collect belongs to a type you already have: here, 61%; with a probability of 39%, the next one would be a new species.</p>
+  </div>
+  <p>With a single doubleton, the Chao1 fraction explodes. When there are <b>fewer than three doubletons</b>, the app puts the warning <span class="ui">Careful with Chao1 in this collection.</span> at the top of the section, but the summary box still shows 116.0: do not quote it without the warning. Jackknife 1 is the most stable; Chao2, with a single type in two units, explodes just like Chao1.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>What the totals measure depends on the unit</div>
+    <p>The curve, the coverage and the four estimators come from the same 36 accessions, so they can be compared with one another; but they speak only of what was collected in Mexico. If you want them to cover the whole collection, change the unit to <span class="ui">Country</span> or to <span class="ui">Grid cell</span>: with those, all 45 accessions with coordinates and the 24 species come in (Section 5.9).</p>
+  </div>
+
+  <!-- 5.5 -->
+  <h2 id="b5-5"><span class="num">5.5</span>Exclusive types and the index map</h2>
+  <p>A type is <b>exclusive</b> to a unit when it appears in no other. The <span class="ui">Exclusive</span> column counts them, and their sum is the Q<sub>1</sub> of the previous section. In the example collection there are 15, distributed as follows: Puebla 4 (<i>Cucurbita pepo</i>, <i>Amaranthus hypochondriacus</i>, <i>Physalis philadelphica</i>, <i>Cucurbita argyrosperma</i>), Veracruz 4 (<i>Cucurbita moschata</i>, <i>Vanilla planifolia</i>, <i>Coffea arabica</i>, <i>Sechium edule</i>), Chiapas 3 (<i>Phaseolus coccineus</i>, <i>Theobroma cacao</i>, <i>Quercus crassifolia</i>), and one each in Michoacán (avocado), the State of Mexico (wheat), Jalisco (agave) and Sonora (tepary bean). Oaxaca, with 7 accessions, has none.</p>
+  <p>For the genebank, an exclusive type is a risk and a priority at the same time: if the accessions of that unit are lost, the type disappears from the collection. They are good candidates for the safety duplicate and for recollecting in the same region; Block 6 (Chapter 6) also reviews the types with a single accession, which are not the same thing: a type can be exclusive to a unit with several accessions.</p>
+  <p>Below the table, with the unit set to states, countries or cells, comes the <span class="ui">Index map</span>: a choropleth map that colours each unit by the index you choose in its selector—<span class="ui">Accessions</span>, <span class="ui">Observed richness (S)</span> (the default), <span class="ui">Rarefied richness</span>, <span class="ui">Shannon (H′)</span>, <span class="ui">Gini-Simpson (1 − D)</span>, <span class="ui">Evenness (J′)</span>, <span class="ui">Effective types (Hill q=1)</span> or <span class="ui">Exclusive types</span>—, with a sentence beside it that explains what it measures. Units without a value stay white; the ramp runs from the minimum to the maximum of the units, and both are written at its ends. The map uses the outlines and the projection of Block 4, explained in Chapter 4. With the unit set to elevation belts there is no map.</p>
+  <div class="dos-figs">
+  <figure>
+    <div class="marco"><img src="../img/en/b5-mapa.png" alt="The index map with Exclusive types: Puebla and Veracruz in purple, Chiapas in reddish brown, Sonora, Jalisco, Michoacán and México in ochre, Oaxaca, Chihuahua and Yucatán in the lightest shade and the states without accessions in white"></div>
+    <figcaption><b>Figure 5.5.</b> The index map with <span class="ui">Exclusive types</span>. The three lightest states have accessions, but no type of their own; the white ones have no accessions.</figcaption>
+  </figure>
+  <figure>
+    <div class="marco"><img src="../img/en/b5-rejilla.png" alt="The index map with the unit set to 1 degree cells and observed richness: cells in central and southern Mexico, Chihuahua and Yucatán, the darkest east of the Valley of Mexico"></div>
+    <figcaption><b>Figure 5.6.</b> With <span class="ui">Geographic unit</span> set to <span class="ui">Grid cell</span> of 1°, the map paints the cells over the states. The richest, with 5 species in 6 accessions, is the one at 19.50, −98.50.</figcaption>
+  </figure>
+  </div>
+  <p>With cells, the label of each unit is the coordinate of its centre. The 1° grid distributes the 45 accessions among 21 cells, nine of which have a single accession. It is the most honest unit when the states differ greatly in size, but the finer it is, the more cells with one or two accessions and the less you can rarefy.</p>
+
+  <!-- 5.6 -->
+  <h2 id="b5-6"><span class="num">5.6</span>Do the regions resemble each other? Similarity and clustering</h2>
+  <p>Section <span class="ui">3 · Do the regions resemble each other?</span> compares the <b>composition</b> of the units: not how much they hold, but whether they hold the same things. Only units with at least two accessions come in, and at least three such units are needed; in the example, 9 states come in (Sonora stays out).</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · Jaccard, Sørensen and Bray–Curtis</div>
+    <p>For two units A and B, with <i>a</i> and <i>b</i> types and <i>c</i> types in common, and with <i>x<sub>k</sub></i>, <i>y<sub>k</sub></i> the accessions of type <i>k</i> in each, the dissimilarities of Jaccard (1912), Sørensen (1948) and Bray and Curtis (1957) are:</p>
+    <div class="formula">Jaccard = 1 − c / (a + b − c)  ·  Sørensen = 1 − 2c / (a + b)  ·  Bray-Curtis = Σ |x<sub>k</sub> − y<sub>k</sub>| / Σ (x<sub>k</sub> + y<sub>k</sub>)</div>
+    <p>All three run from 0 (identical composition) to 1 (nothing in common). Jaccard and Sørensen look only at presences; Sørensen gives double weight to what is shared and never exceeds Jaccard. Bray–Curtis also weighs how many accessions there are of each type.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Worked example · Oaxaca and Yucatán</div>
+    <p>Oaxaca: maize 5, bean 1, chili 1. Yucatán: maize 1, chili 1. They share <i>c</i> = 2 of <i>a</i> = 3 and <i>b</i> = 2 types.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td style="width:50%">Jaccard = 1 − 2/3 = 0.333</td><td>Sørensen = 1 − 4/5 = 0.200</td></tr>
+      <tr><td colspan="2">Bray-Curtis = (|5 − 1| + |1 − 0| + |1 − 1|) / (7 + 2) = 5/9 = 0.556</td></tr>
+    </tbody></table>
+    <p>With Jaccard it is the most similar pair of the nine states, and that is why it is the first pair the tree joins.</p>
+  </div>
+  <p>With the dissimilarity matrix, the app clusters the units by <b>UPGMA</b> (unweighted pair-group method with arithmetic means): it joins the closest pair, replaces the two by a group whose distance to each unit is the size-weighted mean of its members’ distances, and repeats until a single group remains. Each join is drawn at a height equal to half its distance; Oaxaca and Yucatán join at 0.167 (half of 0.333).</p>
+  <figure>
+    <div class="marco"><img src="../img/en/b5-composicion.png" alt="Section 3: on the left, the heat map of nine states with the dendrogram above, in the order Veracruz, Jalisco, Puebla, Chiapas, Chihuahua, México, Michoacán, Oaxaca and Yucatán, with Veracruz in the palest shade off the diagonal and the shared composition legend from 0 to 100 %; on the right, the scatter of geographic distance against dissimilarity with a descending line, r = -0.42, and the note Mantel: r = -0.422, p = 0.123 with 999 permutations and 9 units. No evidence of geographic structure at this scale"></div>
+    <figcaption><b>Figure 5.7.</b> Section 3 with Jaccard. The rows and columns of the heat map follow the order of the dendrogram’s leaves, so the groups appear as blocks of colour along the diagonal.</figcaption>
+  </figure>
+  <p><b>How to read it.</b> In the heat map each cell is the similarity (1 − dissimilarity) between two units: the darker, the more they share, according to the 0, 50 and 100% legend; the diagonal is each unit against itself. Hover over a cell to see the pair and its percentage. In the example, Veracruz splits off from all the others at the maximum height, 0.5: its four species are exclusive, and it shares none with anyone. This is not an oddity of the territory but an effect of the data: its maize is the one that lost the sign of its longitude. With the Block 3 corrections applied, Veracruz recovers its maize (it ends up with 7 accessions and 5 species) and is no longer isolated. Chihuahua and México (0.25) and the Michoacán–Oaxaca–Yucatán group are the maize blocks with one companion.</p>
+  <p>Changing the distance changes the tree: with Sørensen the order is almost the same; with Bray–Curtis, which weighs abundance, Oaxaca and Yucatán go from 0.333 to 0.556, because the five maizes of Oaxaca carry weight, and the closest pairs are now states with two similar accessions (Chihuahua, México and Yucatán with one another, at 0.500).</p>
+
+  <!-- 5.7 -->
+  <h2 id="b5-7"><span class="num">5.7</span>The Mantel test and turnover between units</h2>
+  <p>Do nearby units hold the same things, and distant ones different things? The <b>Mantel test</b> asks this by comparing two matrices: the distances in kilometres between the units (haversine, Section 3.5) and the compositional dissimilarity. It is the right-hand chart of Figure 5.7: one point for each pair of units—36 with nine states—and the least-squares line as a visual aid.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · the Mantel test</div>
+    <p>In the Mantel test (1967), the statistic is Pearson’s correlation <i>r</i> between the elements of the two matrices below the diagonal. Since those elements are not independent (each unit enters many pairs), their significance is not taken from a table: the rows and columns of one of the matrices are permuted at random, 999 times, <i>r</i> is recomputed each time, and</p>
+    <div class="formula">p = (number of permutations with |r<sub>perm</sub>| ≥ |r| + 1) / (999 + 1)</div>
+    <p>The test is two-tailed. The permutations use a fixed seed, so the same analysis always gives the same <i>p</i>. A positive and significant <i>r</i> says that “what is close is alike”.</p>
+  </div>
+  <p>With the example collection, the note below the chart says <i>Mantel: r = -0.422, p = 0.123 with 999 permutations and 9 units. No evidence of geographic structure at this scale.</i> The negative sign—distant states would be slightly more alike—means nothing with <i>p</i> = 0.123 and nine units; what it does say is that composition is not ordered by geography but by what was collected on each trip. With <i>p</i> &lt; 0.05 the sentence changes to <i>There is geographic structure: what is close is alike.</i></p>
+  <p>The position of each state or country is the centre of its bounding rectangle, and that of each cell, its centre: with large states, the distance between centres is a rough approximation. With the unit set to elevation belts, the test does not use kilometres but the <b>elevation difference between the centres of the belts</b>, in metres, and the axis, the title and the note say so: with the example, <i>Mantel (against elevation difference): r = 0.405, p = 0.176 with 999 permutations and 6 units. No evidence of elevational structure with these belts.</i></p>
+  <p>At least four units with two or more accessions are needed. If the test cannot be computed, the note gives the reason: that there are too few units with a composition to compare (by country, only 3 of the 8 have two or more accessions, and the app suggests using states, grid cells or elevation belts), or that all the dissimilarities are equal and there is no variation to correlate (by accession name, no state shares names with another).</p>
+  <h3>Turnover between units</h3>
+  <p>The <span class="ui">Turnover between units (β)</span> box holds <b>Whittaker’s beta</b>, the simplest measure of how much composition changes from one unit to another:</p>
+  <div class="formula">β = γ / ᾱ − 1    (γ: types of all units together; ᾱ: mean richness per unit)</div>
+  <p>With the example, γ = 18, ᾱ = (3 + 5 + 4 + 4 + 3 + 1 + 2 + 2 + 2 + 1)/10 = 2.7 and β = 18/2.7 − 1 = <b>5.67</b>. β = 0 would mean that every unit has all the types; a large β, that each unit holds a small and distinct part of the collection, as here. For the genebank, a high β means that no region substitutes for another: losing a state, or ceasing to collect there, leaves gaps that the others do not fill. Since γ and ᾱ come from the same units, β can be compared between analyses with the same unit; between different units, it cannot: more and smaller units always give a larger β (Table 5.5).</p>
+
+  <!-- 5.8 -->
+  <h2 id="b5-8"><span class="num">5.8</span>The elevation gradient</h2>
+  <p>Section <span class="ui">4 · The elevation gradient</span> sorts into elevation belts the accessions with coordinates and a valid elevation (from −500 to 7,000 m), whatever unit is chosen (with the unit set to belts it does not appear, because the table already is that). It draws every belt from the lowest to the highest with data, the empty ones included. For each belt with accessions, two bars: accessions above, distinct types below, with both figures alongside; an empty belt carries <span class="ui">0 · 0 — no collections in this belt</span> and a dotted line. The highest goes at the top. The belt width is that of the <span class="ui">Elevation belt</span> selector, and a footnote says how many accessions are included, how many belts are empty and how many accessions were left out for having no elevation or an impossible one.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/en/b5-gradiente.png" alt="Section 4 with 500 m belts: 0-500 m 5 accessions and 4 species; 500-1,000 m 3 and 3; 1,000-1,500 m 7 and 5; 1,500-2,000 m 11 and 6; 2,000-2,500 m 15 and 9; 2,500-3,000 m 2 and 2; 3,000-3,500 m empty, with 0 · 0 and a dotted line; 3,500-4,000 m 1 and 1; the note 44 accessions with a valid elevation are included. 1 empty belt within the collected range. 1 accession has an impossible elevation and is left out (accepted range −500 to 7,000 m; fix it in the accession record, in Block 2); below, the buttons Table as CSV, Curve as SVG and Heat map as SVG"></div>
+    <figcaption><b>Figure 5.8.</b> The gradient with 500 m belts and, below it, the block’s three export buttons. The belt from 3,000 to 3,500 m is empty; the 25,000 m tepary bean is left out and the note says so.</figcaption>
+  </figure>
+  <p>In the example, more than half the collection lies between 1,500 and 2,500 m (26 of the 44 included, with 6 and 9 species), the elevation of the central valleys where the maizes are concentrated. In the 2,000 to 2,500 m belt, 15 accessions give only 9 species; in the 0 to 500 m belt, 5 give 4. The lowlands are under-collected, but the little there is is varied: that is where a field trip would pay off most.</p>
+  <p>The empty belts are the most useful reading of the chart: from 3,000 to 3,500 m there is no collection at all, between the bitter potato at 3,797 m and everything else, so that elevation is not represented. And an impossible elevation does not vanish silently: the note counts it and says where to fix it: <i>1 accession has an impossible elevation and is left out (accepted range −500 to 7,000 m; fix it in the accession record, in Block 2)</i> (Chapter 2).</p>
+
+  <!-- 5.9 -->
+  <h2 id="b5-9"><span class="num">5.9</span>Exporting, and how everything changes with the unit</h2>
+  <p>At the end of the panel there are three buttons (Figure 5.8):</p>
+  <ul>
+    <li><span class="ui">Table as CSV</span> saves <span class="ruta">diversidad-geografica.csv</span>, in UTF-8, with one row per unit and the columns <code>unidad</code> (unit), <code>clave</code> (the code of the state, of the country, of the cell or the lower limit of the belt), <code>accesiones</code>, <code>riqueza</code>, <code>rarificada</code>, <code>shannon</code>, <code>gini_simpson</code>, <code>pielou</code> (empty with a single type), <code>hill_q1</code>, <code>exclusivos</code>, <code>altitud_media</code>, <code>lat</code> and <code>lon</code> (the position used by the Mantel test; empty for belts). The file and column names are the same in both interface languages. The indices carry three decimals, not rounded to two as on screen.</li>
+    <li><span class="ui">Curve as SVG</span> saves <span class="ruta">curva-acumulacion.svg</span>, the curve with its estimators.</li>
+    <li><span class="ui">Heat map as SVG</span> saves <span class="ruta">similitud-composicion.svg</span>, the heat map with its dendrogram.</li>
+  </ul>
+  <p>The SVG files carry the light theme colours, so that they look the same in a document. As in the other blocks, the figures can also be opened in the figure studio (Section I.6). The CSV does not store the settings: write down which unit, type and effort you used.</p>
+  <h3>The same collection, other units</h3>
+  <p>All the results depend on the unit and the type. With the example collection:</p>
+  <table class="compacta">
+    <caption><b>Table 5.5.</b> What changes with the unit and the type (uncorrected example collection; the other selectors at their defaults).</caption>
+    <thead><tr><th style="width:1.55in">Unit · type</th><th class="c" style="width:0.62in">Units · accessions</th><th class="c" style="width:0.42in">γ</th><th class="c" style="width:0.45in">β</th><th>Mantel and what is worth noting</th></tr></thead>
+    <tbody>
+      <tr><td>State · species</td><td class="c">10 · 36</td><td class="c">18</td><td class="c">5.67</td><td>r = −0.422, p = 0.123, 9 units. The figures of this chapter.</td></tr>
+      <tr><td>Country · species</td><td class="c">8 · 45</td><td class="c">24</td><td class="c">6.38</td><td>Mexico holds 36; only 3 of the 8 countries have two or more: a heat map, but no Mantel test. Myanmar comes from the unsigned longitude.</td></tr>
+      <tr><td>1° cell · species</td><td class="c">21 · 45</td><td class="c">24</td><td class="c">12.62</td><td>r = −0.408, p = 0.055, 12 cells. Chao1 = 224, Chao2 = 234, jackknife 1 = 44.0.</td></tr>
+      <tr><td>0.5° cell · species</td><td class="c">26 · 45</td><td class="c">24</td><td class="c">15.00</td><td>r = −0.399, p = 0.077, 12 cells; 14 of the 26 cells have a single accession.</td></tr>
+      <tr><td>500 m belt · species</td><td class="c">7 · 44</td><td class="c">23</td><td class="c">4.37</td><td>Against elevation difference: r = 0.405, p = 0.176, 6 belts. No index map; the 25,000 m tepary is left out.</td></tr>
+      <tr><td>State · genus</td><td class="c">10 · 36</td><td class="c">14</td><td class="c">4.38</td><td>Chao1 drops to 50: there are more genera with two or more accessions.</td></tr>
+      <tr><td>State · crop</td><td class="c">10 · 36</td><td class="c">18</td><td class="c">5.67</td><td>Oaxaca rises to 4 types: the crop separates what the species lumps together.</td></tr>
+      <tr><td>State · accession name</td><td class="c">10 · 36</td><td class="c">35</td><td class="c">9.00</td><td>Almost every accession is a type: no state shares names, so Mantel has no variation to correlate.</td></tr>
+    </tbody>
+  </table>
+  <p>The species is the natural type for the interspecific diversity of a multi-crop genebank; in a single-crop genebank, the accession name (the landrace or the race) is what matters, provided it is written consistently (Section 3.3). The state serves to report to those who manage the territory; the cell, to compare fairly and plan trips; the belt, to see which environments are missing.</p>
+
+  <h3>When something goes wrong</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:40%">What you see</th><th>Why it happens and what to do</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Load your accessions in Block 2 first.</span></td><td>There is no passport data. Load your collection or the example one (Chapter 2).</td></tr>
+      <tr><td><span class="ui">Accessions analysed</span> is smaller than the accessions with coordinates</td><td>Some fall in no unit (outside Mexico, or with no valid elevation for belts); the note in section 1 says how many and why.</td></tr>
+      <tr><td>The rarefied column is full of “—”</td><td>The effort is larger than the accessions of almost every unit. Choose <span class="ui">at the first quartile (recommended)</span> or a larger unit.</td></tr>
+      <tr><td><span class="ui">Careful with Chao1 in this collection.</span> appears</td><td>There are fewer than three types with two accessions. Read jackknife 1 and the curve, not Chao1.</td></tr>
+      <tr><td><span class="ui">at least three units with two accessions each are needed</span></td><td>There is nothing to compare composition with. Use a larger unit (2° cells, 1000 m belts).</td></tr>
+      <tr><td>The Mantel note says it cannot be computed</td><td>Read the reason: too few units with two or more accessions (use larger units) or all dissimilarities equal (change the type).</td></tr>
+      <tr><td>The gradient note says an accession has an impossible elevation</td><td>A mistyped elevation (outside −500 to 7,000 m). It is left out of the belts, the gradient and the mean elevation; correct it in its Block 2 record.</td></tr>
+      <tr><td>The <span class="ui">Index map</span> is not shown</td><td>The unit is the elevation belt, which has no geography.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja regla">
+    <div class="caja-t"><span class="ico">✓</span>Decision rule · what to do in Block 5</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:44%"><b>If</b> you are going to measure diversity</td><td><b>then</b> first correct coordinates, elevations and duplicates (Blocks 2 and 3): each error changes the units, the tree and the estimators.</td></tr>
+      <tr><td><b>If</b> you want to know which unit is best represented</td><td><b>then</b> compare the rarefied column, at two or three efforts, and not the raw richness; keep the order that holds.</td></tr>
+      <tr><td><b>If</b> a unit has S equal to N, or J′ = 1 with few accessions</td><td><b>then</b> sampling is lacking there: each collection brought something new. It is a candidate for the next field trip (Block 6).</td></tr>
+      <tr><td><b>If</b> a unit has many accessions and a low q1</td><td><b>then</b> it is saturated: collect other species there.</td></tr>
+      <tr><td><b>If</b> the accumulation curve does not flatten or the coverage is low</td><td><b>then</b> it is far from saturated; report jackknife 1 as a floor for what is missing, and Chao1 only without the warning.</td></tr>
+      <tr><td><b>If</b> a unit has exclusive types</td><td><b>then</b> secure their safety duplicate and consider recollecting there.</td></tr>
+      <tr><td><b>If</b> the Mantel test gives p &lt; 0.05 with a positive r</td><td><b>then</b> diversity has geographic structure: spread your collecting over the territory instead of concentrating it.</td></tr>
+      <tr><td><b>If</b> a belt is missing from the gradient</td><td><b>then</b> that elevation is not represented: note it as a gap for Block 6.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">Block 5 does not change the passport: it only measures it. What turns out poor or absent here is what Block 6 turns into priority cells and a collecting route.</p>
+  </div>
+
+</section>
+
+</body>
+</html>
