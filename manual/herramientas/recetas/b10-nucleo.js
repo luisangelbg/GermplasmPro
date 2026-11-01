@@ -18,8 +18,8 @@
   goStep(7); await W(1500);
   Object.assign(B7.view, { k: 4, tree: "ward", pct: 10, strata: "group", alloc: "L", pick: "distance", method: "strata", atLeastOne: false, colorBy: "group" });
   document.getElementById("b7Example").click(); await W(4000);
-  Prefs.set("repTitle", "Informe anual 2026"); Prefs.set("repBank", "Banco de Germoplasma de Ejemplo"); Prefs.set("repAuthor", "");
-  Object.assign(B10.view, { title: "Informe anual 2026", bank: "Banco de Germoplasma de Ejemplo", author: "", pick: null, figures: true, annex: true, lang: null });
+  Prefs.set("repTitle", (document.documentElement.lang === "en" ? "Annual report 2026" : "Informe anual 2026")); Prefs.set("repBank", (document.documentElement.lang === "en" ? "Example Genebank" : "Banco de Germoplasma de Ejemplo")); Prefs.set("repAuthor", "");
+  Object.assign(B10.view, { title: (document.documentElement.lang === "en" ? "Annual report 2026" : "Informe anual 2026"), bank: (document.documentElement.lang === "en" ? "Example Genebank" : "Banco de Germoplasma de Ejemplo"), author: "", pick: null, figures: true, annex: true, lang: null });
   goStep(10); await W(6000);
   const s = seccion("charac");
   await irA(s[0]);

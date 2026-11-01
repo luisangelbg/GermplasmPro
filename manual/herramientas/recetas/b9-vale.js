@@ -13,7 +13,7 @@
   goStep(9); await W(2000);
   Object.assign(B9.view, { fmt: "envelope", page: "letter", fields: ["ACCENAME", "TAXON", "COLLSITE"], barcode: true, codigo: "barras", logo: true, header: "", which: "all", sheet: "labels", plants: 100, plantsEdited: false });
   B9.view.selection.clear(); B9.view.q = "";
-  Object.assign(B9.view, { which: "selection", sheet: "delivery", header: "Banco de Germoplasma de Ejemplo" });
+  Object.assign(B9.view, { which: "selection", sheet: "delivery", header: (document.documentElement.lang === "en" ? "Example Genebank" : "Banco de Germoplasma de Ejemplo") });
   ["MEX-SE-0029", "MEX-SE-0030", "MEX-SE-0046"].forEach(n => B9.view.selection.add(n));
   B9.run(); await W(1000);
   const sh = document.querySelector("#b9Preview .print-sheet");
