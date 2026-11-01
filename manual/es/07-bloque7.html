@@ -64,8 +64,8 @@
     </tbody>
   </table>
   <p>La caracterización se guarda en el almacenamiento local del navegador, junto al pasaporte: si cierras la app y la vuelves a abrir, sigue ahí. No sale de tu computadora.</p>
-  <div class="caja dato">
-    <div class="caja-t">La caracterización de ejemplo</div>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>La caracterización de ejemplo</div>
     <p>Doce descriptores para las 46 accesiones de la colección de ejemplo, <b>generados por la app con datos sintéticos</b>: seis cuantitativos (<code>dias_floracion</code>, <code>altura_planta_cm</code>, <code>largo_fruto_cm</code>, <code>diametro_fruto_cm</code>, <code>peso_100_semillas_g</code>, <code>rendimiento_planta_g</code>), cuatro cualitativos (<code>color_principal</code>, <code>forma</code>, <code>habito</code>, <code>textura</code>) y dos escalas de 1 a 5 (<code>tolerancia_sequia</code>, <code>vigor</code>). Los cuantitativos salen de una distribución normal con media propia de cada género —un agave tarda años en florecer y un encino mide metros—; el hábito sigue al género (los árboles son arbóreos, la vainilla y el chayote trepadores), y color, forma, textura y las dos escalas se sortean. Alrededor de 8&nbsp;% de las celdas quedan vacías a propósito. Siempre salen los mismos valores para la misma colección, así que puedes reproducir cada cifra de este capítulo.</p>
   </div>
 
@@ -134,10 +134,10 @@
     <div class="caja-t"><span class="ico">▸</span>Ejemplo numérico · dos maíces del ejemplo, MEX-ZM-0001 y MEX-ZM-0002</div>
     <p>A MEX-ZM-0001 le falta la altura; a MEX-ZM-0002, el peso de 100 semillas y la tolerancia a la sequía. Esos tres caracteres no entran; quedan nueve. Los rangos son los de las 46 accesiones.</p>
     <table class="compacta cuenta"><tbody>
-      <tr><td style="width:36%">dias_floracion   84 y 63</td><td>21 / 2554 = 0.00822</td></tr>
+      <tr><td style="width:36%">dias_floracion   84 y 63</td><td>21 / 2 554 = 0.00822</td></tr>
       <tr><td>largo_fruto_cm   20.6 y 15.7</td><td>4.9 / 76.4 = 0.06414</td></tr>
       <tr><td>diametro_fruto_cm   4.5 y 4.9</td><td>0.4 / 19.4 = 0.02062</td></tr>
-      <tr><td>rendimiento_planta_g   96 y 120</td><td>24 / 32405 = 0.00074</td></tr>
+      <tr><td>rendimiento_planta_g   96 y 120</td><td>24 / 32 405 = 0.00074</td></tr>
       <tr><td>vigor   2 y 3</td><td>1 / 4 = 0.25000</td></tr>
       <tr><td>color · forma · textura</td><td>azul/verde, aplanada/cónica, lisa/pubescente: 1 + 1 + 1</td></tr>
       <tr><td>habito</td><td>erecto/erecto: 0</td></tr>
@@ -168,7 +168,7 @@
   </figure>
   <div class="caja teoria">
     <div class="caja-t"><span class="ico">θ</span>Teoría en breve · el análisis de coordenadas principales</div>
-    <p>El análisis de coordenadas principales (Gower 1966) busca puntos en un plano cuyas distancias se parezcan lo más posible a las de la matriz. Con <i>D</i> la matriz de distancias de <i>n</i> accesiones, se forma <i>A</i> con <i>a<sub>ij</sub></i> = −½ <i>d<sub>ij</sub></i>² y se centra por filas y por columnas:</p>
+    <p>El análisis de coordenadas principales (Gower, 1966) busca puntos en un plano cuyas distancias se parezcan lo más posible a las de la matriz. Con <i>D</i> la matriz de distancias de <i>n</i> accesiones, se forma <i>A</i> con <i>a<sub>ij</sub></i> = −½ <i>d<sub>ij</sub></i>² y se centra por filas y por columnas:</p>
     <div class="formula">b<sub>ij</sub> = a<sub>ij</sub> − ā<sub>i·</sub> − ā<sub>·j</sub> + ā<sub>··</sub><br>B = Σ λ<sub>m</sub> u<sub>m</sub> u<sub>m</sub>ᵀ<br>coordenada<sub>im</sub> = u<sub>im</sub> √λ<sub>m</sub></div>
     <p>Los valores propios λ<sub>m</sub> de <i>B</i> (la app los obtiene por el método de Jacobi) miden cuánta variación recoge cada eje. El porcentaje que la app escribe en cada eje es λ<sub>m</sub> dividido entre la suma de los valores propios <b>positivos</b>. Gower con datos faltantes no es una distancia euclidiana, así que algunos valores propios salen negativos; la app los deja fuera de la suma y no aplica ninguna corrección.</p>
   </div>
@@ -180,11 +180,11 @@
   <p>El árbol de la derecha agrupa las accesiones con la misma matriz de Gower. Cada hoja es una accesión, escrita en el color de su grupo y con la rama pegada a su nombre; las ramas se unen hacia la derecha, y la escala de abajo da la <span class="ui">altura de fusión</span>: cuanto más a la derecha se unen dos ramas, más distintas son. Con Ward la altura está en las unidades de Ward.D2; con UPGMA, en distancia de Gower. La app corta el árbol en el número de grupos elegido y llama G1, G2… a los grupos que resultan. Debajo de las dos gráficas, <span class="ui">PCoA en SVG</span> guarda <span class="ruta">pcoa-gower.svg</span> y <span class="ui">Árbol en SVG</span>, <span class="ruta">arbol-gower.svg</span>, los dos con los colores del tema claro.</p>
   <div class="caja teoria">
     <div class="caja-t"><span class="ico">θ</span>Teoría en breve · Ward.D2 y UPGMA</div>
-    <p><b>UPGMA</b> une en cada paso los dos grupos con la menor distancia media entre sus miembros. <b>Ward.D2</b> (Murtagh y Legendre 2014) une el par cuya fusión menos aumenta la suma de cuadrados dentro de los grupos; trabaja con las distancias al cuadrado y actualiza con la fórmula de Lance-Williams, el mismo criterio que <code>hclust(…, method = "ward.D2")</code> de R. Ward tiende a dar grupos de tamaño parecido; UPGMA respeta mejor las distancias, pero deja aislados a los raros y junta a los demás en un grupo enorme. El corte en <i>k</i> grupos parte, una y otra vez, el nodo más alto que queda.</p>
+    <p><b>UPGMA</b> une en cada paso los dos grupos con la menor distancia media entre sus miembros. <b>Ward.D2</b> (Murtagh y Legendre, 2014) une el par cuya fusión menos aumenta la suma de cuadrados dentro de los grupos; trabaja con las distancias al cuadrado y actualiza con la fórmula de Lance-Williams, el mismo criterio que <code>hclust(…, method = "ward.D2")</code> de R. Ward tiende a dar grupos de tamaño parecido; UPGMA respeta mejor las distancias, pero deja aislados a los raros y junta a los demás en un grupo enorme. El corte en <i>k</i> grupos parte, una y otra vez, el nodo más alto que queda.</p>
   </div>
   <div class="caja teoria">
     <div class="caja-t"><span class="ico">θ</span>Teoría en breve · la silueta</div>
-    <p>La <b>silueta</b> (Rousseeuw 1987) dice si cada accesión está bien en su grupo. Con <i>a</i>(<i>i</i>) la distancia media de <i>i</i> a los demás de su grupo y <i>b</i>(<i>i</i>) la distancia media al grupo vecino más cercano:</p>
+    <p>La <b>silueta</b> (Rousseeuw, 1987) dice si cada accesión está bien en su grupo. Con <i>a</i>(<i>i</i>) la distancia media de <i>i</i> a los demás de su grupo y <i>b</i>(<i>i</i>) la distancia media al grupo vecino más cercano:</p>
     <div class="formula">s(i) = [ b(i) − a(i) ] / max{ a(i), b(i) }<br>silueta media = Σ s(i) / n</div>
     <p><i>s</i> va de −1 a 1: cerca de 1, la accesión está mucho más cerca de su grupo que de cualquier otro; cerca de 0, está en la frontera; negativa, estaría mejor en otro grupo. Una accesión sola en su grupo vale 0. Por encima de 0.25 hay estructura; por debajo, el corte es casi arbitrario.</p>
   </div>
@@ -205,7 +205,7 @@
 
   <!-- 7.6 -->
   <h2 id="b7-6"><span class="num">7.6</span>La colección núcleo: estratos, reparto y elección</h2>
-  <p>Una <b>colección núcleo</b> (Frankel y Brown 1984) es un subconjunto pequeño que guarda, con el mínimo de repeticiones, la mayor parte de la diversidad de la colección entera. Sirve para caracterizar a fondo, para evaluar en campo o para atender pedidos sin tocar todo el banco. La sección <span class="ui">3 · La colección núcleo</span> la arma en tres decisiones: cuántas accesiones, en qué estratos se reparten y cuáles se eligen dentro de cada estrato.</p>
+  <p>Una <b>colección núcleo</b> (Frankel y Brown, 1984) es un subconjunto pequeño que guarda, con el mínimo de repeticiones, la mayor parte de la diversidad de la colección entera. Sirve para caracterizar a fondo, para evaluar en campo o para atender pedidos sin tocar todo el banco. La sección <span class="ui">3 · La colección núcleo</span> la arma en tres decisiones: cuántas accesiones, en qué estratos se reparten y cuáles se eligen dentro de cada estrato.</p>
   <figure class="mediana">
     <div class="marco"><img src="../img/b7-nucleo.png" alt="La sección 3 · La colección núcleo con los valores de fábrica: los selectores Tamaño en 10 %, Método por estratos, Estratos en grupos del agrupamiento, Reparto en Logarítmica y Dentro del estrato las más distintas, la casilla al menos 1 por estrato sin marcar y el botón otra selección al azar desactivado; el aviso El núcleo es demasiado pequeño para juzgarlo con estas cifras con 5 accesiones, que dice que con 46 caracterizadas hace falta un núcleo de 21 % o más y propone elegir 25 %; la tabla de criterios de Hu et al. con MD% 0.0 bien, VD% 62.5 revisar, CR% 75.2 revisar, VR% 91.4 revisar y clases capturadas 19 / 32 · 59.4 % revisar; el reparto por estrato G1 23 a 2, G2 17 a 1, G3 2 a 1 y G4 4 a 1; y, debajo, el desplegable Detalle por carácter cerrado"></div>
     <figcaption><b>Figura 7.5.</b> El núcleo de fábrica: 10&nbsp;%, estratificado por los grupos de Ward, reparto logarítmico y las accesiones más distintas dentro de cada estrato. Con 5 accesiones, la app avisa que el núcleo es demasiado pequeño para juzgarlo.</figcaption>
@@ -225,11 +225,11 @@
   </table>
   <div class="caja teoria">
     <div class="caja-t"><span class="ico">θ</span>Teoría en breve · las cuatro reglas de reparto y la elección por máxima distancia</div>
-    <p>Con un tamaño objetivo <i>T</i> y estratos de tamaños <i>n<sub>1</sub></i>, …, <i>n<sub>g</sub></i>, a cada estrato le corresponde la cuota <i>q<sub>h</sub></i> = <i>T</i> · <i>w<sub>h</sub></i> / Σ <i>w</i>, donde el peso <i>w<sub>h</sub></i> depende de la regla (Brown 1989):</p>
+    <p>Con un tamaño objetivo <i>T</i> y estratos de tamaños <i>n<sub>1</sub></i>, …, <i>n<sub>g</sub></i>, a cada estrato le corresponde la cuota <i>q<sub>h</sub></i> = <i>T</i> · <i>w<sub>h</sub></i> / Σ <i>w</i>, donde el peso <i>w<sub>h</sub></i> depende de la regla (Brown, 1989):</p>
     <div class="formula">Constante: w = 1  ·  Proporcional: w = n<sub>h</sub><br>Logarítmica: w = ln(n<sub>h</sub> + 1)  ·  Raíz cuadrada: w = √n<sub>h</sub></div>
     <p>La constante da lo mismo a cada estrato y favorece a los pequeños; la proporcional reproduce el desequilibrio de la colección; la logarítmica y la raíz cuadrada quedan en medio, y la logarítmica es la recomendada cuando los estratos son muy desiguales. Las cuotas no son enteras, y la app las reparte <b>por mayor resto</b>: si hay al menos tantas plazas como estratos, cada estrato recibe primero una; luego, plaza por plaza, la siguiente va al estrato más lejos de su cuota (<i>q<sub>h</sub></i> menos lo que ya tiene; a igual distancia, al más grande), sin pasar nunca de las accesiones que el estrato tiene. Si hay <b>más estratos que plazas</b>, nadie recibe una de entrada: las plazas van a los estratos de mayor cuota y los demás se quedan sin representante. Así la suma es siempre <i>T</i>. Sólo con <span class="ui">al menos 1 por estrato</span> cada estrato recibe una aunque la suma pase de <i>T</i>.</p>
     <p><b>Las más distintas</b>: dentro del estrato, la app empieza por el par más alejado en la distancia de Gower y añade, una por una, la accesión cuya distancia a la más cercana de las ya elegidas es la mayor (criterio maximín). Si al estrato le toca una sola, se queda con una de las dos del par más alejado. <b>Al azar</b>: sorteo sin reemplazo con una semilla fija, para que se pueda repetir.</p>
-    <p><b>Método M</b> (Schoen y Brown 1993): se cuentan todas las clases de los caracteres cualitativos y ordinales («habito = trepador», «vigor = 4»…); en cada paso entra la accesión que aporta más clases todavía no cubiertas. Cuando ya no queda ninguna clase nueva, completa el tamaño con las accesiones que más clases tienen.</p>
+    <p><b>Método M</b> (Schoen y Brown, 1993): se cuentan todas las clases de los caracteres cualitativos y ordinales («habito = trepador», «vigor = 4»…); en cada paso entra la accesión que aporta más clases todavía no cubiertas. Cuando ya no queda ninguna clase nueva, completa el tamaño con las accesiones que más clases tienen.</p>
   </div>
   <div class="caja importante">
     <div class="caja-t"><span class="ico">!</span>Más estratos que plazas: o faltan estratos o sobra núcleo</div>

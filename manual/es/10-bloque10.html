@@ -109,8 +109,8 @@
     <tbody>
       <tr><td><span class="ui">accesiones</span></td><td class="c">46</td><td>Los registros del pasaporte.</td></tr>
       <tr><td><span class="ui">taxones</span></td><td class="c">24</td><td>Las combinaciones distintas de género y especie (<code>GENUS</code> + <code>SPECIES</code>), sin la subespecie.</td></tr>
-      <tr><td><span class="ui">países de origen</span></td><td class="c">8</td><td>Los valores distintos de <code>ORIGCTY</code>, tal como están escritos: el «MX» del frijol tepari, uno de los errores sembrados (apartado 3.4), cuenta como un país más.</td></tr>
-      <tr><td><span class="ui">rutas de conservación</span></td><td class="c">6</td><td>Las rutas con al menos una accesión, declaradas en <code>GP_CONS</code> o deducidas de <code>STORAGE</code>; no cuenta «sin declarar».</td></tr>
+      <tr><td><span class="ui">países de origen</span></td><td class="c">8</td><td>Los valores distintos de <code>ORIGCTY</code>, tal como están escritos: el «MX» del frijol tépari, uno de los errores sembrados (apartado 3.4), cuenta como un país más.</td></tr>
+      <tr><td><span class="ui">rutas de conservación</span></td><td class="c">6</td><td>Las rutas con al menos una accesión, declaradas en <code>GP_CONS</code> o deducidas de <code>STORAGE</code>; no cuenta «Sin declarar».</td></tr>
       <tr><td><span class="ui">con coordenadas</span></td><td class="c">45</td><td>Las que tienen latitud y longitud numéricas.</td></tr>
       <tr><td><span class="ui">con duplicado</span></td><td class="c">20</td><td>Las que tienen duplicado de seguridad en otra institución (<code>DUPLSITE</code> distinto de <code>INSTCODE</code>).</td></tr>
     </tbody>
@@ -157,7 +157,7 @@
     <figcaption><b>Figura 10.5.</b> La sección <i>Distribución geográfica</i>. El punto en Birmania es MEX-ZM-0039, con la longitud sin signo.</figcaption>
   </figure>
   <p>Los puntos van coloreados por la ruta de conservación, como en el Bloque 4, y la leyenda dice cuántos puntos hay de cada una: 27 del banco de semillas (la accesión de semilla sin coordenadas no cuenta), 8 del banco de campo, 3 in vitro, 3 en finca, 2 in situ, 1 criopreservada y 1 sin declarar; en total, los 45 del pie.</p>
-  <p>Aquí se nota la diferencia entre lo declarado y lo medido: la sección <span class="ui">La colección</span> cuenta 37 accesiones de México por <code>ORIGCTY</code>, y esta, 36 puntos dentro de México, porque el tuxpeño de la costa (MEX-ZM-0039), que dice ser de México, tiene la longitud sin signo y cae en Birmania. El frijol tepari, declarado «MX», sí cae en Sonora. La nota de abajo dice cuántos puntos quedan fuera de México: <span class="ui largo">9 de los puntos caen fuera de México, así que sólo aparecen en el conteo por país.</span> Las entidades que suman 36 son las diez de la tabla; con más de doce, las demás no se enseñan.</p>
+  <p>Aquí se nota la diferencia entre lo declarado y lo medido: la sección <span class="ui">La colección</span> cuenta 37 accesiones de México por <code>ORIGCTY</code>, y esta, 36 puntos dentro de México, porque el tuxpeño de la costa (MEX-ZM-0039), que dice ser de México, tiene la longitud sin signo y cae en Birmania. El frijol tépari, declarado «MX», sí cae en Sonora. La nota de abajo dice cuántos puntos quedan fuera de México: <span class="ui largo">9 de los puntos caen fuera de México, así que sólo aparecen en el conteo por país.</span> Las entidades que suman 36 son las diez de la tabla; con más de doce, las demás no se enseñan.</p>
 
   <!-- 10.7 -->
   <h2 id="b10-7"><span class="num">10.7</span>Diversidad y vacíos de colecta</h2>
@@ -205,7 +205,7 @@
       <tr><td><span class="ui">Sin constantes de viabilidad: no se proyecta</span></td><td class="c">14</td><td>informativa</td></tr>
     </tbody>
   </table>
-  <p>Los nombres son genéricos: el informe dice qué pasa y a cuántos lotes, no las cifras de cada uno. Para saber cuáles son los 4 lotes con la germinación bajo el umbral —el teocintle de Balsas con 81 %, el frijol vaquita con 84 %, el frijol tepari con 79 % y el maíz ancho de riego con 72 %— mira la tabla del Bloque 8 o <span class="ruta">datos/plan-de-trabajo.csv</span> del paquete (apartado 10.11). La gráfica de la carga de trabajo lleva su leyenda —pruebas de germinación, regeneraciones, resiembras de campo y subcultivos in vitro— y un eje con 0, 13 y 25 tareas; los picos de los años +7 y +17 son las pruebas de germinación de 22 lotes de semilla que vencen juntas.</p>
+  <p>Los nombres son genéricos: el informe dice qué pasa y a cuántos lotes, no las cifras de cada uno. Para saber cuáles son los 4 lotes con la germinación bajo el umbral —el teocintle de Balsas con 81 %, el frijol vaquita con 84 %, el frijol tépari con 79 % y el maíz ancho de riego con 72 %— mira la tabla del Bloque 8 o <span class="ruta">datos/plan-de-trabajo.csv</span> del paquete (apartado 10.11). La gráfica de la carga de trabajo lleva su leyenda —pruebas de germinación, regeneraciones, resiembras de campo y subcultivos in vitro— y un eje con 0, 13 y 25 tareas; los picos de los años +7 y +17 son las pruebas de germinación de 22 lotes de semilla que vencen juntas.</p>
   <p>Al final del documento va el <b>anexo</b>: una fila por accesión con su número, nombre, especie (sin subespecie), país de origen por su nombre, sitio de colecta, ruta de conservación y existencias. Un código de país que la app no reconoce, como el «MX», sale tal cual. Es la lista que se archiva con el informe; si no la necesitas, apaga su botón.</p>
 
   <!-- 10.9 -->
@@ -302,7 +302,7 @@
       <tr><td><code>dynamicProperties</code></td><td>los 30 restantes</td><td>{"mcpd:ACCENAME":"Maíz azul de Apoala", "mcpd:SAMPSTAT":"300", "mcpd:STORAGE":"13;40", … "mcpd:GP_GERMPCT":"88", …}</td></tr>
     </tbody>
   </table>
-  <p>Los textos de <code>country</code>, <code>samplingProtocol</code>, <code>georeferenceProtocol</code> y <code>preparations</code> salen en el idioma del informe: si vas a subir el archivo a GBIF, pon el informe en <span class="ui">English</span> antes de exportar. <code>recordedBy</code> es la persona que colectó, y sólo se llena con <code>COLLNAME</code>; el código del instituto colector viaja en <code>dynamicProperties</code>. Lo silvestre no tiene término en <code>degreeOfEstablishment</code>: se deja vacío y el código <code>SAMPSTAT</code> completo va en <code>dynamicProperties</code>. Si el país está mal escrito en el pasaporte, como el «MX» del frijol tepari, <code>country</code> y <code>countryCode</code> quedan vacíos: corrige antes el pasaporte en el Bloque 3.</p>
+  <p>Los textos de <code>country</code>, <code>samplingProtocol</code>, <code>georeferenceProtocol</code> y <code>preparations</code> salen en el idioma del informe: si vas a subir el archivo a GBIF, pon el informe en <span class="ui">English</span> antes de exportar. <code>recordedBy</code> es la persona que colectó, y sólo se llena con <code>COLLNAME</code>; el código del instituto colector viaja en <code>dynamicProperties</code>. Lo silvestre no tiene término en <code>degreeOfEstablishment</code>: se deja vacío y el código <code>SAMPSTAT</code> completo va en <code>dynamicProperties</code>. Si el país está mal escrito en el pasaporte, como el «MX» del frijol tépari, <code>country</code> y <code>countryCode</code> quedan vacíos: corrige antes el pasaporte en el Bloque 3.</p>
 
   <h3>Cuando algo no sale</h3>
   <table class="compacta">
