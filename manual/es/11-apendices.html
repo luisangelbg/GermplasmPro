@@ -46,7 +46,7 @@
     <tbody>
       <tr><td><b>.csv, .tsv, .txt</b></td><td>Bloque 2, <span class="ui">Abrir un archivo (CSV, TSV o proyecto)</span>: el pasaporte, una fila por accesión. Bloque 7, <span class="ui">Cargar mi caracterización (CSV)</span>: la caracterización, que se une al pasaporte por el número de accesión.</td></tr>
       <tr><td><b>pegado</b></td><td>Bloques 2 y 7, <span class="ui">Pegar desde una hoja de cálculo</span>: un bloque de celdas copiado con su fila de encabezados. En el Bloque 2 la misma ventana trae la plantilla guiada para escribir la tabla desde cero (apartado 2.4).</td></tr>
-      <tr><td><b>.json</b> de proyecto</td><td>Bloque 2, el mismo botón de abrir: la colección y la caracterización guardadas antes por la app con <span class="ui">Guardar el proyecto (.json)</span>.</td></tr>
+      <tr><td><b>.json</b> de proyecto</td><td>Bloque 2, el mismo botón de abrir: la colección, la caracterización y los ajustes de los Bloques 3, 8 y 9 guardados antes con <span class="ui">Guardar el proyecto (.json)</span>.</td></tr>
       <tr><td>en pantalla</td><td>Bloque 8: las constantes de viabilidad de otras especies (<span class="ui">Añadir constantes de una especie</span>) y los registros de pruebas, regeneraciones, subcultivos, revisiones y visitas, que se escriben en la propia app y van directo al pasaporte.</td></tr>
     </tbody>
   </table>
@@ -95,7 +95,7 @@
     <tbody>
       <tr><td><span class="chip k2">2</span></td><td><span class="ui">Descargar la plantilla</span></td><td><span class="ruta">plantilla-pasaporte.csv</span>: los 49 descriptores con una fila de ejemplo. Desde la plantilla guiada, <span class="ui">Descargar esta plantilla en CSV</span> da <span class="ruta">plantilla-germplasmpro.csv</span>, sólo con las columnas marcadas.</td></tr>
       <tr><td><span class="chip k2">2</span></td><td><span class="ui">Exportar MCPD (sólo el estándar)</span> · <span class="ui">Exportar todo (con la extensión)</span></td><td><span class="ruta">pasaporte-mcpd.csv</span>, con los 42 descriptores del estándar; <span class="ruta">pasaporte-completo.csv</span>, con los 49.</td></tr>
-      <tr><td><span class="chip k2">2</span></td><td><span class="ui">Guardar el proyecto (.json)</span></td><td><span class="ruta">coleccion-germplasmpro.json</span>: el pasaporte y la caracterización del Bloque 7.</td></tr>
+      <tr><td><span class="chip k2">2</span></td><td><span class="ui">Guardar el proyecto (.json)</span></td><td><span class="ruta">coleccion-germplasmpro.json</span> (versión 2 del formato): el pasaporte, la caracterización del Bloque 7, el umbral y los pares descartados del Bloque 3, los supuestos del banco, las constantes de viabilidad propias y las calculadoras del Bloque 8, y las preferencias de las etiquetas del Bloque 9.</td></tr>
       <tr><td><span class="chip k3">3</span></td><td><span class="ui">Descargar el informe de calidad</span></td><td><span class="ruta">informe-calidad.csv</span>: una fila por hallazgo de geografía, consistencia, corrección, duplicado o validación del pasaporte.</td></tr>
       <tr><td><span class="chip k4">4</span></td><td><span class="ui">Exportar SVG</span> · <span class="ui">Exportar PNG (2×)</span> · <span class="ui">Puntos en CSV (con entidad y celda)</span></td><td><span class="ruta">mapa-colecta.svg</span> y <span class="ruta">.png</span>; <span class="ruta">puntos-mapa.csv</span>, con las accesiones que se ven.</td></tr>
       <tr><td><span class="chip k5">5</span></td><td><span class="ui">Tabla en CSV</span> · <span class="ui">Curva en SVG</span> · <span class="ui">Mapa de calor en SVG</span></td><td><span class="ruta">diversidad-geografica.csv</span>; <span class="ruta">curva-acumulacion.svg</span>; <span class="ruta">similitud-composicion.svg</span>.</td></tr>
@@ -130,7 +130,7 @@
       <tr><td><span class="ruta">darwin-core-….csv</span></td><td>occurrenceID, basisOfRecord, institutionCode, collectionCode, catalogNumber, otherCatalogNumbers, fieldNumber, recordedBy, eventDate, year, month, day, scientificName, genus, specificEpithet, infraspecificEpithet, scientificNameAuthorship, vernacularName, country, countryCode, locality, decimalLatitude, decimalLongitude, geodeticDatum, coordinateUncertaintyInMeters, georeferenceProtocol, minimumElevationInMeters, maximumElevationInMeters, samplingProtocol, degreeOfEstablishment, preparations, occurrenceRemarks, dynamicProperties</td></tr>
     </tbody>
   </table>
-  <p class="small">En el ZIP, <span class="ruta">datos/calidad.csv</span> lleva las mismas cinco columnas que el informe de calidad del Bloque 3, y <span class="ruta">datos/plan-de-trabajo.csv</span> una fila por alerta: accesion, taxon, ruta, nivel, alerta, detalle. Cómo se traduce cada descriptor a Darwin Core está en el apartado 10.12.</p>
+  <p class="small">En el ZIP, <span class="ruta">datos/calidad.csv</span> es el mismo archivo que <span class="ruta">informe-calidad.csv</span> del Bloque 3: las mismas cinco columnas y las mismas filas (geografía, consistencia, corrección, duplicado y validación del pasaporte), y <span class="ruta">datos/plan-de-trabajo.csv</span> una fila por alerta: accesion, taxon, ruta, nivel, alerta, detalle. Cómo se traduce cada descriptor a Darwin Core está en el apartado 10.12.</p>
 
   <!-- B -->
   <h2 id="ap-b"><span class="num">B</span>Las reglas de decisión, reunidas</h2>
@@ -226,7 +226,8 @@
       <tr><td>La primera fila de datos se tomó como encabezado, o al revés</td><td>Corrígelo con la casilla <span class="ui">La primera fila son los encabezados</span> de la ventana de pegado; si sólo hay una fila y es encabezado, la app avisa que no quedan datos que importar.</td></tr>
       <tr><td>Las coordenadas llevan coma decimal (<code>19,149</code>)</td><td>Con tabuladores o punto y coma de separador, la app las entiende, avisa al pegar cuántos valores la usan y las pasa a punto al importar. En un archivo separado por comas, una coma decimal que no va entre comillas parte el número en dos columnas: guárdalo con punto y coma o copia y pega desde la hoja.</td></tr>
       <tr><td>Al abrir un .json dice <span class="ui">Ese archivo no es un proyecto de GermplasmPro.</span></td><td>No lo escribió <span class="ui">Guardar el proyecto (.json)</span>. Si es una tabla, guárdala como .csv.</td></tr>
-      <tr><td>Abrí un proyecto en otra computadora y faltan mis constantes, mis supuestos del banco o los pares que descarté</td><td>El proyecto lleva el pasaporte y la caracterización; lo demás se queda en el navegador donde lo pusiste (apéndice F.3). Vuelve a ponerlo en la nueva.</td></tr>
+      <tr><td>Abrí un proyecto en otra computadora y faltan mis constantes, mis supuestos del banco o los pares que descarté</td><td>El proyecto se guardó con una versión anterior de la app, que sólo llevaba el pasaporte y la caracterización. Vuelve a ponerlos en la computadora de origen y guarda el proyecto otra vez: desde la versión 2 del formato viajan con él (apéndice F.3).</td></tr>
+      <tr><td>Junto al contador del Bloque 2 dice <i>No se pudo guardar en este navegador…</i></td><td>El almacenamiento del navegador está lleno o la ventana es privada: lo que hagas sólo vive en esa pestaña. Guarda el proyecto .json ya y antes de cerrar.</td></tr>
       <tr><td>Bajé varias tablas seguidas y sólo bajaron algunas</td><td>El navegador frena las descargas seguidas: permítelas para este sitio, o usa <span class="ui">Descargar todo (ZIP)</span> del Bloque 10.</td></tr>
       <tr><td>El informe no se abre para imprimir</td><td>El navegador bloqueó la ventana, y la app lo dice: descarga el informe con <span class="ui">Descargar el informe (HTML)</span> y ábrelo con doble clic.</td></tr>
       <tr><td>Las etiquetas impresas no miden lo que dice su formato</td><td>La escala del diálogo de impresión no está en 100 % o la impresora reduce la hoja. Ponla en 100 % o «tamaño real» (apartado 9.6).</td></tr>
@@ -312,7 +313,7 @@
   <p>Lo que la app recuerda se queda en el almacenamiento local de ese navegador, en esa computadora, con claves que empiezan por <span class="ruta">germplasmpro:</span>: la colección y la hora del último guardado; la caracterización; los supuestos del banco y las constantes propias del Bloque 8; el umbral de duplicados y los pares descartados del Bloque 3; los campos, el encabezado y el código de las etiquetas; el título, el banco y la firma del informe; el idioma y el tema. La barra común guarda aparte si la barra de bloques va contraída y si las animaciones están encendidas. Nada de eso sale de la computadora, y se borra al borrar los datos de navegación de ese sitio; <span class="ui">Vaciar</span>, en la tabla del Bloque 2, borra la colección después de pedir confirmación.</p>
   <div class="caja nota">
     <div class="caja-t"><span class="ico">i</span>El respaldo es tuyo</div>
-    <p>El almacenamiento del navegador es una comodidad, no un respaldo. El proyecto .json lleva el pasaporte y la caracterización; los supuestos del banco, las constantes propias y los pares descartados no viajan en él. Guarda el proyecto al terminar cada sesión, exporta el pasaporte cada temporada y anota las constantes de tus especies con su fuente.</p>
+    <p>El almacenamiento del navegador es una comodidad, no un respaldo, y a veces no se puede usar: con el espacio lleno o en una ventana privada, el Bloque 2 avisa que no pudo guardar. El proyecto .json lleva el pasaporte, la caracterización, los supuestos del banco, las constantes propias, los pares descartados y el umbral, y las preferencias de las etiquetas; el título del informe, el idioma y el tema se quedan en el navegador. Guarda el proyecto al terminar cada sesión, exporta el pasaporte cada temporada y anota las constantes de tus especies con su fuente.</p>
   </div>
 
   <h3>F.4 · Teclado y accesibilidad</h3>
@@ -321,7 +322,7 @@
     <thead><tr><th style="width:1.6in">Teclas</th><th>Qué hacen</th></tr></thead>
     <tbody>
       <tr><td><kbd>Alt</kbd> + <kbd>←</kbd> · <kbd>Alt</kbd> + <kbd>→</kbd></td><td>Bloque anterior o siguiente. En el modo enfocado, sección anterior o siguiente, y en los extremos, el bloque.</td></tr>
-      <tr><td><kbd>←</kbd> <kbd>→</kbd> · <kbd>Inicio</kbd> <kbd>Fin</kbd></td><td>Con el foco en la barra de bloques, recorrerla; Inicio y Fin van al primero y al último.</td></tr>
+      <tr><td><kbd>←</kbd> / <kbd>→</kbd> · <kbd>Inicio</kbd> / <kbd>Fin</kbd></td><td>Con el foco en la barra de bloques, recorrerla; Inicio y Fin van al primero y al último.</td></tr>
       <tr><td><kbd>Ctrl</kbd> + <kbd>K</kbd></td><td>Buscar bloques, secciones, controles y acciones, también desde un campo de texto.</td></tr>
       <tr><td><kbd>[</kbd></td><td>Contraer o mostrar la barra de bloques.</td></tr>
       <tr><td><kbd>?</kbd></td><td>Mostrar la lista de atajos.</td></tr>
