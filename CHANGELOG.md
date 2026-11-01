@@ -2,6 +2,8 @@
 
 ## Después de la 1.0.0 — 2026-10-30
 
+- **Caracterización (Bloque 7):** la equitatividad de un carácter con una sola clase queda indefinida («—»), como la J′
+  del Bloque 5; antes valía 1.
 - **Pasaporte (Bloque 2):**
   - Después de «Importar y reemplazar» o «Añadir a lo que ya hay», la colección queda guardada en el navegador en ese
     momento, con la hora de guardado (antes sólo se guardaba con la siguiente edición).
@@ -39,7 +41,7 @@
   página colgada. 977 pruebas, todas en verde.
 - **Mapa de colecta (Bloque 4):**
   - Todo país con puntos cuenta: la tabla de códigos de dos y tres letras (`GEO.A3_TO_A2`) y el catálogo de países
-    (`MCPD.COUNTRIES`) traen ya los 177 países que dibuja el mapa. Antes, un punto que caía en un país fuera de la
+    (`MCPD.COUNTRIES`) traen ya los 174 países que dibuja el mapa. Antes, un punto que caía en un país fuera de la
     lista parcial (Botsuana, Croacia, Catar, Taiwán…) se descartaba en `GEO.countByCountry`: no salía en la tabla por
     país ni se coloreaba en la coropleta. Si algún día falta una equivalencia, cuenta con su código de dos letras.
   - La altitud vacía ya no se pinta como 0 m: queda en gris, «sin dato», fuera de la escala (`GEO.elevOf`). Tampoco

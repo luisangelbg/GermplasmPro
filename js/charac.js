@@ -137,7 +137,7 @@
       return {
         type, n, classes: counts.size, counts: [...counts.entries()].sort((a, b) => b[1] - a[1]),
         H: idx.H, Hmax: counts.size > 1 ? Math.log(counts.size) : 0,
-        evenness: counts.size > 1 ? idx.H / Math.log(counts.size) : (counts.size === 1 ? 1 : 0),
+        evenness: counts.size > 1 ? idx.H / Math.log(counts.size) : null,
         missing: values.length - n,
       };
     }

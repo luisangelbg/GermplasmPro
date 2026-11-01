@@ -1374,6 +1374,7 @@ const dCat = CHAR.describe(['rojo', 'rojo', 'azul', 'azul'], 'cat');
 ok(dCat.classes === 2, 'dos clases');
 near(dCat.H, Math.log(2), 1e-12, 'Shannon del carácter cualitativo');
 near(dCat.evenness, 1, 1e-12, 'y equitatividad máxima');
+ok(CHAR.describe(['rojo', 'rojo'], 'cat').evenness == null, 'con una sola clase la equitatividad queda indefinida');
 
 /* Gower a mano: dos caracteres, uno numérico y uno categórico */
 const gRows = [
