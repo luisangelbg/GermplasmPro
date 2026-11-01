@@ -10,8 +10,6 @@
   const ocultaFlotantes = () => fijos().forEach(e => { const r = e.getBoundingClientRect(); if (r.top > innerHeight / 3 && r.width < 400) e.style.visibility = "hidden"; });
   const irA = async n => { window.scrollTo({ top: top(n) - 400, behavior: "instant" }); await W(300); window.scrollTo({ top: top(n) - cabeza() - 18, behavior: "instant" }); await W(500); ocultaFlotantes(); };
   await W(1000); goStep(1); await W(500);
-  /* las opciones de los selectores del simulador nacen en español: se pasan al idioma activo (en inglés no lo hace la app al abrir) */
-  if (window.I18N) I18N.apply();
   set("simPreset", "seed-fao"); await W(300);
   set("simSpecies", "chayote"); await W(500);
   const c = document.querySelector("#panel-1 .pg-controls");
