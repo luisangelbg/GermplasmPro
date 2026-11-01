@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · User’s Manual · Chapter 1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- reparte el contenido en hojas tamaño carta, con encabezados, números de página e índice -->
+<script src="../paginar.js"></script>
+<style>
+  .formula { font-family: var(--mono); font-size: 9pt; background: var(--marino-suave); border-radius: 5px; padding: 0.07in 0.12in; margin: 0.08in 0; }
+  .cuenta td { font-family: var(--mono); font-size: 8.6pt; }
+  figure.reducida { width: 74%; margin-left: auto; margin-right: auto; }
+  figure.mediana { width: 86%; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<section class="capitulo" id="cap-b1" data-pestana="1" data-orden="1" style="--acento: var(--b1)">
+  <div class="cap-apertura">
+    <div class="cap-num">1</div>
+    <div class="cap-etiqueta">Chapter one · Block 1 · Home</div>
+    <h1 data-corto="Home">Home: kinds of genebank and the life of an accession</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">The first screen of the app needs no data. It presents the five kinds of genebank —four ex situ and one in situ—, says which seed behavior each one admits and brings a simulator that follows an accession for decades along the route you choose, with two clocks running: that of the material and that of its genetic diversity. It is the place to understand why a species is conserved the way it is before loading the collection.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>1.1</b>What you see when you open the app</li>
+      <li><b>1.2</b>The kinds of genebank</li>
+      <li><b>1.3</b>Seed behavior and the species in the simulator</li>
+      <li><b>1.4</b>The simulator “the life of an accession”</li>
+      <li><b>1.5</b>The seed route and the viability equation</li>
+      <li><b>1.6</b>The other four routes</li>
+      <li><b>1.7</b>When the route does not suit the species</li>
+      <li><b>1.8</b>The rest of the home page and how to cite</li>
+    </ul>
+  </div>
+
+  <!-- 1.1 -->
+  <h2 id="b1-1"><span class="num">1.1</span>What you see when you open the app</h2>
+  <p class="lead">When you open <span class="ruta">index.html</span>, Block 1 appears. At the top, in small capitals, the scope of the program —<i>Plant genetic resources · ex situ and in situ conservation · any species</i>— and, in large type, its motto: <b>“The genebank, accession by accession”</b>. The paragraph below sums up the promise: the field notebook, the passport data, the collecting map and the inventory of the collection in one place, whatever the species and whatever the way of conserving it, with no loose spreadsheets, no external portals and without the data leaving the computer.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/en/b1-portada.png" alt="The home page of Block 1 in English: the motto “The genebank, accession by accession”, the introductory paragraph, the buttons Load my accessions, Try the simulator and How to cite, the five badges and the illustration of the five conservation routes over a collecting grid"></div>
+    <figcaption><b>Figure 1.1.</b> The home page. On the left, the motto, the introduction, the three buttons and the five badges; on the right, the illustration: the five conservation routes —seed, field, in vitro, cryo and in situ— over a grid with collecting points, and the label of an accession with its barcode.</figcaption>
+  </figure>
+  <p>Three buttons lead in. <span class="ui">Load my accessions →</span> takes you to Block 2, where the work with your collection begins; <span class="ui">Try the simulator ↓</span> scrolls down to this block’s simulator (Section 1.4), and <span class="ui">How to cite</span> opens the box with the citation of the program (Section 1.8). Below, five badges sum up what the program guarantees: <i>Any crop, tree or wild relative</i>; <i>Ex situ and in situ</i>; <i>Works offline</i>; <i>FAO/Bioversity descriptors (MCPD v2.1)</i>, and <i>Spanish and English · light and dark theme</i>.</p>
+  <p>The illustration is drawn by the program itself. The four ex situ routes are to the left of a dotted line and the in situ route, to the right; the collecting points cluster in five groups, as collections really cluster along roads and valleys. The label at the bottom (<i>MEX-CR-0417 · accession · MCPD passport</i>) is decorative: it does not correspond to any accession of the example collection. The <span class="ui">another random collection ↻</span> button redraws the scene with other points.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Block 1 does not read your collection</div>
+    <p>It is the only block that does not use the passport. Nothing you do here is saved, changes the collection or goes into the report of Block 10. That is why it is best used for thinking: change one control at a time and see what happens to the accession.</p>
+  </div>
+
+  <!-- 1.2 -->
+  <h2 id="b1-2"><span class="num">1.2</span>The kinds of genebank</h2>
+  <p>The section <span class="ui">There is no single kind of genebank</span> starts with the essentials: a seed bank only works for species whose seed tolerates drying and freezing. Trees with recalcitrant seed and everything propagated by cutting, tuber or offset —potato, cassava, agave, vanilla, chayote— are conserved alive, in jars or in liquid nitrogen, and none of that replaces in situ conservation. Five cards present the routes; each one carries its <i>Ex situ</i> or <i>In situ</i> badge.</p>
+  <figure>
+    <div class="marco"><img src="../img/en/b1-tipos.png" alt="The five cards of the kinds of genebank, in English: seed bank, field genebank or living collection, slow-growth in vitro culture and cryopreservation, with the Ex situ badge, and genetic reserve and on-farm conservation, with the In situ badge; below, the box “What about the DNA bank?”"></div>
+    <figcaption><b>Figure 1.2.</b> The five cards of the kinds of genebank and the box on the DNA bank. A click on a card opens the simulator with that route.</figcaption>
+  </figure>
+  <table class="compacta">
+    <thead><tr><th style="width:1.55in">Card</th><th>What it is</th><th style="width:1.85in">Its weak point</th></tr></thead>
+    <tbody>
+      <tr><td><b><span class="ui">Seed bank</span></b><br><span class="small">ex situ</span></td><td>Dry seed in sealed jars, in a cold room. Cheap, compact and safe.</td><td>It only lasts if someone watches germination and regenerates in time.</td></tr>
+      <tr><td><b><span class="ui">Field genebank or living collection</span></b><br><span class="small">ex situ</span></td><td>Living plants in a plot, an orchard or an arboretum. Essential for trees and recalcitrant species.</td><td>Expensive and exposed to the weather, to pests and to budget cuts.</td></tr>
+      <tr><td><b><span class="ui">Slow-growth in vitro culture</span></b><br><span class="small">ex situ</span></td><td>Plantlets or shoot tips in jars, with growth slowed down to subculture as rarely as possible. It saves space and cleans the material.</td><td>Every subculture costs labor and risks contamination and somaclonal variation.</td></tr>
+      <tr><td><b><span class="ui">Cryopreservation</span></b><br><span class="small">ex situ</span></td><td>Shoot tips, embryos or pollen in liquid nitrogen at −196 °C. The material stops aging and there are no more regeneration cycles.</td><td>All the risk lies at the entry (how much regrows after thawing) and in never running out of nitrogen.</td></tr>
+      <tr><td><b><span class="ui">Genetic reserve and on-farm conservation</span></b><br><span class="small">in situ</span></td><td>The population stays alive in its own site —a reserve of crop wild relatives or the field of whoever sows it each year— and keeps evolving.</td><td>Control is lost: there is selection, gene flow from neighboring populations and the risk that the site disappears.</td></tr>
+    </tbody>
+  </table>
+  <p>The two faces of in situ —the genetic reserve of crop wild relatives and on-farm conservation, in the fields of custodian families— share a card and a model in the simulator, because they are driven by the same dynamics: a population that reproduces on its own, with drift, gene flow and the risk of losing the site. In the passport, on the other hand, they are recorded separately (Chapter 2), and that is why the portrait of the example collection counts six routes (Figure I.3).</p>
+  <p>When you click a card, the app picks the first ready-made scenario for that route (Table 1.3), loads it into the simulator and scrolls down to it: <i>Seed bank</i> opens the FAO standard with maize; <i>Field genebank</i>, chayote; <i>In vitro culture</i> and <i>Cryopreservation</i>, potato, and <i>In situ</i>, the maize landrace in the farmer’s field.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>What about the DNA bank?</div>
+    <p>Below the cards, a box makes it clear: the DNA bank conserves information, not living material —no plant grows from a tube of DNA—. GermplasmPro records it in the passport, together with herbarium and pollen samples, but does not simulate it, because there is no regeneration cycle to follow. That is why the introduction speaks of “five kinds of genebank”: the sixth exists, but only as a record.</p>
+  </div>
+
+  <!-- 1.3 -->
+  <h2 id="b1-3"><span class="num">1.3</span>Seed behavior and the species in the simulator</h2>
+  <p>Which route suits a species depends, first of all, on how its seed behaves when dried and cooled, and on whether the variety to be conserved reproduces by seed or is a clone. The app distinguishes four behaviors, with the same sentence it shows in the simulator’s verdict:</p>
+  <table class="compacta">
+    <thead><tr><th style="width:1.5in">Behavior</th><th>What the app says</th></tr></thead>
+    <tbody>
+      <tr><td><b>Orthodox</b></td><td>Tolerates drying to 3–7% moisture and freezing: it is stored in jars at −18 °C.</td></tr>
+      <tr><td><b>Intermediate</b></td><td>Tolerates drying but not deep cold: it loses viability within a few years at −18 °C.</td></tr>
+      <tr><td><b>Recalcitrant</b></td><td>Tolerates neither desiccation nor freezing: a seed bank is not an option.</td></tr>
+      <tr><td><b>Vegetatively propagated</b></td><td>Its seed does not reproduce the genotype to be conserved, because the variety is a clone.</td></tr>
+    </tbody>
+  </table>
+  <p>With these four behaviors the app decides, for each pair of species and route, whether the route <b>suits it</b>, whether it is <b>possible with caveats</b> or whether it <b>does not suit it</b>. Table 1.1 gathers those decisions; they are what produce the verdicts of Section 1.7.</p>
+  <table class="compacta">
+    <caption><b>Table 1.1.</b> Which route each behavior admits, according to the app. ✓ suits it · ! possible, with caveats · ✗ does not suit it.</caption>
+    <thead><tr><th>Behavior</th><th class="c">Seed</th><th class="c">Field</th><th class="c">In vitro</th><th class="c">Cryo</th><th class="c">In situ</th></tr></thead>
+    <tbody>
+      <tr><td>Orthodox</td><td class="c si">✓</td><td class="c si">✓</td><td class="c parcial">!</td><td class="c si">✓</td><td class="c si">✓</td></tr>
+      <tr><td>Intermediate</td><td class="c parcial">!</td><td class="c si">✓</td><td class="c si">✓</td><td class="c si">✓</td><td class="c si">✓</td></tr>
+      <tr><td>Recalcitrant</td><td class="c no">✗</td><td class="c si">✓</td><td class="c si">✓</td><td class="c si">✓</td><td class="c si">✓</td></tr>
+      <tr><td>Vegetatively propagated</td><td class="c no">✗</td><td class="c si">✓</td><td class="c si">✓</td><td class="c si">✓</td><td class="c si">✓</td></tr>
+    </tbody>
+  </table>
+  <p>The two caveats have their reasons. Intermediate seed can be dried, but in a store at −18 °C its useful life is measured in years, not centuries, and it has to be checked very often. And for a species with orthodox seed the in vitro jar works, but it is an unnecessary expense: the seed bank does the same job for a fraction of the cost.</p>
+
+  <h3>The species in the simulator</h3>
+  <p>The <span class="ui">Species</span> selector has fifteen entries: fourteen species that illustrate the four behaviors and a generic entry for yours. It is not a closed catalog of what the app can handle —the passport accepts any taxon—, but real cases so that the simulator has something to work with. Each species carries a note that appears below the results.</p>
+  <table class="compacta">
+    <caption><b>Table 1.2.</b> The species in the simulator, their behavior and what their note says.</caption>
+    <thead><tr><th style="width:1.75in">Species</th><th style="width:1.05in">Seed</th><th>The app’s note, in brief</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Other species (choose its behaviour)</span></td><td>whichever you choose</td><td>Declare how your species behaves and, if it goes to a seed bank, enter its viability constants before deciding anything with the years that come out.</td></tr>
+      <tr><td>Maize (<i>Zea mays</i>)</td><td>orthodox</td><td>Published constants. Outcrossing: regenerate with at least 100 plants and controlled pollination.</td></tr>
+      <tr><td>Common bean (<i>Phaseolus vulgaris</i>)</td><td>orthodox</td><td>Self-pollinating: fewer plants are enough, but it is best to harvest plant by plant.</td></tr>
+      <tr><td>Squash (<i>Cucurbita pepo</i>)</td><td>orthodox</td><td>Outcrossing, with specialist pollinators: isolation or hand pollination.</td></tr>
+      <tr><td>Chilli pepper (<i>Capsicum annuum</i>)</td><td>orthodox</td><td>Self-pollinating with appreciable natural outcrossing: regenerate under insect-proof mesh.</td></tr>
+      <tr><td>Wheat (<i>Triticum aestivum</i>)</td><td>orthodox</td><td>The easiest case for a seed bank.</td></tr>
+      <tr><td>Coffee (<i>Coffea arabica</i>)</td><td>intermediate</td><td>Freezing kills it: it is conserved in the field, in vitro or cryopreserved.</td></tr>
+      <tr><td>Avocado (<i>Persea americana</i>)</td><td>recalcitrant</td><td>Living field collection; elite germplasm as grafted clones.</td></tr>
+      <tr><td>Cacao (<i>Theobroma cacao</i>)</td><td>recalcitrant</td><td>Field collections backed up in vitro and by cryopreserved shoot tips.</td></tr>
+      <tr><td>Chayote (<i>Sechium edule</i>)</td><td>recalcitrant</td><td>It germinates inside the fruit: field genebank or in vitro, with periodic replanting.</td></tr>
+      <tr><td>Oak (<i>Quercus</i> spp.)</td><td>recalcitrant</td><td>Conservation starts in situ, in seed stands and reserves.</td></tr>
+      <tr><td>Potato (<i>Solanum tuberosum</i>)</td><td>vegetative</td><td>The variety is a clone: in vitro and cryopreserved, with a field backup.</td></tr>
+      <tr><td>Cassava (<i>Manihot esculenta</i>)</td><td>vegetative</td><td>Propagated by stem cuttings: field and in vitro, with cryo as backup.</td></tr>
+      <tr><td>Agave (<i>Agave</i> spp.)</td><td>vegetative</td><td>Cultivars kept as offsets; many wild populations only in situ.</td></tr>
+      <tr><td>Vanilla (<i>Vanilla planifolia</i>)</td><td>vegetative</td><td>Narrow genetic base: in vitro, shaded field plots and in situ conservation of its relatives.</td></tr>
+    </tbody>
+  </table>
+  <p>Only with <span class="ui">Other species (choose its behaviour)</span> does the <span class="ui">Its seed is</span> selector appear, with the four options above; for the other species the behavior is given. Outcrossing and self-pollinating species are not distinguished in the calculation of drift —in all those that reproduce sexually two copies per plant are drawn—; the difference stays in the note, as management advice for regeneration.</p>
+
+  <!-- 1.4 -->
+  <h2 id="b1-4"><span class="num">1.4</span>The simulator “the life of an accession”</h2>
+  <p>The section <span class="ui">Try it: the life of an accession, along the route you choose</span> follows an accession for decades with two clocks running, the same as in the fourth idea of the introduction (I.3): that of the <b>material</b> —the germination of the lot, the living plants of the plot, the jars in the laboratory, the explants that regrow after thawing or the size of the population in its site— and that of <b>genetic integrity</b>, because each bottleneck redraws the allele frequencies and takes the rare ones away.</p>
+  <figure style="width:56%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b1-sim-semillas.png" alt="The simulator in English with the scenario of the community seed bank without a cold room: the selectors, the verdict in green, the germination chart with fifteen regenerations and the diversity chart, six sliders, seven result tiles and the reading in words"></div>
+    <figcaption><b>Figure 1.3.</b> The whole simulator, with the scenario <span class="ui">Seed · community seed bank, no cold room (20 °C, 12%)</span>. From top to bottom: the selectors, the verdict, the two charts, the route’s sliders, the result tiles and the reading in words.</figcaption>
+  </figure>
+  <h3>The controls</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:1.75in">Control</th><th>What it is for</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Scenario</span></td><td>Loads in one go one of the fourteen ready-made scenarios (Table 1.3): route, species and slider values.</td></tr>
+      <tr><td><span class="ui">Conservation method</span></td><td>The route, in two groups: <i>Ex situ</i> (the first four) and <i>In situ</i>. Changing it changes the sliders.</td></tr>
+      <tr><td><span class="ui">Species</span></td><td>One of the fifteen entries of Table 1.2.</td></tr>
+      <tr><td><span class="ui">Its seed is</span></td><td>Only with <i>Other species</i>: the behavior of your seed.</td></tr>
+      <tr><td><span class="ui">K<sub>E</sub></span> and <span class="ui">C<sub>W</sub></span></td><td>Only in the seed bank and with a species whose viability constants are editable (all seeded species except maize). See Section 1.5.</td></tr>
+      <tr><td><span class="ui">Another random run ↻</span></td><td>Repeats the simulation with another seed of the random number generator: the regenerations, the tests, the weather hits and the drift change; the parameters do not.</td></tr>
+    </tbody>
+  </table>
+  <p>Below the charts are the <b>route’s sliders</b>, different for each one (Sections 1.5 and 1.6); all of them share the last one, <span class="ui">Simulation horizon (years)</span>, from 30 to 200 years. Each movement runs the simulation again instantly.</p>
+
+  <h3>The ready-made scenarios</h3>
+  <table class="compacta">
+    <caption><b>Table 1.3.</b> The fourteen scenarios of the <span class="ui">Scenario</span> selector and what each one gives with the initial run (the one shown when the app opens, before pressing <span class="ui">Another random run ↻</span>).</caption>
+    <thead><tr><th>Scenario</th><th class="c" style="width:0.62in">Alleles</th><th class="c" style="width:0.62in">H<sub>e</sub></th><th class="c" style="width:0.55in">F</th><th style="width:1.75in">And also</th></tr></thead>
+    <tbody>
+      <tr><td>Seed · long-term genebank (FAO standard: −18 °C, 6%)</td><td class="c">100.0%</td><td class="c">100.0%</td><td class="c">0.0%</td><td>p₅₀ 883 years; no regeneration</td></tr>
+      <tr><td>Seed · medium-term cold room (5 °C, 8%)</td><td class="c">98.3%</td><td class="c">96.2%</td><td class="c">1.9%</td><td>wheat; p₅₀ 117 years; 3 regenerations in 200 years</td></tr>
+      <tr><td>Seed · community seed bank, no cold room (20 °C, 12%)</td><td class="c">69.4%</td><td class="c">85.0%</td><td class="c">16.8%</td><td>p₅₀ 11 years; 15 regenerations</td></tr>
+      <tr><td>Seed · the same community bank with no germination test for 15 years</td><td class="c">59.4%</td><td class="c">79.2%</td><td class="c">20.9%</td><td>6 regenerations with a mean N<sub>e</sub> of 14</td></tr>
+      <tr><td>Seed · good cold room, but regenerated with 25 plants</td><td class="c">80.0%</td><td class="c">91.8%</td><td class="c">7.6%</td><td>3 regenerations with a mean N<sub>e</sub> of 19</td></tr>
+      <tr><td>Field · chayote, recalcitrant, replanted every 3 years</td><td class="c">53.3%</td><td class="c">73.9%</td><td class="c">33.6%</td><td>33 replantings, 3 hits</td></tr>
+      <tr><td>Field · cacao tree collection, renewed every 25 years</td><td class="c">46.7%</td><td class="c">74.3%</td><td class="c">28.7%</td><td>4 replantings, 3 hits</td></tr>
+      <tr><td>In vitro · potato under slow growth, subcultured every 12 months</td><td class="c">100.0%</td><td class="c">100.0%</td><td class="c">0.0%</td><td>50 subcultures, 1,000 jars; fidelity 77.8%</td></tr>
+      <tr><td>In vitro · the same potato, but subcultured every 3 months</td><td class="c">100.0%</td><td class="c">100.0%</td><td class="c">0.0%</td><td>200 subcultures, 4,000 jars; fidelity 36.7%</td></tr>
+      <tr><td>Cryo · potato shoot tips in liquid nitrogen</td><td class="c">100.0%</td><td class="c">100.0%</td><td class="c">0.0%</td><td>100 of 200 explants recovered</td></tr>
+      <tr><td>Cryo · the same potato, but with only 30 explants frozen</td><td class="c">100.0%</td><td class="c">100.0%</td><td class="c">0.0%</td><td>12 of 30 recovered</td></tr>
+      <tr><td>In situ · maize landrace in the farmer’s field (on-farm)</td><td class="c">100.0%</td><td class="c">97.1%</td><td class="c">4.4%</td><td>mean N<sub>e</sub> 136; 3 hits</td></tr>
+      <tr><td>In situ · the same field, isolated and short of seed (no gene flow)</td><td class="c">17.2%</td><td class="c">2.3%</td><td class="c">98.8%</td><td>mean N<sub>e</sub> 17; 2 hits</td></tr>
+      <tr><td>In situ · oaks in a crop-wild-relative reserve</td><td class="c">100.0%</td><td class="c">99.7%</td><td class="c">0.3%</td><td>mean N<sub>e</sub> 777; 1 hit</td></tr>
+    </tbody>
+  </table>
+  <p>The scenarios come in pairs on purpose: the same material with only one thing changed. Compare the community bank that tests every 3 years with the one that lets 15 go by; the good cold room that regenerates with 100 plants with the one that regenerates with 25; the potato subcultured every year with the one subcultured every three months; the 200 explants with the 30; the connected field with the isolated one. In each pair, what is lost is explained not by time but by management. In the potato pairs, since potato is a clone, no alleles are lost: what management changes is the fidelity, the labor and how much material is left so as not to lose the whole accession.</p>
+
+  <h3>What the charts and the tiles show</h3>
+  <ul>
+    <li><b>The state of the material</b> (left). On the vertical axis, what is measured on each route: the germination of the lot (%), the living plants as a percentage of the target, genetic fidelity (% of lines without change), the recoverable material (%) or the size of the population as a percentage of the initial census. The chart title changes with the route and says what is in it. For seed, field and in situ, the dotted vertical lines are the cycles —regenerations, replantings, generations—; they are omitted when there are more than 60, as in the hundred in situ generations. In in vitro and cryo there are no lines: the title says only <span class="ui">The state of the material</span>. In the seed bank, in addition, the dots are the germination tests and the dashed red line, the regeneration threshold.</li>
+    <li><b>What is left of the original diversity</b> (right). Three curves as a percentage of the initial value: <span class="ui">alleles retained</span> (in in vitro, <span class="ui">clonal variants retained</span>), <span class="ui">expected diversity</span> (the expected heterozygosity, H<sub>e</sub>/H<sub>e0</sub>) and <span class="ui">accumulated inbreeding (F)</span>, dashed.</li>
+    <li><b>The tiles.</b> Always the three for diversity —<span class="ui">Alleles retained</span>, <span class="ui">Diversity retained</span> and <span class="ui">Inbreeding</span>— plus those specific to each route, explained in Sections 1.5 and 1.6.</li>
+    <li><b>The reading in words.</b> A paragraph that puts the figures into a sentence and says what they mean; it adds warnings when the management calls for them and ends with the species note. If the accession was lost, it says so in red, with the year.</li>
+  </ul>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · drift in each cycle</div>
+    <p>The simulated accession starts with 30 loci of six alleles each, with frequencies ranging from common to rare (about 0.45, 0.22, 0.15, 0.09, 0.06 and 0.03, with a small random variation between loci). Each time it passes through a bottleneck, the app redraws the frequencies with <b>2N<sub>e</sub></b> copies, two for each plant, jar or explant that passes on to the next cycle. In a <b>clonal</b> accession —potato, cassava, agave, vanilla or an <i>Other species</i> declared vegetatively propagated— there is nothing to draw: cuttings, jars and cryovials are copies of the same genotype, and in the field, in vitro and in cryo its alleles, its diversity and its F stay at 100, 100 and 0%. The only thing that puts a clone at risk is running out of material. An allele with a frequency of 0.03 has a good chance of not turning up in a small draw, and once lost it does not come back: that is why alleles are lost earlier and faster than expected diversity, which gives little weight to the rare ones. Inbreeding grows with each cycle:</p>
+    <div class="formula">F<sub>t</sub> = 1 − (1 − F<sub>t−1</sub>)(1 − 1/(2N<sub>e</sub>))</div>
+    <p>Hence the genebank rule: <b>few cycles, each with many individuals</b>. In situ the same happens in every generation, but gene flow from neighboring populations brings back part of what was lost (Section 1.6).</p>
+  </div>
+
+  <!-- 1.5 -->
+  <h2 id="b1-5"><span class="num">1.5</span>The seed route and the viability equation</h2>
+  <p>In the seed bank, the clock of the material is the <b>Ellis and Roberts viability equation</b> (1980): from the store temperature and the seed moisture it gives how long the lot takes to lose germination. The simulator applies it year by year to a lot that enters with 96% germination and 2,500 seeds, and combines it with the genebank’s germination tests and regenerations.</p>
+  <div class="formula">v = K<sub>i</sub> − p/σ  ·  log<sub>10</sub> σ = K<sub>E</sub> − C<sub>W</sub> log<sub>10</sub> m − C<sub>H</sub> t − C<sub>Q</sub> t²  ·  germination = 100 Φ(v)</div>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · the viability equation</div>
+    <p>The germination of a lot does not fall in a straight line: the seeds die over time following a normal distribution, which is why the equation is written in <b>probits</b>, units of normal deviation. <b>v</b> is the viability in probits after <b>p</b> days; <b>K<sub>i</sub></b>, the initial viability of the lot in probits (96% is equivalent to 1.7507); <b>σ</b>, the days it takes viability to fall by one probit. The expected germination is Φ(v), the cumulative normal probability.</p>
+    <p>σ depends on the seed moisture <b>m</b> (% fresh weight) and on the temperature <b>t</b> (°C). <b>K<sub>E</sub></b> and <b>C<sub>W</sub></b> are specific to each species; <b>C<sub>H</sub></b> = 0.0329 and <b>C<sub>Q</sub></b> = 0.000478 describe the effect of temperature and hold for many orthodox species, so the app keeps them fixed. Since the moisture term is a logarithm, lowering moisture from 12 to 6% multiplies σ by 2<sup>2.115</sup> ≈ 4.3; lowering the temperature from 20 to −18 °C multiplies it by about 19, and both together, by 84: from 6 to 505 years per probit.</p>
+  </div>
+  <h3>The sliders and the genebank rules</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:2.1in">Slider</th><th style="width:0.9in">Range</th><th>What it controls</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Store temperature (°C)</span></td><td>−20 to 25</td><td>t in the equation.</td></tr>
+      <tr><td><span class="ui">Seed moisture content (%)</span></td><td>3 to 14</td><td>m in the equation, in steps of half a point.</td></tr>
+      <tr><td><span class="ui">Regeneration threshold (% germination)</span></td><td>50 to 95</td><td>If a test gives less, the lot is regenerated. It is the red line on the chart.</td></tr>
+      <tr><td><span class="ui">Years between checks</span></td><td>1 to 30</td><td>How often a germination test is done, with 100 seeds.</td></tr>
+      <tr><td><span class="ui">Plants used to regenerate</span></td><td>10 to 300</td><td>The seeds sown at each regeneration.</td></tr>
+    </tbody>
+  </table>
+  <p>Each test uses 100 seeds and its result carries the sampling error of a real count (that is why the dots do not fall exactly on the curve). The lot is regenerated when a test falls below the threshold or when the stock drops to 400 seeds. At regeneration, the live fraction of what is sown germinates at random; 90% of the plants that emerge leave offspring —that is the N<sub>e</sub> of the cycle—, and the new lot goes back to 96% germination with as many seeds as those plants yield. If fewer than two emerge, the lot is lost.</p>
+  <p>The seven tiles of this route are <span class="ui">Half-viability period</span> (the years to 50% germination, p₅₀; above 999 it is written <i>&gt;999</i>), <span class="ui">Regenerations</span> within the horizon, the three for diversity, <span class="ui">Mean effective size</span> of the regenerations and <span class="ui">Seed spent on tests</span>. The reading adds two warnings: if checks are every 10 years or more, and if regeneration uses 30 plants or fewer.</p>
+
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Worked example · the equation by hand</div>
+    <p>The scenario of the community seed bank without a cold room: maize at 20 °C with 12% moisture, constants K<sub>E</sub> = 6.474, C<sub>W</sub> = 2.115.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td style="width:46%">log<sub>10</sub> 12 = 1.07918</td><td>C<sub>W</sub> log<sub>10</sub> m = 2.115 × 1.07918 = 2.28247</td></tr>
+      <tr><td>C<sub>H</sub> t = 0.0329 × 20 = 0.65800</td><td>C<sub>Q</sub> t² = 0.000478 × 400 = 0.19120</td></tr>
+      <tr><td colspan="2">log<sub>10</sub> σ = 6.474 − 2.28247 − 0.65800 − 0.19120 = 3.34233  →  σ = 10<sup>3.34233</sup> = 2,199.5 days = 6.02 years per probit</td></tr>
+      <tr><td colspan="2">K<sub>i</sub> = Φ<sup>−1</sup>(0.96) = 1.7507 · at 50%, v = 0  →  p₅₀ = 1.7507 × 6.02 = 10.54 years</td></tr>
+      <tr><td colspan="2">at 85%, v = Φ<sup>−1</sup>(0.85) = 1.0364  →  p = (1.7507 − 1.0364) × 6.02 = 4.30 years</td></tr>
+      <tr><td colspan="2">after 3 years: v = 1.7507 − 3/6.02 = 1.2525 → 89.5% · after 6 years: v = 0.7544 → 77.5%</td></tr>
+    </tbody></table>
+    <p>The app writes <i>σ = 6 years per probit</i> and a half-viability period of <b>11</b> years (10.54 rounded). The lot crosses the 85% threshold at 4.3 years, but with tests every 3 years the year-3 test still gives about 89%, and it is the year-6 test that detects it, with the lot already at 77.5%: that is why the first of the 15 regenerations falls in year 6. With the same calculation, the FAO standard (−18 °C, 6%) gives log<sub>10</sub> σ = 6.474 − 1.6458 + 0.5922 − 0.1549 = 5.2655, σ = 504.6 years per probit and p₅₀ = 1.7507 × 504.6 = <b>883</b> years, the figure in the tile; in 100 years the lot only drops to 94%.</p>
+  </div>
+
+  <h3>The viability constants</h3>
+  <p>Only <b>maize</b> comes with published constants (K<sub>E</sub> = 6.474, C<sub>W</sub> = 2.115), and with it the <span class="ui">K<sub>E</sub></span> and <span class="ui">C<sub>W</sub></span> boxes do not appear. For the other species that can go to a seed bank —common bean, squash, chilli pepper, wheat, coffee and <i>Other species</i>— the boxes appear next to the species selector and start with the maize values, except coffee, which starts with K<sub>E</sub> = 5.2 to reflect its short life. In other words: the wheat in the medium-term scenario ages like a maize until you give it its own constants.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/en/b1-constantes.png" alt="The simulator selectors in English with coffee in the seed bank: the K E box with 5.2 and the C W box with 2.115 appear, and the orange verdict “Possible, but with caveats”"></div>
+    <figcaption><b>Figure 1.4.</b> Coffee in the seed bank: the verdict <span class="ui">Possible, but with caveats.</span> and the <span class="ui">K<sub>E</sub></span> and <span class="ui">C<sub>W</sub></span> boxes, which start at 5.2 and 2.115. With those values, at −18 °C and 6% the lot has a half-viability period of 47 years.</figcaption>
+  </figure>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Without your own constants, the years are an illustration</div>
+    <p>The <span class="ui">What runs where</span> section of the home page warns about it: for any species other than maize, K<sub>E</sub> and C<sub>W</sub> are a starting point. Take them from Kew’s Seed Information Database or from the literature on your species before using the simulator’s years to schedule a regeneration. What does hold without them is the shape of the responses: how much a lot gains by lowering moisture or temperature, and how much it costs to check late or to regenerate with few plants.</p>
+  </div>
+
+  <!-- 1.6 -->
+  <h2 id="b1-6"><span class="num">1.6</span>The other four routes</h2>
+  <p>On the routes without stored seed there is no viability equation: the clock of the material is a different one on each. What does not change is the genetic clock, which runs with the same drift as in the box of Section 1.4.</p>
+
+  <h3>Field genebank or living collection</h3>
+  <p>A living collection does not age in a jar: it ages in the plot. Every year there is a probability of a hit —drought, pest or hurricane— that kills between 30 and 70% of the plants; every so many years the collection is renewed, and at that replanting 75% of the remaining plants leave offspring. Afterwards the plot returns to its number of plants. Replanting from seed redraws the genes of those plants; in a clone, which is replanted from cuttings, tubers or offsets, replanting copies the same genotype and takes no alleles away: only the hits that can leave the plot without plants count.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2.4in">Slider</th><th style="width:0.9in">Range</th><th>What it controls</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Years between replantings</span></td><td>1 to 30</td><td>How often the plot is renewed.</td></tr>
+      <tr><td><span class="ui">Plants kept in the collection</span></td><td>10 to 300</td><td>The target number of living plants.</td></tr>
+      <tr><td><span class="ui">Annual risk of drought, pest or hurricane (%)</span></td><td>0 to 15</td><td>The probability of a hit each year.</td></tr>
+    </tbody>
+  </table>
+  <p>The tiles specific to this route are <span class="ui">Hits to the collection</span>, <span class="ui">Replantings</span> and <span class="ui">Mean effective size</span>. The left chart shows the living plants as a percentage of the target: each drop is a hit, and the line returns to 100 at the next replanting.</p>
+  <figure style="width:68%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b1-sim-campo.png" alt="The simulator in English with chayote in a field genebank, replanted every 3 years: three drops in living plants from weather hits, the gradual loss of alleles and diversity, the four sliders and six tiles: 3 hits, 33 replantings, 53.3% of alleles, 73.9% of diversity, 33.6% inbreeding and a mean effective size of 43"></div>
+    <figcaption><b>Figure 1.5.</b> Chayote in the field, replanted every 3 years with 60 plants. In 100 years, 33 replantings and 3 hits; the collection keeps 53.3% of its alleles and inbreeding reaches 33.6%.</figcaption>
+  </figure>
+  <p>The reading puts it bluntly: here the enemy is not storage time, but how often the plot is renewed, how big it is and luck. The cacao scenario shows it from the other side: renewing every 25 years seems cheap, but three hits before the first renewal (in years 12, 18 and 21) leave only 2 of the 40 trees to renew it in year 24: in that single step the collection drops to 46.7% of its alleles, and the three following renewals, with 30 trees, no longer take any away. That is why the app insists that a field genebank always needs a backup: in vitro, cryopreservation or a second site.</p>
+
+  <h3>Slow-growth in vitro culture</h3>
+  <p>Here the clock of the material is <b>genetic fidelity</b>. Each subculture leaves behind part of the true-to-type material through somaclonal variation (the app assumes 0.5% per pass, a fixed value that has no slider) and loses jars to contamination or poor rooting; those that survive are multiplied until the number of lines is restored. With 50 passes, fidelity ends at 0.995<sup>50</sup> = 77.8%; with 200, at 36.7%. In a clone such as potato, losing jars does not change the accession’s alleles —all the lines are the same genotype—, so the diversity tiles stay at 100% and inbreeding at 0%. If the species reproduces sexually (a maize or a coffee in a jar), each pass does redraw the genes of the surviving lines, two copies per line, and diversity drops: maize with 20 lines and yearly subculture keeps 19.4% of its alleles in 100 years.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2.4in">Slider</th><th style="width:0.9in">Range</th><th>What it controls</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Months between subcultures</span></td><td>2 to 24</td><td>How often the material is moved to fresh medium.</td></tr>
+      <tr><td><span class="ui">Jars (lines) per accession</span></td><td>5 to 60</td><td>How many lines are maintained.</td></tr>
+      <tr><td><span class="ui">Jars lost per subculture (%)</span></td><td>0 to 20</td><td>The loss to contamination at each pass.</td></tr>
+    </tbody>
+  </table>
+  <p>The tiles specific to this route are <span class="ui">Subcultures</span>, <span class="ui">Genetic fidelity</span> and <span class="ui">Jars handled</span>, which measures the laboratory’s work: 1,000 jars in 50 years with yearly subculture and 20 lines, 4,000 if subcultured every three months. The reading recalls that lengthening the interval —with lower temperature, less light or osmotic media— is the only way to bring that cost down, and that the definitive backup is cryopreservation.</p>
+
+  <h3>Cryopreservation</h3>
+  <p>At −196 °C the material does not age, so the only bottleneck is the <b>entry</b>: of the explants that are frozen, only some regrow after thawing, and those are the accession that remains. If the material is a clone, that bottleneck takes no alleles away: the explants are copies of one genotype and it only decides whether there is material left to regrow. If they are embryos or pollen of a sexually reproducing species, on the other hand, the draw happens just once, in year 0, and inbreeding stays at 1/(2N), with N the explants recovered. Afterwards, the only thing that can happen is that the tank or the nitrogen supply fails, and then everything is lost.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2.4in">Slider</th><th style="width:0.9in">Range</th><th>What it controls</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Explants frozen</span></td><td>10 to 500</td><td>How many shoot tips or embryos go into the nitrogen.</td></tr>
+      <tr><td><span class="ui">Recovery after thawing (%)</span></td><td>5 to 95</td><td>What fraction regrows.</td></tr>
+      <tr><td><span class="ui">Tank failure risk (per thousand years)</span></td><td>0 to 20</td><td>The annual probability, per thousand, of losing the tank.</td></tr>
+    </tbody>
+  </table>
+  <p>The tiles specific to this route are <span class="ui">Explants recovered</span>, <span class="ui">Regeneration cycles</span> (always 0) and <span class="ui">Tank failures</span>. The chart of the material is a flat line at the height of the recovery, which falls to zero if the tank fails. The two potato scenarios keep 100% of the alleles —it is a clone—, but they are not worth the same: with 200 explants and 50% recovery, 100 plants are left to regrow; with 30 and 40%, only 12. The app’s reading puts it this way: all the risk is at the entry and in the nitrogen supply, so it pays to freeze enough explants and to work on the protocol until recovery goes up.</p>
+
+  <h3>In situ: genetic reserve or on-farm conservation</h3>
+  <p>The population lives in its site and reproduces on its own, one generation per year. In each generation there is drift with the effective size (a fraction of the census), and then gene flow arrives from neighboring populations, bringing back the frequencies of the regional gene pool. Every year there is also the risk of a hit to the site —drought, fire, land-use change, the variety no longer being sown— that takes between 40 and 100% of the population; if it survives, it recovers little by little, 15% per year, up to its usual census.</p>
+  <figure style="width:66%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b1-sim-insitu.png" alt="The simulator in English with the isolated field short of seed: two sharp drops of the population and its recovery, inbreeding rising almost to 100% while alleles and diversity collapse; tiles: 100 generations, 2 hits, 17.2% of alleles, 2.3% of diversity, 98.8% inbreeding, a mean effective size of 17 and a final population of 80"></div>
+    <figcaption><b>Figure 1.6.</b> The isolated field: 80 plants, N<sub>e</sub> of 25% of the census and no gene flow. In 100 generations it keeps 17.2% of its alleles and inbreeding reaches 98.8%. With 500 plants and 5% gene flow (the scenario of the connected field) it keeps 100% of its alleles and inbreeding stays at 4.4%.</figcaption>
+  </figure>
+  <div class="formula">F<sub>t</sub> = (1 − m)² [F<sub>t−1</sub>(1 − 1/(2N<sub>e</sub>)) + 1/(2N<sub>e</sub>)]</div>
+  <p>With migration m, the two genes of an individual come from resident parents with probability (1 − m)², so inbreeding does not grow without limit: it settles at an equilibrium between drift and migration. Without gene flow (m = 0), the formula goes back to the one in the box of Section 1.4.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2.4in">Slider</th><th style="width:0.9in">Range</th><th>What it controls</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Individuals in the population</span></td><td>20 to 3,000</td><td>The usual census.</td></tr>
+      <tr><td><span class="ui">Effective size (Ne as % of the census)</span></td><td>5 to 100</td><td>What part of the census really leaves offspring.</td></tr>
+      <tr><td><span class="ui">Gene flow from neighbouring populations (%)</span></td><td>0 to 30</td><td>m, per generation.</td></tr>
+      <tr><td><span class="ui">Annual risk of losing the site (%)</span></td><td>0 to 10</td><td>The probability of a hit each year.</td></tr>
+    </tbody>
+  </table>
+  <p>The tiles specific to this route are <span class="ui">Generations</span>, <span class="ui">Hits to the site</span>, <span class="ui">Mean effective size</span> and <span class="ui">Final population</span>. The reading changes depending on whether there is gene flow —conserving in situ means conserving a network of populations, not a single plot— and always closes with the same idea: it is the only route in which the accession keeps evolving and keeps its associated knowledge; what is gained in adaptation is lost in control, and that is why in situ and ex situ are complementary, not alternatives.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>What the simulator simplifies</div>
+    <p>It is a model for understanding, not for forecasting a particular accession: the initial diversity is that of 30 imaginary loci, the initial germination of the lot (96%) and its initial stock are fixed, and there is neither natural selection nor mutation. Its figures serve to compare management options with one another. Decisions about real lots are made in Block 8, with your tests and your regenerations.</p>
+  </div>
+
+  <!-- 1.7 -->
+  <h2 id="b1-7"><span class="num">1.7</span>When the route does not suit the species</h2>
+  <p>Above the charts, a box always says what type of seed the chosen species has and whether the route suits it. It takes three forms, which come from Table 1.1:</p>
+  <ul>
+    <li><b>Green</b>: <i>“… The chosen method suits it.”</i> The simulation runs normally.</li>
+    <li><b>Orange, <span class="ui">Possible, but with caveats.</span></b> The simulation runs, and the box explains the caveat: intermediate seed in a cold store (Figure 1.4) or an orthodox species in an in vitro jar.</li>
+    <li><b>Orange, <span class="ui">This route does not suit this species.</span></b> The app <b>does not invent a simulation</b>: no viability curve comes out of a recalcitrant seed in a cold store. The left chart says <span class="ui">No simulation: this material is not conserved this way.</span>, the sliders and tiles disappear, and the right chart offers, under <span class="ui">Try instead:</span>, one button for each route that does suit it. A click on any of them loads it and runs the simulation.</li>
+  </ul>
+  <figure style="width:72%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b1-aviso.png" alt="Chayote in the seed bank, in English: the warning “This route does not suit this species”, the left chart with “No simulation: this material is not conserved this way” and the right one with the buttons for the four routes that do suit it"></div>
+    <figcaption><b>Figure 1.7.</b> Chayote in the seed bank. The warning explains why —recalcitrant seed: a seed bank is not an option— and proposes the four routes that do suit it: field, in vitro, cryopreservation and in situ.</figcaption>
+  </figure>
+  <p>Only the seed bank can be blocked: with recalcitrant seed or with a clonal variety, the app replies that the seed bank does not conserve what you mean to conserve and proposes field, in vitro or cryopreservation. This happens with avocado, cacao, chayote and oak (recalcitrant), with potato, cassava, agave and vanilla (vegetative), and with <i>Other species</i> when you choose <span class="ui">recalcitrant</span> or <span class="ui">vegetatively propagated</span> in <span class="ui">Its seed is</span>.</p>
+
+  <!-- 1.8 -->
+  <h2 id="b1-8"><span class="num">1.8</span>The rest of the home page and how to cite</h2>
+  <h3>The life of an accession and the ten blocks</h3>
+  <p>Between the cards and the simulator, the strip <span class="ui">The life of an accession</span> sums up in seven steps the order in which the work on a collection happens: <i>Collect</i> (site, elevation, informant), <i>Register</i> (MCPD passport), <i>Clean</i> (errors and duplicates), <i>Map</i> (maps and grids), <i>Analyse</i> (diversity and gaps), <i>Conserve</i> (whichever route each species needs) and <i>Deliver</i> (labels and report). They are Blocks 2 to 10 grouped by what they solve; Figure I.4 of the introduction draws the same path block by block.</p>
+  <p>After the simulator, the section <span class="ui">The ten blocks</span> recalls that all ten are ready —you can enter any of them from there or from the sidebar— and brings nine cards, from Block 2 to Block 10, with the name of the block and a line on what it does; a click takes you to the block. The same list, with the question each block answers, is in Section I.2.</p>
+  <h3>What runs where, and where the methods come from</h3>
+  <p>The <span class="ui">What runs where</span> card repeats what you already know from the introduction —everything is computed in the browser, nothing is uploaded, the maps work offline, and the app opens with a double click or with <span class="ruta">Open GermplasmPro.bat</span>— and adds two boxes: the warning about the viability constants from Section 1.5, and an idea that sums up the program: the same accession written in three ways, a coordinate with the sign flipped, a lot that has gone twelve years without a germination test or an in situ plot nobody visits cannot be seen in a sheet with a thousand rows.</p>
+  <p>The list <span class="ui">Where the methods come from</span> gives the six sources of the block: the Ellis and Roberts equation (1980); FAO’s genebank standards (2014) for seed, field, in vitro and cryopreservation; the MCPD v2.1 descriptors (Alercia, Diulgheroff and Mackay, 2015); the review by Engels and Ebert (2021) of the global ex situ conservation system; the book by Maxted, Dulloo and Ford-Lloyd (2016) on in situ and on-farm conservation, and Kew’s Seed Information Database, for the viability constants and the behavior of each species. Appendix E gives them in full.</p>
+  <h3>How to cite</h3>
+  <figure class="reducida">
+    <div class="marco"><img src="../img/en/b1-citar.png" alt="The citation box, in English, with the citation of the program: Barrera-Guzmán, L.Á. (2026). GermplasmPro: el banco de germoplasma, accesión por accesión (versión 1.0.0) [software]. https://github.com/luisangelbg/GermplasmPro"></div>
+    <figcaption><b>Figure 1.8.</b> The box opened by the <span class="ui">How to cite</span> button on the home page.</figcaption>
+  </figure>
+  <div class="cita">Barrera-Guzmán, L.Á. (2026). GermplasmPro: el banco de germoplasma, accesión por accesión (versión 1.0.0) [software]. https://github.com/luisangelbg/GermplasmPro</div>
+  <p>It is the same citation as in the credits of this manual and in the <span class="ruta">CITATION.cff</span> file in the program folder, and it keeps the original Spanish title in both interface languages. The program has no digital object identifier: the citation carries the address of the repository. The box closes with its ✕ button or with the Esc key.</p>
+
+  <h3>When something goes wrong</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:40%">What you see</th><th>Why it happens and what to do</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">No simulation: this material is not conserved this way.</span></td><td>The route does not suit the species (Section 1.7). Press one of the buttons under <span class="ui">Try instead:</span>.</td></tr>
+      <tr><td>The <span class="ui">K<sub>E</sub></span> and <span class="ui">C<sub>W</sub></span> boxes do not appear</td><td>They only appear in the seed bank and with species whose constants are editable; with maize they do not, because its constants are the published ones.</td></tr>
+      <tr><td><span class="ui">Its seed is</span> does not appear</td><td>It only appears with <span class="ui">Other species (choose its behaviour)</span>.</td></tr>
+      <tr><td>The half-viability period says <i>&gt;999</i></td><td>The lot takes more than 999 years to reach 50%: the store is very cold or the seed very dry. It is a result, not an error.</td></tr>
+      <tr><td>The figures do not match those in this manual</td><td><span class="ui">Another random run ↻</span> was pressed or a slider was moved. Choose the scenario again or reload the page: the initial run is always the same.</td></tr>
+      <tr><td>The chart of the material has no vertical lines</td><td>In in vitro and in cryo the chart never has them. For seed, field and in situ, there are more than 60 cycles within the horizon (as in situ, one generation per year) and the app omits them so that the curve can be read.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja regla">
+    <div class="caja-t"><span class="ico">✓</span>Decision rule · what to do in Block 1</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:44%"><b>If</b> you do not know which route suits a species</td><td><b>then</b> choose it in <span class="ui">Species</span> (or use <i>Other species</i> and declare its seed) and try the five routes: the verdict tells you which ones suit it.</td></tr>
+      <tr><td><b>If</b> you run a seed bank without a cold room</td><td><b>then</b> compare the two community seed bank scenarios: checking often matters as much as temperature.</td></tr>
+      <tr><td><b>If</b> you are going to use the seed bank years for planning</td><td><b>then</b> first enter the K<sub>E</sub> and C<sub>W</sub> constants of your species; only those of maize come published.</td></tr>
+      <tr><td><b>If</b> a figure changes a lot with <span class="ui">Another random run ↻</span></td><td><b>then</b> the result depends on luck (hits, few individuals): run it several times and look at the range, not at one number.</td></tr>
+      <tr><td><b>If</b> you already have your list of accessions</td><td><b>then</b> <span class="ui">Load my accessions →</span> and go on to Chapter 2.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">Nothing done in Block 1 affects the collection: the simulator keeps no state and does not go into the report.</p>
+  </div>
+
+</section>
+
+</body>
+</html>

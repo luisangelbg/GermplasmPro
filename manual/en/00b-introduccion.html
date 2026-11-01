@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · User’s Manual · Front matter and introduction</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- reparte el contenido en hojas tamaño carta, con encabezados, números de página e índice -->
+<script src="../paginar.js"></script>
+<style>
+  figure.reducida { width: 78%; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<!-- ====================================================================== CRÉDITOS -->
+<section class="preliminares creditos" id="creditos">
+  <div class="cred-titulo">GermplasmPro</div>
+  <div class="cred-sub">User’s Manual · The genebank, accession by accession</div>
+
+  <dl>
+    <dt>Author</dt><dd><b>Luis Ángel Barrera-Guzmán</b><br><span class="small">ORCID 0000-0001-8057-2583</span></dd>
+    <dt>Program</dt><dd>GermplasmPro, version 1.0.0 (1 October 2026)</dd>
+    <dt>Manual</dt><dd>First English edition, 2026, translated from the first Spanish edition. Describes version 1.0.0 of the program.</dd>
+    <dt>Program license</dt><dd>GNU General Public License, version 3 or later (GPL-3.0-or-later).</dd>
+    <dt>Manual rights</dt><dd>© 2026 Luis Ángel Barrera-Guzmán. All rights reserved.</dd>
+    <dt>Interface language</dt><dd>Spanish or English, with the <span class="ui">ES</span> · <span class="ui">EN</span> switch on the top bar. The app opens in Spanish; in this manual the names of buttons, fields and menus are written as they appear on screen in English, for example <span class="ui">Open the example collection</span>.</dd>
+  </dl>
+
+  <h4>How to cite the program</h4>
+  <div class="cita">Barrera-Guzmán, L.Á. (2026). GermplasmPro: el banco de germoplasma, accesión por accesión (versión 1.0.0) [software]. https://github.com/luisangelbg/GermplasmPro</div>
+  <h4>How to cite this manual</h4>
+  <div class="cita">Barrera-Guzmán, L. Á. (2026). <i>GermplasmPro. User’s Manual</i> (1st English ed.). Distributed with GermplasmPro, version 1.0.0. https://github.com/luisangelbg/GermplasmPro</div>
+  <p class="small">The citation of the program is the same one given by the <span class="ui">How to cite</span> button on the app’s home page, which keeps the original Spanish title. The program can also be used online, without installing anything, at https://luisangelbg.github.io/GermplasmPro/.</p>
+
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Privacy</div>
+    <p>GermplasmPro runs entirely inside your browser. The passport data, characterization and management records you load are read on your computer and <b>are never sent to any server</b>; the collection is kept in that same browser’s local storage so that it is not lost when you close the window. You can work with the coordinates of sensitive populations or with data from custodian families without anything leaving your machine, and without the internet: the maps use geometries included in the program.</p>
+  </div>
+
+  <p class="small" style="margin-top:0.12in;color:var(--gris)">The illustrations, diagrams and screenshots in this manual are original: they were generated with the program itself or with code written for the manual. The <b>example collection</b> is <b>fictitious</b>: the sites are real localities with approximate coordinates, but the accessions, people, stocks and dates are invented, and the example characterization is generated at random with a fixed seed. The viability constants included are those published for <i>Zea mays</i>; for other species they are an editable starting point. The map outlines are from <b>Natural Earth</b> (public domain).</p>
+</section>
+
+<!-- ====================================================================== ÍNDICE -->
+<section class="preliminares indice" id="indice" data-nueva-hoja>
+  <h1>Contents</h1>
+  <div class="indice-sub">General contents of the manual</div>
+
+  <ol class="toc">
+    <li>
+      <div class="toc-cap"><span class="chip k0">P</span><a href="#como-leer">How to read this manual</a><a class="pag" href="#como-leer"></a></div>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k0">In</span><a href="#cap-intro">Introduction to GermplasmPro</a><a class="pag" href="#cap-intro"></a></div>
+      <ul>
+        <li><span class="n">I.1</span><a href="#si-1"><span class="t">What is GermplasmPro?</span></a></li>
+        <li><span class="n">I.2</span><a href="#si-2"><span class="t">Questions it answers</span></a></li>
+        <li><span class="n">I.3</span><a href="#si-3"><span class="t">Five ideas behind the manual</span></a></li>
+        <li><span class="n">I.4</span><a href="#si-4"><span class="t">What data it accepts and what it delivers</span></a></li>
+        <li><span class="n">I.5</span><a href="#si-5"><span class="t">What you need and how to open it</span></a></li>
+        <li><span class="n">I.6</span><a href="#si-6"><span class="t">A tour of the interface</span></a></li>
+        <li><span class="n">I.7</span><a href="#si-7"><span class="t">The example collection</span></a></li>
+        <li><span class="n">I.8</span><a href="#si-8"><span class="t">How a piece of work proceeds</span></a></li>
+        <li><span class="n">I.9</span><a href="#si-9"><span class="t">What the program does not do</span></a></li>
+      </ul>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k1">1</span><a href="#cap-b1">Home: kinds of genebank and the life of an accession</a><a class="pag" href="#cap-b1"></a></div>
+      <ul>
+        <li><span class="n">1.1</span><a href="#b1-1"><span class="t">What you see when you open the app</span></a></li>
+        <li><span class="n">1.2</span><a href="#b1-2"><span class="t">The kinds of genebank</span></a></li>
+        <li><span class="n">1.3</span><a href="#b1-3"><span class="t">Seed behavior and the species in the simulator</span></a></li>
+        <li><span class="n">1.4</span><a href="#b1-4"><span class="t">The simulator “the life of an accession”</span></a></li>
+        <li><span class="n">1.5</span><a href="#b1-5"><span class="t">The seed route and the viability equation</span></a></li>
+        <li><span class="n">1.6</span><a href="#b1-6"><span class="t">The other four routes</span></a></li>
+        <li><span class="n">1.7</span><a href="#b1-7"><span class="t">When the route does not suit the species</span></a></li>
+        <li><span class="n">1.8</span><a href="#b1-8"><span class="t">The rest of the home page and how to cite</span></a></li>
+      </ul>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k2">2</span><a href="#cap-b2">The passport of the accessions</a><a class="pag" href="#cap-b2"></a></div>
+      <ul>
+        <li><span class="n">2.1</span><a href="#b2-1"><span class="t">The MCPD v2.1 passport and the GP_ extension</span></a></li>
+        <li><span class="n">2.2</span><a href="#b2-2"><span class="t">The ways of bringing in the data</span></a></li>
+        <li><span class="n">2.3</span><a href="#b2-3"><span class="t">Pasting from a spreadsheet</span></a></li>
+        <li><span class="n">2.4</span><a href="#b2-4"><span class="t">The guided template</span></a></li>
+        <li><span class="n">2.5</span><a href="#b2-5"><span class="t">What is each column?</span></a></li>
+        <li><span class="n">2.6</span><a href="#b2-6"><span class="t">Validation: errors and warnings</span></a></li>
+        <li><span class="n">2.7</span><a href="#b2-7"><span class="t">The table and the record of each accession</span></a></li>
+        <li><span class="n">2.8</span><a href="#b2-8"><span class="t">The portrait of the collection and completeness</span></a></li>
+        <li><span class="n">2.9</span><a href="#b2-9"><span class="t">Taking your data with you and autosave</span></a></li>
+      </ul>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k3">3</span><a href="#cap-b3">Data quality and duplicates</a><a class="pag" href="#cap-b3"></a></div>
+      <ul>
+        <li><span class="n">3.1</span><a href="#b3-1"><span class="t">What the block checks and how to read the summary</span></a></li>
+        <li><span class="n">3.2</span><a href="#b3-2"><span class="t">Does the point fall where it says? Coordinates against the country</span></a></li>
+        <li><span class="n">3.3</span><a href="#b3-3"><span class="t">Names and catalogs</span></a></li>
+        <li><span class="n">3.4</span><a href="#b3-4"><span class="t">Corrections, always with your approval</span></a></li>
+        <li><span class="n">3.5</span><a href="#b3-5"><span class="t">How duplicates are searched for</span></a></li>
+        <li><span class="n">3.6</span><a href="#b3-6"><span class="t">The groups, the side-by-side comparison and the threshold</span></a></li>
+        <li><span class="n">3.7</span><a href="#b3-7"><span class="t">Merge, annotate or dismiss</span></a></li>
+        <li><span class="n">3.8</span><a href="#b3-8"><span class="t">The quality report</span></a></li>
+      </ul>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k4">4</span><a href="#cap-b4">The collecting map</a><a class="pag" href="#cap-b4"></a></div>
+      <ul>
+        <li><span class="n">4.1</span><a href="#b4-1"><span class="t">A map that needs no internet</span></a></li>
+        <li><span class="n">4.2</span><a href="#b4-2"><span class="t">From the sphere to the screen: the projection</span></a></li>
+        <li><span class="n">4.3</span><a href="#b4-3"><span class="t">In which state and in which country does each point fall?</span></a></li>
+        <li><span class="n">4.4</span><a href="#b4-4"><span class="t">The extent: your data, Mexico, the world or a state</span></a></li>
+        <li><span class="n">4.5</span><a href="#b4-5"><span class="t">The color, size and filters of the points</span></a></li>
+        <li><span class="n">4.6</span><a href="#b4-6"><span class="t">The choropleth and the grid</span></a></li>
+        <li><span class="n">4.7</span><a href="#b4-7"><span class="t">The counts by state and by country</span></a></li>
+        <li><span class="n">4.8</span><a href="#b4-8"><span class="t">Taking the map and the points with you</span></a></li>
+      </ul>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k5">5</span><a href="#cap-b5">Geographic diversity</a><a class="pag" href="#cap-b5"></a></div>
+      <ul>
+        <li><span class="n">5.1</span><a href="#b5-1"><span class="t">Units, types and the block summary</span></a></li>
+        <li><span class="n">5.2</span><a href="#b5-2"><span class="t">The diversity indices, unit by unit</span></a></li>
+        <li><span class="n">5.3</span><a href="#b5-3"><span class="t">Rarefaction: comparing with the same effort</span></a></li>
+        <li><span class="n">5.4</span><a href="#b5-4"><span class="t">How much is missing? Accumulation, estimators and coverage</span></a></li>
+        <li><span class="n">5.5</span><a href="#b5-5"><span class="t">The exclusive types and the index map</span></a></li>
+        <li><span class="n">5.6</span><a href="#b5-6"><span class="t">Are the regions alike? Similarity and clustering</span></a></li>
+        <li><span class="n">5.7</span><a href="#b5-7"><span class="t">The Mantel test and the turnover between units</span></a></li>
+        <li><span class="n">5.8</span><a href="#b5-8"><span class="t">The elevation gradient</span></a></li>
+        <li><span class="n">5.9</span><a href="#b5-9"><span class="t">Exporting, and how everything changes with the unit</span></a></li>
+      </ul>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k6">6</span><a href="#cap-b6">Collecting gaps</a><a class="pag" href="#cap-b6"></a></div>
+      <ul>
+        <li><span class="n">6.1</span><a href="#b6-1"><span class="t">The territory, the grid and the block summary</span></a></li>
+        <li><span class="n">6.2</span><a href="#b6-2"><span class="t">The map of what is missing</span></a></li>
+        <li><span class="n">6.3</span><a href="#b6-3"><span class="t">The priority index, component by component</span></a></li>
+        <li><span class="n">6.4</span><a href="#b6-4"><span class="t">Moving the weights: what you are after on the next trip</span></a></li>
+        <li><span class="n">6.5</span><a href="#b6-5"><span class="t">The collecting route for the GPS</span></a></li>
+        <li><span class="n">6.6</span><a href="#b6-6"><span class="t">What you already have and could lose</span></a></li>
+        <li><span class="n">6.7</span><a href="#b6-7"><span class="t">The bare minimum: complementarity</span></a></li>
+        <li><span class="n">6.8</span><a href="#b6-8"><span class="t">How everything changes with the cell, the territory and the type</span></a></li>
+      </ul>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k7">7</span><a href="#cap-b7">Characterization and core collection</a><a class="pag" href="#cap-b7"></a></div>
+      <ul>
+        <li><span class="n">7.1</span><a href="#b7-1"><span class="t">Bringing in the characterization and joining it to the collection</span></a></li>
+        <li><span class="n">7.2</span><a href="#b7-2"><span class="t">The traits: type, weight and variation</span></a></li>
+        <li><span class="n">7.3</span><a href="#b7-3"><span class="t">The Gower distance</span></a></li>
+        <li><span class="n">7.4</span><a href="#b7-4"><span class="t">The map of resemblance: principal coordinates</span></a></li>
+        <li><span class="n">7.5</span><a href="#b7-5"><span class="t">Clustering and the silhouette</span></a></li>
+        <li><span class="n">7.6</span><a href="#b7-6"><span class="t">The core collection: strata, allocation and selection</span></a></li>
+        <li><span class="n">7.7</span><a href="#b7-7"><span class="t">Is it representative? The criteria of Hu <i>et al.</i></span></a></li>
+        <li><span class="n">7.8</span><a href="#b7-8"><span class="t">Exporting, and how the core changes with the options</span></a></li>
+      </ul>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k8">8</span><a href="#cap-b8">Genebank management</a><a class="pag" href="#cap-b8"></a></div>
+      <ul>
+        <li><span class="n">8.1</span><a href="#b8-1"><span class="t">The genebank dashboard</span></a></li>
+        <li><span class="n">8.2</span><a href="#b8-2"><span class="t">The assumptions: the store and the intervals</span></a></li>
+        <li><span class="n">8.3</span><a href="#b8-3"><span class="t">Today’s viability, lot by lot</span></a></li>
+        <li><span class="n">8.4</span><a href="#b8-4"><span class="t">The alerts, route by route</span></a></li>
+        <li><span class="n">8.5</span><a href="#b8-5"><span class="t">The work list</span></a></li>
+        <li><span class="n">8.6</span><a href="#b8-6"><span class="t">Recording what is done, and the plan in CSV</span></a></li>
+        <li><span class="n">8.7</span><a href="#b8-7"><span class="t">How many plants and how many seeds</span></a></li>
+        <li><span class="n">8.8</span><a href="#b8-8"><span class="t">The workload for the next 25 years</span></a></li>
+        <li><span class="n">8.9</span><a href="#b8-9"><span class="t">The genebank by route</span></a></li>
+      </ul>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k9">9</span><a href="#cap-b9">Labels and register</a><a class="pag" href="#cap-b9"></a></div>
+      <ul>
+        <li><span class="n">9.1</span><a href="#b9-1"><span class="t">What gets printed</span></a></li>
+        <li><span class="n">9.2</span><a href="#b9-2"><span class="t">The five formats and how many fit on a sheet</span></a></li>
+        <li><span class="n">9.3</span><a href="#b9-3"><span class="t">What each label says</span></a></li>
+        <li><span class="n">9.4</span><a href="#b9-4"><span class="t">The Code 128 barcode</span></a></li>
+        <li><span class="n">9.5</span><a href="#b9-5"><span class="t">The QR code and the chayote in the middle</span></a></li>
+        <li><span class="n">9.6</span><a href="#b9-6"><span class="t">Printing and checking</span></a></li>
+        <li><span class="n">9.7</span><a href="#b9-7"><span class="t">The sowing list</span></a></li>
+        <li><span class="n">9.8</span><a href="#b9-8"><span class="t">The distribution slip</span></a></li>
+        <li><span class="n">9.9</span><a href="#b9-9"><span class="t">The register</span></a></li>
+      </ul>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip k10">10</span><a href="#cap-b10">Report</a><a class="pag" href="#cap-b10"></a></div>
+      <ul>
+        <li><span class="n">10.1</span><a href="#b10-1"><span class="t">What the report brings together</span></a></li>
+        <li><span class="n">10.2</span><a href="#b10-2"><span class="t">Title, signature and language</span></a></li>
+        <li><span class="n">10.3</span><a href="#b10-3"><span class="t">The sections and the figures</span></a></li>
+        <li><span class="n">10.4</span><a href="#b10-4"><span class="t">The summary and the collection</span></a></li>
+        <li><span class="n">10.5</span><a href="#b10-5"><span class="t">Data quality</span></a></li>
+        <li><span class="n">10.6</span><a href="#b10-6"><span class="t">Geographic distribution</span></a></li>
+        <li><span class="n">10.7</span><a href="#b10-7"><span class="t">Diversity and collecting gaps</span></a></li>
+        <li><span class="n">10.8</span><a href="#b10-8"><span class="t">Characterization, core and management</span></a></li>
+        <li><span class="n">10.9</span><a href="#b10-9"><span class="t">The written methods and the references</span></a></li>
+        <li><span class="n">10.10</span><a href="#b10-10"><span class="t">Printing and downloading the report</span></a></li>
+        <li><span class="n">10.11</span><a href="#b10-11"><span class="t">The ZIP package</span></a></li>
+        <li><span class="n">10.12</span><a href="#b10-12"><span class="t">The passport in Darwin Core and in MCPD</span></a></li>
+      </ul>
+    </li>
+    <li>
+      <div class="toc-cap"><span class="chip kx">Ap</span><a href="#cap-ap">Appendices</a><a class="pag" href="#cap-ap"></a></div>
+      <ul>
+        <li><span class="n">A</span><a href="#ap-a"><span class="t">The files the app reads and writes</span></a></li>
+        <li><span class="n">B</span><a href="#ap-b"><span class="t">The decision rules, gathered together</span></a></li>
+        <li><span class="n">C</span><a href="#ap-c"><span class="t">Glossary</span></a></li>
+        <li><span class="n">D</span><a href="#ap-d"><span class="t">When something goes wrong</span></a></li>
+        <li><span class="n">E</span><a href="#ap-e"><span class="t">References</span></a></li>
+        <li><span class="n">F</span><a href="#ap-f"><span class="t">The tool: data, privacy, license and citation</span></a></li>
+      </ul>
+    </li>
+  </ol>
+</section>
+
+<!-- ====================================================================== CÓMO LEER -->
+<section class="preliminares" id="como-leer" data-nueva-hoja style="--acento: var(--b0)">
+  <h2 style="margin-top:0.2in">How to read this manual</h2>
+  <p class="lead">The manual follows the same order as the app: ten numbered blocks that appear, from top to bottom, in the sidebar on the left. Each chapter explains one block and carries its number —Chapter 6 is Block 6, and its sections, figures and tables are numbered 6.1, 6.2…—. Each one begins with the idea from plant genetic resources management that the block needs, goes on to what the screen calculates and how to read it, and ends with what is worth checking before moving on. This introduction has no number: its sections run I.1, I.2…</p>
+
+  <h3>A color for each block</h3>
+  <p>The block’s color appears on the opening page of its chapter, on the number of each section, on the tab at the edge of the page and in the table of contents, and it is the same as in the strip on the cover. That way you can tell at a glance which part of the app you are in.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:0.6in">Block</th><th style="width:1.6in">Name in the app</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="chip k1">1</span></td><td><span class="ui">Home</span></td><td>Home page, the five kinds of genebank, seed behavior and the simulator “the life of an accession”, which follows the material and its diversity for decades</td></tr>
+      <tr><td><span class="chip k2">2</span></td><td><span class="ui">Passport</span></td><td>Bring in the list of accessions (file, paste or template), recognize the columns as MCPD v2.1 descriptors, validate them, edit them, portray the collection and export it</td></tr>
+      <tr><td><span class="chip k3">3</span></td><td><span class="ui">Quality &amp; duplicates</span></td><td>Coordinates that do not fall in the declared country, untidy names and catalogs, corrections proposed for your approval and the same collection entered twice</td></tr>
+      <tr><td><span class="chip k4">4</span></td><td><span class="ui">Collecting map</span></td><td>The accessions on the map, offline, colored by species, elevation, year or route; how many fall in each state and each country</td></tr>
+      <tr><td><span class="chip k5">5</span></td><td><span class="ui">Geographic diversity</span></td><td>Richness, diversity indices and Hill numbers per geographic unit, rarefaction, richness estimators, similarity between regions, Mantel test and elevation gradient</td></tr>
+      <tr><td><span class="chip k6">6</span></td><td><span class="ui">Collecting gaps</span></td><td>The grid of what is missing, a transparent priority index, the route for the next collecting trip, the risks to what you already have and the minimum set by complementarity</td></tr>
+      <tr><td><span class="chip k7">7</span></td><td><span class="ui">Characterization &amp; core</span></td><td>Mixed morphological descriptors, Gower distance, principal coordinates, clustering and a validated core collection</td></tr>
+      <tr><td><span class="chip k8">8</span></td><td><span class="ui">Genebank management</span></td><td>Viability lot by lot with the Ellis and Roberts equation, what has to be done and when on each route, how many plants and seeds to regenerate, and the workload for the next 25 years</td></tr>
+      <tr><td><span class="chip k9">9</span></td><td><span class="ui">Labels &amp; register</span></td><td>Labels with Code 128 barcodes and QR codes, in formats measured in millimeters; sowing lists, distribution slips and the register</td></tr>
+      <tr><td><span class="chip k10">10</span></td><td><span class="ui">Report</span></td><td>The collection status report, with the methods written out, to print or save as PDF; the .zip package and the passport in MCPD and in Darwin Core</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Types of box</h3>
+  <div class="dos">
+    <div class="caja nota" style="margin:0"><div class="caja-t"><span class="ico">i</span>Note</div><p>Clarifications and practical tips that save time.</p></div>
+    <div class="caja importante" style="margin:0"><div class="caja-t"><span class="ico">!</span>Important</div><p>What can change your decisions if overlooked.</p></div>
+    <div class="caja teoria" style="margin:0"><div class="caja-t"><span class="ico">θ</span>Theory in brief</div><p>The idea behind a calculation, without unnecessary formulas.</p></div>
+    <div class="caja ejemplo" style="margin:0"><div class="caja-t"><span class="ico">▸</span>Example</div><p>A case worked step by step with the example collection.</p></div>
+  </div>
+  <div class="caja regla" style="margin-top:0.18in">
+    <div class="caja-t"><span class="ico">✓</span>Decision rule</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:40%"><b>If</b> the result falls in this case…</td><td><b>then</b> this is the recommended reading.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">These are guides for interpretation, not laws: what you know about your species, your genebank and your sites always comes first.</p>
+  </div>
+  <div class="caja dato">
+    <div class="dato-cifra">42</div>
+    <div class="dato-txt"><div class="caja-t">Key fact</div>A figure or a fact worth remembering; for example, the FAO/Bioversity multi-crop passport descriptors (MCPD v2.1) that the app recognizes, plus seven fields of its own for management and in situ conservation.</div>
+  </div>
+
+  <h3>Writing conventions</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:38%">Written like this</th><th>Means</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Open the example collection</span></td><td>A button, checkbox or menu of the app, with its text as it appears on screen in English.</td></tr>
+      <tr><td><span class="ruta">Block 3<span class="sep">›</span>Is it the same collection twice?</span></td><td>A path: open the first item and look for the second inside it.</td></tr>
+      <tr><td><code>ACCENUMB</code>, <code>GP_CONS</code>, <code>.csv</code></td><td>A descriptor key, a file name or a value typed as it stands. Keys beginning with <code>GP_</code> are the GermplasmPro extension, not part of MCPD.</td></tr>
+      <tr><td>MEX-ZM-0039 · Tuxpeño de la costa</td><td>An accession from the example collection, with its number and its name as they appear in the table of Block 2.</td></tr>
+      <tr><td>25,000 m · 98% · 0.14</td><td>Thousands separated with a comma and decimals with a point, as in the app in English.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>The figures in this manual</div>
+    <p>The results in the text come from running the app with the <b>example collection</b> of Block 2 (46 accessions, with their planted errors) and, in Block 7, with the <b>example characterization</b> of 12 descriptors. The examples have a fixed seed and the calculations are deterministic: with those data you will see the same numbers. If a chapter starts from another state, such as the corrected collection, it says so first.</p>
+  </div>
+</section>
+
+<!-- ====================================================================== INTRODUCCIÓN -->
+<section class="capitulo" id="cap-intro" data-pestana="In" data-orden="0" style="--acento: var(--b0)">
+  <div class="cap-apertura">
+    <div class="cap-num">In</div>
+    <div class="cap-etiqueta">Introduction · Before the blocks</div>
+    <h1 data-corto="Introduction">Introduction to GermplasmPro</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">What the program is, which questions from the daily work of a genebank it answers, what data it accepts and how to go through it from start to finish. It includes the five ideas that hold up everything else —the accession and its passport, the route each species needs, the safety duplicate, the two clocks of conservation, and what you have versus what you are missing— and an honest list of what the program does not do.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>I.1</b>What is GermplasmPro?</li>
+      <li><b>I.2</b>Questions it answers</li>
+      <li><b>I.3</b>Five ideas behind the manual</li>
+      <li><b>I.4</b>What data it accepts and what it delivers</li>
+      <li><b>I.5</b>What you need and how to open it</li>
+      <li><b>I.6</b>A tour of the interface</li>
+      <li><b>I.7</b>The example collection</li>
+      <li><b>I.8</b>How a piece of work proceeds</li>
+      <li><b>I.9</b>What the program does not do</li>
+    </ul>
+  </div>
+
+  <!-- I.1 -->
+  <h2 id="si-1"><span class="num">I.1</span>What is GermplasmPro?</h2>
+  <p class="lead">GermplasmPro is a platform for the daily work of a plant genetic resources collection <b>from the field notebook to the report</b>: it organizes the passport of each accession with the FAO/Bioversity multi-crop descriptors, finds errors and duplicates, draws the collecting map, measures geographic diversity, points out where collecting is still missing, builds a core collection from the characterization, projects the viability of each lot and warns what needs regenerating, prints labels with a barcode or QR code, and writes a report with the methods written out.</p>
+  <p>It works for <b>any species</b> and for <b>every kind of genebank</b>. Ex situ: the seed bank, the field genebank or living collection, slow-growth in vitro culture and cryopreservation; the DNA bank is recorded in the passport. In situ: the genetic reserve of crop wild relatives and conservation in the field of whoever sows it. A real collection almost always combines several of those routes, and the app handles them all at once. Maize and chayote turn up often on the screens and in this manual because they are good examples of two worlds —an orthodox seed that is kept in a jar and a crop that can only be conserved alive—, not because the program is meant for them.</p>
+  <p>Everything happens inside the browser. There is nothing to install, no programming is needed and the data do not leave the computer. It is written for genebank curators, field technicians, thesis students and those in charge of institutional or community collections: it knows that a passport almost always arrives from a spreadsheet with hand-typed headers, that the same collection is often there twice with the name spelled differently, that a longitude loses its sign when it passes from one program to another, that a lot that has gone years without a germination test is an invisible risk, and that an in situ plot nobody visits is also lost.</p>
+
+  <!-- I.2 -->
+  <h2 id="si-2"><span class="num">I.2</span>Questions it answers</h2>
+  <p>Each block of the app answers a question that anyone who manages a collection really asks. These are the questions, in the order in which the blocks are worked through:</p>
+  <table>
+    <thead><tr><th style="width:0.55in">Block</th><th style="width:2.6in">The question</th><th>How it answers</th></tr></thead>
+    <tbody>
+      <tr><td><span class="chip k1">1</span></td><td>Which kind of genebank suits my species? What happens to an accession over the years?</td><td>The five kinds of genebank, seed behavior and a simulator of viability and diversity over decades</td></tr>
+      <tr><td><span class="chip k2">2</span></td><td>What do I have, where did it come from and how is it conserved? Is my passport complete?</td><td>Reading the list, recognizing the columns, validation field by field and across fields, a portrait of the collection and completeness per descriptor</td></tr>
+      <tr><td><span class="chip k3">3</span></td><td>Are my data reliable? Do I have the same collection twice?</td><td>Coordinates against the country, names and catalogs, proposed corrections and pairs of possible duplicates with their score</td></tr>
+      <tr><td><span class="chip k4">4</span></td><td>Where did I collect? How many accessions are there per state and per country?</td><td>The offline collecting map, colored by species, elevation, year or route, and the tables by state and by country</td></tr>
+      <tr><td><span class="chip k5">5</span></td><td>Where is the diversity of my collection? How much is still left to find?</td><td>Richness and indices per geographic unit, rarefaction, richness estimators, similarity between regions and elevation gradient</td></tr>
+      <tr><td><span class="chip k6">6</span></td><td>Where do I go on the next collecting trip? What could I lose of what I already have?</td><td>The grid of gaps, the priority index, the collecting route, the risks to the collection and the minimum set</td></tr>
+      <tr><td><span class="chip k7">7</span></td><td>Which accessions are alike? Which do I keep if I cannot evaluate them all?</td><td>Gower distance with mixed data, principal coordinates, groups and a core collection with its validation</td></tr>
+      <tr><td><span class="chip k8">8</span></td><td>Which lot must be tested or regenerated, and when? How many plants do I sow?</td><td>Projected viability per lot, alerts and a work plan per route, calculation of plants and seeds, and the workload over 25 years</td></tr>
+      <tr><td><span class="chip k9">9</span></td><td>How do I identify each envelope, jar, pot or cryovial? How do I record what goes out?</td><td>Labels with Code 128 and QR, sowing lists, distribution slips and the register</td></tr>
+      <tr><td><span class="chip k10">10</span></td><td>How do I report on the state of the collection? How do I share the passport?</td><td>A report with written methods and references, a .zip package, the passport in MCPD and in Darwin Core</td></tr>
+    </tbody>
+  </table>
+
+  <!-- I.3 -->
+  <h2 id="si-3"><span class="num">I.3</span>Five ideas behind the manual</h2>
+  <p>You do not need to be a genebank curator to use the app, but there are five ideas that come back again and again. Understanding them turns the results from tables into decisions.</p>
+
+  <h3>1. The accession is the unit, and its passport is its identity</h3>
+  <p>An <b>accession</b> is a distinct sample of a species that the genebank conserves and manages as a unit: a maize collection from one community, a potato clone, a wild population in its reserve. What makes it useful is not the material but what is known about it: what it is, where it came from, who collected it and when, what type of material it is and how it is conserved. That is the <b>passport</b>, and the FAO/Bioversity multi-crop passport descriptors (MCPD v2.1) are the way of writing it that every genebank and information system understands. The app recognizes its 42 descriptors and adds seven fields of its own, those beginning with <code>GP_</code>, for the active conservation route, the in situ site and custodian, the stock, the last germination test and the last regeneration. Every block reads from that passport; that is why Block 2 is the way in.</p>
+
+  <h3>2. Each species has its conservation route</h3>
+  <p>A seed bank only works for <b>orthodox</b> seed, which tolerates drying and freezing. <b>Intermediate</b> seed does not tolerate deep cold, <b>recalcitrant</b> seed tolerates neither drying nor freezing, and in <b>vegetatively propagated</b> crops the seed does not reproduce the clone. For them there are the field, the in vitro jar and liquid nitrogen, and nothing replaces <b>in situ</b> conservation, where the population keeps evolving. The app handles the five routes and adapts alerts and deadlines to each one; the label format (envelope, jar, cryovial, stake…) is your choice in Block 9.</p>
+
+  <h3>3. An accession without a safety duplicate depends on a single facility</h3>
+  <p>The <b>safety duplicate</b> is a sample of the same accession kept at another institution, so that a fire, a long power cut or a pest does not take away the only specimen. The passport records it in <code>DUPLSITE</code>, and the app counts what share of the collection has one. The other duplicate, the <b>accidental</b> one —the same collection entered twice in the catalog, with the name spelled differently—, is the opposite: it protects nothing, inflates the collection and muddles the analyses. Telling one from the other, and finding the second before measuring diversity, is part of the work of Block 3.</p>
+
+  <h3>4. An accession has two clocks</h3>
+  <p>The first is the clock of the <b>material</b>: seed ages in the store at a rate that depends on its moisture content and the temperature, which the Ellis and Roberts viability equation can project; field plants die, jars get contaminated, frozen explants only partly recover. The second is the clock of <b>genetic integrity</b>: each regeneration, each subculture and each generation in the field is a bottleneck that redraws the allele frequencies, and the rare alleles are the first to be lost. Hence the genebank rule: regenerate rarely and with many individuals. The simulator in Block 1 shows the two clocks side by side; Block 8 applies them to every lot in your collection.</p>
+
+  <h3>5. What you have and what you are missing</h3>
+  <p>A collection is worth the diversity it represents, and that diversity has a geography: it is spread across regions, elevations and sites. Block 5 measures how much there is where you have already collected and how much you are still missing with the same effort; Block 6 draws the grid of what has never been collected and proposes where to go, with a priority index whose components are visible and can be moved. In both cases the analysis is <b>geographic and collection-based</b>: it counts accessions, species and sites, not climate or soil.</p>
+
+  <!-- I.4 -->
+  <h2 id="si-4"><span class="num">I.4</span>What data it accepts and what it delivers</h2>
+  <h4>What goes in</h4>
+  <ul>
+    <li><b>The passport</b>: a table with one row per accession, which is opened from a <code>.csv</code>, <code>.tsv</code> or <code>.txt</code> file, pasted directly from a spreadsheet, typed into the guided template of the paste dialog or started blank. The headers may come in Spanish, in English or as the MCPD key: the app proposes which descriptor each column is and you confirm it.</li>
+    <li><b>The characterization</b>, in Block 7: another table, one row per accession and one column per morphological descriptor —numbers, categories and scales mixed, with empty cells—, which is joined to the passport by the accession number.</li>
+    <li><b>The management records</b>, in Block 8: the germination tests, regenerations and subcultures you carry out, and the viability constants of your species if you have them.</li>
+    <li><b>A project</b> saved earlier as <code>.json</code>, which brings back the collection exactly as it was, with its characterization and the settings of Blocks 3, 8 and 9.</li>
+  </ul>
+  <h4>What comes out</h4>
+  <ul>
+    <li><b>The clean passport</b> as <code>.csv</code>, in two versions: with the MCPD descriptors only, to send to any system, or complete, with the <code>GP_</code> extension, so as not to lose the internal management. And the project as <code>.json</code>.</li>
+    <li><b>The quality report</b> of Block 3 and the <code>.csv</code> tables of each block: the map points with their state and their cell, the diversity indices, the collecting route, the genebank work plan.</li>
+    <li><b>Figures</b> as SVG or as PNG at double resolution: the collecting map, the accumulation curve, the similarity heat map, the gap map.</li>
+    <li><b>Labels</b> ready to print, with barcodes and QR codes generated in the browser itself.</li>
+    <li><b>The report</b>: an <code>.html</code> file that opens in any browser and can be printed or saved as PDF, with one section per analysis, the methods written from what was actually run, and their references; and a <code>.zip</code> with everything, including the passport in MCPD and in Darwin Core.</li>
+  </ul>
+
+  <!-- I.5 -->
+  <h2 id="si-5"><span class="num">I.5</span>What you need and how to open it</h2>
+  <p>A computer with a recent browser —Edge, Chrome, Firefox or Safari from the last two or three years— and the program folder. There is no installation: you copy the folder and open <span class="ruta">index.html</span> with a double click. It also works from a USB stick and on a computer without internet, and online at https://luisangelbg.github.io/GermplasmPro/.</p>
+  <ol class="pasos">
+    <li>Copy the whole <span class="ruta">GermplasmPro</span> folder to your computer (or download it and unzip it). Inside there must be <span class="ruta">index.html</span> and the folders <span class="ruta">js</span>, <span class="ruta">css</span>, <span class="ruta">data</span> —which holds the map outlines— and <span class="ruta">tests</span>.</li>
+    <li>Open <span class="ruta">index.html</span> with a double click. If your institution blocks local pages, use <span class="ruta">Open GermplasmPro.bat</span> on Windows. The first screen is Block 1, the home page.</li>
+    <li>Choose the language with <span class="ui">ES</span> · <span class="ui">EN</span> and the light or dark theme with the sun button. Both are remembered for next time.</li>
+    <li>If you want to check that the calculations come out right in your browser, open <span class="ruta">tests/index.html</span>: these are the program’s tests; all of them must come out green.</li>
+  </ol>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>The app remembers the collection</div>
+    <p>The accessions are saved automatically in the browser of that computer (in its <i>local storage</i>); next to the counter in Block 2 the time of the last save is shown, and when you open the app again the collection is still there; if the browser does not allow saving (full storage or a private window), it says so in that same place. It is only a convenience: the real backup is the <code>.json</code> project downloaded with <span class="ui">Save the project (.json)</span>, which can be opened on any other machine with <span class="ui">Open a file (CSV, TSV or project)</span>. The <span class="ui">Empty</span> button of the table deletes what is saved, after asking for confirmation.</p>
+  </div>
+
+  <!-- I.6 -->
+  <h2 id="si-6"><span class="num">I.6</span>A tour of the interface</h2>
+  <figure style="width:86%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/inicio.png" alt="The opening screen of GermplasmPro in English: the top bar with the brand and its buttons; on the left the sidebar with the ten blocks; in the center the Block 1 home page with its illustration of the five routes; on the right the index of the block’s sections"></div>
+    <figcaption><b>Figure I.1.</b> The opening screen. At the top, the fixed bar with the brand, the link to the suite portal, the language, the theme, the animations, the problem report and the keyboard shortcuts. On the left, the sidebar with the ten blocks; in the center, the home page of Block 1; on the right, the <span class="ui">In this block</span> index, which follows your reading.</figcaption>
+  </figure>
+  <table class="compacta">
+    <thead><tr><th style="width:1.7in">Element</th><th>What it is for</th></tr></thead>
+    <tbody>
+      <tr><td><b>The block sidebar</b></td><td>On the left, the ten numbered blocks, always visible. The active one is highlighted in gold; the counter at the top (<i>1/10</i>, <i>2/10</i>…) and the check mark next to each number say how many you have done. No block is locked: you can jump to any of them at any time. The sidebar collapses with its button or with the <code>[</code> key.</td></tr>
+      <tr><td><b>The path and the reading modes</b></td><td>Above the content, the path <i>GermplasmPro › block › section</i> tells you where you are. <span class="ui">Document</span> shows all the sections of the block one after another; <span class="ui">Focused</span>, one at a time, with Previous and Next (or Alt+← and Alt+→).</td></tr>
+      <tr><td><b><span class="ui">In this block</span></b></td><td>The index on the right: the sections of the block, with the current one marked. A click takes you to each one. In sections that have figures there is also the button to open them in the figure studio.</td></tr>
+      <tr><td><b><span class="ui">Search</span> · Ctrl K</b></td><td>A palette that finds blocks, sections, controls and figures by name, with the recent ones first.</td></tr>
+      <tr><td><b>The cards</b></td><td>Each block is divided into numbered sections —“1 · Fixes the app can make for you”, “2 · Does the point fall where it says?”…— that are read from top to bottom. The first ones are usually the data and assumptions; the following ones, the results.</td></tr>
+      <tr><td><b>The result tiles</b></td><td>A row of large figures with their label and a line of context below, like those of the portrait of the collection (Figure I.3). They are the summary of the section: what you would say in one sentence.</td></tr>
+      <tr><td><b>The export buttons</b></td><td>Next to each map, chart or table: <span class="ui">Export SVG</span>, <span class="ui">Export PNG (2×)</span>, <span class="ui">Table as CSV</span>… What they download is what you see.</td></tr>
+      <tr><td><b>Previous · Next</b></td><td>At the foot of each block, the buttons that take you to the block before and the block after, with their number and name.</td></tr>
+      <tr><td><b>Help and shortcuts</b></td><td>The <span class="ui">Help</span> button in the sidebar and the question mark on the top bar show the keyboard shortcuts; <span class="ui">Focused mode</span> switches the reading mode from the same sidebar.</td></tr>
+    </tbody>
+  </table>
+  <figure style="width:62%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/intro-b2.png" alt="Block 2 in English with the example collection loaded: the buttons to bring in the data, the counter of 46 accessions saved in the browser, the filters, the visible columns and the first rows of the accession table"></div>
+    <figcaption><b>Figure I.2.</b> A block in use: Block 2 with the example collection. The sidebar already marks <i>1/10</i>; below the buttons, the counter and the time of the last save; then the filters, the visible columns and the table.</figcaption>
+  </figure>
+
+  <!-- I.7 -->
+  <h2 id="si-7"><span class="num">I.7</span>The example collection</h2>
+  <p>The <span class="ui">Open the example collection</span> button of Block 2 loads a small but realistic genebank, the same one that illustrates the whole of this manual. It is <b>fictitious</b>: the collecting sites are real localities with approximate coordinates, but the accessions, numbers, custodians, stocks and dates are invented. It serves to learn the app, to see what each block does before loading your collection and to reproduce the figures in the manual.</p>
+  <figure>
+    <div class="marco"><img src="../img/en/intro-retrato.png" alt="The five tiles of the portrait of the example collection, in English: 46 accessions with 24 taxa and 23 crops; 98% with coordinates; 43% with a safety duplicate; 8 countries; 6 routes in use"></div>
+    <figcaption><b>Figure I.3.</b> The portrait of the example collection, in Block 2. The eight “countries” include the code <code>MX</code>, miswritten on purpose, and the six “routes” count the genetic reserve and the on-farm plot separately, since they are the two faces of in situ conservation.</figcaption>
+  </figure>
+  <table class="compacta">
+    <thead><tr><th style="width:1.75in">What it contains</th><th>How much</th></tr></thead>
+    <tbody>
+      <tr><td><b>Accessions</b></td><td>46, from 24 taxa and 18 genera: maize landraces and their wild relatives (18 accessions of <i>Zea mays</i>), beans, squashes, chili peppers, amaranths, husk tomato, potatoes, oca, cassava, agave, vanilla, avocado, cacao, coffee, chayote, oak, wheat and barley.</td></tr>
+      <tr><td><b>Countries of origin</b></td><td>7: Mexico (37 accessions), Guatemala, Peru, Bolivia, Colombia, Ethiopia and India; plus one accession with the country written <code>MX</code>.</td></tr>
+      <tr><td><b>Conservation routes</b></td><td>All five: seed bank (28), field genebank or living collection (8), in vitro culture (3), cryopreservation (1) and in situ, with 2 accessions in a genetic reserve and 3 in the fields of custodian families. One accession is left without a route, because its only storage code does not exist.</td></tr>
+      <tr><td><b>Coordinates</b></td><td>45 of the 46 accessions can be mapped (98%).</td></tr>
+      <tr><td><b>Safety duplicate</b></td><td>20 of the 46 have one at another institution (43%).</td></tr>
+      <tr><td><b>Characterization</b> (Block 7)</td><td>With <span class="ui">Use the example characterization</span>: 12 descriptors for the 46 accessions —six quantitative, four qualitative and two ordinal—, with about 8% empty cells, as in a real field notebook.</td></tr>
+    </tbody>
+  </table>
+  <h4>The planted errors</h4>
+  <p>The collection deliberately contains the typical errors of a real file, so that Blocks 2 and 3 have something to find:</p>
+  <ul>
+    <li>a longitude that lost its minus sign, so that the point of a maize from Veracruz falls outside Mexico (MEX-ZM-0039, Tuxpeño de la costa);</li>
+    <li>a 30 February as collecting date;</li>
+    <li>a country written with two letters (<code>MX</code>) and an elevation of 25,000 m in the same accession;</li>
+    <li>an invented storage code (15, which does not exist in MCPD);</li>
+    <li>an accession without coordinates, with the site “described from memory”;</li>
+    <li>a maize with wild status collected in a granary, which also entered the genebank before it was collected;</li>
+    <li>two pairs of accidental duplicates: the same collection entered twice, with the name in capitals or with extra spaces and the collecting number repeated.</li>
+  </ul>
+  <p>With the collection just loaded, the validation in Block 2 reports <b>3 errors and 26 warnings in 21 of the 46 accessions</b>; Block 3 finds the point outside its country, proposes 4 corrections and brings together the two groups of duplicates.</p>
+
+  <!-- I.8 -->
+  <h2 id="si-8"><span class="num">I.8</span>How a piece of work proceeds</h2>
+  <p>The order of the blocks is the order in which the work on a collection really happens: first the passport, then the cleaning, then the analysis of what you have and what you are missing, and finally the management of the living material and the paperwork. You do not have to go through all of it: an inventory ends at Block 3; a collecting plan needs Blocks 2 to 6; the work of the cold store, Blocks 2, 8 and 9. All the blocks read the same collection, so whatever is corrected in one is seen by the others.</p>
+
+  <figure>
+    <svg viewBox="0 0 700 322" xmlns="http://www.w3.org/2000/svg" font-family="Jost, sans-serif" role="img"
+         aria-label="The path of a piece of work through the ten blocks of GermplasmPro: the passport of Block 2 passes through the quality check of Block 3; from there three branches come out: the geographic one (map, diversity and gaps), characterization and core, and genebank management with its labels; all of them flow into the report of Block 10. Block 1 stands apart, for understanding the kinds of genebank before starting.">
+      <defs>
+        <marker id="fi" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#5f5a6e"/></marker>
+        <marker id="fiv" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#b5352b"/></marker>
+      </defs>
+
+      <g font-size="10" text-anchor="middle">
+        <!-- 1 · inicio -->
+        <rect x="10" y="30" width="96" height="58" rx="9" fill="#f3eff8" stroke="#6b4a8f" stroke-dasharray="5 3"/>
+        <text x="58" y="51" font-weight="600" fill="#4e3a75" font-size="11.5">Home</text>
+        <text x="58" y="66" fill="#4d4459">kinds of genebank,</text><text x="58" y="78" fill="#4d4459">simulator</text>
+
+        <!-- 2 · pasaporte -->
+        <rect x="10" y="120" width="96" height="58" rx="9" fill="#eaf3f9" stroke="#2f7fb4"/>
+        <text x="58" y="141" font-weight="600" fill="#1f5a80" font-size="11.5">Passport</text>
+        <text x="58" y="156" fill="#34495a">MCPD v2.1 + GP_,</text><text x="58" y="168" fill="#34495a">validation</text>
+
+        <!-- 3 · calidad -->
+        <rect x="126" y="120" width="96" height="58" rx="9" fill="#f8ebea" stroke="#b5352b"/>
+        <text x="174" y="141" font-weight="600" fill="#8a2820" font-size="11.5">Quality</text>
+        <text x="174" y="156" fill="#5a3936">coordinates,</text><text x="174" y="168" fill="#5a3936">duplicates</text>
+
+        <!-- 4 · mapa -->
+        <rect x="242" y="30" width="96" height="58" rx="9" fill="#f4efe8" stroke="#8a6a45"/>
+        <text x="290" y="51" font-weight="600" fill="#634a2e" font-size="11.5">Map</text>
+        <text x="290" y="66" fill="#4f4436">points, states,</text><text x="290" y="78" fill="#4f4436">countries</text>
+
+        <!-- 5 · diversidad -->
+        <rect x="358" y="30" width="96" height="58" rx="9" fill="#ebf5ed" stroke="#3d8f4f"/>
+        <text x="406" y="51" font-weight="600" fill="#2a6638" font-size="11.5">Diversity</text>
+        <text x="406" y="66" fill="#38503d">indices, rarefaction,</text><text x="406" y="78" fill="#38503d">Mantel, elevation</text>
+
+        <!-- 6 · vacíos -->
+        <rect x="474" y="30" width="96" height="58" rx="9" fill="#fbf1e5" stroke="#c5761c"/>
+        <text x="522" y="51" font-weight="600" fill="#8a5210" font-size="11.5">Gaps</text>
+        <text x="522" y="66" fill="#5a4630">priority, route,</text><text x="522" y="78" fill="#5a4630">minimum set</text>
+
+        <!-- 7 · caracterización -->
+        <rect x="242" y="120" width="96" height="58" rx="9" fill="#f7ebf2" stroke="#a8437e"/>
+        <text x="290" y="141" font-weight="600" fill="#7a2f5b" font-size="11.5">Core</text>
+        <text x="290" y="156" fill="#563a4a">Gower, groups,</text><text x="290" y="168" fill="#563a4a">core collection</text>
+
+        <!-- 8 · manejo -->
+        <rect x="242" y="210" width="96" height="58" rx="9" fill="#eef5ea" stroke="#4f8a3c"/>
+        <text x="290" y="231" font-weight="600" fill="#36622a" font-size="11.5">Management</text>
+        <text x="290" y="246" fill="#3d5236">viability, alerts,</text><text x="290" y="258" fill="#3d5236">regeneration</text>
+
+        <!-- 9 · etiquetas -->
+        <rect x="358" y="210" width="96" height="58" rx="9" fill="#f7f1e2" stroke="#9a7414"/>
+        <text x="406" y="231" font-weight="600" fill="#6e530e" font-size="11.5">Labels</text>
+        <text x="406" y="246" fill="#544a30">Code 128 and QR,</text><text x="406" y="258" fill="#544a30">slips, register</text>
+
+        <!-- 10 · informe -->
+        <rect x="590" y="104" width="100" height="90" rx="9" fill="#eeedf6" stroke="#4e4382"/>
+        <text x="640" y="128" font-weight="600" fill="#3a3164" font-size="11.5">Report</text>
+        <text x="640" y="145" fill="#3f3b55">written methods,</text><text x="640" y="157" fill="#3f3b55">PDF, .zip package,</text><text x="640" y="169" fill="#3f3b55">MCPD and</text><text x="640" y="181" fill="#3f3b55">Darwin Core</text>
+      </g>
+
+      <!-- la tabla de caracterización entra por su cuenta al Bloque 7 -->
+      <g font-size="9" fill="#7a2f5b" text-anchor="middle">
+        <text x="406" y="143">characterization</text><text x="406" y="154">table</text>
+      </g>
+      <path d="M 366 160 L 340 155" fill="none" stroke="#a8437e" stroke-width="1.2" stroke-dasharray="3 2" marker-end="url(#fi)"/>
+
+      <!-- corregir vuelve al pasaporte -->
+      <path d="M 174 118 C 174 96 70 96 62 116" fill="none" stroke="#b5352b" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#fiv)"/>
+      <text x="118" y="115" text-anchor="middle" font-size="9.5" fill="#b5352b" font-weight="500">correct</text>
+
+      <g fill="none" stroke="#5f5a6e" stroke-width="1.4" marker-end="url(#fi)">
+        <path d="M106 149 L 124 149"/>
+        <path d="M222 136 L 240 70"/>
+        <path d="M222 149 L 240 149"/>
+        <path d="M222 162 L 240 228"/>
+        <path d="M338 59 L 356 59"/>
+        <path d="M454 59 L 472 59"/>
+        <path d="M338 239 L 356 239"/>
+        <path d="M570 74 L 588 112"/>
+        <path d="M454 239 C 540 239 560 210 588 182"/>
+        <path d="M338 128 C 400 112 520 120 588 136"/>
+        <path d="M332 268 C 345 326 590 326 630 196"/>
+      </g>
+      <g font-size="9" fill="#5f5a6e" text-anchor="middle">
+        <text x="58" y="20">Block 1</text><text x="58" y="192">Block 2</text><text x="174" y="192">Block 3</text>
+        <text x="290" y="20">Block 4</text><text x="406" y="20">Block 5</text><text x="522" y="20">Block 6</text>
+        <text x="290" y="192">Block 7</text><text x="290" y="282">Block 8</text><text x="406" y="282">Block 9</text><text x="640" y="97">Block 10</text>
+      </g>
+    </svg>
+    <figcaption><b>Figure I.4.</b> The path of a piece of work through the blocks. The passport of Block 2 goes through the check of Block 3, and whatever is corrected there goes back to the passport. Three branches come out of the clean collection: the geographic one (map, diversity and gaps), the characterization branch, which also needs its own table, and the management of the living material with its labels. All of them flow into the report. Block 1 stands apart: it is for understanding the kinds of genebank before starting.</figcaption>
+  </figure>
+
+  <ol class="pasos">
+    <li><b>Block 1.</b> If it is your first time, go through the kinds of genebank and try the simulator with your species: it tells you whether the route you use suits it and how long an accession stays alive with the management you give it.</li>
+    <li><b>Block 2.</b> Bring in your list, confirm which descriptor each column is and review what the validation flags. Look at the portrait of the collection and how complete the passport is. Save the project.</li>
+    <li><b>Block 3.</b> Run the check on the whole collection, apply the corrections that convince you, decide on each pair of possible duplicates and download the quality report. This step comes before any analysis: an unresolved duplicate counts twice, and a point in the sea falls in no region.</li>
+    <li><b>Blocks 4, 5 and 6.</b> See where you collected, how much diversity there is in each region and how much is missing, and where it is worth going next time. Export the collecting route if you are going to the field.</li>
+    <li><b>Block 7.</b> If you have characterization data, load them, check the type of each descriptor, read the groups and build the core collection; check with its validation that it really represents the rest.</li>
+    <li><b>Blocks 8 and 9.</b> Review the assumptions of each route, deal with the alerts in the work plan, record tests and regenerations, and prepare the labels, the sowing list or the slip for what leaves the genebank.</li>
+    <li><b>Block 10.</b> Choose the sections of the report, review it as it comes out and download it, together with the package and the passport in whichever format you are asked for.</li>
+  </ol>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>What is upstream rules what is downstream</div>
+    <p>If you load another collection in Block 2, everything is redone and the check marks in the sidebar are cleared. If you apply a correction in Block 3, the map, the diversity and the gaps pick it up when you open them. The report of Block 10 is written with whatever exists at that moment: that is why it is best generated at the end, and generated again if something was changed.</p>
+  </div>
+
+  <!-- I.9 -->
+  <h2 id="si-9"><span class="num">I.9</span>What the program does not do</h2>
+  <ul>
+    <li><b>It is not an ecogeographic analysis.</b> Collecting gaps and diversity are calculated from geography and from the collection itself: accessions, species, cells, states and elevation. The app brings no climate or soil layers, so it does not say which environments are missing in an ecological sense, nor does it model the distribution of a species.</li>
+    <li><b>It neither downloads nor uploads data.</b> It does not query Genesys or any other portal, it does not look up names in online taxonomic catalogs and it does not georeference localities by name. It works with what you give it and delivers files that you decide where to send.</li>
+    <li><b>A viability projection is not a germination test.</b> The Ellis and Roberts equation estimates when the germination of a lot will drop, but it is only as good as its constants: the app brings those published for maize, and for any other species you have to enter your own before reading the years as a forecast. The decision to regenerate is taken with a real test, and the program says so.</li>
+    <li><b>It does not know your borders in detail.</b> Block 3 compares each coordinate with a rectangle enclosing the declared country: it catches gross errors, such as a lost sign, but it does not verify a municipality. The maps use simplified outlines, good for a collection, not for a boundary survey.</li>
+    <li><b>It does not replace your institution’s information system.</b> It keeps the collection in the browser of one computer; it is not a database shared among several users, nor does it keep a log of who changed what. The backup is the <code>.json</code> project, and the exchange with other systems, the MCPD and Darwin Core files.</li>
+    <li><b>It does not read workbooks.</b> An <code>.xlsx</code> file is deliberately not opened: save it as <code>.csv</code> or copy and paste the block of cells. That is what lets the app open with a double click and work without internet.</li>
+    <li><b>It does not decide for you.</b> The corrections of Block 3 are proposed and not applied without your approval; duplicates are proposed with a score that you interpret; the collecting priorities and the core collection are reasoned suggestions. The app points out, explains and leaves the decision to whoever knows the collection.</li>
+  </ul>
+</section>
+
+</body>
+</html>
