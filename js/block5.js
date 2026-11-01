@@ -348,7 +348,7 @@
         </tbody></table></div>
         <p class="hint">${T(`La columna rarificada compara todas las unidades al mismo esfuerzo (${A.nCommon} accesiones); las que tienen menos aparecen vacías porque rarificar hacia arriba sería inventar. «Exclusivos» son los tipos —${clsLabel()}— que no están en ninguna otra unidad: si esa unidad se pierde, se pierden con ella.`,
           `The rarefied column compares every unit at the same effort (${A.nCommon} accessions); units with fewer are left blank because rarefying upwards would be making things up. “Exclusive” counts the types —${clsLabel()}— found in no other unit: if that unit is lost, they go with it.`)}
-          ${T(' J′ queda en «—» cuando la unidad tiene un solo tipo: con uno no hay reparto que medir.', ' J′ shows «—» when the unit holds a single type: with one there is no spread to measure.')}</p>
+          ${T(' J′ queda en «—» cuando la unidad tiene un solo tipo: con uno no hay reparto que medir.', ' J′ shows “—” when the unit holds a single type: with one there is no spread to measure.')}</p>
       </div>
 
       ${indexMap(900, 420) ? `<div class="card" style="margin-top:14px">
