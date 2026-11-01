@@ -105,7 +105,7 @@
     moisture: { es: 'Humedad de la semilla (%)', en: 'Seed moisture content (%)', min: 3, max: 14, step: 0.5, fmt: v => v + ' %' },
     threshold: { es: 'Umbral para regenerar (% germinación)', en: 'Regeneration threshold (% germination)', min: 50, max: 95, step: 5, fmt: v => v + ' %' },
     interval: {
-      es: 'Cada cuántos años se revisa', en: 'Years between checks', min: 1, max: 30, step: 1, fmt: v => v + ' a',
+      es: 'Cada cuántos años se revisa', en: 'Years between checks', min: 1, max: 30, step: 1, fmt: v => v + T(' a', ' y'),
       labels: { field: { es: 'Años entre resiembras', en: 'Years between replantings' } },
     },
     sown: {
@@ -113,7 +113,7 @@
       labels: { field: { es: 'Plantas que mantiene la colección', en: 'Plants kept in the collection' } },
     },
     hazard: { es: 'Riesgo anual de sequía, plaga o huracán (%)', en: 'Annual risk of drought, pest or hurricane (%)', min: 0, max: 15, step: 0.5, fmt: v => v + ' %' },
-    subMonths: { es: 'Meses entre subcultivos', en: 'Months between subcultures', min: 2, max: 24, step: 1, fmt: v => v + ' m' },
+    subMonths: { es: 'Meses entre subcultivos', en: 'Months between subcultures', min: 2, max: 24, step: 1, fmt: v => v + T(' m', ' mo') },
     lines: { es: 'Frascos (líneas) por accesión', en: 'Jars (lines) per accession', min: 5, max: 60, step: 1, fmt: v => String(v) },
     contam: { es: 'Frascos que se pierden por subcultivo (%)', en: 'Jars lost per subculture (%)', min: 0, max: 20, step: 0.5, fmt: v => v + ' %' },
     explants: { es: 'Explantes que se congelan', en: 'Explants frozen', min: 10, max: 500, step: 10, fmt: v => String(v) },
@@ -123,7 +123,7 @@
     neRatio: { es: 'Tamaño efectivo (Ne como % del censo)', en: 'Effective size (Ne as % of the census)', min: 5, max: 100, step: 5, fmt: v => v + ' %' },
     migration: { es: 'Flujo génico de las poblaciones vecinas (%)', en: 'Gene flow from neighboring populations (%)', min: 0, max: 30, step: 1, fmt: v => v + ' %' },
     siteRisk: { es: 'Riesgo anual de perder el sitio (%)', en: 'Annual risk of losing the site (%)', min: 0, max: 10, step: 0.5, fmt: v => v + ' %' },
-    years: { es: 'Horizonte de la simulación (años)', en: 'Simulation horizon (years)', min: 30, max: 200, step: 10, fmt: v => v + ' a' },
+    years: { es: 'Horizonte de la simulación (años)', en: 'Simulation horizon (years)', min: 30, max: 200, step: 10, fmt: v => v + T(' a', ' y') },
   };
 
   const cur = Object.assign({}, GB.DEFAULTS, PRESETS['seed-fao'].v);
