@@ -18,7 +18,7 @@
   const inp = document.querySelector("#fichaBody .fi-inp[data-k=DUPLSITE]"); inp.value = "MEX006"; inp.dispatchEvent(new Event("change")); await W(500);
   const body = document.getElementById("fichaBody");
   const gs = [...body.querySelectorAll(".fi-group")];
-  const g = gs.find(x => /Origen/.test(x.querySelector("h4").textContent));
+  const g = gs.find(x => /Origen|Origin/.test(x.querySelector("h4").textContent));
   body.scrollTop = g.offsetTop - body.offsetTop; await W(300);
   const g2 = g.nextElementSibling;
   return caja([document.querySelector("#fichaDlg .dlg-h"), g, g2], 12);

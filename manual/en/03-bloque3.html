@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · User’s Manual · Chapter 3</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- splits the content into letter-size pages, with running heads, page numbers and table of contents -->
+<script src="../paginar.js"></script>
+<style>
+  .formula { font-family: var(--mono); font-size: 9pt; background: var(--marino-suave); border-radius: 5px; padding: 0.07in 0.12in; margin: 0.08in 0; }
+  .cuenta td { font-family: var(--mono); font-size: 8.6pt; }
+  .csv td { font-family: var(--mono); font-size: 7.6pt; }
+  figure.reducida { width: 74%; margin-left: auto; margin-right: auto; }
+  figure.mediana { width: 86%; margin-left: auto; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<section class="capitulo" id="cap-b3" data-pestana="3" data-orden="3" style="--acento: var(--b3)">
+  <div class="cap-apertura">
+    <div class="cap-num">3</div>
+    <div class="cap-etiqueta">Chapter three · Block 3 · Quality and duplicates</div>
+    <h1 data-corto="Quality and duplicates">Data quality and duplicates</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">Block 2 checks each value on its own; Block 3 checks what only shows when the whole collection is looked at: the coordinate that does not fall in the country the accession declares, the genus spelled two ways, the site with several spellings and, above all, the same collection entered twice. The app diagnoses, proposes the fix and explains why; applying it, merging two accessions or dismissing a pair is your decision.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>3.1</b>What the block checks and how to read the summary</li>
+      <li><b>3.2</b>Does the point fall where it says? Coordinates against the country</li>
+      <li><b>3.3</b>Names and catalogues</li>
+      <li><b>3.4</b>Fixes, always with your approval</li>
+      <li><b>3.5</b>How duplicates are searched for</li>
+      <li><b>3.6</b>Groups, side-by-side comparison and the threshold</li>
+      <li><b>3.7</b>Merge, note or dismiss</li>
+      <li><b>3.8</b>The quality report</li>
+    </ul>
+  </div>
+
+  <!-- 3.1 -->
+  <h2 id="b3-1"><span class="num">3.1</span>What the block checks and how to read the summary</h2>
+  <p class="lead">Block 3 works on the collection you loaded in Block 2 (Chapter 2) and asks for nothing else: when you enter it, the check runs by itself, with the animated wait <i>Checking quality and duplicates</i>, and the result is laid out in five tiles and four sections. If there are no accessions yet, the block says so —<span class="ui">Load your accessions in Block 2 first.</span>— and offers the button <span class="ui">Go to the passport</span>.</p>
+  <figure>
+    <div class="marco"><img src="../img/en/b3-resumen.png" alt="The header of Block 3 with the example collection: the title, the introductory paragraph, the buttons Check the collection and Download the quality report and five tiles: 46 accessions checked with 33 pairs compared, 1 location problem, 4 proposed fixes, 2 duplicate groups and 0 consistency warnings"></div>
+    <figcaption><b>Figure 3.1.</b> The header of the block with the example collection just loaded. The five tiles summarize the four sections below.</figcaption>
+  </figure>
+  <p>Two buttons govern the block. <span class="ui">Check the collection</span> runs the whole check again; it is needed when you changed something in Block 2 without leaving it, because on re-entering Block 3 the check is redone anyway. <span class="ui">Download the quality report</span> saves everything found in a <code>.csv</code> file (Section 3.8). Next to them, a green tag shows for a few seconds the result of the last thing you did: <i>Coordinate fixed.</i>, <i>Accessions merged.</i>, <i>Noted in both accessions.</i></p>
+  <table class="compacta">
+    <caption><b>Table 3.1.</b> The five summary tiles and what they show with the example collection.</caption>
+    <thead><tr><th style="width:1.75in">Tile</th><th style="width:0.6in" class="c">Example</th><th>What it counts</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Accessions checked</span></td><td class="c">46</td><td>All those in the passport. Below, how many pairs were compared in the search for duplicates: 33 of the 1,035 possible (Section 3.5).</td></tr>
+      <tr><td><span class="ui">Location problems</span></td><td class="c">1</td><td>The errors and warnings of section 2 (Section 3.2); below, how many of them come <i>with a clear diagnosis</i>, that is, are errors. Accessions that could not be compared with their country do not count.</td></tr>
+      <tr><td><span class="ui">Proposed fixes</span></td><td class="c">4</td><td>The changes the app knows how to make and that await your approval (Section 3.4).</td></tr>
+      <tr><td><span class="ui">Duplicate groups</span></td><td class="c">2</td><td>The groups of accessions that look like the same material; below, how many pairs are above the threshold (Sections 3.5 and 3.6).</td></tr>
+      <tr><td><span class="ui">Consistency warnings</span></td><td class="c">0</td><td>The findings about names and catalogues (Section 3.3).</td></tr>
+    </tbody>
+  </table>
+  <p>On screen, the sections come in the order in which it pays to work: <span class="ui">1 · Fixes the app can make for you</span>, <span class="ui">2 · Does the point fall where it says?</span>, <span class="ui">3 · Names and catalogues</span> and <span class="ui">4 · Is it the same collection twice?</span> First you clean up what has a safe fix, and at the end you decide about the duplicates, which is what calls for the most judgement. This chapter explains the checks first (3.2 and 3.3), because the fixes (3.4) come out of them.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Which seeded errors each block catches</div>
+    <p>Of the errors planted on purpose in the example collection (Section I.7), Block 3 finds the <b>unsigned longitude</b>, the <b>two-letter country</b> and the <b>two duplicates</b>. The rest —the 30 February, the elevation of 25,000 m, the invented storage code, the accession without coordinates and the dates in reverse order— are errors in an isolated value and are flagged by the validation of Block 2 (Chapter 2). They are not lost here: the quality report gathers them along with everything else.</p>
+  </div>
+
+  <!-- 3.2 -->
+  <h2 id="b3-2"><span class="num">3.2</span>Does the point fall where it says? Coordinates against the country</h2>
+  <p>Each accession declares its country of origin in <code>ORIGCTY</code> and its site in <code>DECLATITUDE</code> and <code>DECLONGITUDE</code>. If the two do not agree, one of them is wrong, and almost always because of one of a few mechanical slips. The app compares each coordinate with a <b>bounding box</b> of the country: the rectangle, in degrees, running from its minimum to its maximum latitude and from its minimum to its maximum longitude. It bundles the boxes of <b>119 countries</b> —the whole of the Americas, Europe, a good part of Africa and Asia, Australia, New Zealand, Papua New Guinea and Fiji— and gives each one a margin of one degree per side, so as not to accuse sites on the coast or the border.</p>
+  <figure>
+    <div class="marco"><img src="../img/en/b3-geo.png" alt="Section 2 of Block 3: accession MEX-ZM-0039, Tuxpeño de la costa, with country MEX and coordinates 18.8100, 96.0600, the diagnosis Longitude sign, “The longitude lost its minus sign”, the Fix and Record buttons, and the note that in 1 accession the coordinate could not be checked because the boxes cover 119 countries"></div>
+    <figcaption><b>Figure 3.2.</b> Section 2 with the example collection: the maize <i>Tuxpeño de la costa</i> declares Mexico with a positive longitude, which would place it in Myanmar. Below, the note about the accession that could not be compared.</figcaption>
+  </figure>
+  <h3>The checks, in order</h3>
+  <p>The app does not check an accession that lacks the latitude or the longitude, or that has them written as something that is not a number: Block 2 takes care of that. With both coordinates present, it checks in this order:</p>
+  <table class="compacta">
+    <thead><tr><th style="width:1.35in">Tag</th><th style="width:0.6in">Level</th><th>What it detects and what the app says</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Point (0, 0)</span></td><td>error</td><td>The point (0, 0): <i>is in the Gulf of Guinea: it is an empty field written as zero.</i> No fix is possible; the coordinate has to be looked up in the notebook.</td></tr>
+      <tr><td><span class="ui">Latitude = longitude</span></td><td>warning</td><td>Identical latitude and longitude: one was probably copied over the other.</td></tr>
+      <tr><td><span class="ui">Whole degrees</span></td><td>warning</td><td>Both are whole numbers: the site was rounded to degrees and carries more than 50 km of uncertainty.</td></tr>
+      <tr><td><span class="ui">Country without outline</span></td><td>note</td><td>The country is not among the 119: the coordinate is not compared. It does not count as a problem; it is summarized in a note under the table.</td></tr>
+      <tr><td><span class="ui">Longitude sign</span>, <span class="ui">Latitude sign</span>, <span class="ui">Swapped coordinates</span>, <span class="ui">Swapped and sign-flipped</span></td><td>error</td><td>The point falls outside the box and one of the classic slips brings it back inside (below). The app proposes that fix.</td></tr>
+      <tr><td><span class="ui">Outside the country</span></td><td>warning</td><td>The point falls outside and no simple fix repairs it: the coordinate or the country must be checked.</td></tr>
+    </tbody>
+  </table>
+  <h3>The classic slips and their diagnosis</h3>
+  <p>When the point leaves the box, the app tries four repairs, one after another, and keeps the first one that brings it back into the country:</p>
+  <ol>
+    <li><b>The longitude lost its sign</b> (<span class="ui">Longitude sign</span>): the sign of the longitude is changed. It is the most common in the Americas, where all longitudes are negative and the sign gets lost when passing through a spreadsheet or when copying from a GPS that writes “W”.</li>
+    <li><b>The latitude has the wrong sign</b> (<span class="ui">Latitude sign</span>): the symmetric error, typical of countries in the southern hemisphere.</li>
+    <li><b>Latitude and longitude swapped</b> (<span class="ui">Swapped coordinates</span>): each one ended up in the other’s column.</li>
+    <li><b>Swapped and with the sign changed</b> (<span class="ui">Swapped and sign-flipped</span>): both things at once.</li>
+  </ol>
+  <p>The order only matters when two repairs would work, which is rare with small boxes. Each row of the table carries the number and name of the accession, the country, the coordinates as they stand and the diagnosis —a tag with the name of the problem and the explanation—, with two buttons: <span class="ui">Fix</span> applies the proposed fix on the spot (and the green tag says <i>Coordinate fixed.</i>), and <span class="ui">Record</span> opens the accession’s record in Block 2 so that you can review it or correct it by hand.</p>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Worked example · the maize that landed on the other side of the world</div>
+    <p>The box of Mexico runs from 14.3 to 32.8 in latitude and from −118.5 to −86.6 in longitude; with the one-degree margin, from 13.3 to 33.8 and from −119.5 to −85.6. <i>Tuxpeño de la costa</i> (MEX-ZM-0039) declares 18.8100, 96.0600: the latitude falls inside, but the longitude +96.06 is in the eastern hemisphere, in Myanmar. The first test, changing the sign of the longitude, gives −96.06, which does fall between −119.5 and −85.6: diagnosis <span class="ui">Longitude sign</span>, fix <b>96.0600 → −96.06</b>. The corrected point lies on the Gulf coastal plain, in Veracruz.</p>
+  </div>
+  <p>Below the table, the note <span class="ui">In 1 accession the coordinate could not be checked against the country because the app does not bundle that country's outline. The bundled boxes cover 119 countries.</span> refers to the tepary bean MEX-PH-0041, which declares its country as <i>MX</i>. It is not that Mexico is missing: <i>MX</i> is the two-letter code, and the boxes use the three-letter one. As soon as you apply the fix <i>MX → MEX</i> (Section 3.4), the coordinate is compared, falls inside and the note disappears.</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Rectangles, not borders</div>
+    <p>A bounding box is generous: Mexico’s includes part of Guatemala and of the Gulf, and Chile’s a good part of Argentina. It serves the purpose it is used for here —catching a lost sign or two swapped columns, errors of hundreds or thousands of kilometres—, but it does not confirm that a point is in the right municipality or state. That fine check is done on the map of Block 4 (Chapter 4), which draws the 32 states of Mexico. For the same reason, a point that passes this check is not guaranteed to be right.</p>
+  </div>
+
+  <!-- 3.3 -->
+  <h2 id="b3-3"><span class="num">3.3</span>Names and catalogues</h2>
+  <p>The section <span class="ui">3 · Names and catalogues</span> looks for what is not a format error but still makes the collection untidy: things Block 2 cannot see because each value, on its own, is well written. Before comparing, the app <b>normalizes</b> the texts: it removes accents and punctuation, turns everything into lower case and collapses spaces. That is why “Maiz” and “Maíz” count as the same crop name, and in the example collection no warning comes up even though the duplicated accession writes “Maiz” without the accent.</p>
+  <table class="compacta">
+    <caption><b>Table 3.2.</b> The checks on names and catalogues. All of them are warnings (ochre tag), except the site with several spellings, which is a note (blue tag).</caption>
+    <thead><tr><th style="width:1.45in">Tag</th><th>What it looks for</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Genus capitalization</span></td><td>A genus that is not written with an initial capital and the rest in lower case (<i>zea</i>, <i>ZEA</i>).</td></tr>
+      <tr><td><span class="ui">Epithet capitalization</span></td><td>An epithet with some capital letter (<i>Mays</i>).</td></tr>
+      <tr><td><span class="ui">Authority in the epithet</span></td><td>An epithet that carries something more: a space or an initial with a full stop, as in <i>mays L.</i> The authority belongs in <code>SPAUTHOR</code> and the infraspecific rank in <code>SUBTAXA</code>.</td></tr>
+      <tr><td><span class="ui">Misspelled genus</span></td><td>Two genera in the collection that are too similar to be different: at a <b>Levenshtein distance</b> of 1 or 2, with at least five letters in the longer one.</td></tr>
+      <tr><td><span class="ui">Crop names</span></td><td>The same taxon under several crop names. The taxon includes the subspecies or variety: teosinte (<i>Zea mays</i> subsp. <i>parviglumis</i>) does not count as another name for maize.</td></tr>
+      <tr><td><span class="ui">Site spelling</span></td><td>The same site written in several ways: identical after normalizing, different as they stand.</td></tr>
+      <tr><td><span class="ui">Repeated coordinates</span></td><td>Accessions with exactly the same coordinates (to four decimals) that declare different sites: almost always, a coordinate copied from the row above.</td></tr>
+    </tbody>
+  </table>
+  <p>The Levenshtein distance is the minimum number of letters that must be inserted, deleted or changed to go from one word to another. From <i>Phaseolus</i> to <i>Phaseolous</i> there is one (the second <i>o</i> is extra); from <i>Capsicum</i> to <i>Capcisum</i>, two (two letters swapped cost two changes). The five-letter minimum prevents two short, different genera, which may differ by one or two letters, from accusing each other.</p>
+  <p>The example collection comes out clean: the section says <span class="ui">Scientific names, crop names and sites are spelled consistently.</span> and the warnings tile shows 0. For Figure 3.3, six values were altered by hand, as you could do in the record of Block 2, so that every type of warning shows up.</p>
+  <figure style="width:80%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b3-nombres.png" alt="Section 3 with six warnings: Epithet capitalization in 2 accessions, Authority in the epithet in 1, Misspelled genus, “Phaseolus” and “Phaseolous”, in 4, Crop names of Zea mays, “Maíz” and “Elote”, in 15, Site spelling of Oaxaca, San Pablo Villa de Mitla in 4 and Repeated coordinates in 2; below, the detail of the first one with the buttons MEX-ZM-0003 and MEX-ZM-0006"></div>
+    <figcaption><b>Figure 3.3.</b> Section 3 with six values of the example collection altered for the figure: the genus of MEX-PH-0041 written <i>Phaseolous</i>; the epithet of MEX-ZM-0006 as <i>Mays</i> and that of MEX-ZM-0003 as <i>mays L.</i>; the crop of MEX-ZM-0004 as <i>Elote</i>; the site of MEX-ZM-0045 with <i>villa</i> in lower case, and the coordinate of MEX-SE-0019 copied into MEX-CH-0042. Below, the detail opened by <span class="ui">show</span>.</figcaption>
+  </figure>
+  <p>Each row gives the type, the finding and how many accessions it touches. The <span class="ui">show</span> button unfolds underneath the list of those accessions —up to 40— as buttons; each one opens its record in Block 2. Notice that <i>mays L.</i> comes up twice: as an epithet with a capital and as an epithet with an authority. In the crop warning, the taxon and the names appear as they are written in the passport, even though the app has already compared them in normalized form.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Warning is not fixing</div>
+    <p>Of all these warnings, only the capitalization of the genus and the epithet has an automatic fix (Section 3.4). The others call for judgement: which of the two genera is the right one, whether “Elote” is an error or the local name you want to keep, which of the two accessions with the same coordinate has it right. The app takes you to the record; the decision, and the correction, are made in Block 2.</p>
+  </div>
+
+  <!-- 3.4 -->
+  <h2 id="b3-4"><span class="num">3.4</span>Fixes, always with your approval</h2>
+  <p>The section <span class="ui">1 · Fixes the app can make for you</span> gathers the repairs that have a single reasonable answer. None is applied by itself: each one is shown with the original value struck through and the proposed one in green, and it is applied when you say so.</p>
+  <figure>
+    <div class="marco"><img src="../img/en/b3-correcciones.png" alt="Section 1 with four fixes: Longitude (decimal), Longitude sign, 96.0600 to -96.06; Country of origin, Two-letter country, MX to MEX; Accession name, All caps, BOLITA AMARILLO to Bolita amarillo; Accession name, Extra spaces, Chayote verde liso; each one with 1 case and its Apply button, and below the button Apply every fix (4)"></div>
+    <figcaption><b>Figure 3.4.</b> The four fixes the app proposes for the example collection, grouped by type and descriptor: on the left, the name of the descriptor; in the middle, the tag of the fix and its reason.</figcaption>
+  </figure>
+  <table class="compacta">
+    <caption><b>Table 3.3.</b> The fixes the app knows how to propose: the tag it shows in the <span class="ui">What is proposed</span> column and the descriptors it touches.</caption>
+    <thead><tr><th style="width:1.9in">Fix · descriptor</th><th>When it is proposed and what it does</th></tr></thead>
+    <tbody>
+      <tr><td>The four of Section 3.2 (<span class="ui">Longitude sign</span>…) · decimal latitude and longitude</td><td>When the check of Section 3.2 found one of the classic slips: the sign change or the swap that brings the point back into the country.</td></tr>
+      <tr><td><span class="ui">Two-letter country</span> · country of origin</td><td>When the country comes in two letters and the app knows it: it replaces it with the three-letter code the standard asks for. The app’s table has 56 codes in common use (<i>MX</i>, <i>GT</i>, <i>PE</i>, <i>US</i>, <i>ES</i>…, and also <i>UK</i> for the United Kingdom).</td></tr>
+      <tr><td><span class="ui">Extra spaces</span> · accession name, collecting site, common crop name</td><td>Extra spaces at the start, at the end or between words.</td></tr>
+      <tr><td><span class="ui">All caps</span> · the same three</td><td>Only a text written <b>entirely</b> in capitals (with some word of four letters or more). The accession name and the crop name are turned into sentence case: <i>BOLITA  AMARILLO</i> → <i>Bolita amarillo</i>. The site is turned into a place name, with a capital on every word except <i>de</i>, <i>la</i>, <i>del</i> and the other Spanish minor words: <i>SAN PABLO VILLA DE MITLA, OAXACA</i> → <i>San Pablo Villa de Mitla, Oaxaca</i>. It also removes the surplus spaces.</td></tr>
+      <tr><td><span class="ui">Genus capitalization</span>, <span class="ui">Epithet capitalization</span> · genus, species</td><td>The genus with an initial capital; the epithet in lower case (only if it carries no authority, which has to be moved by hand).</td></tr>
+      <tr><td><span class="ui">Inferred route</span> · active conservation route</td><td>The empty conservation route when it can be derived from the storage type (<code>STORAGE</code>).</td></tr>
+      <tr><td><span class="ui">Degrees, minutes, seconds</span> · decimal latitude and longitude</td><td>The empty decimal coordinate when there is one in degrees, minutes and seconds (<code>LATITUDE</code>, <code>LONGITUDE</code>): it computes it, with six decimals.</td></tr>
+    </tbody>
+  </table>
+  <p>Proposals are grouped by type and descriptor; each group shows its first case as an example and how many cases it has. The <span class="ui">Apply</span> button of a row applies that whole group (the green tag says, for example, <i>1 fix applied to Longitude (decimal).</i>); <span class="ui">Apply every fix (4)</span>, all of them at once. When fixes are applied, the passport is saved, the validation of Block 2 is redone and the check of Block 3 runs again. With the example collection, after applying the four, the tiles show 0 location problems and 0 fixes, and the note about the country without a box disappears; the two duplicate groups are still there, because correcting a name does not separate them.</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Before applying everything in one go</div>
+    <p>Sentence case leaves in lower case everything after the first word, proper names included: <i>TUXPEÑO DE VERACRUZ</i> would become <i>Tuxpeño de veracruz</i>. Whatever already mixes upper and lower case is left alone, so this only happens with names entered entirely in capitals. There is no undo button: the app itself reminds you, <span class="ui">You can undo them by editing the accession in Block 2.</span> With a large collection, apply by groups, check the examples and, if in doubt, export the passport first (Chapter 2).</p>
+  </div>
+
+  <!-- 3.5 -->
+  <h2 id="b3-5"><span class="num">3.5</span>How duplicates are searched for</h2>
+  <p>An <b>accidental duplicate</b> is the same collection recorded twice in the catalogue —when digitizing an old notebook, when receiving a safety duplicate back, when merging two inventories— or the same accession kept in two genebanks without anyone knowing (Section I.3). It is almost never written identically: a capital letter, a space, the coordinate or the accession number changes. That is why the app does not look for identical rows, but for pairs that resemble each other in several things at once, and each resemblance adds points.</p>
+  <p>Before anything else, the app looks for <b>repeated accession numbers</b>. That is not a duplicate candidate, it is an error: if there is one, a box at the start of section 4 (<span class="ui">Repeated accession numbers</span>) gives the number and the two rows, and recalls that an accession number is never repeated, not even when the material really is the same.</p>
+  <h3>First, blocking</h3>
+  <p>Comparing every pair grows very fast: 46 accessions give 1,035 pairs, and 5,000 would give more than twelve million. The app only compares the pairs that share at least one <b>blocking key</b>:</p>
+  <ul>
+    <li>the <b>collecting number</b> (<code>COLLNUMB</code>), normalized and without spaces;</li>
+    <li>each of the <b>donor and other-collection numbers</b> (<code>DONORNUMB</code>, <code>OTHERNUMB</code>, separated by semicolons);</li>
+    <li>the first five letters of the <b>accession name</b>, without spaces;</li>
+    <li>the first four letters of the genus and the <b>half-degree cell</b> in which the coordinate falls;</li>
+    <li>the <b>taxon and the year and month of collection</b>.</li>
+  </ul>
+  <p>Keys shorter than three letters do not count, and a key shared by more than 400 accessions is ignored, because it distinguishes nothing. For example, <i>Bolita amarillo</i> (MEX-ZM-0002) has the keys <code>lab2019101</code> (as collecting number and as number), <code>bolit</code>, <code>zea</code> with the cell 17, −96.5 and <code>zea mays</code> with 2019-08. In the example collection, blocking leaves <b>33 pairs</b> out of the 1,035: that is the figure shown in the first tile.</p>
+  <h3>Then, the score</h3>
+  <table class="compacta">
+    <caption><b>Table 3.4.</b> What adds and what subtracts in each pair. The total is clipped between 0 and 100.</caption>
+    <thead><tr><th>Match</th><th class="c" style="width:0.7in">Points</th><th style="width:2.5in">Detail</th></tr></thead>
+    <tbody>
+      <tr><td>The same collecting number</td><td class="c">+40</td><td>Normalized: “LAB-2019-101” and “lab 2019 101” match.</td></tr>
+      <tr><td>They share a donor or other-collection number</td><td class="c">+35</td><td>Not counting the collecting number, which already added.</td></tr>
+      <tr><td>Nearly identical names</td><td class="c">+25</td><td>Similarity of 0.92 or more (below).</td></tr>
+      <tr><td>Similar names</td><td class="c">+12</td><td>Similarity from 0.82 to 0.92.</td></tr>
+      <tr><td>Less than 1 km / 5 km / 25 km apart</td><td class="c">+20 / +12 / +5</td><td>Haversine distance between the two points.</td></tr>
+      <tr><td>The same collecting date</td><td class="c">+15</td><td>Full eight-digit date; if only the year matches, +5.</td></tr>
+      <tr><td>The same taxon</td><td class="c">+10</td><td>Same genus and epithet.</td></tr>
+      <tr><td>The same collecting mission</td><td class="c">+5</td><td><code>COLLMISSID</code>.</td></tr>
+      <tr><td>Different genera</td><td class="c">−35</td><td>Almost certainly not the same thing; it replaces the taxon bonus.</td></tr>
+      <tr><td>Different subtaxa</td><td class="c">−15</td><td>Same genus, but both declare <code>SUBTAXA</code> and it does not match (subsp. <i>mexicana</i> versus subsp. <i>parviglumis</i>).</td></tr>
+    </tbody>
+  </table>
+  <p>The weights say how strong each clue is. A collecting number is assigned by the collector, one per sample: a match is almost a signature. Being close, on the other hand, is weak: many different samples are collected in the same community. No clue on its own is enough to pass the threshold of 50 points; two or three together are needed.</p>
+  <h3>Similarity between names</h3>
+  <p>To compare names, the app normalizes them (without accents, case or punctuation: <i>Tuxpeño</i> and <i>TUXPENO</i> become equal) and computes two measures, keeping the larger one: the <b>Jaro-Winkler similarity</b> between the two strings, and a word-based measure, 0.55 + 0.45 × the proportion of shared words (Jaccard index), which only counts if they share at least one word. The second rescues names with extra or missing words: <i>Chayote verde liso</i> and <i>Chayote verde</i>.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · the Jaro-Winkler similarity</div>
+    <p>The Jaro similarity counts the letters that match between two strings <b>a</b> and <b>b</b> within a window —a letter of <b>a</b> is only paired with the same letter of <b>b</b> if it is at most ⌊max(|a|, |b|)/2⌋ − 1 positions away—, and the transpositions <b>t</b>: half the paired letters that end up in a different order. With <b>m</b> paired letters:</p>
+    <div class="formula">J = ( m/|a| + m/|b| + (m − t)/m ) / 3  ·  JW = J + ℓ · p · (1 − J)</div>
+    <p>Winkler added a bonus for a <b>common prefix</b>, because in names errors are seldom at the start: ℓ is the number of equal initial letters (up to 4) and p = 0.1. The app only applies the bonus if J is already 0.7 or more, so as not to bring together strings that do not resemble each other.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Worked example · MARTHA and MARHTA</div>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">window = ⌊6/2⌋ − 1 = 2 · all six letters are paired (T and H, one position apart)  →  m = 6</td></tr>
+      <tr><td colspan="2">M A R T H A versus M A R H T A: two letters out of order  →  t = 2/2 = 1</td></tr>
+      <tr><td style="width:50%">J = (6/6 + 6/6 + 5/6) / 3 = 0.9444</td><td>common prefix M-A-R  →  ℓ = 3</td></tr>
+      <tr><td colspan="2">JW = 0.9444 + 3 × 0.1 × (1 − 0.9444) = 0.9611, as in the app</td></tr>
+    </tbody></table>
+  </div>
+  <h3>The distance between the two sites</h3>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · the haversine distance</div>
+    <p>Between two points on the Earth, with latitudes φ<sub>1</sub>, φ<sub>2</sub> and longitudes λ<sub>1</sub>, λ<sub>2</sub> in radians, the distance over the surface of a sphere of radius R is:</p>
+    <div class="formula">a = sin²(Δφ/2) + cos φ<sub>1</sub> cos φ<sub>2</sub> sin²(Δλ/2)  ·  d = 2R arcsin √a</div>
+    <p>The app uses R = 6,371.0088 km, the mean radius of the Earth. Treating the Earth as a sphere produces errors of around 0.5 %, irrelevant for deciding whether two collections are 1, 5 or 25 km apart. Unlike subtracting degrees, the formula takes into account that a degree of longitude is shorter away from the equator.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Worked example · the two Bolita amarillo</div>
+    <p>MEX-ZM-0002 is at 16.9771, −96.4008 and MEX-ZM-0045 at 16.932, −96.3665.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td style="width:50%">Δφ = −0.0451° = −0.00078714 rad</td><td>Δλ = 0.0343° = 0.00059865 rad</td></tr>
+      <tr><td>sin²(Δφ/2) = 1.5490 × 10<sup>−7</sup></td><td>cos φ<sub>1</sub> cos φ<sub>2</sub> = 0.95642 × 0.95665 = 0.91497</td></tr>
+      <tr><td>sin²(Δλ/2) = 8.9595 × 10<sup>−8</sup></td><td>a = 1.5490 × 10<sup>−7</sup> + 0.91497 × 8.9595 × 10<sup>−8</sup> = 2.3687 × 10<sup>−7</sup></td></tr>
+      <tr><td colspan="2">d = 2 × 6,371.0088 × arcsin(4.8670 × 10<sup>−4</sup>) = 2 × 6,371.0088 × 4.8670 × 10<sup>−4</sup> = 6.2015 km</td></tr>
+    </tbody></table>
+    <p>The app writes <i>6.2 km</i>, both in the header of the pair and in the reason, and adds 5 points, because the distance lies between 5 and 25 km.</p>
+  </div>
+
+  <!-- 3.6 -->
+  <h2 id="b3-6"><span class="num">3.6</span>Groups, side-by-side comparison and the threshold</h2>
+  <p>The pairs that reach the threshold are gathered into <b>groups by transitivity</b>: if A resembles B and B resembles C, the three form a group even if A and C do not reach the threshold between them.</p>
+  <figure>
+    <div class="marco"><img src="../img/en/b3-duplicados.png" alt="Section 4: the threshold to propose a duplicate at 50 points, the button Bring dismissed pairs back (0) and two cards of 100 points: MEX-ZM-0002 and MEX-ZM-0045, Bolita amarillo; MEX-SE-0029 and MEX-SE-0046, Chayote verde liso"></div>
+    <figcaption><b>Figure 3.5.</b> Section 4 with the example collection: the two seeded duplicates, each in its own group, with 100 points.</figcaption>
+  </figure>
+  <p>Each group is a card with the highest score of its pairs, the numbers of its accessions in passport order, the name of the first one and the button <span class="ui">compare</span>. With the example collection and the default threshold there are <b>2 groups and 2 pairs</b>, the two seeded duplicates, both with 100 points. The maize one adds up to exactly 100: the same taxon (+10), the same collecting number LAB-2019-101 (+40), nearly identical names (+25: after normalizing, <i>BOLITA  AMARILLO</i> and <i>Bolita amarillo</i> are equal), 6.2 km (+5), the same date (+15) and the same mission (+5). The chayote one adds up to 102 —the same taxon, collecting number LAB-2018-102, name, 1.97 km (+12) and date— and is clipped to 100.</p>
+  <h3>The side-by-side comparison</h3>
+  <p><span class="ui">compare</span> opens the card (and <span class="ui">hide</span> closes it). At the top, a table puts the accessions in columns, with the first one tagged as <span class="ui">master</span>, and up to fifteen descriptors in rows: accession number and name, genus, species, collecting number, date and site, latitude, longitude, elevation, holding institute, conservation route (with its name: <i>Seed bank</i>, <i>Field genebank or living collection</i>…), stock, other numbers and donor accession number. Rows that are empty in every accession are omitted; those that <b>differ</b> are highlighted in pink with the name in bold, so that you can see at a glance where they do not match.</p>
+  <figure style="width:76%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b3-comparar.png" alt="The group of MEX-ZM-0002 and MEX-ZM-0045 open: the table with the master MEX-ZM-0002, the highlighted rows of accession number, name, latitude, longitude, elevation and stock, 1930 versus 1400; below, the pair with 100 points and 6.2 km, its six reasons with the points of each one and the buttons Merge into the first, Note as duplicate without merging and Not duplicates"></div>
+    <figcaption><b>Figure 3.6.</b> The comparison of the first group. The number, the form of the name, the coordinate, the elevation (1,696 and 1,691 m) and the stock differ; the collecting number and date, the site and the institute match.</figcaption>
+  </figure>
+  <p>Below come the <b>pairs</b> of the group, one per box: the two numbers, the score, the distance and the list of reasons, each with its points in brackets. Each pair carries its three decision buttons (Section 3.7). The distance is written the same way in the header and in the reason: in metres below 1 km, with one decimal up to 10 km (<i>6.2 km apart</i>) and in whole kilometres from there on.</p>
+  <h3>The threshold</h3>
+  <p>The slider <span class="ui">Threshold to propose a duplicate</span> runs from 25 to 95 points, in steps of 5, and starts at 50. When you release it, the check runs again; the value is saved in the browser for next time. The app itself sums up the trade-off: <span class="ui">Lowering the threshold proposes more pairs and gets more of them wrong; raising it does the opposite.</span></p>
+  <table class="compacta">
+    <caption><b>Table 3.5.</b> What the example collection proposes with different thresholds.</caption>
+    <thead><tr><th style="width:0.9in" class="c">Threshold</th><th class="c" style="width:0.6in">Pairs</th><th class="c" style="width:0.65in">Groups</th><th>What comes in</th></tr></thead>
+    <tbody>
+      <tr><td class="c">40 to 95</td><td class="c">2</td><td class="c">2</td><td>Only the two seeded duplicates (100 points).</td></tr>
+      <tr><td class="c">35</td><td class="c">4</td><td class="c">2</td><td>The spiny chayote MEX-SE-0030 (39 points with each one) joins the chayote group.</td></tr>
+      <tr><td class="c">30</td><td class="c">5</td><td class="c">3</td><td>In addition, two maizes from the same mission with similar names (32).</td></tr>
+      <tr><td class="c">25</td><td class="c">8</td><td class="c">5</td><td>Three more pairs, of 25 to 27 points (taxon, similar name, proximity).</td></tr>
+    </tbody>
+  </table>
+  <figure style="width:76%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b3-umbral.png" alt="With the threshold at 35 points, the chayote group open with three accessions, MEX-SE-0029, MEX-SE-0030 and MEX-SE-0046; the first rows of the comparison show that MEX-SE-0030, Chayote erizo (cuspidatum), has another collecting number, LAB-2018-103, and another date, 20180616"></div>
+    <figcaption><b>Figure 3.7.</b> With the threshold at 35, the spiny chayote MEX-SE-0030 enters the group of the smooth green chayote by transitivity. The first rows of the comparison give away that it is another collection: another name, another number and another day.</figcaption>
+  </figure>
+  <p>Figure 3.7 shows the risk of transitivity with a low threshold. The spiny chayote adds up to 39 points with each smooth green chayote —the same taxon (+10), names 87 % similar (+12), 3.4 and 2.3 km apart (+12) and the same year (+5)— and stays in the group, although it is another collection, from another day, and in its passport it is another variety (<code>SUBTAXA</code> <i>var. nigrum spinosum</i>).</p>
+  <p>The subtraction for different subtaxa does not stop it, because the smooth green chayotes declare no variety: the app only subtracts the 15 points when both sides declare a subtaxon and it does not match. That is why the decision is taken <b>pair by pair</b>: here the two 39-point pairs would be dismissed with <span class="ui">Not duplicates</span> and only the 100-point one would be resolved.</p>
+
+  <!-- 3.7 -->
+  <h2 id="b3-7"><span class="num">3.7</span>Merge, note or dismiss</h2>
+  <p>Each pair has three ways out. None is automatic, and all three change what the app proposes afterwards.</p>
+  <h3>Merge into the first</h3>
+  <p><span class="ui">Merge into the first</span> turns the two accessions into one. Beforehand, the app asks for confirmation: <i>MEX-ZM-0045 will be merged into MEX-ZM-0002 and the second will disappear from the catalogue. Continue?</i> The “first” is the one that comes earlier in the passport —usually the one that entered the catalogue first— and it is the <b>master</b>. The merge follows three rules:</p>
+  <ul>
+    <li><b>The master rules.</b> Every descriptor the master has filled in stays as it is; from the other one, only those that are empty in the master are taken. If the master has no donor accession number and the other does, it inherits it.</li>
+    <li><b>Stocks are added</b>, because they are two packets —or two groups of plants— of the same material.</li>
+    <li><b>The absorbed number is not lost</b>: it is added to the master’s <code>OTHERNUMB</code>, so that any label, publication or distribution note that cites it can be traced.</li>
+  </ul>
+  <figure>
+    <div class="marco"><img src="../img/en/b3-fusion.png" alt="The header of Block 3 after merging: the green tag Accessions merged. and the tiles with 45 accessions checked and 30 pairs compared, 1 location problem, 3 proposed fixes, 1 duplicate group and 0 consistency warnings"></div>
+    <figcaption><b>Figure 3.8.</b> After merging MEX-ZM-0045 into MEX-ZM-0002: the catalogue drops to 45 accessions and a single group remains. The fixes drop from 4 to 3 because the all-caps name belonged to the absorbed accession.</figcaption>
+  </figure>
+  <p>With the example collection, MEX-ZM-0002 ends up with 1,930 + 1,400 = <b>3,330</b> seeds, with <i>MEX-ZM-0045</i> among its other numbers, and keeps its name, its coordinate, its crop “Maíz” and its remark <i>Raza Bolita.</i>; the remark of the absorbed one, which explained how it had entered the catalogue again, does not carry over, because the master already had its own. The merge has no undo button: if in doubt, export the passport first (Chapter 2).</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>What the merge does not do for you</div>
+    <p>Adding stocks assumes the two lots are in the same condition. If one was tested a year ago with 89 % germination and the other has another date, the master keeps only its own test: check in Block 8 (Chapter 8) whether the merged lot should be tested again. And if the two records are really the same material in two different genebanks, do not merge: note it.</p>
+  </div>
+  <h3>Note as duplicate without merging</h3>
+  <p><span class="ui">Note as duplicate without merging</span> leaves both accessions in the catalogue, but records the link in both: each one receives the other’s number in <code>OTHERNUMB</code> and a sentence in <code>REMARKS</code> —in the example, <i>Declared duplicate of MEX-SE-0046.</i> and <i>Declared duplicate of MEX-SE-0029.</i>— (the sentence is written in the interface language). It is the way out for the same collection kept at two institutions, or for two lots you decide to keep apart. The pair is no longer proposed.</p>
+  <h3>Not duplicates</h3>
+  <p><span class="ui">Not duplicates</span> dismisses the pair without touching the passport. The dismissal —like that of a noted pair— is saved in the browser and survives closing the app, so the pair does not come back to bother you. Each dismissal is remembered by the <b>identity</b> of the two accessions —the institute code and the accession number of each one—, not by their place in the table, so it remains valid even if you merge, re-sort or import more accessions. The button <span class="ui">Bring dismissed pairs back</span> shows in brackets how many dismissals correspond to a pair of the current collection and brings them all back at once. With the example collection, after merging the maize and noting the chayote, the groups tile shows 0 and the button says <i>(1)</i>.</p>
+  <!-- 3.8 -->
+  <h2 id="b3-8"><span class="num">3.8</span>The quality report</h2>
+  <p><span class="ui">Download the quality report</span> saves <span class="ruta">informe-calidad.csv</span>, in UTF-8, with one row per finding and five columns: <code>tipo</code> (type), <code>nivel</code> (level), <code>accesion</code> (accession), <code>campo</code> (field) and <code>detalle</code> (detail). It gathers what Block 3 found and, at the end, what the validation of Block 2 found, so it is the complete list of pending work on the collection in a single file, to work on in a spreadsheet or to attach to a report. The file is the same whatever the interface language: its name, its column names, the row types and the detail texts are always in Spanish, and so are the field names of the consistency rows.</p>
+  <table class="compacta">
+    <caption><b>Table 3.6.</b> The five row types of the report and how many it carries with the example collection just loaded (37 in all).</caption>
+    <thead><tr><th style="width:1in">tipo</th><th class="c" style="width:0.55in">Rows</th><th>nivel · accesion · campo</th></tr></thead>
+    <tbody>
+      <tr><td><code>geografia</code></td><td class="c">2</td><td><code>error</code>, <code>warn</code> or <code>info</code> · the accession · the descriptor checked (Section 3.2).</td></tr>
+      <tr><td><code>consistencia</code></td><td class="c">0</td><td><code>warn</code> or <code>info</code> · all the accessions of the finding, separated by spaces · the name of the warning (Section 3.3).</td></tr>
+      <tr><td><code>correccion</code></td><td class="c">4</td><td><code>fix</code> · the accession · the descriptor; the detail carries “before → after” and the reason (Section 3.4).</td></tr>
+      <tr><td><code>duplicado</code></td><td class="c">2</td><td>the score · the two accessions joined with “+” · the distance in km, with one decimal; the detail, the reasons (Section 3.5).</td></tr>
+      <tr><td><code>pasaporte</code></td><td class="c">29</td><td><code>error</code> or <code>warn</code> · the accession · the descriptor: the 3 errors and 26 warnings of the Block 2 validation (Chapter 2).</td></tr>
+    </tbody>
+  </table>
+  <table class="compacta csv">
+    <caption><b>Table 3.7.</b> Some rows of the report for the example collection, exactly as they come out (the detail, abbreviated).</caption>
+    <thead><tr><th>tipo</th><th>nivel</th><th>accesion</th><th>campo</th><th>detalle</th></tr></thead>
+    <tbody>
+      <tr><td>geografia</td><td>error</td><td>MEX-ZM-0039</td><td>DECLONGITUDE</td><td>La longitud perdió el signo negativo…</td></tr>
+      <tr><td>geografia</td><td>info</td><td>MEX-PH-0041</td><td>ORIGCTY</td><td>La app no trae el contorno de MX…</td></tr>
+      <tr><td>correccion</td><td>fix</td><td>MEX-PH-0041</td><td>ORIGCTY</td><td>MX → MEX · «MX» es el código de dos letras…</td></tr>
+      <tr><td>duplicado</td><td>100</td><td>MEX-ZM-0002 + MEX-ZM-0045</td><td>6.2 km</td><td>el mismo taxón; el mismo número de colecta (LAB-2019-101); …</td></tr>
+      <tr><td>duplicado</td><td>100</td><td>MEX-SE-0029 + MEX-SE-0046</td><td>2.0 km</td><td>el mismo taxón; el mismo número de colecta (LAB-2018-102); …</td></tr>
+      <tr><td>pasaporte</td><td>warn</td><td>MEX-ZM-0001</td><td>DUPLSITE</td><td>Sin duplicado de seguridad: la accesión depende de una sola instalación.</td></tr>
+    </tbody>
+  </table>
+  <p>The report portrays the collection at the moment it is downloaded: dismissed or noted pairs do not appear, and neither does anything you have already corrected. If you are going to hand it in, download it at the end, after applying fixes and resolving duplicates, or download one before and another after to document the clean-up.</p>
+
+  <h3>When something goes wrong</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:40%">What you see</th><th>Why it happens and what to do</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Load your accessions in Block 2 first.</span></td><td>There is no passport. Press <span class="ui">Go to the passport</span> and load your collection or the example one (Chapter 2).</td></tr>
+      <tr><td>An accession without coordinates does not appear in section 2</td><td>Without latitude or longitude there is nothing to compare with the country. Block 2 flags it.</td></tr>
+      <tr><td>The note says an accession could not be compared</td><td>Its country is not among the 119, or it is written in two letters. Apply the <code>ORIGCTY</code> fix if there is one; if the country is not included, check the point on the map of Block 4.</td></tr>
+      <tr><td>An obviously misplaced point does not show up as a problem</td><td>It falls inside the country’s box, even if in the wrong state: the boxes are rectangles with a one-degree margin. Check it in Block 4.</td></tr>
+      <tr><td>A duplicate you know of does not appear</td><td>It shares no blocking key, does not reach the threshold or you dismissed it earlier. Lower the threshold or press <span class="ui">Bring dismissed pairs back</span>.</td></tr>
+      <tr><td>A group gathers accessions that are not the same</td><td>They came in by transitivity. Open the group and dismiss, pair by pair, those that are not.</td></tr>
+      <tr><td>A pair you had not resolved disappeared</td><td>You dismissed it or noted it earlier, perhaps in another session: the dismissal is saved with the numbers of the two accessions (Section 3.7). Press <span class="ui">Bring dismissed pairs back</span>.</td></tr>
+      <tr><td>You merged the wrong pair</td><td>There is no undo. Recover the accession from the passport you exported earlier, or enter it again in Block 2 with the number left in the master’s <code>OTHERNUMB</code>.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja regla">
+    <div class="caja-t"><span class="ico">✓</span>Decision rule · what to do in Block 3</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:44%"><b>If</b> a point has a sign or swap diagnosis</td><td><b>then</b> accept the fix if the corrected site agrees with <code>COLLSITE</code>; if not, open the record and look up the coordinate in the notebook.</td></tr>
+      <tr><td><b>If</b> a fix is about form (two-letter country, spaces, capitals)</td><td><b>then</b> apply it by group after looking at the example; watch out for proper names inside a name written entirely in capitals.</td></tr>
+      <tr><td><b>If</b> a names or site warning appears</td><td><b>then</b> decide which form is the right one and correct it in the record of Block 2.</td></tr>
+      <tr><td><b>If</b> a pair matches in collecting number, date and taxon</td><td><b>then</b> it is the same collection: merge it if it is in your genebank twice; note it if it is in two genebanks.</td></tr>
+      <tr><td><b>If</b> a pair only resembles each other in name, proximity or year</td><td><b>then</b> compare it calmly and, if the collecting number or date differ, mark it as <span class="ui">Not duplicates</span>.</td></tr>
+      <tr><td><b>If</b> you are going to analyse or hand in the collection</td><td><b>then</b> resolve all the groups first and download the quality report at the end.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">Whatever is corrected, merged or noted in Block 3 stays in the passport: Block 2 shows it and Blocks 4 to 10 take it when they open.</p>
+  </div>
+
+</section>
+
+</body>
+</html>

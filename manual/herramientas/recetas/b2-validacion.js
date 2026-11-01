@@ -13,7 +13,7 @@
   const PRUEBA = "No. accesión\tGénero\tEspecie\tCultivo\tPaís\tLocalidad\tLatitud\tLongitud\tAltitud (msnm)\tFecha de colecta\tPESO_FRUTO\nCH-001\tSechium\tedule\tChayote\tMEX\tVeracruz, Huatusco\t19,149\t-96,966\t1340\t20230915\t318.5\nCH-002\tSechium\tedule\tChayote\tMX\tVeracruz, Coatepec\t19,453\t-96,961\t1200\t20230916\t290\nCH-003\tSechium\tedule\tChayote\tMEX\tPuebla, Cuetzalan\t20,019\t-97,519\t980\t20230231\t402.7";
   const pega = async () => { document.getElementById("b2Paste").click(); await W(500); const a = document.getElementById("pasteArea"); a.value = PRUEBA; a.dispatchEvent(new Event("input")); await W(500); };
   await W(1000); await carga();
-  const h = [...document.querySelectorAll("#panel-2 .section-title")].find(x => /revisar/.test(x.textContent));
+  const h = [...document.querySelectorAll("#panel-2 .section-title")].find(x => /revisar|needs checking/.test(x.textContent));
   const c = document.getElementById("b2Issues").closest(".card"); await irA(h);
   return caja([h, h.nextElementSibling, c], 8);
 })()

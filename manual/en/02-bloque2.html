@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · User’s Manual · Chapter 2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- splits the content into letter-size pages, with running heads, page numbers and table of contents -->
+<script src="../paginar.js"></script>
+<style>
+  figure.reducida { width: 74%; margin-left: auto; margin-right: auto; }
+  figure.mediana { width: 86%; margin-left: auto; margin-right: auto; }
+  table.descr td:first-child { white-space: nowrap; }
+  table.descr td.g { background: var(--marino-suave); font-weight: 600; }
+  .muestra { font-family: var(--mono); font-size: 8.4pt; background: var(--marino-suave); border-radius: 5px; padding: 0.07in 0.12in; margin: 0.08in 0; white-space: pre; line-height: 1.45; }
+</style>
+</head>
+<body>
+
+<section class="capitulo" id="cap-b2" data-pestana="2" data-orden="2" style="--acento: var(--b2)">
+  <div class="cap-apertura">
+    <div class="cap-num">2</div>
+    <div class="cap-etiqueta">Chapter two · Block 2 · Passport</div>
+    <h1 data-corto="Passport">The passport of the accessions</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">Block 2 is the gateway to the collection. Your list of accessions arrives here —from a file, from a spreadsheet paste or typed into a template—; the app recognizes which descriptor of the MCPD v2.1 standard each column is, checks every value on its own and against the others, and lets you correct it in a table or in the record of each accession. It ends with the portrait of the collection, the completeness of each descriptor and the files for taking the passport with you. Everything the following blocks do comes from here.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>2.1</b>The MCPD v2.1 passport and the GP_ extension</li>
+      <li><b>2.2</b>Ways to bring in the data</li>
+      <li><b>2.3</b>Pasting from a spreadsheet</li>
+      <li><b>2.4</b>The guided template</li>
+      <li><b>2.5</b>What is each column?</li>
+      <li><b>2.6</b>Validation: errors and warnings</li>
+      <li><b>2.7</b>The table and the record of each accession</li>
+      <li><b>2.8</b>The portrait of the collection and completeness</li>
+      <li><b>2.9</b>Taking your data with you and automatic saving</li>
+    </ul>
+  </div>
+
+  <!-- 2.1 -->
+  <h2 id="b2-1"><span class="num">2.1</span>The MCPD v2.1 passport and the GP_ extension</h2>
+  <p class="lead">The first idea of the introduction (I.3) sums it up: the accession is the unit and its passport is its identity. GermplasmPro writes that passport with the <b>FAO/Bioversity Multi-Crop Passport Descriptors, version 2.1</b> (MCPD; Alercia, Diulgheroff and Mackay, 2015), the form that genebanks and information systems around the world understand. Each descriptor has a fixed upper-case key —<code>ACCENUMB</code>, <code>DECLATITUDE</code>, <code>SAMPSTAT</code>— and the app always shows it next to its full name, so that nobody has to memorize abbreviations.</p>
+  <p>The app recognizes the <b>42 descriptors</b> of the standard and sorts them into seven groups, the same ones that organize the record of each accession, the selector of the column mapping and the catalogue of the template. Three are <b>mandatory</b> —the holding institute code, the accession number and the genus— and twelve more are <b>strongly recommended</b>: without them the accession exists, but it is worth less. To those 42 it adds seven fields of its own, the <b>GermplasmPro extension</b>, whose keys start with <code>GP_</code>.</p>
+  <table class="compacta">
+    <caption><b>Table 2.1.</b> The groups of passport descriptors. Mandatory: <code>INSTCODE</code>, <code>ACCENUMB</code> and <code>GENUS</code>. Strongly recommended: the twelve in the last column.</caption>
+    <thead><tr><th style="width:1.9in">Group</th><th class="c" style="width:0.7in">Descriptors</th><th>The strongly recommended ones in the group</th></tr></thead>
+    <tbody>
+      <tr><td>Identification</td><td class="c">6</td><td>— (two of the mandatory ones are here)</td></tr>
+      <tr><td>Taxonomy</td><td class="c">6</td><td><code>SPECIES</code>, <code>CROPNAME</code> (and the mandatory <code>GENUS</code>)</td></tr>
+      <tr><td>Collecting</td><td class="c">7</td><td><code>COLLDATE</code>, <code>COLLSRC</code></td></tr>
+      <tr><td>Site and coordinates</td><td class="c">10</td><td><code>ORIGCTY</code>, <code>COLLSITE</code>, <code>DECLATITUDE</code>, <code>DECLONGITUDE</code>, <code>ELEVATION</code></td></tr>
+      <tr><td>Origin and status</td><td class="c">5</td><td><code>SAMPSTAT</code>, <code>ACQDATE</code></td></tr>
+      <tr><td>Donor and safety duplicates</td><td class="c">5</td><td>—</td></tr>
+      <tr><td>Conservation and availability</td><td class="c">3</td><td><code>STORAGE</code></td></tr>
+      <tr><td>GermplasmPro extension</td><td class="c">7</td><td>— (outside the standard)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>The 42 descriptors of the standard</h3>
+  <p>Table 2.2 is a reference for deciding which descriptor each column of your sheet corresponds to. The name is the one shown in the app; the example is the one the app proposes in the record and in the template. The full descriptions are in the app itself: in the record, next to each box, and in the catalogue of the template (Section 2.4). That is why this reference is here and not in an appendix: it is what you need at hand while you confirm the mapping.</p>
+  <table class="compacta descr">
+    <caption><b>Table 2.2.</b> The MCPD v2.1 descriptors, by group. * mandatory · ° strongly recommended.</caption>
+    <thead><tr><th style="width:1.35in">Key</th><th style="width:2.3in">Name in the app</th><th>What it holds · example</th></tr></thead>
+    <tbody>
+      <tr><td class="g" colspan="3">Identification</td></tr>
+      <tr><td><code>PUID</code></td><td>Persistent unique identifier</td><td>An identifier that never changes and works outside your genebank · <code>doi:10.18730/ABC12</code></td></tr>
+      <tr><td><code>INSTCODE</code> *</td><td>Holding institute code</td><td>WIEWS code: three country letters and three digits · <code>MEX006</code></td></tr>
+      <tr><td><code>ACCENUMB</code> *</td><td>Accession number</td><td>Unique in your genebank; never repeated or reused · <code>MEX-CR-0417</code></td></tr>
+      <tr><td><code>ACCENAME</code></td><td>Accession name</td><td>Local or cultivar name; several, separated by semicolons · <code>Cónico norteño; Maíz azul</code></td></tr>
+      <tr><td><code>ACCEURL</code></td><td>Accession URL</td><td>Its page in your institution’s public catalogue</td></tr>
+      <tr><td><code>OTHERNUMB</code></td><td>Other identification numbers</td><td>The numbers it has in other genebanks, separated by semicolons · <code>CIMMYTMA 2317; PI 484512</code></td></tr>
+      <tr><td class="g" colspan="3">Taxonomy</td></tr>
+      <tr><td><code>GENUS</code> *</td><td>Genus</td><td>Capitalized, not abbreviated · <code>Zea</code></td></tr>
+      <tr><td><code>SPECIES</code> °</td><td>Species</td><td>The epithet only, in lower case, or “sp.” · <code>mays</code></td></tr>
+      <tr><td><code>SPAUTHOR</code></td><td>Species authority</td><td><code>L.</code></td></tr>
+      <tr><td><code>SUBTAXA</code></td><td>Subtaxa</td><td>With its rank abbreviation · <code>subsp. mexicana</code></td></tr>
+      <tr><td><code>SUBTAUTHOR</code></td><td>Subtaxa authority</td><td><code>(Schrad.) H.H.Iltis</code></td></tr>
+      <tr><td><code>CROPNAME</code> °</td><td>Common crop name</td><td><code>Maíz</code></td></tr>
+      <tr><td class="g" colspan="3">Collecting</td></tr>
+      <tr><td><code>COLLNUMB</code></td><td>Collecting number</td><td>The number in the field notebook · <code>LAB-2019-033</code></td></tr>
+      <tr><td><code>COLLCODE</code></td><td>Collecting institute code</td><td>WIEWS code · <code>MEX006</code></td></tr>
+      <tr><td><code>COLLNAME</code></td><td>Collecting institute name</td><td>Its name, when there is no code</td></tr>
+      <tr><td><code>COLLINSTADDRESS</code></td><td>Collecting institute address</td><td>Postal address</td></tr>
+      <tr><td><code>COLLMISSID</code></td><td>Collecting mission identifier</td><td>Groups the accessions of the same trip · <code>SIERRA-2019</code></td></tr>
+      <tr><td><code>COLLDATE</code> °</td><td>Collecting date</td><td>YYYYMMDD, with hyphens where unknown · <code>20190812</code>, <code>2019----</code></td></tr>
+      <tr><td><code>COLLSRC</code> °</td><td>Collecting source</td><td>Code from the list: wild habitat, field, farm store, market… · <code>26</code></td></tr>
+      <tr><td class="g" colspan="3">Site and coordinates</td></tr>
+      <tr><td><code>ORIGCTY</code> °</td><td>Country of origin</td><td>ISO 3166-1 alpha-3 · <code>MEX</code></td></tr>
+      <tr><td><code>COLLSITE</code> °</td><td>Collecting site</td><td>From general to particular · <code>Oaxaca, Santiago Apoala, 3 km al norte</code></td></tr>
+      <tr><td><code>DECLATITUDE</code> °</td><td>Latitude (decimal)</td><td>Signed, negative to the south · <code>17.6423</code></td></tr>
+      <tr><td><code>DECLONGITUDE</code> °</td><td>Longitude (decimal)</td><td>Signed, negative to the west · <code>-97.3311</code></td></tr>
+      <tr><td><code>LATITUDE</code></td><td>Latitude (degrees, minutes, seconds)</td><td>DDMMSSH format · <code>173832N</code></td></tr>
+      <tr><td><code>LONGITUDE</code></td><td>Longitude (degrees, minutes, seconds)</td><td>DDDMMSSH format · <code>0971952W</code></td></tr>
+      <tr><td><code>COORDUNCERT</code></td><td>Coordinate uncertainty (m)</td><td>Radius in metres within which the real site lies · <code>250</code></td></tr>
+      <tr><td><code>COORDDATUM</code></td><td>Coordinate datum</td><td><code>WGS84</code></td></tr>
+      <tr><td><code>GEOREFMETH</code></td><td>Georeferencing method</td><td>GPS, from a map, from a gazetteer or from the description · <code>GPS</code></td></tr>
+      <tr><td><code>ELEVATION</code> °</td><td>Elevation (m)</td><td>Metres above sea level · <code>2180</code></td></tr>
+      <tr><td class="g" colspan="3">Origin and status</td></tr>
+      <tr><td><code>SAMPSTAT</code> °</td><td>Biological status</td><td>Code from the list: wild, landrace, improved… · <code>300</code></td></tr>
+      <tr><td><code>ANCEST</code></td><td>Ancestral data</td><td>Pedigree of breeding material</td></tr>
+      <tr><td><code>BREDCODE</code></td><td>Breeding institute code</td><td>WIEWS code</td></tr>
+      <tr><td><code>BREDNAME</code></td><td>Breeding institute name</td><td>Its name, when there is no code</td></tr>
+      <tr><td><code>ACQDATE</code> °</td><td>Acquisition date</td><td>YYYYMMDD; it is not the collecting date · <code>20191104</code></td></tr>
+      <tr><td class="g" colspan="3">Donor and safety duplicates</td></tr>
+      <tr><td><code>DONORCODE</code></td><td>Donor institute code</td><td>WIEWS code</td></tr>
+      <tr><td><code>DONORNAME</code></td><td>Donor institute name</td><td>Its name, when there is no code</td></tr>
+      <tr><td><code>DONORNUMB</code></td><td>Donor accession number</td><td>The number it had in the donor’s collection</td></tr>
+      <tr><td><code>DUPLSITE</code></td><td>Safety duplicate site</td><td>WIEWS code of the genebank holding the backup; several, separated by semicolons · <code>NOR051</code></td></tr>
+      <tr><td><code>DUPLINSTNAME</code></td><td>Safety duplicate institute name</td><td>Its name, when there is no code</td></tr>
+      <tr><td class="g" colspan="3">Conservation and availability</td></tr>
+      <tr><td><code>STORAGE</code> °</td><td>Type of germplasm storage</td><td>One or several codes separated by semicolons: 10–13 seed, 20 field, 30 in vitro, 40 cryo, 50 DNA, 99 other · <code>13;40</code></td></tr>
+      <tr><td><code>MLSSTAT</code></td><td>MLS status</td><td>0 not included, 1 included, 99 other · <code>1</code></td></tr>
+      <tr><td><code>REMARKS</code></td><td>Remarks</td><td>Whatever does not fit in another field, prefixed with the key it refers to</td></tr>
+    </tbody>
+  </table>
+  <p>Four descriptors take their value from a closed list of codes: <code>SAMPSTAT</code> (21 codes, from 100 wild to 999 other), <code>COLLSRC</code> (22, from 10 wild habitat to 99 other), <code>STORAGE</code> (9) and <code>MLSSTAT</code> (3); <code>GEOREFMETH</code> accepts four fixed texts. You do not need to learn them: in the table and in the record, typing in those boxes brings up the list with the meaning of each code, and under the value you can read its name (<i>Traditional cultivar/landrace</i> under <i>300</i>). The country list is another matter: the app bundles 119 ISO alpha-3 codes in common use in germplasm work, not the 249 entries of the standard, and that is why a well-formed code that is not in it only raises a warning.</p>
+
+  <h3>The GermplasmPro extension</h3>
+  <p>MCPD is a standard for <b>ex situ</b> collections: a population kept in its reserve or in the field of the farmer who sows it has no storage type and no acquisition date, but it has to be recorded all the same. And a genebank needs to know things the standard does not ask for, such as how much seed is left or when it was last tested. That is what the seven <code>GP_</code> fields are for. They are never confused with those of the standard: in the record they carry the tag <span class="ui">outside the standard</span>, in the completeness list they come last and the MCPD file does not include them (Section 2.9).</p>
+  <table class="compacta">
+    <caption><b>Table 2.3.</b> The seven fields of the GermplasmPro extension and who uses them.</caption>
+    <thead><tr><th style="width:1.3in">Key</th><th style="width:1.75in">Name in the app</th><th>What it covers</th></tr></thead>
+    <tbody>
+      <tr><td><code>GP_CONS</code></td><td>Active conservation route</td><td>The route by which the material is managed today: <code>seed</code>, <code>field</code>, <code>invitro</code>, <code>cryo</code>, <code>dna</code>, <code>insitu</code> or <code>onfarm</code>. It includes the two in situ routes that <code>STORAGE</code> does not cover. If left blank, the app derives it from the first <code>STORAGE</code> code that has a route (13 → seed, 20 → field…); the other codes count as backups.</td></tr>
+      <tr><td><code>GP_SITEID</code></td><td>In-situ site identifier</td><td>The code of the reserve, holding or field, so that you can go back.</td></tr>
+      <tr><td><code>GP_KEEPER</code></td><td>Custodian farmer or community</td><td>Who keeps the population, with their consent.</td></tr>
+      <tr><td><code>GP_STOCK</code></td><td>Stock</td><td>How much there is today: seeds, plants, jars or cryovials, depending on the route.</td></tr>
+      <tr><td><code>GP_GERMPCT</code></td><td>Last germination (%)</td><td>The result of the last viability test, from 0 to 100.</td></tr>
+      <tr><td><code>GP_GERMDATE</code></td><td>Last test date</td><td>When that test was done, in YYYYMMDD.</td></tr>
+      <tr><td><code>GP_REGENDATE</code></td><td>Last regeneration date</td><td>When it was last regenerated, replanted or subcultured, in YYYYMMDD.</td></tr>
+    </tbody>
+  </table>
+  <p>The route decides a great deal in the following blocks: which alerts Block 8 gives and, already in this one, which validations apply. The four stock and date fields are the starting point of genebank management in Block 8.</p>
+
+  <!-- 2.2 -->
+  <h2 id="b2-2"><span class="num">2.2</span>Ways to bring in the data</h2>
+  <p>The first card of the block gathers five buttons. Next to them are the counter (<i>46 accessions in the collection</i>) and the time of the last save in the browser; Figure I.2 of the introduction shows that bar with the example collection loaded.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2.1in">Button</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Open a file (CSV, TSV or project)</span></td><td>Reads a <span class="ruta">.csv</span>, <span class="ruta">.tsv</span> or <span class="ruta">.txt</span> file and moves on to the column mapping (Section 2.5). If it is a <span class="ruta">.json</span> saved with <span class="ui">Save the project (.json)</span>, it opens it directly, without mapping.</td></tr>
+      <tr><td><span class="ui">Paste from a spreadsheet</span></td><td>Opens the paste assistant, with its two tabs: paste the table (Section 2.3) or build it column by column in the guided template (2.4).</td></tr>
+      <tr><td><span class="ui">Open the example collection</span></td><td>Loads the 46 accessions used to illustrate this manual (Section I.7).</td></tr>
+      <tr><td><span class="ui">Start from scratch</span></td><td>Leaves the collection with a single empty accession and opens its record so you can fill it in (Section 2.7).</td></tr>
+      <tr><td><span class="ui">Download the template</span></td><td>Downloads <span class="ruta">plantilla-pasaporte.csv</span>: the 49 columns, with their key as the header, and one row with the example of each descriptor.</td></tr>
+    </tbody>
+  </table>
+  <p>When it reads a file, the app guesses the separator —tab, semicolon, comma or vertical bar— by choosing the one that splits every line into the same number of fields, not the most frequent one. It respects quotes, so a comma inside <i>“Veracruz, Huatusco”</i> does not split the cell, and it accepts line breaks inside a quoted cell. It removes the byte order mark that some spreadsheets put at the start and, if broken characters appear when reading it as UTF-8, reads it again as Windows-1252, the encoding spreadsheets usually use on Windows; that way accented letters arrive intact. An empty header is named <i>Columna A</i>, <i>Columna B</i>…, as in the sheet (the app writes these names in Spanish even with the interface in English), and a repeated one is numbered (<i>Sitio (2)</i>) so that the column is not lost.</p>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>Before replacing the collection, the app asks</div>
+    <p><span class="ui">Open the example collection</span>, <span class="ui">Start from scratch</span> and opening a <span class="ruta">.json</span> project replace the whole collection. If there are already accessions with any data, the app asks for confirmation and says how much will be lost: <i>The 46 accessions now in the collection will be lost. Continue?</i> If the collection is empty or has only blank rows, it does not ask. When importing a file or a paste, on the other hand, you choose in the mapping between <span class="ui">Import and replace</span> and <span class="ui">Append to what is there</span>. <span class="ui">Empty</span> and the ✕ of each row also ask for confirmation. If the collection you are about to replace is yours, save the project first (Section 2.9).</p>
+  </div>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>If you use the downloaded template</div>
+    <p>The example row of <span class="ruta">plantilla-pasaporte.csv</span> is only a format guide (<code>MEX-CR-0417</code>, <code>Zea</code>, <code>20190812</code>…). Delete it before you bring the filled-in file back, or it will enter as one more accession. The columns you will not use can be left empty or removed: the app recognizes the remaining ones by their key.</p>
+  </div>
+
+  <!-- 2.3 -->
+  <h2 id="b2-3"><span class="num">2.3</span>Pasting from a spreadsheet</h2>
+  <p>This is the quickest way to bring in a collection: in your spreadsheet you select the table with its headers, copy it, press <span class="ui">Paste from a spreadsheet</span> and paste with Ctrl + V. You do not have to aim at the box: the dialog accepts the paste anywhere. The <span class="ui">Paste from the clipboard</span> button does the same with one click, if the browser grants permission to read the clipboard; if it does not, the app asks you to paste with Ctrl + V. Text separated by commas, semicolons or tabs, typed or copied from anywhere else, works too.</p>
+  <p>The idea of the assistant is that nobody presses “read” blindly. As soon as the text comes in, the app reads it and shows what it understood, before importing anything:</p>
+  <figure style="width:78%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b2-asistente.png" alt="The “Paste your passport table” dialog with a test paste of three chayotes: the cards 3 rows, 11 columns and tabs; the decimal-comma notice; the checkbox “The first row holds the headers”, the Separator selector on automatic, the preview split into cells and the Read 3 rows button"></div>
+    <figcaption><b>Figure 2.1.</b> The assistant with a test paste: three chayotes copied from a spreadsheet, with the coordinates in decimal comma. At the top, the text as it arrived; then the three cards, the notice, the options and the preview already split into cells.</figcaption>
+  </figure>
+  <ul>
+    <li><b>The cards.</b> How many data rows come out, how many columns and which separator split them.</li>
+    <li><b>The notices.</b> What usually goes wrong when copying from a sheet, explained in one sentence (Table 2.4).</li>
+    <li><b>The options.</b> The checkbox <span class="ui">The first row holds the headers</span> and the <span class="ui">Separator</span> selector (<i>automatic</i>, <i>tab</i>, <i>comma</i>, <i>semicolon</i> or <i>pipe</i>). Any change reads the text again instantly. <span class="ui">Clear and start over</span> empties the box.</li>
+    <li><b>The preview.</b> The first six rows, split into cells, with up to nine columns; the rest are summarized in a <i>+2</i> column, and below it says how many more rows there are.</li>
+  </ul>
+  <p>The app ticks the headers checkbox the first time. To decide, it compares the first row with the ones that follow: a title does not have the shape of the data it heads —it is not a number over a column of numbers, nor a date over dates, nor a code like <i>MEX-001</i> over codes—. If the table holds only text, it checks whether the first row looks like a title: no numbers, no empty cells and no repeated texts. If it gets it wrong, simply untick or tick the box. Without headers, the columns are named <i>Columna A</i>, <i>Columna B</i>…, and in the mapping you choose by hand what each one is.</p>
+  <table class="compacta">
+    <caption><b>Table 2.4.</b> The notices of the paste assistant. Only the last one prevents you from going on.</caption>
+    <thead><tr><th style="width:2.55in">What the notice says</th><th>What happened and what to do</th></tr></thead>
+    <tbody>
+      <tr><td><i>“1 row does not have the same number of cells as the rest (3)…”</i></td><td>Almost always a stray comma inside a text without quotes, or merged cells in the sheet. Check that row in the preview; if it is a comma, try another separator.</td></tr>
+      <tr><td><i>“Everything landed in a single column…”</i></td><td>If your table had more columns, the separator is not the right one: choose it in <span class="ui">Separator</span>. If you deliberately copied a single column, go ahead.</td></tr>
+      <tr><td><i>“6 values use a decimal comma, such as “19,149”…”</i></td><td>It is for information: the app turns the comma into a point when validating and importing numbers and coordinates. Even so, your sheet had better use a point.</td></tr>
+      <tr><td><i>“There is only one row and it is being taken as a header…”</i></td><td>You copied only the titles, or a single data row that looks like a title. Untick the headers box if it was data, or copy the whole table again. The button stays disabled until you fix it.</td></tr>
+    </tbody>
+  </table>
+  <p>When everything is in order, the main button says how many rows it will read (<span class="ui">Read 3 rows</span>) and, when you press it, the dialog closes and the column mapping of Section 2.5 appears.</p>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Example · the test paste of this chapter</div>
+    <p>Figures 2.1 and 2.3 use this paste, copied from a spreadsheet (the columns are separated by tabs; here they are trimmed):</p>
+    <div class="muestra">No. accesión  Género   Especie  Cultivo  País  Localidad           Latitud  Longitud  …  Fecha de colecta  PESO_FRUTO
+CH-001        Sechium  edule    Chayote  MEX   Veracruz, Huatusco  19,149   -96,966   …  20230915          318.5
+CH-002        Sechium  edule    Chayote  MX    Veracruz, Coatepec  19,453   -96,961   …  20230916          290
+CH-003        Sechium  edule    Chayote  MEX   Puebla, Cuetzalan   20,019   -97,519   …  20230231          402.7</div>
+    <p>The assistant reads <b>3 rows</b> and <b>11 columns</b> separated by <b>tabs</b>, ticks the headers box on its own and warns about the <b>6 values</b> with a decimal comma. It deliberately carries three problems that the mapping uncovers: a two-letter country, a 31 February and a characterization column. The headers are in Spanish, as they would be in a Mexican genebank’s sheet; the app recognizes them all the same.</p>
+  </div>
+
+  <!-- 2.4 -->
+  <h2 id="b2-4"><span class="num">2.4</span>The guided template</h2>
+  <p>The second tab of the assistant, <span class="ui">Build the table column by column</span>, is for those who do not have the table ready or do not know what to call the columns. It shows the full catalogue of what the app understands, with the name of each column, its key, what it means and an example; you tick the ones you will use and a table ready to fill in appears below.</p>
+  <figure style="width:80%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b2-plantilla.png" alt="The “Build the table column by column” tab: the search box, the Only the essentials and Clear all buttons, the counter 15 columns chosen, the Identification group open with its six columns explained and two marked as mandatory, the number of rows set to 4, the Download this template as CSV button and the grid with three filled rows"></div>
+    <figcaption><b>Figure 2.2.</b> The guided template just opened: it already has the 15 essential columns ticked. At the top, the <i>Identification</i> group expanded; at the bottom, the grid with three rows typed in and the <span class="ui">Read 3 rows</span> button.</figcaption>
+  </figure>
+  <h3>The catalogue of columns</h3>
+  <p>The catalogue has <b>86 columns</b> in twelve groups that open and close: the eight of the passport (the 42 MCPD descriptors and the 7 of the extension) and four of <b>characterization</b>, with 37 descriptors that are not passport data: <i>Agronomic and plant traits</i> (11), <i>Fruit morphology</i> (10), <i>Chemical and quality traits</i> (12) and <i>Seed</i> (4). The latter carry their unit in brackets —<i>Fruit weight (g)</i>, <i>Soluble solids (°Brix)</i>, <i>Plant vigour (1–9)</i>— and a line saying how it is measured. Next to the name of each group, a counter says how many columns it has or, if you have already ticked some, how many of them (<i>2/6</i>). The three mandatory descriptors carry the tag <span class="ui">mandatory</span>.</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2in">Control</th><th>What it is for</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Search for a column…</span></td><td>Filters the catalogue by name, by key or by what the description says, regardless of accents and case: “fruit” finds nine characterization columns. Groups with matches open by themselves.</td></tr>
+      <tr><td><span class="ui">Only the essentials</span></td><td>Leaves ticked only the 15 mandatory and strongly recommended columns (Table 2.1). It is the selection the tab opens with.</td></tr>
+      <tr><td><span class="ui">Clear all</span></td><td>Unticks everything, so you can start your own selection.</td></tr>
+      <tr><td><span class="ui">Rows</span></td><td>How many rows the grid has, from 1 to 500; it starts at 10.</td></tr>
+      <tr><td><span class="ui">Download this template as CSV</span></td><td>Downloads <span class="ruta">plantilla-germplasmpro.csv</span> with only the ticked columns, with the keys as headers and with whatever you have already typed into the grid. It is for filling it in in your spreadsheet and coming back with it.</td></tr>
+    </tbody>
+  </table>
+  <h3>The grid</h3>
+  <p>Each ticked column appears in the grid with its full name and its key underneath, in the order in which you ticked it. You type in it as in a sheet. What makes it practical is pasting whole columns: copy a column of values in your spreadsheet —the accession numbers, for example—, click the first cell of the corresponding column of the grid and paste. The values are spread downwards, one per row, and if there are more of them than rows, the grid grows up to 500. If what you copied has several columns, they are also spread to the right, over the following columns. A single value, without tabs or line breaks, is pasted normally into the cell where the cursor is, just as in the search box.</p>
+  <p>Empty rows do not count: the main button says how many rows have something (<span class="ui">Read 3 rows</span>). When you press it, the grid follows the same path as a paste and reaches the column mapping, where all the keys are recognized at the first attempt.</p>
+
+  <!-- 2.5 -->
+  <h2 id="b2-5"><span class="num">2.5</span>What is each column?</h2>
+  <p>Whether it comes from a file, a paste or the template, the table goes through the card <span class="ui">What is each column?</span> before entering the collection. At the top, a line says what was read (<i>Read 3 rows and 11 columns from pasted text. The app recognized 10 columns; check the rest.</i>); below it, one row per column of your file, with four items:</p>
+  <ul>
+    <li><span class="ui">Column in your file</span>: the original header and, under it, its first three values, so you can tell what it is about.</li>
+    <li><span class="ui">Descriptor</span>: the selector with the 49 descriptors grouped as in Table 2.1, plus <i>— do not import —</i>. The app fills it with its proposal.</li>
+    <li><span class="ui">Key</span>: the chosen key, in green if it belongs to the standard and in another colour if it belongs to the <code>GP_</code> extension.</li>
+    <li><span class="ui">How well it fits</span>: what would happen if you imported the column as that descriptor (explained in the box below).</li>
+  </ul>
+  <h3>How the app recognizes your columns</h3>
+  <p>Real headers arrive in Spanish, in English, with accents, with full stops, with units or with the MCPD key. Before comparing them, the app normalizes them: it removes accents, case, spaces and punctuation, so that <i>No. accesión</i>, <i>no_accesion</i> and <i>NO ACCESIÓN</i> are the same thing. Then it searches in three passes, and each descriptor receives a single column:</p>
+  <ol class="pasos">
+    <li><b>The exact key of the standard.</b> A column called <code>ACCENUMB</code>, <code>accenumb</code> or <code>GP_CONS</code> is recognized first.</li>
+    <li><b>The synonyms.</b> The app bundles 224 common column names for the 49 descriptors, in Spanish and in English: <i>número de accesión</i>, <i>accession number</i>, <i>clave</i>; <i>país</i>, <i>country</i>, <i>iso3</i>; <i>altitud</i>, <i>msnm</i>, <i>elevación</i>; <i>custodio</i>, <i>agricultor</i>, <i>comunidad</i> for <code>GP_KEEPER</code>; <i>existencias</i>, <i>inventario</i> for <code>GP_STOCK</code>, and so on with the rest.</li>
+    <li><b>Partial matches.</b> A header that contains a synonym of at least four letters is assigned to the longest match: <i>Altitud (msnm)</i> contains <i>altitudmsnm</i> and goes to <code>ELEVATION</code>; <i>Germinación %</i> goes to <code>GP_GERMPCT</code>.</li>
+  </ol>
+  <figure style="width:82%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b2-mapeo.png" alt="The “What is each column?” card after reading the test paste: the notice that one column is characterization data (Fruit weight), the notice that the Holding institute code is missing and ten recognized rows; under How well it fits, “3 ok” in all of them except Country of origin (1 of 3 fails, MX) and Collecting date (1 of 3 fails, 20230231)"></div>
+    <figcaption><b>Figure 2.3.</b> The mapping of the test paste. The ten passport columns were recognized; <i>PESO_FRUTO</i> was set aside as characterization. Under <span class="ui">How well it fits</span>, the country <i>MX</i> and the 31 February are visible before importing. (In the app, the list scrolls inside its frame when there are many columns.)</figcaption>
+  </figure>
+  <p>Coordinates take one more step, because the header is not enough: a <i>Latitud</i> column may hold <i>17.6423</i> or <i>173832N</i>. The app looks at up to ten values and, if most of them have the shape of degrees-minutes-seconds, sends it to <code>LATITUDE</code>; if they are decimals, to <code>DECLATITUDE</code> (and likewise for longitude), swapping the two columns if necessary. If only the degrees-minutes-seconds coordinates are present, the decimal ones, which the maps use, are computed on import.</p>
+  <p>Since each descriptor receives a single column, when two columns compete the first one wins: in a sheet with <i>Estado</i>, <i>Municipio</i> and <i>Localidad</i>, only one reaches <code>COLLSITE</code> and the others are left at <i>— do not import —</i>. If you choose by hand a descriptor that already had another column, the other one is unassigned automatically. <span class="ui">Detect again</span> undoes your changes and goes back to the app’s proposal.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · “how well it fits”</div>
+    <p>For each assigned column, the app validates all its non-empty values as if they already belonged to that descriptor, with the same rules as in Section 2.6. If none of them gives an error, it writes <span class="ui">3 ok</span> (with the number of values); if any fails, <span class="ui">1 of 3 fails</span> (or <i>2 of 3 fail</i>) and, next to it, the first value that fails. Only errors count, not warnings. It is the fastest way to discover a wrongly assigned column: if the elevation column ended up as collecting date, nearly all of them will fail. Better to see it here than later, with the data already inside.</p>
+  </div>
+  <h3>What stays outside the passport</h3>
+  <p>Below the summary line, two boxes may appear:</p>
+  <ul>
+    <li><b>The characterization columns.</b> If a column is named exactly like a key of the characterization catalogue (<code>PESO_FRUTO</code>, <code>BRIX</code>, <code>DIAS_FLORACION</code>…), the app does not look for an MCPD descriptor for it: it sets it aside, names it in the box (<i>1 column is characterization data, not passport (Fruit weight)</i>) and, on import, stores it in the characterization of Block 7, linked to its accession by the number. MCPD is an exchange standard and fields are not hung on it. A column with another name, such as <i>Peso del fruto</i>, is not recognized this way: either you rename it with the key, or you load it in Block 7.</li>
+    <li><b>Mandatory descriptors without a column.</b> <i>Still without a column: Holding institute code.</i> You can import anyway and fill it in later in the table; meanwhile, each accession will carry that error.</li>
+  </ul>
+  <p>At the end, four buttons: <span class="ui">Import and replace</span> replaces the collection with what was read; <span class="ui">Append to what is there</span> adds it at the end of the current collection (without looking for repeats: Block 3 does that); <span class="ui">Detect again</span> and <span class="ui">Cancel</span>. On import, numeric values and coordinates go from decimal comma to decimal point, and countries to upper case. The imported collection is saved in the browser immediately, and the time of the save appears next to the counter (Section 2.9).</p>
+
+  <!-- 2.6 -->
+  <h2 id="b2-6"><span class="num">2.6</span>Validation: errors and warnings</h2>
+  <p>Every time the collection changes, the app checks all the accessions, field by field and across fields, and gives each problem one of two levels. <b>Errors</b> are values the standard does not accept —a date that does not exist, a code that is not in the list, an empty mandatory field— and must be corrected. <b>Warnings</b> are values worth completing or confirming: an empty strongly recommended field, an odd elevation, two fields that disagree.</p>
+  <table class="compacta">
+    <caption><b>Table 2.5.</b> The field-by-field validation rules.</caption>
+    <thead><tr><th style="width:1.75in">Type of data</th><th>Error</th><th style="width:1.85in">Warning</th></tr></thead>
+    <tbody>
+      <tr><td>Any empty descriptor</td><td>If it is mandatory: <i>A mandatory value is missing.</i></td><td>If it is strongly recommended.</td></tr>
+      <tr><td>Dates (<code>COLLDATE</code>, <code>ACQDATE</code>, <code>GP_GERMDATE</code>, <code>GP_REGENDATE</code>)</td><td>Not in YYYYMMDD with hyphens where unknown; year before 1700 or in the future; month outside 01–12; day outside 01–31; a day that does not exist in that month (30 February).</td><td>—</td></tr>
+      <tr><td>Decimal coordinates</td><td>Not a number; outside −90 to 90 or −180 to 180.</td><td>An exact zero, which is almost always a missing value written as zero.</td></tr>
+      <tr><td>Degrees, minutes and seconds</td><td>Does not follow DDMMSSH (<i>173832N</i>).</td><td>—</td></tr>
+      <tr><td>Numbers</td><td>Not a number; germination outside 0–100; negative uncertainty or stock.</td><td>Elevation outside −430 to 6,500 m.</td></tr>
+      <tr><td>Country (<code>ORIGCTY</code>)</td><td>Not three letters.</td><td>Three letters that are not in the list of 119 countries.</td></tr>
+      <tr><td>WIEWS codes (<code>INSTCODE</code>, <code>COLLCODE</code>, <code>BREDCODE</code>, <code>DONORCODE</code>, <code>DUPLSITE</code>)</td><td>—</td><td>Not three letters and three digits. <code>DUPLSITE</code> accepts several, separated by semicolons.</td></tr>
+      <tr><td>Code lists</td><td>A value that is not in the descriptor’s list; in <code>STORAGE</code>, any code of the semicolon-separated list that does not exist.</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <table class="compacta">
+    <caption><b>Table 2.6.</b> The rules that compare fields of the same accession.</caption>
+    <thead><tr><th style="width:2.25in">What is compared</th><th style="width:0.6in">Level</th><th>What the app says</th></tr></thead>
+    <tbody>
+      <tr><td>Only one of the two decimal coordinates</td><td>error</td><td><i>The other coordinate is missing: one alone locates nothing.</i></td></tr>
+      <tr><td>Decimal and degrees-minutes-seconds coordinates</td><td>warning</td><td>They do not match (they differ by more than 0.02°).</td></tr>
+      <tr><td>Collecting date later than acquisition date</td><td>warning</td><td><i>The accession would have entered the genebank before being collected.</i></td></tr>
+      <tr><td>Last test or regeneration earlier than acquisition</td><td>warning</td><td>The test (or the regeneration) predates the accession’s arrival.</td></tr>
+      <tr><td>Wild status (100) and cultivated or store source (21, 22, 23, 26, 27)</td><td>warning</td><td><i>It says wild but was collected in a cultivated site or a store.</i></td></tr>
+      <tr><td>Landrace status (300) and wild habitat (10–15)</td><td>warning</td><td><i>It says landrace but was collected in a wild habitat.</i></td></tr>
+      <tr><td>In situ route with a storage type</td><td>warning</td><td>If you hold both, register two linked accessions.</td></tr>
+      <tr><td>In situ route without <code>GP_SITEID</code></td><td>warning</td><td><i>An in-situ record with no site identifier cannot be revisited.</i></td></tr>
+      <tr><td>Ex situ route without <code>DUPLSITE</code></td><td>warning</td><td><i>No safety duplicate: the accession depends on a single facility.</i></td></tr>
+      <tr><td>Ex situ route with <code>DUPLSITE</code> only at the holding institution itself</td><td>warning</td><td><i>The safety duplicate is held by the same institution as the accession: it does not protect it if that institution loses its collection.</i></td></tr>
+    </tbody>
+  </table>
+  <p>The route changes what is required. An in situ record (genetic reserve or on-farm) is not asked for <code>STORAGE</code>, <code>ACQDATE</code>, <code>DUPLSITE</code> or <code>INSTCODE</code>: it has no storage, it never entered a genebank and it is not duplicated elsewhere. And the safety duplicate only counts if at least one of the sites in <code>DUPLSITE</code> is <b>an institution other</b> than the one in <code>INSTCODE</code>: a copy in the cold room next door does not protect against a fire in the same building. That same rule is the one used by the <i>With safety duplicate</i> tile of the portrait (Section 2.8). An accession without a recognizable route —neither <code>GP_CONS</code> nor a valid <code>STORAGE</code> code— does not receive the duplicate warnings.</p>
+
+  <h3>What needs checking</h3>
+  <p>The section <span class="ui">What needs checking</span> gathers the problems of the whole collection, grouped by descriptor and message, which is how they are fixed: errors first and, within each level, the most frequent ones. Above it, three figures: how many errors, how many warnings and in how many accessions. The <span class="ui">show</span> button of each row turns on the filter <span class="ui">only those with something to check</span>, clears the other filters, adds the problem’s column to the table if it was not there and opens the record of the first affected accession.</p>
+  <figure style="width:50%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b2-validacion.png" alt="The “What needs checking” section with the example collection: 3 errors, 26 warnings, across 21 of 46; three errors (COLLDATE, ORIGCTY, STORAGE) and seven groups of warnings, the largest DUPLSITE with 20 accessions"></div>
+    <figcaption><b>Figure 2.4.</b> The validation of the example collection just loaded: 3 errors and 26 warnings in 21 of the 46 accessions, in ten groups.</figcaption>
+  </figure>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Example · the 29 problems of the example collection</div>
+    <p>The seeded errors (Section I.7) that Block 2 can see with a single accession in view are these:</p>
+    <table class="compacta"><tbody>
+      <tr><td style="width:40%"><b>MEX-CU-0040 · Calabaza pipiana</b></td><td>error in <code>COLLDATE</code>: <i>20190230</i>, a 30 February.</td></tr>
+      <tr><td><b>MEX-PH-0041 · Frijol tepari</b></td><td>error in <code>ORIGCTY</code> (<i>MX</i>, two letters) and warning in <code>ELEVATION</code> (<i>25000</i> m).</td></tr>
+      <tr><td><b>MEX-CH-0042 · Chile costeño</b></td><td>error in <code>STORAGE</code>: <i>Codes that do not exist: 15.</i> With no route, it is not asked for a duplicate either.</td></tr>
+      <tr><td><b>MEX-ZM-0043 · Maíz ancho de riego</b></td><td>three warnings: no latitude, no longitude and no elevation.</td></tr>
+      <tr><td><b>MEX-ZM-0044 · Maíz reventador</b></td><td>two cross-field warnings: wild status collected in a farm store, and an acquisition date (<i>20190105</i>) earlier than the collection.</td></tr>
+      <tr><td><b>20 ex situ accessions</b></td><td>warning in <code>DUPLSITE</code>: no safety duplicate.</td></tr>
+    </tbody></table>
+  </div>
+  <p>They add up to 3 errors and 6 + 20 = 26 warnings, in 21 accessions (the five above, plus sixteen that only have the duplicate warning). The 20 accessions with a duplicate hold it at another institution (<code>NOR051</code>, <code>MEX008</code>, <code>BOL004</code> or <code>PER001</code>), so none of them receives the same-institution warning; Figure 2.6 triggers it on purpose. What Block 2 does <b>not</b> see: the unsigned longitude of MEX-ZM-0039 is a valid number (only Block 3 discovers that it falls outside Mexico), and the two pairs of accidental duplicates are, each one on its own, correct accessions.</p>
+
+  <!-- 2.7 -->
+  <h2 id="b2-7"><span class="num">2.7</span>The table and the record of each accession</h2>
+  <p>The section <span class="ui">The collection, accession by accession</span> shows the collection in an editable table, 50 rows at a time, with the ← → arrows and the count (<i>showing 1–46 of 46</i>) at the foot. Above it are the search box, the filters and the buttons for adding and emptying.</p>
+  <figure style="width:66%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b2-revisar.png" alt="The table with the filter “only those with something to check” on and six columns: accession number, country of origin, elevation, collecting date, type of germplasm storage and safety duplicate site; the cells with an error in red (MX, 20190230, 15) and with a warning in ochre (25000 and the empty duplicate cells); to the right of each row, the count of problems, the record button and the delete button"></div>
+    <figcaption><b>Figure 2.5.</b> The table with <span class="ui">only those with something to check</span> (21 rows) and the columns chosen to see the problems: errors in red, warnings in ochre. The circle on the right counts the problems of each accession, in red if any of them is an error.</figcaption>
+  </figure>
+  <table class="compacta">
+    <thead><tr><th style="width:2.2in">Control</th><th>What it is for</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Search every field…</span></td><td>Searches the 49 fields at once, regardless of accents, case and hyphens: “chayote” leaves 3 rows.</td></tr>
+      <tr><td><span class="ui">all routes</span>, <span class="ui">all crops</span>, <span class="ui">all countries</span></td><td>Filter by conservation route (only those in use), by common crop name and by country of origin (with its name; a code that is not in the list, such as <i>MX</i>, appears as it is). With the example collection, <i>Field genebank or living collection</i> leaves 8 rows.</td></tr>
+      <tr><td><span class="ui">only those with something to check</span></td><td>Keeps only the accessions with some error or warning: 21 in the example collection.</td></tr>
+      <tr><td><span class="ui">+ Accession</span></td><td>Adds an empty accession at the end and opens its record.</td></tr>
+      <tr><td><span class="ui">Empty</span></td><td>Deletes the whole collection, including the copy stored in the browser, after asking for confirmation.</td></tr>
+      <tr><td>The 18 column tags</td><td>Choose which columns are shown; the highlighted ones are visible. At least two must remain. It opens with nine: accession number and name, genus, species, crop, country, site, elevation and route.</td></tr>
+    </tbody>
+  </table>
+  <p>A click on a column title sorts by it (▲) and another reverses the order (▼); coordinates, elevation and the other numbers are sorted as numbers. The table opens sorted by accession number, and the grey number on the left is the position of the accession in the collection, which does not change when sorting or filtering. Each cell is edited by typing in it; the change is applied when you leave the cell and validation is redone at once. Code cells offer the list as you type and show the meaning underneath (a <i>?</i> if the code does not exist). Hovering over a flagged cell shows the problem’s message. To the right of each row, ▤ opens the full record and ✕ deletes the accession, with confirmation.</p>
+
+  <h3>The full record</h3>
+  <p>The record shows the 49 fields of an accession, in the eight groups of Table 2.1. The title gives the accession number and the scientific name; on the right, its position (<i>44 / 46</i>) and the ← → arrows to move to the previous or next one without closing the dialog. Each line has the name of the descriptor with its key (and an asterisk if it is mandatory), the box and, on the right, the description of the descriptor or, if there is a problem, the message in bold, with the line tinted red or ochre. Empty text boxes show the descriptor’s example as a guide.</p>
+  <figure style="width:80%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b2-ficha.png" alt="The record of MEX-ZM-0044 · Zea mays, 44 of 46, with the groups Origin and status and Donor and safety duplicates: warnings in Biological status (It says wild but was collected in a cultivated site or a store), Acquisition date (The accession would have entered the genebank before being collected) and Safety duplicate site, with MEX006 (The safety duplicate is held by the same institution as the accession)"></div>
+    <figcaption><b>Figure 2.6.</b> The record of MEX-ZM-0044 · Maíz reventador. Besides its two seeded warnings, <i>MEX006</i> was typed here as the duplicate site —the same code as the institute that holds it— and the warning changed from <i>No safety duplicate</i> to the same-institution one. With <i>NOR051</i> it disappears; with <i>MEX006;NOR051</i> too, because one of the two sites is another institution.</figcaption>
+  </figure>
+  <p>What you type in the record is applied when you leave the box, and everything is updated at once: the record, the table, the list of problems and the portrait. <span class="ui">Start from scratch</span> and <span class="ui">+ Accession</span> open the record of an empty accession, which starts with 3 errors (the three mandatory fields) and 12 warnings (the strongly recommended ones); they go out as you fill it in. The record closes with ✕ or with Esc.</p>
+
+  <!-- 2.8 -->
+  <h2 id="b2-8"><span class="num">2.8</span>The portrait of the collection and completeness</h2>
+  <p><span class="ui">The portrait of the collection</span> begins with the five tiles already presented in the introduction (Figure I.3): accessions, with coordinates, with safety duplicate (in red while it does not reach 80 %), countries and routes in use. Below them come six charts, which are redrawn with every change (Figure 2.7):</p>
+  <table class="compacta">
+    <thead><tr><th style="width:2.2in">Chart</th><th>What it counts · with the example collection</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Accessions by conservation route</span></td><td>Each route in use, declared or derived from <code>STORAGE</code>: 28 in seed, 8 in field, 3 in vitro, 3 on-farm, 2 in a genetic reserve and 1 cryopreserved. The accession without a route does not appear.</td></tr>
+      <tr><td><span class="ui">Accessions by species</span></td><td>The ten species with the most accessions (genus and epithet): <i>Zea mays</i> with 18, <i>Capsicum annuum</i> and <i>Sechium edule</i> with 3. All 24 are in the taxa tile.</td></tr>
+      <tr><td><span class="ui">Biological status</span></td><td>Up to eight statuses: 39 landraces, 4 wild, 2 natural and 1 breeder’s line.</td></tr>
+      <tr><td><span class="ui">Country of origin</span></td><td>Up to eight countries: Mexico with 37, Guatemala and Peru with 2, and one each for Bolivia, Ethiopia, India, Colombia and <i>MX</i>.</td></tr>
+      <tr><td><span class="ui">Elevation of collecting sites (m)</span></td><td>Histogram in 12 classes of equal width between the minimum and the maximum: here, from 20 to 25,000 m. Empty elevations are left out; those of 0 m, at sea level, are included.</td></tr>
+      <tr><td><span class="ui">Collecting year</span></td><td>Histogram in 10 classes with the year of <code>COLLDATE</code>: from 2014 to 2022, with most between 2018 and 2020.</td></tr>
+    </tbody>
+  </table>
+  <figure style="width:72%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b2-graficas.png" alt="The six charts of the portrait: accessions by route (28 seed bank, 8 field, 3 in vitro, 3 on-farm, 2 reserve, 1 cryo), by species (Zea mays 18 and nine others), biological status (39 landraces, 4 wild, 2 natural, 1 breeder’s line), country of origin (Mexico 37 and seven more, MX among them), histogram of elevation from 20 to 25,000 m and of collecting year from 2014 to 2022"></div>
+    <figcaption><b>Figure 2.7.</b> The charts of the portrait with the example collection. In the elevation chart, the accession at 25,000 m stretches the axis until nearly all the others are left in the first two bars: a data-entry error jumps out.</figcaption>
+  </figure>
+  <p>Long names are trimmed in the bars (<i>Traditional cultivar/landr…</i>). The charts count what is written, not what ought to be: the code <i>MX</i> appears as an eighth country until you correct it to <i>MEX</i>, and the elevation of 25,000 m distorts the histogram. That is why it pays to look at the portrait again after Block 3.</p>
+
+  <h3>How complete the passport is</h3>
+  <p>The last results section gives, for each descriptor, the percentage of accessions that carry it. The bar is green from 90 %, ochre from 50 to 90 % and red below 50 %; an asterisk marks the mandatory ones, and hovering over a line shows the description of the descriptor. So as not to fill the list with zeros, optional descriptors that no accession carries are omitted; the mandatory ones, the strongly recommended ones and the seven of the extension always appear, the latter at the end.</p>
+  <figure style="width:50%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b2-completitud.png" alt="The completeness of the example collection: 39 descriptors with their bar and percentage, from 100 % in the mandatory ones and most of the strongly recommended ones to 2 % in subtaxa authority and donor institute name; safety duplicate site at 43 %, acquisition date and type of germplasm storage at 89 %, and the seven GP_ fields at the end"></div>
+    <figcaption><b>Figure 2.8.</b> The completeness of the example collection: 39 lines; the 10 descriptors that no accession carries (such as <code>PUID</code> or <code>ANCEST</code>) are not shown.</figcaption>
+  </figure>
+  <p>It can be read in two ways. By descriptor, it says what is missing in the whole collection: here, the safety duplicate site (43 %) is the most serious gap among those that matter for conservation, and the last regeneration date (28 %) the one in the extension. And against what validation asks for: acquisition date and type of germplasm storage stand at 89 % (41 of 46) and, even so, they produce no warnings, because the five accessions without them are in situ and must not have them. Completeness measures presence, not correctness: <i>MX</i> counts as a country present.</p>
+
+  <!-- 2.9 -->
+  <h2 id="b2-9"><span class="num">2.9</span>Taking your data with you and automatic saving</h2>
+  <p>The section <span class="ui">Take your data with you</span> has three buttons, each with a different destination:</p>
+  <figure style="width:52%;margin-left:auto;margin-right:auto">
+    <div class="marco"><img src="../img/en/b2-exportar.png" alt="The “Take your data with you” section with the buttons Export MCPD (standard only), Export everything (with the extension) and Save the project (.json), and the explanation of each file"></div>
+    <figcaption><b>Figure 2.9.</b> The three export buttons of Block 2.</figcaption>
+  </figure>
+  <table class="compacta">
+    <thead><tr><th style="width:2.15in">Button</th><th style="width:1.55in">File</th><th>What it carries and what it is for</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Export MCPD (standard only)</span></td><td><span class="ruta">pasaporte-mcpd.csv</span></td><td>The 42 descriptors of the standard, with their official keys as headers and in the order of Table 2.2. It is the one sent to Genesys, to SINAREFI or to any other system.</td></tr>
+      <tr><td><span class="ui">Export everything (with the extension)</span></td><td><span class="ruta">pasaporte-completo.csv</span></td><td>The 49 fields: the standard and, at the end, the seven <code>GP_</code> ones, so that internal management data are not lost. It comes back in through <span class="ui">Open a file (CSV, TSV or project)</span> with all the columns recognized by their key.</td></tr>
+      <tr><td><span class="ui">Save the project (.json)</span></td><td><span class="ruta">coleccion-germplasmpro.json</span></td><td>The accessions as they are, with all their fields; the characterization of Block 7; the threshold and the dismissed pairs of Block 3; the genebank assumptions, the custom viability constants and the calculator values of Block 8, and the label preferences of Block 9. It opens with the same button above, without going through the mapping, in any browser or computer.</td></tr>
+    </tbody>
+  </table>
+  <p>The CSV files come out comma-separated and in UTF-8, and only cells that need it (those containing commas, quotes or line breaks) are quoted. The files are exported with the values as they are, errors included: fix first whatever validation flags. The project carries everything that was worked on and does not fit in the passport (version 2 of the format): when it is opened, each item is restored in its block. A project saved with an earlier version, which carried only the passport or the passport and the characterization, opens all the same and leaves as it was whatever it does not carry: the characterization, the Block 3 settings, those of the genebank and those of the labels.</p>
+  <h3>Automatic saving</h3>
+  <p>Every change to the collection —a cell, the record, an accession added or deleted, the example collection— is saved by itself in the browser’s local storage a moment later, and <i>saved in this browser · </i> appears next to the counter with the time. When you reopen the app in that browser, the collection is still there. If the browser cannot save —full storage or a private window—, the time is replaced, in red, by <i>Could not save in this browser (storage full or private mode): download the .json project</i>: from then on your work lives only in that tab until you save the project. Even when it saves, it is not a backup: it lives in one browser on one computer and is lost if the browsing data are cleared. The backup is the <span class="ruta">.json</span> project; save it at the end of every work session.</p>
+
+  <h3>When something goes wrong</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:40%">What you see</th><th>Why it happens and what to do</th></tr></thead>
+    <tbody>
+      <tr><td>Accented letters arrive broken (<i>Ã©</i>, <i>�</i>)</td><td>The app already tries UTF-8 and Windows-1252; if they still come out wrong, save the sheet as “CSV UTF-8” or use the paste, which does not depend on the encoding.</td></tr>
+      <tr><td><span class="ui">Read 0 rows</span> or the button disabled</td><td>You copied only the headers, or the headers box swallowed the only row (Table 2.4). In the template, no row has data.</td></tr>
+      <tr><td>In the mapping, a column was left at <i>— do not import —</i></td><td>Its header does not resemble any synonym, or its descriptor was already taken by another column. Choose it by hand in the selector.</td></tr>
+      <tr><td><span class="ui">How well it fits</span> says nearly all fail</td><td>The column is assigned to the wrong descriptor. Change the selector before importing.</td></tr>
+      <tr><td>The coordinates ended up as text or in another column</td><td>They came in degrees-minutes-seconds with another shape, or with a decimal comma and a comma separator. Check the separator in the assistant and the column’s selector in the mapping.</td></tr>
+      <tr><td>Every accession has <i>A mandatory value is missing.</i> in <code>INSTCODE</code></td><td>Your file did not carry the institute code. Add the column in your sheet and import again, or type it in the table.</td></tr>
+      <tr><td>A characterization column entered the passport</td><td>It is set aside only if its header is an exact key of the catalogue (<code>PESO_FRUTO</code>). Set it to <i>— do not import —</i> and load it in Block 7.</td></tr>
+      <tr><td>The collection disappeared when the app was opened again</td><td>It was opened in another browser or with the browsing data cleared. Open the <span class="ruta">.json</span> project.</td></tr>
+      <tr><td>Next to the counter it says <i>Could not save in this browser…</i></td><td>The browser’s storage is full or the window is private. Use <span class="ui">Save the project (.json)</span> now, and again before closing; in a normal window, with space, the notice goes back to <i>saved in this browser</i>.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja regla">
+    <div class="caja-t"><span class="ico">✓</span>Decision rule · what to do in Block 2</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:44%"><b>If</b> your collection is in a spreadsheet</td><td><b>then</b> copy it with its headers and use <span class="ui">Paste from a spreadsheet</span>; check the cards and the notices before reading it.</td></tr>
+      <tr><td><b>If</b> you do not know what to call your columns</td><td><b>then</b> build the table in the guided template, starting with <span class="ui">Only the essentials</span>, or download it as CSV to fill it in in your sheet.</td></tr>
+      <tr><td><b>If</b> in the mapping a column fails in <span class="ui">How well it fits</span></td><td><b>then</b> look at the first value that fails: if it is one, import it and correct it in the table; if it is nearly all of them, change the descriptor.</td></tr>
+      <tr><td><b>If</b> validation gives errors</td><td><b>then</b> correct them before going on; the safety duplicate warnings and the empty strongly recommended fields are pending work on the collection, not on data entry.</td></tr>
+      <tr><td><b>If</b> an ex situ accession only has a copy at your own institution</td><td><b>then</b> it has no safety duplicate: arrange one at another genebank and record it in <code>DUPLSITE</code>.</td></tr>
+      <tr><td><b>If</b> you have finished loading and correcting</td><td><b>then</b> save the <span class="ruta">.json</span> project and move on to Block 3, before any analysis.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">What you correct here is seen by every block; Block 3 then looks for what a single accession does not reveal: coordinates outside their country, untidy names and the same collection entered twice.</p>
+  </div>
+
+</section>
+
+</body>
+</html>
