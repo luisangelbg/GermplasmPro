@@ -29,7 +29,7 @@
     <div class="cap-etiqueta">Chapter nine · Block 9 · Labels and register</div>
     <h1 data-corto="Labels and register">Labels and register</h1>
     <div class="cap-regla"></div>
-    <p class="cap-resumen">Everything that enters or leaves the genebank carries paper: the label on the envelope, the jar, the stake or the cryovial, and the sheet that travels with the material. Block 9 prints those labels at their real size, in millimetres, with a Code 128 barcode or a QR code that the app itself generates, with no outside libraries; and it prepares the genebank’s three worksheets: the sowing list for a regeneration, the delivery note and the collection register book. It computes nothing new: it takes the passport from Block 2, the core collection from Block 7 or the lots in trouble from Block 8, and puts them on paper.</p>
+    <p class="cap-resumen">Everything that enters or leaves the genebank carries paper: the label on the envelope, the jar, the stake or the cryovial, and the sheet that travels with the material. Block 9 prints those labels at their real size, in millimeters, with a Code 128 barcode or a QR code that the app itself generates, with no outside libraries; and it prepares the genebank’s three worksheets: the sowing list for a regeneration, the delivery note and the collection register book. It computes nothing new: it takes the passport from Block 2, the core collection from Block 7 or the lots in trouble from Block 8, and puts them on paper.</p>
     <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
     <ul class="cap-contenido">
       <li><b>9.1</b>What gets printed</li>
@@ -74,7 +74,7 @@
 
   <!-- 9.2 -->
   <h2 id="b9-2"><span class="num">9.2</span>The five formats and how many fit on a sheet</h2>
-  <p>The <span class="ui">Format</span> selector offers five label sizes, one per object labelled in a genebank; the name of each option carries its size. <span class="ui">Paper</span> chooses letter (216 × 279 mm, the default) or A4 (210 × 297 mm). The app draws each label with a grey border with rounded corners, which is the cutting line: it is designed to be printed on a full sheet of adhesive paper and cut out, not for pre-cut label sheets of a commercial size.</p>
+  <p>The <span class="ui">Format</span> selector offers five label sizes, one per object labelled in a genebank; the name of each option carries its size. <span class="ui">Paper</span> chooses letter (216 × 279 mm, the default) or A4 (210 × 297 mm). The app draws each label with a gray border with rounded corners, which is the cutting line: it is designed to be printed on a full sheet of adhesive paper and cut out, not for pre-cut label sheets of a commercial size.</p>
   <table class="compacta">
     <caption><b>Table 9.2.</b> The five formats, how many labels fit on each paper and how many sheets the example collection (46 accessions) needs.</caption>
     <thead><tr><th>Format</th><th class="c">Size (mm)</th><th class="c">Text (mm)</th><th class="c">Letter</th><th class="c">Sheets</th><th class="c">A4</th><th class="c">Sheets</th></tr></thead>
@@ -102,7 +102,7 @@
 
   <!-- 9.3 -->
   <h2 id="b9-3"><span class="num">9.3</span>What each label says</h2>
-  <p>Each label carries, from top to bottom: the <b>header</b>, if you wrote one, in small grey type; the <b>accession number</b> (<code>ACCENUMB</code>), always, in bold monospaced type so that zero and O are not confused; the <b>fields</b> you switch on, one per line; and the <b>code</b>, at the bottom right if it is a barcode, and on the right, from top to bottom, if it is a QR.</p>
+  <p>Each label carries, from top to bottom: the <b>header</b>, if you wrote one, in small gray type; the <b>accession number</b> (<code>ACCENUMB</code>), always, in bold monospaced type so that zero and O are not confused; the <b>fields</b> you switch on, one per line; and the <b>code</b>, at the bottom right if it is a barcode, and on the right, from top to bottom, if it is a QR.</p>
   <figure>
     <div class="marco"><img src="../img/en/b9-sobres.png" alt="Four seed envelope labels in two columns, each with the header Example Genebank, the accession number in bold (MEX-ZM-0001 to MEX-ZM-0004), the name, Zea mays in italics and the collecting site; at the bottom right, a barcode with the accession number printed below it"></div>
     <figcaption><b>Figure 9.3.</b> The first four envelope labels, with the three default fields, the header <i>Example Genebank</i> and the barcode.</figcaption>
@@ -117,7 +117,7 @@
       <tr><td><span class="ui">Crop</span></td><td><code>CROPNAME</code></td><td>Maíz</td></tr>
       <tr><td><span class="ui">Collecting site</span></td><td><code>COLLSITE</code></td><td>Oaxaca, Santiago Apoala</td></tr>
       <tr><td><span class="ui">Country</span></td><td><code>ORIGCTY</code></td><td>Mexico: the name of the country, in the language of the app, not the ISO code</td></tr>
-      <tr><td><span class="ui">Collecting date</span></td><td><code>COLLDATE</code></td><td>12/08/2019 (day/month/year, also in English); an incomplete date such as <code>2021----</code> comes out as “2021”</td></tr>
+      <tr><td><span class="ui">Collecting date</span></td><td><code>COLLDATE</code></td><td>2019-08-12 (year-month-day, ISO 8601; with the interface in Spanish, day/month/year); an incomplete date such as <code>2021----</code> comes out as “2021”</td></tr>
       <tr><td><span class="ui">Elevation</span></td><td><code>ELEVATION</code></td><td>followed by “m”</td></tr>
       <tr><td><span class="ui">Conservation route</span></td><td><code>GP_CONS</code></td><td>Seed bank (or the one deduced from <code>STORAGE</code>)</td></tr>
       <tr><td><span class="ui">Stock</span></td><td><code>GP_STOCK</code></td><td>1800, with no unit</td></tr>
@@ -231,14 +231,14 @@
 
   <!-- 9.6 -->
   <h2 id="b9-6"><span class="num">9.6</span>Printing and checking</h2>
-  <p>The <span class="ui">Print</span> button opens the browser’s print dialogue with the preview; the button is disabled if there are no accessions to print. With labels, the app prepares the printout at exact scale: each sheet measures the same as the chosen paper, carries its own 8 mm margins, and the page is declared at the size of the paper and with no browser margin. That way nothing shrinks and no blank sheet is left over at the end. The same happens if you print with <span class="ui">Ctrl + P</span> while you are in Block 9.</p>
+  <p>The <span class="ui">Print</span> button opens the browser’s print dialog with the preview; the button is disabled if there are no accessions to print. With labels, the app prepares the printout at exact scale: each sheet measures the same as the chosen paper, carries its own 8 mm margins, and the page is declared at the size of the paper and with no browser margin. That way nothing shrinks and no blank sheet is left over at the end. The same happens if you print with <span class="ui">Ctrl + P</span> while you are in Block 9.</p>
   <div class="caja dato">
     <div class="dato-cifra">89.6</div>
-    <div class="dato-txt"><div class="caja-t">What was measured · millimetres</div>When the 46 envelope labels were printed to PDF, they came out as 6 sheets on letter and 5 on A4, with no blank sheet. The grey border of each envelope measured <b>89.6 mm</b> wide on both papers —the border runs 0.2 mm inside each edge of the 90 mm—, and the first column began 8 mm from the edge of the paper.</div>
+    <div class="dato-txt"><div class="caja-t">What was measured · millimeters</div>When the 46 envelope labels were printed to PDF, they came out as 6 sheets on letter and 5 on A4, with no blank sheet. The gray border of each envelope measured <b>89.6 mm</b> wide on both papers —the border runs 0.2 mm inside each edge of the 90 mm—, and the first column began 8 mm from the edge of the paper.</div>
   </div>
   <p>The worksheets are printed as a document: tables split across sheets and repeat their header row at the top of each sheet. With the whole example collection on letter paper and the app in English, the sowing list takes 2 sheets, the register book 2 and the delivery note 2. At the foot of the block, a note sums up what to take care of: <span class="ui largo">Check the first sheet before printing a hundred.</span></p>
   <ol>
-    <li>In the dialogue set the scale to <b>100%</b>, not “fit to page”, as the line in section 1 also asks, and turn off the browser’s headers and footers.</li>
+    <li>In the dialog set the scale to <b>100 %</b>, not “fit to page”, as the line in section 1 also asks, and turn off the browser’s headers and footers.</li>
     <li>Print <b>one</b> sheet and measure a label with a ruler: the envelope must measure 90 × 54 mm. Some printer drivers shrink the sheet on their own; if the label comes out smaller, look in their options for “actual size” or “100%”.</li>
     <li>Scan the code with the reader. If the number it reads is the one on the label, print the rest.</li>
   </ol>
@@ -248,7 +248,7 @@
   <h2 id="b9-7"><span class="num">9.7</span>The sowing list</h2>
   <p>With <span class="ui">Sheet</span> set to <span class="ui">sowing list</span>, the preview turns into the sheet you take to the greenhouse or the field for a regeneration: one row per accession with how many seeds to sow, and three blank columns to write the plot, the date and the notes by hand. At the top go the title, a line with the number of accessions and of plants, and, on the right, the header and today’s date. The natural thing is to combine it with <span class="ui">the lots in trouble from Block 8</span>.</p>
   <figure class="mediana">
-    <div class="marco"><img src="../img/en/b9-siembra.png" alt="The Sowing list for regeneration sheet, with the line 10 accessions · 100 plants each · seeds to sow follow from each lot's germination and the date 10/31/2026; the table with the columns Accession, Name, Species, Germ., Seeds, Plot, Date and Notes: MEX-ZP-0011 Teocintle de Balsas 81 % 138; MEX-SE-0013 Frijol vaquita 84 % 133; PER-ST-0021 Papa nativa Huayro 85 %* 131; MEX-VA-0025 Vainilla de Papantla 85 %* 131; MEX-PA-0026, MEX-TC-0027, COL-MA-0035 and MEX-SE-0046 also with 85 %* and 131; MEX-PH-0041 Frijol tepari 79 % 141; MEX-ZM-0043 Maíz ancho de riego 72 % 155; below, the note * Assumed: these 6 accessions have no germination test recorded; the 85% from the Block 8 calculator is used, and the Plants per accession field with 100, the remark those of one regeneration in the Block 8 assumptions and the Download as CSV button"></div>
+    <div class="marco"><img src="../img/en/b9-siembra.png" alt="The Sowing list for regeneration sheet, with the line 10 accessions · 100 plants each · seeds to sow follow from each lot's germination and the date 2026-10-31; the table with the columns Accession, Name, Species, Germ., Seeds, Plot, Date and Notes: MEX-ZP-0011 Teocintle de Balsas 81 % 138; MEX-SE-0013 Frijol vaquita 84 % 133; PER-ST-0021 Papa nativa Huayro 85 %* 131; MEX-VA-0025 Vainilla de Papantla 85 %* 131; MEX-PA-0026, MEX-TC-0027, COL-MA-0035 and MEX-SE-0046 also with 85 %* and 131; MEX-PH-0041 Frijol tepari 79 % 141; MEX-ZM-0043 Maíz ancho de riego 72 % 155; below, the note * Assumed: these 6 accessions have no germination test recorded; the 85 % from the Block 8 calculator is used, and the Plants per accession field with 100, the remark those of one regeneration in the Block 8 assumptions and the Download as CSV button"></div>
     <figcaption><b>Figure 9.7.</b> The sowing list of the 10 lots in trouble from Block 8, with 100 plants per accession. The six rows with an asterisk are not seed lots and have no germination test.</figcaption>
   </figure>
   <p>The seeds come from the same computation as in Block 8 (Section 8.7): the plants you want, divided by the lot’s germination and by a fixed field establishment of 90%. The plants per accession are, to begin with, those of one regeneration in the Block 8 assumptions (the <span class="ui">Plants per regeneration</span> slider, 100 by default), and the remark next to the field says so. If you change them in the <span class="ui">Plants per accession</span> field, from 10 to 500 in steps of 10, they apply to every row and the remark disappears.</p>
@@ -266,23 +266,23 @@
     <p>If an accession has no <code>GP_GERMPCT</code>, the list uses the assumption of the Block 8 calculator (<span class="ui">Lot germination (%)</span>, 85% by default, Section 8.7), writes it with an asterisk —<span class="ui">85 %*</span>— and explains it in a note below the table. With the whole example collection these are 17 accessions: all those that are not seed lots, because the field, in vitro, cryopreservation, in situ and on-farm routes have no germination test. Use the list with seed lots, and cross out the rows with an asterisk that are regenerated by replanting or subculture.</p>
     <p>A measured 0%, on the other hand, is a datum: that lot has no viable seed. The row carries a dash under <span class="ui">Seeds</span> and an ochre note names it and suggests turning to the safety duplicate or collecting again.</p>
   </div>
-  <p>The <span class="ui">Download as CSV</span> button saves <span class="ruta">lista-de-siembra.csv</span>, in UTF-8 with comma separator, with eleven columns whose names are fixed (in Spanish, whatever the language of the app): <code>ACCENUMB</code>, <code>nombre</code> (name), <code>taxon</code>, <code>plantas</code> (plants), <code>germinacion</code> (germination), <code>germinacion_supuesta</code> (assumed germination: “yes” when it is the assumption, empty when it was measured), <code>semillas</code> (seeds; empty with a measured 0%), <code>existencias</code> (stock, <code>GP_STOCK</code>), and the three empty ones <code>parcela</code> (plot), <code>fecha_siembra</code> (sowing date) and <code>observaciones</code> (notes). Unlike on the sheet, the name is given in full.</p>
+  <p>The <span class="ui">Download as CSV</span> button saves <span class="ruta">sowing-list.csv</span>, in UTF-8 with comma separator, with eleven columns: <code>ACCENUMB</code>, <code>name</code>, <code>taxon</code>, <code>plants</code>, <code>germination</code>, <code>assumed_germination</code> (“yes” when it is the assumption, empty when it was measured), <code>seeds</code> (empty with a measured 0%), <code>stock</code> (<code>GP_STOCK</code>), and the three empty ones <code>plot</code>, <code>sowing_date</code> and <code>notes</code>. With the interface in Spanish, the file is called <span class="ruta">lista-de-siembra.csv</span> and its columns and the “yes” are in Spanish. Unlike on the sheet, the name is given in full.</p>
   <table class="compacta csv">
-    <caption><b>Table 9.7.</b> Three rows of <span class="ruta">lista-de-siembra.csv</span> with the whole collection (without the three empty columns).</caption>
-    <thead><tr><th>ACCENUMB</th><th>nombre</th><th>taxon</th><th>plantas</th><th>germinacion</th><th>germinacion_supuesta</th><th>semillas</th><th>existencias</th></tr></thead>
+    <caption><b>Table 9.7.</b> Three rows of <span class="ruta">sowing-list.csv</span> with the whole collection (without the three empty columns).</caption>
+    <thead><tr><th>ACCENUMB</th><th>name</th><th>taxon</th><th>plants</th><th>germination</th><th>assumed_germination</th><th>seeds</th><th>stock</th></tr></thead>
     <tbody>
       <tr><td>MEX-ZM-0001</td><td>Maíz azul de Apoala</td><td>Zea mays</td><td>100</td><td>88</td><td></td><td>127</td><td>1800</td></tr>
       <tr><td>MEX-ZM-0002</td><td>Bolita amarillo</td><td>Zea mays</td><td>100</td><td>89</td><td></td><td>125</td><td>1930</td></tr>
       <tr><td>MEX-ZP-0012</td><td>Población silvestre de teocintle, reserva</td><td>Zea mays</td><td>100</td><td>85</td><td>yes</td><td>131</td><td>1200</td></tr>
     </tbody>
   </table>
-  <p>Compare the <code>semillas</code> column with <code>existencias</code> before sowing: if the lot does not have the seeds the list asks for, sow the ones there are and write it down in the notes.</p>
+  <p>Compare the <code>seeds</code> column with <code>stock</code> before sowing: if the lot does not have the seeds the list asks for, sow the ones there are and write it down in the notes.</p>
 
   <!-- 9.8 -->
   <h2 id="b9-8"><span class="num">9.8</span>The delivery note</h2>
   <p>The <span class="ui">delivery note</span> is the sheet that travels with a shipment. At the top it carries the title, a note about the International Treaty, the header and the date; then four lines to fill in by hand —<span class="ui">Requester</span>, <span class="ui">Institution</span>, <span class="ui">Intended use</span> and <span class="ui">Shipping date</span>—, the table of accessions and two signature lines: <span class="ui">Released by (name and signature)</span> and <span class="ui">Received by (name and signature)</span>.</p>
   <figure class="mediana">
-    <div class="marco"><img src="../img/en/b9-vale.png" alt="The Germplasm delivery note with the note This material is supplied under the International Treaty terms when the accession is in the Multilateral System (MLSSTAT = 1), the header Example Genebank and the date 10/31/2026; the lines Requester, Institution, Intended use and Shipping date; the table with Accession, Name, Species, Origin, Quantity and SMTA for MEX-SE-0029 Chayote verde liso, MEX-SE-0030 Chayote erizo (cuspidat…, MEX-SE-0046 Chayote verde liso, all three Sechium edule, Mexico, with the quantity blank and a dash under SMTA; and the signature lines Released by and Received by"></div>
+    <div class="marco"><img src="../img/en/b9-vale.png" alt="The Germplasm delivery note with the note This material is supplied under the International Treaty terms when the accession is in the Multilateral System (MLSSTAT = 1), the header Example Genebank and the date 2026-10-31; the lines Requester, Institution, Intended use and Shipping date; the table with Accession, Name, Species, Origin, Quantity and SMTA for MEX-SE-0029 Chayote verde liso, MEX-SE-0030 Chayote erizo (cuspidat…, MEX-SE-0046 Chayote verde liso, all three Sechium edule, Mexico, with the quantity blank and a dash under SMTA; and the signature lines Released by and Received by"></div>
     <figcaption><b>Figure 9.8.</b> The delivery note for the three chayote accessions of Figure 9.2.</figcaption>
   </figure>
   <p>The table has one row per accession: the number, the name (cut with “…” if it is longer than 24 characters), the species, the country of origin by its name, the <span class="ui">Quantity</span> left blank to write what is sent (seeds, grams, jars or cuttings) and the <span class="ui">SMTA</span> column, which comes from <code>MLSSTAT</code>: <span class="ui">yes</span> if the accession is in the Multilateral System (1), <span class="ui">no</span> if it is not (0) and a dash if the field is empty. With the whole example collection there are 21 “yes”, 4 “no” and 21 dashes.</p>
@@ -293,7 +293,7 @@
 
   <!-- 9.9 -->
   <h2 id="b9-9"><span class="num">9.9</span>The register book</h2>
-  <p>The <span class="ui">register book</span> is the printed inventory of the collection: the title, the line <span class="ui">46 accessions as of 10/31/2026</span> and one table per conservation route, each with its subtitle and its number of accessions. The routes come out in the order in which their first accession appears in the passport; with the example collection they are Seed bank · 28, Genetic reserve (in situ) · 2, In vitro culture · 3, Cryopreservation · 1, Field genebank or living collection · 8, On-farm conservation · 3 and Not declared · 1, which is the chile costeño (Section 8.9).</p>
+  <p>The <span class="ui">register book</span> is the printed inventory of the collection: the title, the line <span class="ui">46 accessions as of 2026-10-31</span> and one table per conservation route, each with its subtitle and its number of accessions. The routes come out in the order in which their first accession appears in the passport; with the example collection they are Seed bank · 28, Genetic reserve (in situ) · 2, In vitro culture · 3, Cryopreservation · 1, Field genebank or living collection · 8, On-farm conservation · 3 and Not declared · 1, which is the chile costeño (Section 8.9).</p>
   <table class="compacta">
     <caption><b>Table 9.8.</b> The columns of the register book.</caption>
     <thead><tr><th style="width:1.3in">Column</th><th>What it shows</th></tr></thead>
@@ -302,14 +302,14 @@
       <tr><td><span class="ui">Name</span></td><td><code>ACCENAME</code>, cut with “…” if it is longer than 22 characters.</td></tr>
       <tr><td><span class="ui">Species</span></td><td>Genus and species, in italics.</td></tr>
       <tr><td><span class="ui">Site</span></td><td><code>COLLSITE</code>, cut with “…” if it is longer than 26 characters.</td></tr>
-      <tr><td><span class="ui">Acquired</span></td><td><code>ACQDATE</code>, the date the accession entered the genebank, as day/month/year (also in English, unlike the date at the top of the sheet, which follows the month/day/year order).</td></tr>
+      <tr><td><span class="ui">Acquired</span></td><td><code>ACQDATE</code>, the date the accession entered the genebank, as year-month-day (ISO 8601), like the date at the top of the sheet; with the interface in Spanish, both go as day/month/year.</td></tr>
       <tr><td><span class="ui">Stock</span></td><td><code>GP_STOCK</code>, in the units of the route.</td></tr>
       <tr><td><span class="ui">Last germ.</span></td><td><code>GP_GERMPCT</code> with “%”, or empty.</td></tr>
       <tr><td><span class="ui">Backup</span></td><td><code>DUPLSITE</code>, the institute holding the safety duplicate, or a dash.</td></tr>
     </tbody>
   </table>
   <figure class="mediana">
-    <div class="marco"><img src="../img/en/b9-registro.png" alt="The Collection register book, with the line 46 accessions as of 10/31/2026 and the date on the right; the subtitle Seed bank · 28 and the table with the columns Accession, Name, Species, Site, Acquired, Stock, Last germ. and Backup, with the first six rows, from MEX-ZM-0001 Maíz azul de Apoala, Zea mays, Oaxaca, Santiago Apoala, 04/11/2019, 1,800, 88 %, no backup, to MEX-ZM-0006 Cacahuacintle de Chol…, 2,450, 93 %, no backup; the others with NOR051"></div>
+    <div class="marco"><img src="../img/en/b9-registro.png" alt="The Collection register book, with the line 46 accessions as of 2026-10-31 and the date on the right; the subtitle Seed bank · 28 and the table with the columns Accession, Name, Species, Site, Acquired, Stock, Last germ. and Backup, with the first six rows, from MEX-ZM-0001 Maíz azul de Apoala, Zea mays, Oaxaca, Santiago Apoala, 2019-11-04, 1,800, 88 %, no backup, to MEX-ZM-0006 Cacahuacintle de Chol…, 2,450, 93 %, no backup; the others with NOR051"></div>
     <figcaption><b>Figure 9.9.</b> The beginning of the register book of the example collection.</figcaption>
   </figure>
   <p>Names and sites that are too long are cut and end in “…” (“Maíz blanco de tempor…”), and the stock carries a thousands separator, as in the rest of the app. The register keeps no history: it reflects the passport on the day you print it, with the tests and regenerations you have recorded in Block 8. Print it at the close of each season, sign it and file it with the passport export from Block 2: that way the collection has a paper record of every year.</p>
@@ -325,7 +325,7 @@
       <tr><td>A label with a dotted red border in the preview</td><td>Its number has characters that Code 128 does not accept (ñ, accents) and it comes out without a code. Switch to QR or fix the number in Block 2.</td></tr>
       <tr><td>Ochre warning about the narrowest bar</td><td>The Code 128 module is below 0.19 mm (Section 9.4). Print a test one, use a wider format or the QR.</td></tr>
       <tr><td>Ochre warning about the QR module</td><td>The format is too small for the QR (Section 9.5). Print a test one, or use the barcode.</td></tr>
-      <tr><td>The printed label is smaller than its format</td><td>The scale in the dialogue is not 100%, or the printer driver shrinks the sheet. Set it to 100% or “actual size” (Section 9.6).</td></tr>
+      <tr><td>The printed label is smaller than its format</td><td>The scale in the dialog is not 100%, or the printer driver shrinks the sheet. Set it to 100% or “actual size” (Section 9.6).</td></tr>
       <tr><td>A row of the sowing list says <span class="ui">85 %*</span></td><td>The accession has no germination test and the list uses the Block 8 assumption (Section 9.7). If it is a seed lot, run the test; if it is not, cross out the row.</td></tr>
       <tr><td>A row of the sowing list has a dash under <span class="ui">Seeds</span></td><td>Its last test gave 0%: there is no viable seed. Turn to the safety duplicate or collect again.</td></tr>
     </tbody>
