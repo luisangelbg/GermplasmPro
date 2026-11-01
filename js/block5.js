@@ -557,7 +557,7 @@
     }
     const b = el('b5Band');
     if (b) {
-      b.innerHTML = [100, 250, 500, 1000].map(v => `<option value="${v}">${v} m</option>`).join('');
+      b.innerHTML = [100, 250, 500, 1000].map(v => `<option value="${v}">${fmtInt(v)} m</option>`).join('');
       b.value = String(view.band);
     }
   }

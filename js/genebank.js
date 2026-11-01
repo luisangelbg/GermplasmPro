@@ -128,7 +128,7 @@
       },
     },
     chile: {
-      es: 'Chile', en: 'Chilli pepper', sci: 'Capsicum annuum',
+      es: 'Chile', en: 'Chili pepper', sci: 'Capsicum annuum',
       behaviour: 'orthodox', editable: true, KE: 6.474, CW: 2.115, CH: 0.0329, CQ: 0.000478,
       seedsPerPlant: 400, sexual: true, outcrossing: false,
       note: {
