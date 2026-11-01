@@ -26,8 +26,8 @@
 <section class="capitulo" id="cap-b9" data-pestana="9" data-orden="9" style="--acento: var(--b9)">
   <div class="cap-apertura">
     <div class="cap-num">9</div>
-    <div class="cap-etiqueta">Chapter nine · Block 9 · Labels and register</div>
-    <h1 data-corto="Labels and register">Labels and register</h1>
+    <div class="cap-etiqueta">Chapter nine · Block 9 · Labels &amp; register</div>
+    <h1 data-corto="Labels &amp; register">Labels and register</h1>
     <div class="cap-regla"></div>
     <p class="cap-resumen">Everything that enters or leaves the genebank carries paper: the label on the envelope, the jar, the stake or the cryovial, and the sheet that travels with the material. Block 9 prints those labels at their real size, in millimeters, with a Code 128 barcode or a QR code that the app itself generates, with no outside libraries; and it prepares the genebank’s three worksheets: the sowing list for a regeneration, the delivery note and the collection register book. It computes nothing new: it takes the passport from Block 2, the core collection from Block 7 or the lots in trouble from Block 8, and puts them on paper.</p>
     <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
@@ -74,7 +74,7 @@
 
   <!-- 9.2 -->
   <h2 id="b9-2"><span class="num">9.2</span>The five formats and how many fit on a sheet</h2>
-  <p>The <span class="ui">Format</span> selector offers five label sizes, one per object labelled in a genebank; the name of each option carries its size. <span class="ui">Paper</span> chooses letter (216 × 279 mm, the default) or A4 (210 × 297 mm). The app draws each label with a gray border with rounded corners, which is the cutting line: it is designed to be printed on a full sheet of adhesive paper and cut out, not for pre-cut label sheets of a commercial size.</p>
+  <p>The <span class="ui">Format</span> selector offers five label sizes, one per object labeled in a genebank; the name of each option carries its size. <span class="ui">Paper</span> chooses letter (216 × 279 mm, the default) or A4 (210 × 297 mm). The app draws each label with a gray border with rounded corners, which is the cutting line: it is designed to be printed on a full sheet of adhesive paper and cut out, not for pre-cut label sheets of a commercial size.</p>
   <table class="compacta">
     <caption><b>Table 9.2.</b> The five formats, how many labels fit on each paper and how many sheets the example collection (46 accessions) needs.</caption>
     <thead><tr><th>Format</th><th class="c">Size (mm)</th><th class="c">Text (mm)</th><th class="c">Letter</th><th class="c">Sheets</th><th class="c">A4</th><th class="c">Sheets</th></tr></thead>
@@ -238,11 +238,11 @@
   </div>
   <p>The worksheets are printed as a document: tables split across sheets and repeat their header row at the top of each sheet. With the whole example collection on letter paper and the app in English, the sowing list takes 2 sheets, the register book 2 and the delivery note 2. At the foot of the block, a note sums up what to take care of: <span class="ui largo">Check the first sheet before printing a hundred.</span></p>
   <ol>
-    <li>In the dialog set the scale to <b>100 %</b>, not “fit to page”, as the line in section 1 also asks, and turn off the browser’s headers and footers.</li>
+    <li>In the dialog set the scale to <b>100%</b>, not “fit to page”, as the line in section 1 also asks, and turn off the browser’s headers and footers.</li>
     <li>Print <b>one</b> sheet and measure a label with a ruler: the envelope must measure 90 × 54 mm. Some printer drivers shrink the sheet on their own; if the label comes out smaller, look in their options for “actual size” or “100%”.</li>
     <li>Scan the code with the reader. If the number it reads is the one on the label, print the rest.</li>
   </ol>
-  <p>For the field and the cold store, the paper matters as much as the ink: use polyester label stock or water-resistant paper, and laser toner or thermal transfer; inkjet ink runs with the condensation when a jar is taken out of the cold.</p>
+  <p>For the field and the cold room, the paper matters as much as the ink: use polyester label stock or water-resistant paper, and laser toner or thermal transfer; inkjet ink runs with the condensation when a jar is taken out of the cold.</p>
 
   <!-- 9.7 -->
   <h2 id="b9-7"><span class="num">9.7</span>The sowing list</h2>
@@ -334,9 +334,9 @@
   <div class="caja regla">
     <div class="caja-t"><span class="ico">✓</span>Decision rule · what to print in Block 9</div>
     <table class="compacta"><tbody>
-      <tr><td style="width:44%"><b>If</b> you are labelling envelopes, jars or shipments</td><td><b>then</b> use Code 128: any handheld reader reads it and types the number wherever the cursor is.</td></tr>
-      <tr><td><b>If</b> you are labelling field stakes or want to read with a phone</td><td><b>then</b> use the QR: it leaves more lines of text and the camera reads it.</td></tr>
-      <tr><td><b>If</b> you are labelling cryovials</td><td><b>then</b> test both codes with your printer before printing the rest; the module is at the limit.</td></tr>
+      <tr><td style="width:44%"><b>If</b> you are labeling envelopes, jars or shipments</td><td><b>then</b> use Code 128: any handheld reader reads it and types the number wherever the cursor is.</td></tr>
+      <tr><td><b>If</b> you are labeling field stakes or want to read with a phone</td><td><b>then</b> use the QR: it leaves more lines of text and the camera reads it.</td></tr>
+      <tr><td><b>If</b> you are labeling cryovials</td><td><b>then</b> test both codes with your printer before printing the rest; the module is at the limit.</td></tr>
       <tr><td><b>If</b> you are about to print a batch</td><td><b>then</b> print one sheet, measure a label with a ruler and scan it; only then print the rest.</td></tr>
       <tr><td><b>If</b> you are preparing a regeneration</td><td><b>then</b> use the lots in trouble from Block 8 with the sowing list, and cross out the accessions that are not regenerated from seed.</td></tr>
       <tr><td><b>If</b> material is leaving the genebank</td><td><b>then</b> print the delivery note, check the SMTA column and fill in <code>MLSSTAT</code> wherever there is a dash.</td></tr>

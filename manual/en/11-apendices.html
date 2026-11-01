@@ -291,7 +291,7 @@
   <h3>F.1 · What the app contains</h3>
   <p>GermplasmPro is written in HTML, CSS and JavaScript without third-party libraries: not for reading files, not for the charts and maps, not for writing the .zip, the QR code or the Code 128, which are generated in the browser itself according to their standards. It carries no fonts and requests none from the internet: it uses the system fonts. The only outside items are two, declared in <span class="ruta">LICENSES-TERCEROS.md</span>:</p>
   <ul>
-    <li><b>The Lucide icons</b> (version 1.49.0) of the common bar, the figure studio and the <span class="ui">Animations</span> button, drawn with a thinner stroke, under the ISC license; those Lucide took from the Feather project also carry the MIT license. Both are permissive and compatible with GPL-3.0.</li>
+    <li><b>The Lucide icons</b> (version 1.49.0) of the top bar, the figure studio and the <span class="ui">Animations</span> button, drawn with a thinner stroke, under the ISC license; those Lucide took from the Feather project also carry the MIT license. Both are permissive and compatible with GPL-3.0.</li>
     <li><b>The Natural Earth outlines</b> of the countries (1:110 million scale) and of the 32 Mexican states (1:10 million), simplified for the app, with which the maps are drawn and each accession is assigned to its country and state. They are in the public domain: they require neither license nor attribution, and are declared only so that it is known where they come from.</li>
   </ul>
   <p>The formulas are those of the original papers of each method (Appendix E), and the code lists, those of MCPD v2.1. The viability constants included are those published by Ellis and Roberts for <i>Zea mays</i>; for the other species you supply them, with their source.</p>
@@ -314,7 +314,7 @@
 
   <h3>F.3 · Privacy: what is stored and where</h3>
   <p>Everything is computed in your browser. The app makes no request to the internet: it does not send the passport, it does not query catalogs or portals and it loads nothing from outside; the maps use the outlines it carries inside. Only two links in the top bar go out to the network, and only if you click them: the one to the suite portal and <span class="ui">Report a problem</span>, which opens GitHub in another tab.</p>
-  <p>What the app remembers stays in the local storage of that browser, on that computer, under keys beginning with <span class="ruta">germplasmpro:</span>: the collection and the time of the last save; the characterization; the genebank assumptions and the custom constants of Block 8; the duplicate threshold and the dismissed pairs of Block 3; the fields, header and code of the labels; the title, genebank and signatory of the report; the language and the theme. The common bar separately stores whether the block bar is collapsed and whether animations are on. None of that leaves the computer, and it is erased when you clear the browsing data for that site; <span class="ui">Empty</span>, in the Block 2 table, erases the collection after asking for confirmation.</p>
+  <p>What the app remembers stays in the local storage of that browser, on that computer, under keys beginning with <span class="ruta">germplasmpro:</span>: the collection and the time of the last save; the characterization; the genebank assumptions and the custom constants of Block 8; the duplicate threshold and the dismissed pairs of Block 3; the fields, header and code of the labels; the title, genebank and signatory of the report; the language and the theme. The top bar separately stores whether the sidebar is collapsed and whether animations are on. None of that leaves the computer, and it is erased when you clear the browsing data for that site; <span class="ui">Empty</span>, in the Block 2 table, erases the collection after asking for confirmation.</p>
   <div class="caja nota">
     <div class="caja-t"><span class="ico">i</span>The backup is yours</div>
     <p>Browser storage is a convenience, not a backup, and sometimes it cannot be used: with the space full or in a private window, Block 2 warns that it could not save. The .json project carries the passport, the characterization, the genebank assumptions, the custom constants, the dismissed pairs and the threshold, and the label preferences; the report title, the language and the theme stay in the browser. Save the project at the end of each session, export the passport every season and write down the constants of your species with their source.</p>
@@ -326,9 +326,9 @@
     <thead><tr><th style="width:1.6in">Keys</th><th>What they do</th></tr></thead>
     <tbody>
       <tr><td><kbd>Alt</kbd> + <kbd>←</kbd> · <kbd>Alt</kbd> + <kbd>→</kbd></td><td>Previous or next block. In focused mode, previous or next section, and at the ends, the block.</td></tr>
-      <tr><td><kbd>←</kbd> / <kbd>→</kbd> · <kbd>Home</kbd> / <kbd>End</kbd></td><td>With the focus on the block bar, move along it; Home and End go to the first and the last.</td></tr>
+      <tr><td><kbd>←</kbd> / <kbd>→</kbd> · <kbd>Home</kbd> / <kbd>End</kbd></td><td>With the focus on the sidebar, move along it; Home and End go to the first and the last.</td></tr>
       <tr><td><kbd>Ctrl</kbd> + <kbd>K</kbd></td><td>Search blocks, sections, controls and actions, also from a text field.</td></tr>
-      <tr><td><kbd>[</kbd></td><td>Collapse or show the block bar.</td></tr>
+      <tr><td><kbd>[</kbd></td><td>Collapse or show the sidebar.</td></tr>
       <tr><td><kbd>?</kbd></td><td>Show the list of shortcuts.</td></tr>
       <tr><td><kbd>Esc</kbd></td><td>Close windows and panels.</td></tr>
       <tr><td><kbd>Ctrl</kbd> + <kbd>P</kbd></td><td>In Block 9, print the label sheet at exact scale, like the <span class="ui">Print</span> button.</td></tr>
@@ -341,7 +341,7 @@
 
   <h3>F.6 · How to cite it</h3>
   <div class="cita">Barrera-Guzmán, L.Á. (2026). GermplasmPro: the genebank, accession by accession (version 1.0.0) [software]. https://github.com/luisangelbg/GermplasmPro</div>
-  <div class="cita">Barrera-Guzmán, L. Á. (2026). <i>GermplasmPro: User’s Manual</i> (1st ed.). Distributed with GermplasmPro, version 1.0.0. https://github.com/luisangelbg/GermplasmPro</div>
+  <div class="cita">Barrera-Guzmán, L.Á. (2026). <i>GermplasmPro: User’s Manual</i> (1st English ed.). Distributed with GermplasmPro, version 1.0.0. https://github.com/luisangelbg/GermplasmPro</div>
   <p class="small">The citation of the program is the one given by the <span class="ui">How to cite</span> button on the app’s home page and the one that closes every Block 10 report in English. GermplasmPro has no DOI: the citation carries the address of the repository, where the source code is; the app is used online at https://luisangelbg.github.io/GermplasmPro/. The <span class="ruta">CITATION.cff</span> file in the program folder gives the same data —author, with his ORCID 0000-0001-8057-2583; version 1.0.0, of 1 October 2026; license GPL-3.0-or-later— in the format read by reference managers and GitHub.</p>
 </section>
 

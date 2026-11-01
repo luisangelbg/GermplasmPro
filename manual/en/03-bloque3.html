@@ -23,8 +23,8 @@
 <section class="capitulo" id="cap-b3" data-pestana="3" data-orden="3" style="--acento: var(--b3)">
   <div class="cap-apertura">
     <div class="cap-num">3</div>
-    <div class="cap-etiqueta">Chapter three · Block 3 · Quality and duplicates</div>
-    <h1 data-corto="Quality and duplicates">Data quality and duplicates</h1>
+    <div class="cap-etiqueta">Chapter three · Block 3 · Quality &amp; duplicates</div>
+    <h1 data-corto="Quality &amp; duplicates">Data quality and duplicates</h1>
     <div class="cap-regla"></div>
     <p class="cap-resumen">Block 2 checks each value on its own; Block 3 checks what only shows when the whole collection is looked at: the coordinate that does not fall in the country the accession declares, the genus spelled two ways, the site with several spellings and, above all, the same collection entered twice. The app diagnoses, proposes the fix and explains why; applying it, merging two accessions or dismissing a pair is your decision.</p>
     <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
@@ -212,7 +212,7 @@
     <div class="caja-t"><span class="ico">θ</span>Theory in brief · the haversine distance</div>
     <p>Between two points on the Earth, with latitudes φ<sub>1</sub>, φ<sub>2</sub> and longitudes λ<sub>1</sub>, λ<sub>2</sub> in radians, the distance over the surface of a sphere of radius R is:</p>
     <div class="formula">a = sin²(Δφ/2) + cos φ<sub>1</sub> cos φ<sub>2</sub> sin²(Δλ/2)  ·  d = 2R arcsin √a</div>
-    <p>The app uses R = 6,371.0088 km, the mean radius of the Earth. Treating the Earth as a sphere produces errors of around 0.5 %, irrelevant for deciding whether two collections are 1, 5 or 25 km apart. Unlike subtracting degrees, the formula takes into account that a degree of longitude is shorter away from the equator.</p>
+    <p>The app uses R = 6,371.0088 km, the mean radius of the Earth. Treating the Earth as a sphere produces errors of around 0.5%, irrelevant for deciding whether two collections are 1, 5 or 25 km apart. Unlike subtracting degrees, the formula takes into account that a degree of longitude is shorter away from the equator.</p>
   </div>
   <div class="caja ejemplo">
     <div class="caja-t"><span class="ico">▸</span>Worked example · the two Bolita amarillo</div>
@@ -257,7 +257,7 @@
     <div class="marco"><img src="../img/en/b3-umbral.png" alt="With the threshold at 35 points, the chayote group open with three accessions, MEX-SE-0029, MEX-SE-0030 and MEX-SE-0046; the first rows of the comparison show that MEX-SE-0030, Chayote erizo (cuspidatum), has another collecting number, LAB-2018-103, and another date, 20180616"></div>
     <figcaption><b>Figure 3.7.</b> With the threshold at 35, the spiny chayote MEX-SE-0030 enters the group of the smooth green chayote by transitivity. The first rows of the comparison give away that it is another collection: another name, another number and another day.</figcaption>
   </figure>
-  <p>Figure 3.7 shows the risk of transitivity with a low threshold. The spiny chayote adds up to 39 points with each smooth green chayote —the same taxon (+10), names 87 % similar (+12), 3.4 and 2.3 km apart (+12) and the same year (+5)— and stays in the group, although it is another collection, from another day, and in its passport it is another variety (<code>SUBTAXA</code> <i>var. nigrum spinosum</i>).</p>
+  <p>Figure 3.7 shows the risk of transitivity with a low threshold. The spiny chayote adds up to 39 points with each smooth green chayote —the same taxon (+10), names 87% similar (+12), 3.4 and 2.3 km apart (+12) and the same year (+5)— and stays in the group, although it is another collection, from another day, and in its passport it is another variety (<code>SUBTAXA</code> <i>var. nigrum spinosum</i>).</p>
   <p>The subtraction for different subtaxa does not stop it, because the smooth green chayotes declare no variety: the app only subtracts the 15 points when both sides declare a subtaxon and it does not match. That is why the decision is taken <b>pair by pair</b>: here the two 39-point pairs would be dismissed with <span class="ui">Not duplicates</span> and only the 100-point one would be resolved.</p>
 
   <!-- 3.7 -->
@@ -277,7 +277,7 @@
   <p>With the example collection, MEX-ZM-0002 ends up with 1,930 + 1,400 = <b>3,330</b> seeds, with <i>MEX-ZM-0045</i> among its other numbers, and keeps its name, its coordinate, its crop “Maíz” and its remark <i>Raza Bolita.</i>; the remark of the absorbed one, which explained how it had entered the catalog again, does not carry over, because the master already had its own. The merge has no undo button: if in doubt, export the passport first (Chapter 2).</p>
   <div class="caja importante">
     <div class="caja-t"><span class="ico">!</span>What the merge does not do for you</div>
-    <p>Adding stocks assumes the two lots are in the same condition. If one was tested a year ago with 89 % germination and the other has another date, the master keeps only its own test: check in Block 8 (Chapter 8) whether the merged lot should be tested again. And if the two records are really the same material in two different genebanks, do not merge: note it.</p>
+    <p>Adding stocks assumes the two lots are in the same condition. If one was tested a year ago with 89% germination and the other has another date, the master keeps only its own test: check in Block 8 (Chapter 8) whether the merged lot should be tested again. And if the two records are really the same material in two different genebanks, do not merge: note it.</p>
   </div>
   <h3>Note as duplicate without merging</h3>
   <p><span class="ui">Note as duplicate without merging</span> leaves both accessions in the catalog, but records the link in both: each one receives the other’s number in <code>OTHERNUMB</code> and a sentence in <code>REMARKS</code> —in the example, <i>Declared duplicate of MEX-SE-0046.</i> and <i>Declared duplicate of MEX-SE-0029.</i>— (the sentence is written in the interface language). It is the way out for the same collection kept at two institutions, or for two lots you decide to keep apart. The pair is no longer proposed.</p>

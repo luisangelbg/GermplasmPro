@@ -28,8 +28,8 @@
 <section class="capitulo" id="cap-b7" data-pestana="7" data-orden="7" style="--acento: var(--b7)">
   <div class="cap-apertura">
     <div class="cap-num">7</div>
-    <div class="cap-etiqueta">Chapter seven · Block 7 · Characterization and core</div>
-    <h1 data-corto="Characterization and core">Characterization and core collection</h1>
+    <div class="cap-etiqueta">Chapter seven · Block 7 · Characterization &amp; core</div>
+    <h1 data-corto="Characterization &amp; core">Characterization and core collection</h1>
     <div class="cap-regla"></div>
     <p class="cap-resumen">The passport says who each accession is and where it comes from; characterization says what it is like. Block 7 takes what you measured in the field and in the laboratory —numbers, scales, colors and empty cells, all together—, describes the variation trait by trait, measures how alike the accessions are with Gower’s distance, lays them out on a map of resemblance and in a tree and, with all that, builds a core collection: the small subset you can characterize in depth or evaluate in the field without moving the whole genebank. Finally, it checks with the criteria of Hu <i>et al.</i> that the core truly represents the collection.</p>
     <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
@@ -177,7 +177,7 @@
 
   <!-- 7.5 -->
   <h2 id="b7-5"><span class="num">7.5</span>Clustering and the silhouette</h2>
-  <p>The tree on the right clusters the accessions with the same Gower matrix. Each leaf is an accession, written in the color of its group and with its branch attached to its name; branches join toward the right, and the scale at the bottom gives the <span class="ui">merge height</span>: the further to the right two branches join, the more different they are. With Ward the height is in Ward.D2 units; with UPGMA, in Gower distance. The app cuts the tree into the chosen number of groups and calls the resulting groups G1, G2… Below the two plots, <span class="ui">PCoA as SVG</span> saves <span class="ruta">pcoa-gower.svg</span> and <span class="ui">Tree as SVG</span>, <span class="ruta">gower-tree.svg</span>, both with the colors of the light theme.</p>
+  <p>The tree on the right clusters the accessions with the same Gower matrix. Each leaf is an accession, written in the color of its group and with its branch attached to its name; branches join toward the right, and the scale at the bottom gives the <span class="ui">merge height</span>: the further to the right two branches join, the more different they are. With Ward the height is in Ward.D2 units; with UPGMA, in Gower’s distance. The app cuts the tree into the chosen number of groups and calls the resulting groups G1, G2… Below the two plots, <span class="ui">PCoA as SVG</span> saves <span class="ruta">pcoa-gower.svg</span> and <span class="ui">Tree as SVG</span>, <span class="ruta">gower-tree.svg</span>, both with the colors of the light theme.</p>
   <div class="caja teoria">
     <div class="caja-t"><span class="ico">θ</span>Theory in brief · Ward.D2 and UPGMA</div>
     <p><b>UPGMA</b> joins at each step the two groups with the smallest mean distance between their members. <b>Ward.D2</b> (Murtagh and Legendre, 2014) joins the pair whose merger least increases the within-group sum of squares; it works with squared distances and updates with the Lance-Williams formula, the same criterion as R’s <code>hclust(…, method = "ward.D2")</code>. Ward tends to give groups of similar size; UPGMA respects the distances better, but leaves the rare accessions isolated and lumps the rest into one huge group. The cut into <i>k</i> groups splits, again and again, the highest remaining node.</p>
