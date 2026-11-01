@@ -68,7 +68,7 @@
   const BEHAVIOUR = {
     orthodox: {
       es: 'ortodoxa', en: 'orthodox',
-      d: { es: 'tolera secarse al 3–7 % de humedad y congelarse: se conserva en frasco a −18 °C.', en: 'tolerates drying to 3–7% moisture and freezing: it is stored in jars at −18 °C.' },
+      d: { es: 'tolera secarse al 3–7 % de humedad y congelarse: se conserva en frasco a −18 °C.', en: 'tolerates drying to 3–7 % moisture and freezing: it is stored in jars at −18 °C.' },
     },
     intermediate: {
       es: 'intermedia', en: 'intermediate',
@@ -92,7 +92,7 @@
      especies de semilla, KE y CW se editan (arrancan de las del maíz). */
   const SPECIES = {
     generica: {
-      es: 'Otra especie (elige su comportamiento)', en: 'Other species (choose its behaviour)',
+      es: 'Otra especie (elige su comportamiento)', en: 'Other species (choose its behavior)',
       sci: '', behaviour: 'orthodox', pickBehaviour: true, editable: true,
       KE: 6.474, CW: 2.115, CH: 0.0329, CQ: 0.000478, seedsPerPlant: 120, sexual: true,
       note: {
@@ -133,7 +133,7 @@
       seedsPerPlant: 400, sexual: true, outcrossing: false,
       note: {
         es: 'Autógamo con cruzamiento natural apreciable: se regenera con malla antiáfidos para que la accesión no se contamine con el vecino.',
-        en: 'Self-pollinating with appreciable outcrossing: regenerate under insect-proof mesh so the accession is not contaminated by its neighbour.',
+        en: 'Self-pollinating with appreciable outcrossing: regenerate under insect-proof mesh so the accession is not contaminated by its neighbor.',
       },
     },
     trigo: {
@@ -243,7 +243,7 @@
     invitro: {
       es: 'Cultivo in vitro de crecimiento lento (ex situ)', en: 'Slow-growth in vitro culture (ex situ)', kind: 'ex situ',
       short: { es: 'Cultivo in vitro de crecimiento lento', en: 'Slow-growth in vitro culture' },
-      d: { es: 'Plántulas o ápices en frascos, con el crecimiento frenado para subcultivar lo menos posible. Ahorra espacio y sanea el material, pero cada subcultivo cuesta trabajo y arriesga contaminación y variación somaclonal.', en: 'Plantlets or shoot tips in jars, with growth slowed to subculture as rarely as possible. It saves space and cleans the material, but every subculture costs labour and risks contamination and somaclonal variation.' },
+      d: { es: 'Plántulas o ápices en frascos, con el crecimiento frenado para subcultivar lo menos posible. Ahorra espacio y sanea el material, pero cada subcultivo cuesta trabajo y arriesga contaminación y variación somaclonal.', en: 'Plantlets or shoot tips in jars, with growth slowed to subculture as rarely as possible. It saves space and cleans the material, but every subculture costs labor and risks contamination and somaclonal variation.' },
       sliders: ['subMonths', 'lines', 'contam', 'years'],
       fits: { orthodox: 'warn', intermediate: 'ok', recalcitrant: 'ok', clonal: 'ok' },
       why: { warn: { es: 'Para una especie de semilla ortodoxa el frasco in vitro es un gasto innecesario: el banco de semillas hace el mismo trabajo por una fracción del costo.', en: 'For an orthodox-seeded species, in-vitro jars are an unnecessary expense: a seed bank does the same job for a fraction of the cost.' } },
@@ -251,14 +251,14 @@
     cryo: {
       es: 'Criopreservación (ex situ)', en: 'Cryopreservation (ex situ)', kind: 'ex situ',
       short: { es: 'Criopreservación', en: 'Cryopreservation' },
-      d: { es: 'Ápices, embriones o polen en nitrógeno líquido a −196 °C. El material deja de envejecer y ya no hay ciclos de regeneración: todo el riesgo está en la entrada y en que nunca falte nitrógeno.', en: 'Shoot tips, embryos or pollen in liquid nitrogen at −196 °C. The material stops ageing and there are no more regeneration cycles: all the risk is at the door, and in never running out of nitrogen.' },
+      d: { es: 'Ápices, embriones o polen en nitrógeno líquido a −196 °C. El material deja de envejecer y ya no hay ciclos de regeneración: todo el riesgo está en la entrada y en que nunca falte nitrógeno.', en: 'Shoot tips, embryos or pollen in liquid nitrogen at −196 °C. The material stops aging and there are no more regeneration cycles: all the risk is at the door, and in never running out of nitrogen.' },
       sliders: ['explants', 'recovery', 'failure', 'years'],
       fits: { orthodox: 'ok', intermediate: 'ok', recalcitrant: 'ok', clonal: 'ok' },
     },
     insitu: {
       es: 'In situ: reserva genética o conservación en la parcela', en: 'In situ: genetic reserve or on-farm conservation', kind: 'in situ',
       short: { es: 'Reserva genética y conservación en la parcela', en: 'Genetic reserve and on-farm conservation' },
-      d: { es: 'La población sigue viva en su sitio —una reserva de parientes silvestres o la milpa de quien la siembra cada año— y sigue evolucionando. Se pierde control y se gana adaptación: hay selección, flujo génico de las poblaciones vecinas y riesgo de que el sitio desaparezca.', en: 'The population stays alive where it belongs —a wild-relative reserve or the field of whoever sows it each year— and keeps evolving. You lose control and gain adaptation: there is selection, gene flow from neighbouring populations, and the risk of losing the site.' },
+      d: { es: 'La población sigue viva en su sitio —una reserva de parientes silvestres o la milpa de quien la siembra cada año— y sigue evolucionando. Se pierde control y se gana adaptación: hay selección, flujo génico de las poblaciones vecinas y riesgo de que el sitio desaparezca.', en: 'The population stays alive where it belongs —a wild-relative reserve or the field of whoever sows it each year— and keeps evolving. You lose control and gain adaptation: there is selection, gene flow from neighboring populations, and the risk of losing the site.' },
       sliders: ['census', 'neRatio', 'migration', 'siteRisk', 'years'],
       fits: { orthodox: 'ok', intermediate: 'ok', recalcitrant: 'ok', clonal: 'ok' },
     },

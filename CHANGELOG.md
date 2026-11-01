@@ -289,6 +289,37 @@
     (`B3.qualityCSV`), así que es el mismo archivo, con las filas de corrección y de validación del pasaporte y el
     nombre legible en «consistencia».
   - 1299 pruebas, todas en verde.
+- **La interfaz en inglés, revisada al traducir el manual:**
+  - Cita del programa: en inglés, la caja «How to cite» de la portada y la referencia del informe usan el título inglés
+    y «version»: «Barrera-Guzmán, L.Á. (2026). GermplasmPro: the genebank, accession by accession (version 1.0.0)
+    [software]. https://github.com/luisangelbg/GermplasmPro» (`REPORT.APP.titleEn`). En español no cambia.
+  - Portada: la lista «Where the methods come from» se traduce («and», «Rome» y las notas entre paréntesis).
+  - Bloque 1: si la app abre ya en inglés (idioma guardado), los selectores Escenario, Forma de conservación, Especie y
+    Su semilla es se arman en inglés (`HOME.buildControls` aplica el idioma al construirlos).
+  - Bloque 9: en inglés todas las fechas van en ISO 8601 (2019-11-04): etiquetas, listas, vale, registro y el
+    encabezado de las hojas (antes 10/31/2026 junto a 04/11/2019). En español siguen día/mes/año (`LABELS.fmtDate`).
+  - Archivos en inglés con la interfaz (o el informe) en inglés: `quality-report.csv` con columnas type, level,
+    accession, field, detail y contenido en inglés; el ZIP del Bloque 10 lleva `report.html`, `data/` (passport-mcpd,
+    passport-full, darwin-core, quality, work-plan), `figures/` y `README.txt` en inglés; las descargas se llaman
+    passport-mcpd.csv, passport-full.csv, passport-template.csv, germplasmpro-collection.json,
+    germplasmpro-template.csv, map-points.csv, collecting-map.svg/.png, accumulation-curve.svg,
+    composition-similarity.svg, geographic-diversity.csv, collecting-gaps.svg, types-at-risk.csv,
+    collecting-priorities.csv, gower-tree.svg, core-collection.csv, characterization-full.csv, gower-distances.csv,
+    characterization-template.csv, work-plan.csv y sowing-list.csv. Las columnas de los CSV de resultados se traducen
+    (`langCSV`); los CSV de pasaporte conservan los nombres MCPD y la plantilla de caracterización las claves del
+    catálogo, iguales en los dos idiomas. La importación de caracterización reconoce la llave «accession» o «accesion».
+  - Columnas sin encabezado: «Column A», «Column B»… en inglés.
+  - Catálogo de caracterización: unidades y ejemplos en inglés (days, count, ratio, % acid, mg GAE/100 g; erect,
+    dark green…).
+  - Bloque 7 e informe: VR% se llama por lo que mide, la razón de coeficientes de variación (100 · CV del núcleo / CV de
+    la colección): «razón de coeficientes de variación» / «coefficient of variation ratio» en la tabla, en el recuadro y
+    en el informe (antes «coeficiente de variación», «variación conservada», «variation retained»).
+  - Bloque 6: la nota de franjas vacías dice «there is one 500 m belt» / «there are N 500 m belts» (se leía «1,500 m»),
+    y en español «hay una franja de 500 m».
+  - Porcentajes con espacio antes de % en los dos idiomas («95 %», «6 %»); en inglés, comillas “ ” en vez de rectas o
+    latinas; ortografía estadounidense en toda la interfaz inglesa (color, behavior, neighbor, analyze, center,
+    catalog, labor, license, meter, fiber, flavor, vigor, aging, dialog…).
+  - 1363 pruebas, todas en verde.
 
 ## Después de la 1.0.0 — 2026-10-09
 

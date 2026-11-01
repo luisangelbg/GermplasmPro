@@ -286,6 +286,19 @@
     { k: 'GP_GERMPCT', es: 'Germinación', en: 'Germination' },
     { k: 'INSTCODE', es: 'Código del instituto', en: 'Institute code' },
   ];
+  /* Fechas: en español día/mes/año (04/11/2019); en inglés ISO 8601 (2019-11-04), que no se confunde con el
+     mes/día/año de EE. UU. Acepta AAAAMMDD de MCPD (con -- en lo que falte) o un objeto Date. */
+  function fmtDate(v, lang) {
+    if (v instanceof Date) {
+      const d = String(v.getDate()).padStart(2, '0'), m = String(v.getMonth() + 1).padStart(2, '0'), y = v.getFullYear();
+      return lang === 'en' ? `${y}-${m}-${d}` : `${d}/${m}/${y}`;
+    }
+    const s = String(v || '');
+    if (/^\d{8}$/.test(s)) return lang === 'en' ? `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}` : `${s.slice(6, 8)}/${s.slice(4, 6)}/${s.slice(0, 4)}`;
+    const t = s.replace(/-+$/, '');
+    if (lang === 'en' && /^\d{6}$/.test(t)) return `${t.slice(0, 4)}-${t.slice(4, 6)}`;
+    return t;
+  }
   function valueOf(row, k, lang) {
     if (k === 'TAXON') return [row.GENUS, row.SPECIES, row.SUBTAXA].filter(Boolean).join(' ');
     if (k === 'GP_CONS') {
@@ -296,10 +309,7 @@
       const c = MCPD.COUNTRY_MAP[row.ORIGCTY];
       return c ? (lang === 'en' ? c.en : c.es) : String(row.ORIGCTY || '');
     }
-    if (k === 'COLLDATE' || k === 'ACQDATE') {
-      const s = String(row[k] || '');
-      return /^\d{8}$/.test(s) ? `${s.slice(6, 8)}/${s.slice(4, 6)}/${s.slice(0, 4)}` : s.replace(/-+$/, '');
-    }
+    if (k === 'COLLDATE' || k === 'ACQDATE') return fmtDate(row[k], lang);
     if (k === 'ELEVATION') return row.ELEVATION ? row.ELEVATION + ' m' : '';
     if (k === 'GP_GERMPCT') return row.GP_GERMPCT ? row.GP_GERMPCT + ' %' : '';
     return String(row[k] ?? '');
@@ -443,7 +453,7 @@
 
   window.LABELS = {
     C128, encode128, widths128, barcodeSVG, decode128,
-    FORMATS, PAGES, FIELDS, valueOf, labelSVG, sheet, sowingSheet, qrSVG, chayoteSVG, qrModulo, QR_MIN_MODULO,
+    FORMATS, PAGES, FIELDS, valueOf, fmtDate, labelSVG, sheet, sowingSheet, qrSVG, chayoteSVG, qrModulo, QR_MIN_MODULO,
     QR_QUIET, qrHueco, barModulo, BAR_MIN_MODULO, BAR_OK_MODULO, fitText, fieldFit,
   };
 })();

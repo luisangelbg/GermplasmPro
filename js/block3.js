@@ -82,7 +82,7 @@
       { k: T('Grupos de duplicados', 'Duplicate groups'), v: fmtInt(a.dup.groups.length), d: T(
         `${a.dup.pairs.length} ${a.dup.pairs.length === 1 ? 'par por encima' : 'pares por encima'} del umbral`,
         `${a.dup.pairs.length} ${a.dup.pairs.length === 1 ? 'pair' : 'pairs'} above the threshold`), c: a.dup.groups.length ? 'var(--stDup)' : 'var(--s3)' },
-      { k: T('Avisos de consistencia', 'Consistency warnings'), v: fmtInt(a.consistency.length), d: T('nombres y catálogos', 'names and catalogues'), c: 'var(--s6)' },
+      { k: T('Avisos de consistencia', 'Consistency warnings'), v: fmtInt(a.consistency.length), d: T('nombres y catálogos', 'names and catalogs'), c: 'var(--s6)' },
     ];
     el('b3Stats').innerHTML = stats.map(x =>
       `<div class="stat" style="--sc:${x.c}"><div class="s-k">${x.k}</div><div class="s-v">${x.v}</div><div class="s-d">${x.d}</div></div>`).join('');
@@ -212,7 +212,7 @@
       : `<div class="note-ok">${T('Los nombres científicos, los de cultivo y los sitios están escritos de manera uniforme.', 'Scientific names, crop names and sites are spelled consistently.')}</div>`;
 
     const sec = section(
-      T('3 · Nombres y catálogos', '3 · Names and catalogues'),
+      T('3 · Nombres y catálogos', '3 · Names and catalogs'),
       T('Lo que no es un error de formato pero desordena la colección: el mismo género escrito de dos maneras, un epíteto con mayúscula, el mismo taxón con dos nombres de cultivo, el mismo sitio con tres ortografías o coordenadas repetidas entre sitios distintos.',
         'What is not a format error but still messes up a collection: the same genus spelled two ways, a capitalized epithet, one taxon under two crop names, one site with three spellings, or identical coordinates across different sites.'),
       inner, 'b3Cons');
@@ -317,7 +317,7 @@
       const [i, j] = b.dataset.merge.split('|').map(Number);
       const merged = QC.mergeRows(state.acc[i], state.acc[j]);
       if (!confirm(T(`Se fusionará ${state.acc[j].ACCENUMB} dentro de ${state.acc[i].ACCENUMB} y la segunda desaparecerá del catálogo. ¿Seguir?`,
-        `${state.acc[j].ACCENUMB} will be merged into ${state.acc[i].ACCENUMB} and the second will disappear from the catalogue. Continue?`))) return;
+        `${state.acc[j].ACCENUMB} will be merged into ${state.acc[i].ACCENUMB} and the second will disappear from the catalog. Continue?`))) return;
       state.acc[i] = merged;
       state.acc.splice(j, 1);
       /* los descartes van por identidad: no hay que renumerarlos */
@@ -349,23 +349,37 @@
      paquete del Bloque 10 (datos/calidad.csv), para que los dos archivos
      sean el mismo: auditoría `a` de QC.audit, accesiones `acc` y avisos del
      pasaporte `issues` */
+  /* Columnas, tipos de fila y textos van en el idioma `lang` (por omisión, el de la interfaz): en inglés,
+     type, level, accession, field, detail. Los niveles (error, warn, info, fix) y los nombres de campo MCPD
+     son códigos y no se traducen. */
   const QUALITY_COLS = ['tipo', 'nivel', 'accesion', 'campo', 'detalle'];
-  function qualityRows(a, acc, issues) {
+  const QUALITY_COLS_EN = ['type', 'level', 'accession', 'field', 'detail'];
+  const QUALITY_TYPES = {
+    geografia: 'geography', consistencia: 'consistency', correccion: 'correction', duplicado: 'duplicate', pasaporte: 'passport',
+  };
+  function qualityRows(a, acc, issues, lang) {
+    const en = (lang || I18N.lang) === 'en';
+    const tx = o => (o ? (en ? (o.en ?? o.es) : o.es) : '');
     const rows = [];
-    a.geo.forEach(p => rows.push({ tipo: 'geografia', nivel: p.level, accesion: acc[p.i].ACCENUMB, campo: p.field, detalle: p.msg.es }));
-    a.consistency.forEach(c => rows.push({ tipo: 'consistencia', nivel: c.level, accesion: c.items.map(i => acc[i].ACCENUMB).join(' '), campo: QC.codeLabel(c.code).es, detalle: c.msg.es }));
-    a.fixes.forEach(f => rows.push({ tipo: 'correccion', nivel: 'fix', accesion: acc[f.i].ACCENUMB, campo: f.field, detalle: `${f.from} → ${f.to} · ${f.msg.es}` }));
-    a.dup.pairs.forEach(p => rows.push({
-      tipo: 'duplicado', nivel: String(Math.round(p.score)), accesion: `${acc[p.i].ACCENUMB} + ${acc[p.j].ACCENUMB}`,
-      campo: p.dist != null ? QC.fmtDist(p.dist) : '', detalle: p.reasons.map(r => r.es).join('; '),
-    }));
-    (issues || []).forEach(p => rows.push({ tipo: 'pasaporte', nivel: p.level, accesion: acc[p.i].ACCENUMB, campo: p.field, detalle: p.msg.es }));
+    const add = (tipo, nivel, accesion, campo, detalle) => rows.push(en
+      ? { type: QUALITY_TYPES[tipo], level: nivel, accession: accesion, field: campo, detail: detalle }
+      : { tipo, nivel, accesion, campo, detalle });
+    a.geo.forEach(p => add('geografia', p.level, acc[p.i].ACCENUMB, p.field, tx(p.msg)));
+    a.consistency.forEach(c => add('consistencia', c.level, c.items.map(i => acc[i].ACCENUMB).join(' '), tx(QC.codeLabel(c.code)), tx(c.msg)));
+    a.fixes.forEach(f => add('correccion', 'fix', acc[f.i].ACCENUMB, f.field, `${f.from} → ${f.to} · ${tx(f.msg)}`));
+    a.dup.pairs.forEach(p => add('duplicado', String(Math.round(p.score)), `${acc[p.i].ACCENUMB} + ${acc[p.j].ACCENUMB}`,
+      p.dist != null ? QC.fmtDist(p.dist) : '', p.reasons.map(tx).join('; ')));
+    (issues || []).forEach(p => add('pasaporte', p.level, acc[p.i].ACCENUMB, p.field, tx(p.msg)));
     return rows;
   }
-  function qualityCSV(a, acc, issues) { return IO.toCSV(qualityRows(a, acc, issues), QUALITY_COLS); }
+  function qualityCSV(a, acc, issues, lang) {
+    const en = (lang || I18N.lang) === 'en';
+    return IO.toCSV(qualityRows(a, acc, issues, lang), en ? QUALITY_COLS_EN : QUALITY_COLS);
+  }
+  const qualityFile = lang => ((lang || I18N.lang) === 'en' ? 'quality-report.csv' : 'informe-calidad.csv');
   function report() {
     const a = ui.lastAudit || QC.audit(state.acc, { threshold: ui.threshold, dismissed: ui.dismissed });
-    download(qualityCSV(a, state.acc, state.issues), 'informe-calidad.csv', 'text/csv;charset=utf-8');
+    download(qualityCSV(a, state.acc, state.issues), qualityFile(), 'text/csv;charset=utf-8');
   }
 
   /* ============ utilidades ============ */
@@ -399,5 +413,5 @@
   document.addEventListener('stepchange', e => { if (e.detail.step === 3) runUI(); });
   document.addEventListener('langchange', () => { if (el('panel-3') && ui.lastAudit) render(); });
 
-  window.B3 = { run, report, ui, render, loadState, dismissPair, cmpValue, qualityRows, qualityCSV };
+  window.B3 = { run, report, ui, render, loadState, dismissPair, cmpValue, qualityRows, qualityCSV, qualityFile, QUALITY_COLS, QUALITY_COLS_EN };
 })();

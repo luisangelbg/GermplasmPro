@@ -26,6 +26,19 @@
   };
   let rows = [];
 
+  /* la lista de siembra en CSV: columnas en el idioma de la interfaz */
+  const SOWING_EN = { nombre: 'name', plantas: 'plants', germinacion: 'germination', germinacion_supuesta: 'assumed_germination',
+    semillas: 'seeds', existencias: 'stock', parcela: 'plot', fecha_siembra: 'sowing_date', observaciones: 'notes' };
+  const sowingFile = () => T('lista-de-siembra.csv', 'sowing-list.csv');
+  function sowingCSV() {
+    const list = LABELS.sowingSheet(rows.map(r => ({ row: r })), { plants: plants(), germ: Prefs.get('calcG', 85) })
+      .map(x => Object.assign({}, x, {
+        semillas: x.semillas == null ? '' : x.semillas,
+        germinacion_supuesta: x.germinacion_supuesta ? T('sí', 'yes') : '',
+      }));
+    return langCSV(list, SOWING_EN, list.length ? null : ['ACCENUMB']);
+  }
+
   const pl = (n, uno, varios) => (n === 1 ? uno : varios);
   const shorten = (s, n) => (String(s).length > n ? String(s).slice(0, n - 1).trimEnd() + '…' : String(s));
 
@@ -155,7 +168,7 @@
         </div>
         <p class="hint" style="margin-bottom:0">${T(
           `Caben <b>${s.cols} × ${s.rowsPerPage} = ${s.perPage}</b> etiquetas por hoja, y para ${rows.length} ${pl(rows.length, 'accesión', 'accesiones')} ${pl(s.pages.length, 'hace', 'hacen')} falta <b>${s.pages.length}</b> ${pl(s.pages.length, 'hoja', 'hojas')}. El número de accesión va siempre; los demás campos se ponen y se quitan aquí, y sólo caben los que quepan. Imprime al 100 % (sin «ajustar a la página»): la hoja ya trae sus márgenes.`,
-          `<b>${s.cols} × ${s.rowsPerPage} = ${s.perPage}</b> labels fit per sheet, and ${rows.length} ${pl(rows.length, 'accession needs', 'accessions need')} <b>${s.pages.length}</b> ${pl(s.pages.length, 'sheet', 'sheets')}. The accession number is always printed; the other fields are switched on and off here, and only those that fit will show. Print at 100% (no “fit to page”): the sheet already carries its margins.`)}</p>`
+          `<b>${s.cols} × ${s.rowsPerPage} = ${s.perPage}</b> labels fit per sheet, and ${rows.length} ${pl(rows.length, 'accession needs', 'accessions need')} <b>${s.pages.length}</b> ${pl(s.pages.length, 'sheet', 'sheets')}. The accession number is always printed; the other fields are switched on and off here, and only those that fit will show. Print at 100 % (no “fit to page”): the sheet already carries its margins.`)}</p>`
         : ''}
         <div id="b9Notes">${notes()}</div>
       </div>
@@ -361,7 +374,8 @@
 
   /* ---------- hojas de trabajo ---------- */
   function workSheet() {
-    const today = new Date().toLocaleDateString(I18N.lang === 'en' ? 'en-US' : 'es-MX');
+    /* en inglés, ISO 8601 (2026-10-31) como las fechas de colecta y adquisición: sin mes/día ambiguo */
+    const today = I18N.lang === 'en' ? LABELS.fmtDate(new Date(), 'en') : new Date().toLocaleDateString('es-MX');
     const head = (title, sub) => `<div class="ws-head">
       <div><h3>${esc(title)}</h3><p class="hint">${esc(sub)}</p></div>
       <div class="ws-meta">${esc(view.header || '')}<br>${today}</div></div>`;
@@ -391,10 +405,10 @@
         </tbody></table>
         ${nSup ? `<p class="ws-note">${T(
           `* Supuesto: ${nSup === 1 ? 'esta accesión no tiene' : `estas ${nSup} accesiones no tienen`} prueba de germinación registrada; se usa el ${fmt(supuesto, 0)} % de la calculadora del Bloque 8. Prueba la germinación antes de sembrar si puedes.`,
-          `* Assumed: ${nSup === 1 ? 'this accession has' : `these ${nSup} accessions have`} no germination test recorded; the ${fmt(supuesto, 0)}% from the Block 8 calculator is used. Test germination before sowing if you can.`)}</p>` : ''}
+          `* Assumed: ${nSup === 1 ? 'this accession has' : `these ${nSup} accessions have`} no germination test recorded; the ${fmt(supuesto, 0)} % from the Block 8 calculator is used. Test germination before sowing if you can.`)}</p>` : ''}
         ${ceros.length ? `<p class="ws-note ws-warn">${T(
           `<b>${ceros.length === 1 ? 'Un lote tiene' : `${ceros.length} lotes tienen`} 0 % de germinación medida</b> (${esc(ceros.map(x => x.ACCENUMB).join(', '))}): no ${pl(ceros.length, 'tiene', 'tienen')} semilla viable y no se ${pl(ceros.length, 'le calculan', 'les calculan')} semillas a sembrar. Recurre al duplicado de seguridad o vuelve a colectar.`,
-          `<b>${ceros.length === 1 ? 'One lot has' : `${ceros.length} lots have`} a measured germination of 0%</b> (${esc(ceros.map(x => x.ACCENUMB).join(', '))}): no viable seed, so no seeds to sow are computed. Turn to the safety duplicate or collect again.`)}</p>` : ''}
+          `<b>${ceros.length === 1 ? 'One lot has' : `${ceros.length} lots have`} a measured germination of 0 %</b> (${esc(ceros.map(x => x.ACCENUMB).join(', '))}): no viable seed, so no seeds to sow are computed. Turn to the safety duplicate or collect again.`)}</p>` : ''}
         <div class="imp-row no-print" style="margin-top:10px">
           <label class="inline-label">${T('Plantas por accesión', 'Plants per accession')}
             <input class="inp" type="number" id="b9Plants" min="10" max="500" step="10" value="${np}" style="width:90px"></label>
@@ -500,14 +514,7 @@
       }
     });
     body.addEventListener('click', e => {
-      if (e.target && e.target.id === 'b9SowCSV') gpBusy(e.target, () => {
-        const list = LABELS.sowingSheet(rows.map(r => ({ row: r })), { plants: plants(), germ: Prefs.get('calcG', 85) })
-          .map(x => Object.assign({}, x, {
-            semillas: x.semillas == null ? '' : x.semillas,
-            germinacion_supuesta: x.germinacion_supuesta ? T('sí', 'yes') : '',
-          }));
-        download(IO.toCSV(list, Object.keys(list[0] || { ACCENUMB: '' })), 'lista-de-siembra.csv', 'text/csv;charset=utf-8');
-      });
+      if (e.target && e.target.id === 'b9SowCSV') gpBusy(e.target, () => download(sowingCSV(), sowingFile(), 'text/csv;charset=utf-8'));
     });
     /* también con Ctrl+P: la hoja de etiquetas se imprime a escala exacta */
     window.addEventListener('beforeprint', () => {
@@ -538,5 +545,5 @@
   document.addEventListener('stepchange', e => { if (e.detail.step === 9) inWork(run); });
   document.addEventListener('langchange', () => { if (el('panel-9')) run(); });
 
-  window.B9 = { run, view, labelsPreview, workSheet, pickRows, search, preparePrint, endPrint, plants, notes, loadPrefs };
+  window.B9 = { run, view, labelsPreview, workSheet, pickRows, search, preparePrint, endPrint, plants, notes, loadPrefs, sowingCSV, sowingFile };
 })();

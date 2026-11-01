@@ -125,7 +125,7 @@
       <h3 class="section-title">${T('1 · Los supuestos con los que se hacen las cuentas', '1 · The assumptions behind every figure')}</h3>
       <p class="section-sub">${T(
         'Las condiciones de tu cámara y los intervalos de trabajo del banco. Todo lo que ves más abajo sale de aquí, así que vale la pena que reflejen la realidad de tu instalación y no un valor de catálogo.',
-        'Your store conditions and the genebank working intervals. Everything below follows from these, so it is worth making them reflect your actual facility rather than a catalogue value.')}</p>
+        'Your store conditions and the genebank working intervals. Everything below follows from these, so it is worth making them reflect your actual facility rather than a catalog value.')}</p>
       <div class="card"><div class="field-grid">
         ${[['seed', 'temp', T('Temperatura de la cámara (°C)', 'Store temperature (°C)'), -20, 25, 1],
            ['seed', 'moisture', T('Humedad de la semilla (%)', 'Seed moisture (%)'), 3, 14, 0.5],
@@ -306,7 +306,7 @@
       </tbody></table>
       <p class="hint">${T(
         `Con las ${fmtInt(N)} plantas por regeneración de los supuestos (FAO recomienda 100 para una alógama), la probabilidad de conservar un alelo de esa frecuencia es de ${pctNear100(100 * conN)} % en una alógama y de ${pctNear100(100 * conNauto)} % en una autógama.${alo > N ? ` <b>Con ${fmtInt(N)} plantas no se llega a la seguridad pedida en una alógama: harían falta ${fmtInt(alo)}.</b>` : auto > N ? ` En una autógama harían falta ${fmtInt(auto)} plantas para llegar a la seguridad pedida.` : ''} Las semillas a sembrar salen de dividir las plantas entre la germinación (${g} %) y un 90 % de establecimiento en campo.`,
-        `With the ${fmtInt(N)} plants per regeneration in the assumptions (FAO recommends 100 for an outcrosser), the probability of keeping an allele of that frequency is ${pctNear100(100 * conN)}% in an outcrosser and ${pctNear100(100 * conNauto)}% in a selfer.${alo > N ? ` <b>${fmtInt(N)} plants do not reach the requested certainty in an outcrosser: ${fmtInt(alo)} would be needed.</b>` : auto > N ? ` A selfer would need ${fmtInt(auto)} plants to reach the requested certainty.` : ''} Seeds to sow come from dividing the plants by germination (${g}%) and a 90% field establishment.`)}</p>`;
+        `With the ${fmtInt(N)} plants per regeneration in the assumptions (FAO recommends 100 for an outcrosser), the probability of keeping an allele of that frequency is ${pctNear100(100 * conN)} % in an outcrosser and ${pctNear100(100 * conNauto)} % in a selfer.${alo > N ? ` <b>${fmtInt(N)} plants do not reach the requested certainty in an outcrosser: ${fmtInt(alo)} would be needed.</b>` : auto > N ? ` A selfer would need ${fmtInt(auto)} plants to reach the requested certainty.` : ''} Seeds to sow come from dividing the plants by germination (${g} %) and a 90 % field establishment.`)}</p>`;
   }
 
   /* ---------- gráfica de carga de trabajo ---------- */
@@ -414,6 +414,8 @@
   }
 
   /* ---------- plan de trabajo ---------- */
+  const PLAN_EN = { ruta: 'route', urgencia: 'urgency', existencias: 'stock', unidad: 'unit', germinacion_ultima: 'last_germination',
+    germinacion_proyectada: 'projected_germination', anios_desde_prueba: 'years_since_test', anios_al_umbral: 'years_to_threshold', acciones: 'actions' };
   function exportPlan() {
     const rows = A.lots.filter(l => l.st.alerts.length).map(l => ({
       ACCENUMB: l.row.ACCENUMB, ACCENAME: l.row.ACCENAME,
@@ -428,7 +430,7 @@
       acciones: l.st.alerts.map(a => T(a.msg.es, a.msg.en)).join(' | '),
     }));
     if (!rows.length) { alert(T('No hay nada pendiente: toda la colección está al día.', 'Nothing pending: the whole collection is up to date.')); return; }
-    download(IO.toCSV(rows, Object.keys(rows[0])), 'plan-de-trabajo.csv', 'text/csv;charset=utf-8');
+    download(langCSV(rows, PLAN_EN), T('plan-de-trabajo.csv', 'work-plan.csv'), 'text/csv;charset=utf-8');
   }
 
   function init() {
@@ -442,5 +444,5 @@
   document.addEventListener('langchange', () => { if (el('panel-8')) run(); });
   document.addEventListener('themechange', () => { if (el('panel-8') && A) render(); });
 
-  window.B8 = { run, view, analysis: () => A, cfg: () => cfg, viab: () => viab, loadCfg, workPlot, byUrgency, recordTest };
+  window.B8 = { run, exportPlan, view, analysis: () => A, cfg: () => cfg, viab: () => viab, loadCfg, workPlot, byUrgency, recordTest };
 })();

@@ -128,10 +128,10 @@
     const opt = PCT_OPTIONS.find(p => p >= need && Math.round(n * p / 100) >= 10);
     if (opt) return es
       ? `Para llegar al menos a 10 accesiones, con ${n} caracterizadas, hace falta un núcleo de ${need} % o más: elige ${opt} % en «Tamaño», o trabaja con una colección más grande, antes de tomar estas cifras en serio.`
-      : `To reach at least 10 accessions, with ${n} characterized, the core must be ${need}% or more: choose ${opt}% under “Size”, or work with a larger collection, before taking these numbers seriously.`;
+      : `To reach at least 10 accessions, with ${n} characterized, the core must be ${need} % or more: choose ${opt} % under “Size”, or work with a larger collection, before taking these numbers seriously.`;
     return es
       ? `Para llegar al menos a 10 accesiones, con ${n} caracterizadas, haría falta un núcleo de ${need} %, más del 30 % que ofrece «Tamaño»: trabaja con una colección más grande antes de tomar estas cifras en serio.`
-      : `To reach at least 10 accessions, with ${n} characterized, the core would need ${need}%, more than the 30% “Size” offers: work with a larger collection before taking these numbers seriously.`;
+      : `To reach at least 10 accessions, with ${n} characterized, the core would need ${need} %, more than the 30 % “Size” offers: work with a larger collection before taking these numbers seriously.`;
   }
 
   /* ============ figuras ============ */
@@ -214,7 +214,7 @@
     const leg = cats.map((c, i) => `<span class="lg-item lg-shape">${sw(catStyle(i))}${esc(c)}${c === OTRAS && lumped ? ` (${lumped + 1})` : ''}</span>`).join('');
     const label = T(
       `Coordenadas principales sobre la distancia de Gower: ${A.pairs.length} accesiones; el eje 1 explica ${fmt(A.ord.explained[0], 1)} % y el eje 2 ${fmt(A.ord.explained[1], 1)} %; las ${A.core.core.length} del núcleo van con símbolo grande y borde.`,
-      `Principal coordinates on Gower distance: ${A.pairs.length} accessions; axis 1 explains ${fmt(A.ord.explained[0], 1)}% and axis 2 ${fmt(A.ord.explained[1], 1)}%; the ${A.core.core.length} core accessions have a large outlined symbol.`);
+      `Principal coordinates on Gower distance: ${A.pairs.length} accessions; axis 1 explains ${fmt(A.ord.explained[0], 1)} % and axis 2 ${fmt(A.ord.explained[1], 1)} %; the ${A.core.core.length} core accessions have a large outlined symbol.`);
     return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" role="img" aria-label="${esc(label)}">${g.join('')}</svg>
       <div class="map-legend" style="margin-top:6px">${leg}<span class="lg-item">${T('símbolo grande y con borde = está en el núcleo', 'large outlined symbol = in the core')}</span></div>`;
   }
@@ -258,7 +258,7 @@
     g.push(`<text x="${((x0 + x1) / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="10" fill="${cv('--text-muted')}">${T('altura de fusión', 'merge height')} (${view.tree === 'upgma' ? T('distancia de Gower', 'Gower distance') : 'Ward.D2'})</text>`);
     const label = T(
       `Dendrograma ${view.tree === 'upgma' ? 'UPGMA' : 'Ward.D2'} de ${n} accesiones sobre la distancia de Gower, cortado en ${view.k} grupos (colores de los nombres).`,
-      `${view.tree === 'upgma' ? 'UPGMA' : 'Ward.D2'} dendrogram of ${n} accessions on Gower distance, cut into ${view.k} groups (label colours).`);
+      `${view.tree === 'upgma' ? 'UPGMA' : 'Ward.D2'} dendrogram of ${n} accessions on Gower distance, cut into ${view.k} groups (label colors).`);
     return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" role="img" aria-label="${esc(label)}">${g.join('')}</svg>`;
   }
 
@@ -285,10 +285,10 @@
     el('b7Stats').innerHTML = [
       { k: T('Accesiones caracterizadas', 'Characterized accessions'), v: fmtInt(A.pairs.length), d: T(`de ${total} en la colección · ${A.used.length} caracteres`, `of ${total} in the collection · ${A.used.length} traits`), c: 'var(--s1)' },
       { k: T('Grupos', 'Groups'), v: fmtInt(view.k), d: T(`silueta media ${fmt(A.sil.mean, 2)}`, `mean silhouette ${fmt(A.sil.mean, 2)}`), c: A.sil.mean > 0.25 ? 'var(--s3)' : 'var(--stWarn)' },
-      { k: T('Núcleo', 'Core'), v: fmtInt(A.core.core.length), d: T(`${fmt(v.pct, 1)} % de las caracterizadas`, `${fmt(v.pct, 1)}% of the characterized ones`), c: 'var(--s2)' },
+      { k: T('Núcleo', 'Core'), v: fmtInt(A.core.core.length), d: T(`${fmt(v.pct, 1)} % de las caracterizadas`, `${fmt(v.pct, 1)} % of the characterized ones`), c: 'var(--s2)' },
       { k: 'MD%', v: fmt(v.MD, 1), d: T('medias que difieren (bueno: < 20)', 'means that differ (good: < 20)'), c: v.MD < 20 ? 'var(--s3)' : 'var(--danger)' },
       { k: 'CR%', v: fmt(v.CR, 1), d: T('rango conservado (bueno: > 80)', 'range retained (good: > 80)'), c: v.CR > 80 ? 'var(--s3)' : 'var(--danger)' },
-      { k: 'VR%', v: fmt(v.VR, 1), d: T(`variación conservada (bueno: ≥ ${VRT})`, `variation retained (good: ≥ ${VRT})`), c: v.VR >= VRT ? 'var(--s3)' : 'var(--stWarn)' },
+      { k: 'VR%', v: fmt(v.VR, 1), d: T(`razón de coeficientes de variación (bueno: ≥ ${VRT})`, `coefficient of variation ratio (good: ≥ ${VRT})`), c: v.VR >= VRT ? 'var(--s3)' : 'var(--stWarn)' },
     ].map(x => `<div class="stat" style="--sc:${x.c}"><div class="s-k">${x.k}</div><div class="s-v">${x.v}</div><div class="s-d">${x.d}</div></div>`).join('');
 
     /* descriptiva por carácter */
@@ -328,10 +328,10 @@
             <option value="upgma"${view.tree === 'upgma' ? ' selected' : ''}>UPGMA</option></select></label>
           <label class="inline-label">${T('Grupos', 'Groups')}<select class="sel" id="b7K">
             ${[2, 3, 4, 5, 6, 7, 8].map(k => `<option value="${k}"${view.k === k ? ' selected' : ''}>${k}</option>`).join('')}</select></label>
-          <label class="inline-label">${T('Colorear por', 'Colour by')}<select class="sel" id="b7Color">
+          <label class="inline-label">${T('Colorear por', 'Color by')}<select class="sel" id="b7Color">
             ${[['group', T('grupo', 'group')], ['crop', T('cultivo', 'crop')], ['taxon', T('especie', 'species')], ['core', T('núcleo', 'core')]]
               .map(([v2, t2]) => `<option value="${v2}"${view.colorBy === v2 ? ' selected' : ''}>${esc(t2)}</option>`).join('')}</select></label>
-          <span class="hint">${T(`El eje 1 explica ${fmt(A.ord.explained[0], 1)} % y el eje 2 ${fmt(A.ord.explained[1], 1)} % de la variación.`, `Axis 1 explains ${fmt(A.ord.explained[0], 1)}% and axis 2 ${fmt(A.ord.explained[1], 1)}% of the variation.`)}</span>
+          <span class="hint">${T(`El eje 1 explica ${fmt(A.ord.explained[0], 1)} % y el eje 2 ${fmt(A.ord.explained[1], 1)} % de la variación.`, `Axis 1 explains ${fmt(A.ord.explained[0], 1)} % and axis 2 ${fmt(A.ord.explained[1], 1)} % of the variation.`)}</span>
         </div>
         <div class="sum-grid" style="align-items:start">
           <div class="pg-pane"><div class="pg-title">${T('Coordenadas principales (PCoA sobre Gower)', 'Principal coordinates (PCoA on Gower)')}</div>${pcoaPlot(520, 380)}</div>
@@ -371,7 +371,7 @@
           `<b>${A.core.unrepresented} of ${A.core.strata.length} strata ${pl(A.core.unrepresented, 'is', 'are')} left without a representative.</b> There are more strata than places (${A.core.target}), and the places went to the strata with the most weight under the ${esc(T(CHAR.ALLOCATIONS[view.alloc].es, CHAR.ALLOCATIONS[view.alloc].en).toLowerCase())} allocation (on equal weight, the largest). If you need one from every stratum, tick “at least 1 per stratum”: the core would have ${A.core.strata.length} accessions instead of ${A.core.target}.`)}</div>` : ''}
         ${!isM && A.core.exceeds ? `<div class="note-warn" style="margin-top:12px">${T(
           `<b>El núcleo tiene ${A.core.core.length} accesiones, no las ${A.core.target} pedidas (${view.pct} %).</b> Con «al menos 1 por estrato» cada uno de los ${A.core.strata.length} estratos pone una, y eso rebasa el tamaño pedido: el núcleo real es el ${fmt(v.pct, 1)} % de las caracterizadas.`,
-          `<b>The core has ${A.core.core.length} accessions, not the ${A.core.target} requested (${view.pct}%).</b> With “at least 1 per stratum” each of the ${A.core.strata.length} strata contributes one, which exceeds the requested size: the actual core is ${fmt(v.pct, 1)}% of the characterized ones.`)}</div>` : ''}
+          `<b>The core has ${A.core.core.length} accessions, not the ${A.core.target} requested (${view.pct} %).</b> With “at least 1 per stratum” each of the ${A.core.strata.length} strata contributes one, which exceeds the requested size: the actual core is ${fmt(v.pct, 1)} % of the characterized ones.`)}</div>` : ''}
 
         ${A.core.core.length < 10 ? `<div class="note-warn" style="margin-top:12px">${T(
           `<b>El núcleo es demasiado pequeño para juzgarlo con estas cifras.</b> Con ${A.core.core.length} ${pl(A.core.core.length, 'accesión', 'accesiones')}, las pruebas t y F casi no tienen potencia y es normal que VD% se dispare y que CR% se quede corto: no es que el núcleo esté mal armado, es que no hay con qué medirlo. ${smallCoreTip(A.traits.length, 'es')}`,
@@ -383,7 +383,7 @@
               <tr><td>MD% · ${T('medias que difieren', 'means that differ')}</td><td class="num"><b>${fmt(v.MD, 1)}</b></td><td><span class="tag ${semaf(v.MD < 20)}">${v.MD < 20 ? T('bien', 'good') : T('revisar', 'check')}</span></td></tr>
               <tr><td>VD% · ${T('varianzas que difieren', 'variances that differ')}</td><td class="num"><b>${fmt(v.VD, 1)}</b></td><td><span class="tag ${semaf(v.VD < 20)}">${v.VD < 20 ? T('bien', 'good') : T('revisar', 'check')}</span></td></tr>
               <tr><td>CR% · ${T('rango conservado', 'range retained')}</td><td class="num"><b>${fmt(v.CR, 1)}</b></td><td><span class="tag ${semaf(v.CR > 80)}">${v.CR > 80 ? T('bien', 'good') : T('revisar', 'check')}</span></td></tr>
-              <tr><td>VR% · ${T('coeficiente de variación', 'coefficient of variation')}</td><td class="num"><b>${fmt(v.VR, 1)}</b></td><td><span class="tag ${semaf(v.VR >= VRT)}">${v.VR >= VRT ? T('bien', 'good') : T('revisar', 'check')}</span></td></tr>
+              <tr><td>VR% · ${T('razón de coeficientes de variación', 'coefficient of variation ratio')}</td><td class="num"><b>${fmt(v.VR, 1)}</b></td><td><span class="tag ${semaf(v.VR >= VRT)}">${v.VR >= VRT ? T('bien', 'good') : T('revisar', 'check')}</span></td></tr>
               <tr><td>${T('clases capturadas (cualitativos y ordinales)', 'classes captured (qualitative and ordinal)')}</td><td class="num"><b>${fmtInt(v.classesCaptured)} / ${fmtInt(v.classesTotal)} · ${fmt(v.classCoverage, 1)} %</b></td><td><span class="tag ${semaf(v.classCoverage > 80)}">${v.classCoverage > 80 ? T('bien', 'good') : T('revisar', 'check')}</span></td></tr>
             </tbody></table>
             <p class="hint">${T(
@@ -477,9 +477,10 @@
     el('b7ExportAll').addEventListener('click', () => exportCore(true));
     el('b7ExportD').addEventListener('click', exportD);
     el('b7SVG').addEventListener('click', () => download(B4.forFile(() => pcoaPlot(700, 500)).split('</svg>')[0] + '</svg>', 'pcoa-gower.svg', 'image/svg+xml'));
-    el('b7TreeSVG').addEventListener('click', () => download(B4.forFile(() => dendroPlot(700)), 'arbol-gower.svg', 'image/svg+xml'));
+    el('b7TreeSVG').addEventListener('click', () => download(B4.forFile(() => dendroPlot(700)), T('arbol-gower.svg', 'gower-tree.svg'), 'image/svg+xml'));
   }
 
+  const CORE_EN = { grupo: 'group', estrato: 'stratum', nucleo: 'core' };
   function exportCore(all) {
     const inCore = new Set(A.core.core);
     const rows = A.pairs.map((p, i) => {
@@ -495,7 +496,7 @@
       if (all) defs.filter(d => d.use).forEach(d => { base[d.k] = p.t[d.k]; });
       return base;
     }).filter(Boolean);
-    download(IO.toCSV(rows, Object.keys(rows[0] || { ACCENUMB: '' })), all ? 'caracterizacion-completa.csv' : 'coleccion-nucleo.csv', 'text/csv;charset=utf-8');
+    download(langCSV(rows, CORE_EN, rows.length ? null : ['ACCENUMB']), all ? T('caracterizacion-completa.csv', 'characterization-full.csv') : T('coleccion-nucleo.csv', 'core-collection.csv'), 'text/csv;charset=utf-8');
   }
   function exportD() {
     const head = ['accesion'].concat(A.labels);
@@ -504,7 +505,7 @@
       r.forEach((d, j) => { o[A.labels[j]] = isFinite(d) ? Math.round(d * 1e4) / 1e4 : ''; });
       return o;
     });
-    download(IO.toCSV(rows, head), 'distancias-gower.csv', 'text/csv;charset=utf-8');
+    download(langCSV(rows, { accesion: 'accession' }, head), T('distancias-gower.csv', 'gower-distances.csv'), 'text/csv;charset=utf-8');
   }
 
   /* ============ traer los datos de caracterización ============ */
@@ -623,7 +624,7 @@
     return IO.toCSV(rows.length ? rows : [Object.fromEntries(cols.map(c => [c, '']))], cols);
   }
   function exportTemplate() {
-    download(templateCSV(), 'plantilla-caracterizacion.csv', 'text/csv;charset=utf-8');
+    download(templateCSV(), T('plantilla-caracterizacion.csv', 'characterization-template.csv'), 'text/csv;charset=utf-8');
   }
 
   function init() {
@@ -673,5 +674,5 @@
   document.addEventListener('langchange', () => { if (el('panel-7')) run(); });
   document.addEventListener('themechange', () => { if (el('panel-7') && A) render(A.pairs); });
 
-  window.B7 = { run, view, defs: () => defs, analysis: () => A, pcoaPlot, dendroPlot, loadExample, importTraits, applyTraits, matchWith, pending: () => pendTraits, templateCSV, strataLabel, TEMPLATE_COLS };
+  window.B7 = { run, exportCore, exportD, exportTemplate, view, defs: () => defs, analysis: () => A, pcoaPlot, dendroPlot, loadExample, importTraits, applyTraits, matchWith, pending: () => pendTraits, templateCSV, strataLabel, TEMPLATE_COLS };
 })();

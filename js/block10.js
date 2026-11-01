@@ -108,7 +108,7 @@
     }));
     el('b10Print').addEventListener('click', printReport);
     el('b10HTML').addEventListener('click', e => gpBusy(e.currentTarget, () => {
-      download(html, fileName('informe', 'html'), 'text/html;charset=utf-8');
+      download(html, fileName(T('informe', 'report'), 'html'), 'text/html;charset=utf-8');
       say(T('Informe descargado.', 'Report downloaded.'));
     }));
     el('b10Zip').addEventListener('click', e => gpBusy(e.currentTarget, downloadZip));
@@ -119,7 +119,7 @@
     }));
     el('b10Mcpd').addEventListener('click', e => gpBusy(e.currentTarget, () => {
       const cols = MCPD.MCPD_FIELDS.map(f => f.k);
-      download(IO.toCSV(state.acc, cols), fileName('pasaporte-mcpd', 'csv'), 'text/csv;charset=utf-8');
+      download(IO.toCSV(state.acc, cols), fileName(T('pasaporte-mcpd', 'passport-mcpd'), 'csv'), 'text/csv;charset=utf-8');
       say(T(`${state.acc.length} accesiones en MCPD v2.1.`, `${state.acc.length} accessions in MCPD v2.1.`));
     }));
     I18N.apply(el('b10Body'));
@@ -180,51 +180,71 @@
 
   /* datos/calidad.csv es el mismo archivo que «Descargar el informe» del
      Bloque 3 (informe-calidad.csv): sale de la misma función, con las
-     correcciones propuestas y los avisos del pasaporte. Sin filas, no va. */
-  function qualityCSV(D) {
+     correcciones propuestas y los avisos del pasaporte. Sin filas, no va.
+     Con el informe en inglés, en inglés (data/quality.csv). */
+  function qualityCSV(D, lang) {
     if (!D || !D.quality || !window.B3 || !B3.qualityRows) return null;
-    const rows = B3.qualityRows(D.quality, D.rows || state.acc, D.issues || []);
-    return rows.length ? B3.qualityCSV(D.quality, D.rows || state.acc, D.issues || []) : null;
+    const rows = B3.qualityRows(D.quality, D.rows || state.acc, D.issues || [], lang);
+    return rows.length ? B3.qualityCSV(D.quality, D.rows || state.acc, D.issues || [], lang) : null;
   }
 
-  /* ============ el paquete completo ============ */
-  async function downloadZip() {
-    say(T('Armando el paquete…', 'Building the package…'));
-    const files = [{ name: 'informe.html', data: html }];
-    const cols = MCPD.MCPD_FIELDS.map(f => f.k);
-    files.push({ name: 'datos/pasaporte-mcpd.csv', data: IO.toCSV(state.acc, cols) });
-    files.push({ name: 'datos/pasaporte-completo.csv', data: IO.toCSV(state.acc, MCPD.FIELDS.map(f => f.k)) });
-    files.push({ name: 'datos/darwin-core.csv', data: IO.toCSV(REPORT.darwinCore(state.acc, view.lang || I18N.lang), REPORT.DWC_COLUMNS) });
+  /* los nombres de los archivos y carpetas del paquete, en el idioma del informe */
+  const ZIP_NAMES = {
+    es: { report: 'informe.html', data: 'datos/', figs: 'figuras/', mcpd: 'pasaporte-mcpd.csv', full: 'pasaporte-completo.csv',
+      dwc: 'darwin-core.csv', quality: 'calidad.csv', plan: 'plan-de-trabajo.csv', readme: 'LEEME.txt',
+      fig: { map: 'mapa-de-colecta', curve: 'curva-de-acumulacion', divmap: 'mapa-de-diversidad', gaps: 'vacios-de-colecta',
+        comp: 'curva-de-complementariedad', pcoa: 'coordenadas-principales', dendro: 'dendrograma', work: 'carga-de-trabajo' } },
+    en: { report: 'report.html', data: 'data/', figs: 'figures/', mcpd: 'passport-mcpd.csv', full: 'passport-full.csv',
+      dwc: 'darwin-core.csv', quality: 'quality.csv', plan: 'work-plan.csv', readme: 'README.txt',
+      fig: { map: 'collecting-map', curve: 'accumulation-curve', divmap: 'diversity-map', gaps: 'collecting-gaps',
+        comp: 'complementarity-curve', pcoa: 'principal-coordinates', dendro: 'dendrogram', work: 'workload' } },
+  };
+  const PLAN_COLS = { es: ['accesion', 'taxon', 'ruta', 'nivel', 'alerta', 'detalle'], en: ['accession', 'taxon', 'route', 'level', 'alert', 'detail'] };
 
-    const cal = qualityCSV(D);
-    if (cal) files.push({ name: 'datos/calidad.csv', data: cal });
+  /* ============ el paquete completo ============ */
+  /* la lista de archivos del paquete, sin comprimir (las pruebas la leen tal cual) */
+  function zipFiles() {
+    const lang = view.lang || I18N.lang, en = lang === 'en', N = ZIP_NAMES[en ? 'en' : 'es'];
+    const files = [{ name: N.report, data: html }];
+    const cols = MCPD.MCPD_FIELDS.map(f => f.k);
+    files.push({ name: N.data + N.mcpd, data: IO.toCSV(state.acc, cols) });
+    files.push({ name: N.data + N.full, data: IO.toCSV(state.acc, MCPD.FIELDS.map(f => f.k)) });
+    files.push({ name: N.data + N.dwc, data: IO.toCSV(REPORT.darwinCore(state.acc, lang), REPORT.DWC_COLUMNS) });
+
+    const cal = qualityCSV(D, lang);
+    if (cal) files.push({ name: N.data + N.quality, data: cal });
     if (D.manage) {
       const plan = [];
+      const [c0, c1, c2, c3, c4, c5] = PLAN_COLS[en ? 'en' : 'es'];
       D.manage.lots.forEach(l => l.st.alerts.forEach(a => plan.push({
-        accesion: l.row.ACCENUMB, taxon: MANAGE.taxonOf(l.row), ruta: l.st.route,
-        nivel: a.level, alerta: a.code, detalle: a.msg.es,
+        [c0]: l.row.ACCENUMB, [c1]: MANAGE.taxonOf(l.row), [c2]: l.st.route,
+        [c3]: a.level, [c4]: a.code, [c5]: en ? (a.msg.en ?? a.msg.es) : a.msg.es,
       })));
-      if (plan.length) files.push({ name: 'datos/plan-de-trabajo.csv', data: IO.toCSV(plan, ['accesion', 'taxon', 'ruta', 'nivel', 'alerta', 'detalle']) });
+      if (plan.length) files.push({ name: N.data + N.plan, data: IO.toCSV(plan, PLAN_COLS[en ? 'en' : 'es']) });
     }
 
     /* las figuras, sueltas y en SVG, para meterlas en otro documento: en el
        idioma del informe, y sólo el <svg> (la leyenda en HTML de algunas no
        es SVG y dejaría el archivo inservible) */
     if (view.figures) {
-      const W = 900, lang = view.lang || I18N.lang;
-      const add = (name, fn, h) => {
+      const W = 900;
+      const add = (k, fn, h) => {
         const svg = REPORT.svgOnly(REPORT.inLang(lang, () => REPORT.inLight(() => REPORT.figure(fn, W, h))));
-        if (svg) files.push({ name: `figuras/${name}.svg`, data: svg });
+        if (svg) files.push({ name: `${N.figs}${N.fig[k]}.svg`, data: svg });
       };
-      if (D.hasMap) add('mapa-de-colecta', B4.drawMap, 560);
-      if (D.diversity) { add('curva-de-acumulacion', B5.curvePlot, 300); add('mapa-de-diversidad', B5.indexMap, 560); }
-      if (D.gaps) { add('vacios-de-colecta', B6.gapMap, 560); add('curva-de-complementariedad', B6.compCurve, 300); }
-      if (D.charac) { add('coordenadas-principales', B7.pcoaPlot, 400); add('dendrograma', B7.dendroPlot, 500); }
-      if (D.manage) add('carga-de-trabajo', B8.workPlot, 280);
+      if (D.hasMap) add('map', B4.drawMap, 560);
+      if (D.diversity) { add('curve', B5.curvePlot, 300); add('divmap', B5.indexMap, 560); }
+      if (D.gaps) { add('gaps', B6.gapMap, 560); add('comp', B6.compCurve, 300); }
+      if (D.charac) { add('pcoa', B7.pcoaPlot, 400); add('dendro', B7.dendroPlot, 500); }
+      if (D.manage) add('work', B8.workPlot, 280);
     }
 
-    files.push({ name: 'LEEME.txt', data: leeme(files) });
-
+    files.push({ name: N.readme, data: leeme(files, lang) });
+    return files;
+  }
+  async function downloadZip() {
+    say(T('Armando el paquete…', 'Building the package…'));
+    const files = zipFiles();
     const blob = await ZIP.build(files);
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -234,8 +254,40 @@
     say(T(`${files.length} archivos en el paquete.`, `${files.length} files in the package.`));
   }
 
-  function leeme(files) {
-    const d = (D && D.date ? D.date : new Date()).toLocaleString('es-MX');
+  /* el LEEME.txt (README.txt con el informe en inglés) */
+  function leeme(files, lang) {
+    const date = D && D.date ? D.date : new Date();
+    if ((lang || view.lang || I18N.lang) === 'en') {
+      const d = `${LABELS.fmtDate(date, 'en')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+      return `GermplasmPro — collection package
+Generated on ${d} with ${state.acc.length} accessions.
+
+What it contains:
+
+  report.html           the full report; it opens with a double click in any browser
+  data/                 the passport in the two standard formats and the working tables
+  figures/              each figure on its own as SVG, to drop into another document
+
+About the two passport formats:
+
+  passport-mcpd.csv     the 42 multi-crop passport descriptors (MCPD v2.1) as they are,
+                        the format genebanks use to talk to each other.
+  passport-full.csv     the same plus this app's seven extension fields (GP_*), which
+                        keep the active conservation route, the in-situ site, the custodian,
+                        the stock, the percentage of the last germination test and
+                        the dates of the last germination test and the last regeneration.
+  darwin-core.csv       the translation into Darwin Core terms, the language GBIF speaks.
+                        What MCPD keeps and Darwin Core has no place for (SAMPSTAT,
+                        STORAGE, MLSSTAT, DUPLSITE and the GP_* fields) is not lost: it travels
+                        in the dynamicProperties column, under its original name. Between the
+                        Darwin Core columns and that one, the whole passport is there: not a
+                        single field is lost.
+
+Files: ${files.length}.
+Everything was computed in your browser; none of this left your computer.
+`;
+    }
+    const d = date.toLocaleString('es-MX');
     return `GermplasmPro — paquete de la colección
 Generado el ${d} con ${state.acc.length} accesiones.
 
@@ -282,5 +334,5 @@ Todo se calculó en tu navegador; nada de esto salió de tu computadora.
   document.addEventListener('stepchange', e => { if (e.detail.step === 10) inWork(run); });
   document.addEventListener('langchange', () => { if (el('panel-10') && el('b10Body') && el('b10Body').children.length) run(); });
 
-  window.B10 = { run, build, view, data: () => D, htmlOf: () => html, downloadZip, leeme, qualityCSV };
+  window.B10 = { run, build, view, data: () => D, htmlOf: () => html, downloadZip, zipFiles, leeme, qualityCSV, ZIP_NAMES };
 })();

@@ -163,13 +163,13 @@
         const proj = st.projected != null && Math.round(st.projected) < Math.round(st.germ);
         add('measuredLow', 'crit',
           `La última prueba dio ${fmt(st.germ, 0)} %, por debajo del umbral de ${c.threshold} %${proj ? `; la proyección lo pone hoy en ${fmt(st.projected, 0)} %` : ''}.${tip.es}`,
-          `The last test gave ${fmt(st.germ, 0)}%, below the ${c.threshold}% threshold${proj ? `; the projection puts it at ${fmt(st.projected, 0)}% today` : ''}.${tip.en}`,
+          `The last test gave ${fmt(st.germ, 0)} %, below the ${c.threshold} % threshold${proj ? `; the projection puts it at ${fmt(st.projected, 0)} % today` : ''}.${tip.en}`,
           { value: st.germ });
       } else if (st.projected != null && st.projected < c.threshold) {
         const tip = regenTip();
         add('belowThreshold', 'crit',
           `La proyección lo pone en ${fmt(st.projected, 0)} % de germinación, por debajo del umbral de ${c.threshold} %.${tip.es}`,
-          `The projection puts it at ${fmt(st.projected, 0)}% germination, below the ${c.threshold}% threshold.${tip.en}`,
+          `The projection puts it at ${fmt(st.projected, 0)} % germination, below the ${c.threshold} % threshold.${tip.en}`,
           { value: st.projected });
       } else if (st.yearsToThreshold != null && st.yearsToThreshold < 3) {
         add('nearThreshold', 'warn',

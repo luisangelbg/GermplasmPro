@@ -155,7 +155,7 @@
       : T('prioridad de colecta de cada celda vacía', 'collecting priority of each empty cell');
     const label = T(
       `Mapa de vacíos de colecta en celdas de ${fmt(view.size, view.size < 1 ? 1 : 0)}°: ${fmtInt(G.filled.length)} de ${fmtInt(G.cells.length)} celdas con colectas; el color muestra la ${what}; los círculos numerados son las ${Math.min(10, G.priorities.length)} primeras prioridades.`,
-      `Map of collecting gaps in ${fmt(view.size, view.size < 1 ? 1 : 0)}° cells: ${fmtInt(G.filled.length)} of ${fmtInt(G.cells.length)} cells hold collections; colour shows the ${what}; the numbered circles are the top ${Math.min(10, G.priorities.length)} priorities.`);
+      `Map of collecting gaps in ${fmt(view.size, view.size < 1 ? 1 : 0)}° cells: ${fmtInt(G.filled.length)} of ${fmtInt(G.cells.length)} cells hold collections; color shows the ${what}; the numbered circles are the top ${Math.min(10, G.priorities.length)} priorities.`);
     return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" role="img" aria-label="${esc(label)}">${g.join('')}</svg>`;
   }
 
@@ -169,7 +169,7 @@
     const g = [];
     [0, 25, 50, 75, 100].forEach(v => {
       g.push(`<line x1="${pad.l}" y1="${Y(v).toFixed(1)}" x2="${W - pad.r}" y2="${Y(v).toFixed(1)}" stroke="${cv('--grid')}"/>`);
-      g.push(`<text x="${pad.l - 6}" y="${(Y(v) + 3.5).toFixed(1)}" text-anchor="end" font-size="9.5" fill="${cv('--text-muted')}">${v}%</text>`);
+      g.push(`<text x="${pad.l - 6}" y="${(Y(v) + 3.5).toFixed(1)}" text-anchor="end" font-size="9.5" fill="${cv('--text-muted')}">${v} %</text>`);
     });
     const pts = o.map((e, i) => `${X(i + 1).toFixed(1)},${Y(e.pct).toFixed(1)}`);
     g.push(`<path d="M${X(0).toFixed(1)},${Y(0).toFixed(1)} L${pts.join(' L')}" fill="none" stroke="${cv('--s1')}" stroke-width="2.2"/>`);
@@ -177,7 +177,7 @@
     const k90 = o.findIndex(e => e.pct >= 90) + 1;
     if (k90 > 0) {
       const p90 = o[k90 - 1].pct;
-      const txt = T(`${k90} ${pl(k90, 'celda', 'celdas')} ≥ 90 % (${fmt(p90, 0)} %)`, `${k90} ${pl(k90, 'cell', 'cells')} ≥ 90% (${fmt(p90, 0)}%)`);
+      const txt = T(`${k90} ${pl(k90, 'celda', 'celdas')} ≥ 90 % (${fmt(p90, 0)} %)`, `${k90} ${pl(k90, 'cell', 'cells')} ≥ 90 % (${fmt(p90, 0)} %)`);
       /* la etiqueta se pone del lado donde cabe: a la izquierda de la línea si
          ésta queda en la mitad derecha de la figura */
       const left = X(k90) > (pad.l + W - pad.r) / 2;
@@ -187,7 +187,7 @@
     g.push(`<text x="${(pad.l + W - pad.r) / 2}" y="${H - 6}" text-anchor="middle" font-size="10" fill="${cv('--text-muted')}">${T('celdas ordenadas por lo que aportan', 'cells ordered by what they add')}</text>`);
     const label = T(
       `Curva de complementariedad: ${o.length} ${pl(o.length, 'celda captura', 'celdas capturan')} los ${G.complementarity.covered} tipos${k90 > 0 ? `; con ${k90} se llega a ${fmt(o[k90 - 1].pct, 0)} %` : ''}.`,
-      `Complementarity curve: ${o.length} ${pl(o.length, 'cell captures', 'cells capture')} the ${G.complementarity.covered} types${k90 > 0 ? `; ${k90} reach ${fmt(o[k90 - 1].pct, 0)}%` : ''}.`);
+      `Complementarity curve: ${o.length} ${pl(o.length, 'cell captures', 'cells capture')} the ${G.complementarity.covered} types${k90 > 0 ? `; ${k90} reach ${fmt(o[k90 - 1].pct, 0)} %` : ''}.`);
     return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" role="img" aria-label="${esc(label)}">${g.join('')}</svg>`;
   }
 
@@ -229,7 +229,7 @@
       { k: T('Celdas sin ninguna colecta', 'Cells with no collection'), v: fmtInt(G.empty.length), d: T('territorio sin representar en la colección', 'territory unrepresented in the collection'), c: 'var(--s2)' },
       { k: T('Vacío más grande', 'Largest gap'), v: (far ? fmtInt(far.dist) : '0') + ' km',
         d: far ? T(`de la celda ${fmt(far.lat, 2)}, ${fmt(far.lon, 2)} (${esc(cellPlace(far).main)}) a la colecta más cercana`, `from cell ${fmt(far.lat, 2)}, ${fmt(far.lon, 2)} (${esc(cellPlace(far).main)}) to the nearest collection`) : T('a la colecta más cercana', 'to the nearest collection'), c: 'var(--s5)' },
-      { k: T('Celdas que captan <span style="white-space:nowrap">≥&nbsp;90&nbsp;%</span>', 'Cells holding <span style="white-space:nowrap">≥&nbsp;90%</span>'), v: fmtInt(Math.max(0, k90)), d: k90 > 0 ? T(`juntan el ${fmt(G.complementarity.order[k90 - 1].pct, 0)} % de ${fmtInt(G.complementarity.total)} tipos, por complementariedad`, `together hold ${fmt(G.complementarity.order[k90 - 1].pct, 0)}% of ${fmtInt(G.complementarity.total)} types, by complementarity`) : T(`de ${fmtInt(G.complementarity.total)} tipos, por complementariedad`, `of ${fmtInt(G.complementarity.total)} types, by complementarity`), c: 'var(--s4)' },
+      { k: T('Celdas que captan <span style="white-space:nowrap">≥&nbsp;90&nbsp;%</span>', 'Cells holding <span style="white-space:nowrap">≥&nbsp;90 %</span>'), v: fmtInt(Math.max(0, k90)), d: k90 > 0 ? T(`juntan el ${fmt(G.complementarity.order[k90 - 1].pct, 0)} % de ${fmtInt(G.complementarity.total)} tipos, por complementariedad`, `together hold ${fmt(G.complementarity.order[k90 - 1].pct, 0)} % of ${fmtInt(G.complementarity.total)} types, by complementarity`) : T(`de ${fmtInt(G.complementarity.total)} tipos, por complementariedad`, `of ${fmtInt(G.complementarity.total)} types, by complementarity`), c: 'var(--s4)' },
       { k: T('Tipos en riesgo', 'Types at risk'), v: fmtInt(nRisk), d: T('una sola accesión, sin respaldo, sólo in situ o sólo ADN', 'single accession, no backup, in situ only or DNA only'), c: nRisk ? 'var(--danger)' : 'var(--s3)' },
     ].map(x => `<div class="stat" style="--sc:${x.c}"><div class="s-k">${x.k}</div><div class="s-v">${x.v}</div><div class="s-d">${x.d}</div></div>`).join('');
 
@@ -247,7 +247,7 @@
         ? { what: T('km de la celda vacía a la colecta más cercana', 'km from the empty cell to the nearest collection'), lo: dists.length ? fmtInt(Math.min(...dists)) : '—', hi: dists.length ? fmtInt(Math.max(...dists)) : '—', t0: 0.1 }
         : { what: T('puntos de prioridad de la celda vacía', 'priority points of the empty cell'), lo: scores.length ? fmtInt(Math.min(...scores)) : '—', hi: scores.length ? fmtInt(Math.max(...scores)) : '—', t0: 0.1 };
     const legendItems = view.show === 'richness'
-      ? `<span class="lg-item"><i style="background:transparent;border:1px solid ${cv('--border')}"></i>${T('celda vacía (sin color)', 'empty cell (no colour)')}</span>`
+      ? `<span class="lg-item"><i style="background:transparent;border:1px solid ${cv('--border')}"></i>${T('celda vacía (sin color)', 'empty cell (no color)')}</span>`
       : `<span class="lg-item"><i style="background:${cv('--s3')}"></i>${T('celda con colectas', 'cell with collections')}</span>`;
 
     const shown = G.risks.filter(r => r.flags.length);
@@ -257,7 +257,7 @@
       <h3 class="section-title">${T('1 · El mapa de lo que falta', '1 · The map of what is missing')}</h3>
       <p class="section-sub">${T(
         `Cada cuadro es una celda de ${sizeTxt}° que toca tierra ${world ? 'de algún país' : 'de alguna entidad'} (se prueban ${nSamp} puntos repartidos en ella, no sólo el centro), o que contiene alguna accesión. Las que tienen un punto verde ya tienen colectas; las demás están vacías. ${view.show === 'distance' ? 'El color de las vacías dice a qué distancia les queda la colecta más cercana' : view.show === 'richness' ? 'Aquí el color va en las ocupadas y dice cuántos tipos tiene cada una; las vacías quedan sin color' : 'El color de las vacías dice su prioridad de colecta'}. Los diez círculos numerados son las diez primeras prioridades; si dos quedan encimados, uno se aparta y una línea lo une con su celda.`,
-        `Each square is a ${sizeTxt}° cell that touches the land of ${world ? 'some country' : 'some state'} (${nSamp} points spread over it are tested, not just its centre), or that holds an accession. Those with a green dot already hold collections; the rest are empty. ${view.show === 'distance' ? 'The colour of the empty ones shows how far the nearest collection is' : view.show === 'richness' ? 'Here the colour goes on the occupied cells and shows how many types each holds; empty cells stay uncoloured' : 'The colour of the empty ones shows their collecting priority'}. The ten numbered circles are the top ten priorities; when two would overlap, one is moved aside and a line joins it to its cell.`)}</p>
+        `Each square is a ${sizeTxt}° cell that touches the land of ${world ? 'some country' : 'some state'} (${nSamp} points spread over it are tested, not just its center), or that holds an accession. Those with a green dot already hold collections; the rest are empty. ${view.show === 'distance' ? 'The color of the empty ones shows how far the nearest collection is' : view.show === 'richness' ? 'Here the color goes on the occupied cells and shows how many types each holds; empty cells stay uncolored' : 'The color of the empty ones shows their collecting priority'}. The ten numbered circles are the top ten priorities; when two would overlap, one is moved aside and a line joins it to its cell.`)}</p>
       <div class="card">
         <div class="imp-row">
           <label class="inline-label">${T('Pintar', 'Paint')}<select class="sel" id="b6Show">
@@ -267,7 +267,7 @@
           </select></label>
           ${nOut > 0 ? `<span class="hint">${T(
             `${fmtInt(nOut)} ${pl(nOut, 'accesión cae', 'accesiones caen')} fuera del área analizada`,
-            `${fmtInt(nOut)} ${pl(nOut, 'accession falls', 'accessions fall')} outside the analysed area`)}</span>` : ''}
+            `${fmtInt(nOut)} ${pl(nOut, 'accession falls', 'accessions fall')} outside the analyzed area`)}</span>` : ''}
         </div>
         <div class="map-wrap">${gapMap(900, 520)}</div>
         <div class="map-legends"><div class="map-legend">
@@ -281,11 +281,11 @@
       <h3 class="section-title">${T('2 · A dónde ir la próxima vez', '2 · Where to go next time')}</h3>
       <p class="section-sub">${T(
         `La prioridad de cada celda vacía es la suma de cuatro cosas, y cada una se puede pesar distinto según lo que busques. Si vas tras material nuevo, sube la distancia; si vas tras diversidad, sube la riqueza del vecindario; si quieres equilibrar la colección entre ${world ? 'países' : 'estados'}, sube el déficit ${world ? 'del país' : 'de la entidad'}: accesiones cuyo propio punto cae en ${world ? 'el país' : 'la entidad'} entre su superficie, comparado con ${world ? 'el país mejor cubierto' : 'la entidad mejor cubierta'} (en una celda que comparten varias, cada una pesa por la tierra que ocupa). El vecindario de una celda son las celdas a unos ${fmtInt(GAPS.NEIGHBOUR_KM)} km o menos (${G.opts.radius} ${pl(G.opts.radius, 'celda', 'celdas')} de ${sizeTxt}° hacia cada lado), sea cual sea el tamaño de celda. A igual puntaje, va primero la celda con más riqueza alrededor y, si sigue el empate, la más lejana. La tabla trae las coordenadas del centro de cada celda, listas para cargarlas en el GPS.`,
-        `The priority of each empty cell is the sum of four things, and each can be weighted differently depending on what you are after. If you want new material, raise the distance; if you want diversity, raise neighbourhood richness; if you want to balance the collection across ${world ? 'countries' : 'states'}, raise the ${world ? 'country' : 'state'} deficit: accessions whose own point falls in the ${world ? 'country' : 'state'} divided by its area, compared with the best covered one (in a cell shared by several, each weighs by the land it occupies). The neighbourhood of a cell is the cells within about ${fmtInt(GAPS.NEIGHBOUR_KM)} km (${G.opts.radius} ${pl(G.opts.radius, 'cell', 'cells')} of ${sizeTxt}° each way), whatever the cell size. On equal scores, the cell with more richness around goes first and, if still tied, the farthest one. The table carries the coordinates of each cell centre, ready for a GPS.`)}</p>
+        `The priority of each empty cell is the sum of four things, and each can be weighted differently depending on what you are after. If you want new material, raise the distance; if you want diversity, raise neighborhood richness; if you want to balance the collection across ${world ? 'countries' : 'states'}, raise the ${world ? 'country' : 'state'} deficit: accessions whose own point falls in the ${world ? 'country' : 'state'} divided by its area, compared with the best covered one (in a cell shared by several, each weighs by the land it occupies). The neighborhood of a cell is the cells within about ${fmtInt(GAPS.NEIGHBOUR_KM)} km (${G.opts.radius} ${pl(G.opts.radius, 'cell', 'cells')} of ${sizeTxt}° each way), whatever the cell size. On equal scores, the cell with more richness around goes first and, if still tied, the farthest one. The table carries the coordinates of each cell center, ready for a GPS.`)}</p>
       <div class="card">
         <div class="field-grid b6-weights">
           ${[['distance', T('Lejanía de la colecta más cercana', 'Distance to nearest collection')],
-             ['richness', T('Riqueza del vecindario', 'Neighbourhood richness')],
+             ['richness', T('Riqueza del vecindario', 'Neighborhood richness')],
              ['state', world ? T('Déficit del país', 'Country deficit') : T('Déficit de la entidad', 'State deficit')],
              ['exclusive', T('Tipos exclusivos cerca', 'Exclusive types nearby')]].map(([k, lab]) => `
             <div class="slider-row"><label for="b6w_${k}">${esc(lab)}</label>
@@ -297,7 +297,7 @@
           '<b>All the weights are zero.</b> With nothing to weigh there is no priority index, and ordering the cells that way would invent a ranking: raise at least one of the four sliders.')}</div>` : `
         <div class="table-wrap" style="max-height:420px;overflow:auto;margin-top:12px" tabindex="0" role="region" aria-label="${esc(T('Tabla de prioridades de colecta', 'Collecting priorities table'))}">
           <table class="tbl"><thead><tr>
-            <th>#</th><th>${T('Centro de la celda', 'Cell centre')}</th><th>${world ? T('País', 'Country') : T('Entidad', 'State')}</th>
+            <th>#</th><th>${T('Centro de la celda', 'Cell center')}</th><th>${world ? T('País', 'Country') : T('Entidad', 'State')}</th>
             <th class="num">${T('Al vecino', 'To nearest')}</th><th class="num">${T('Riqueza cerca', 'Richness nearby')}</th>
             <th class="num">${T('Puntos', 'Score')}</th><th>${T('Por qué', 'Why')}</th>
           </tr></thead><tbody>
@@ -334,7 +334,7 @@
       <h3 class="section-title">${T('3 · Lo que ya tienes y puedes perder', '3 · What you already have and could lose')}</h3>
       <p class="section-sub">${T(
         'Los vacíos que no se ven en un mapa. Un tipo con una sola accesión, sin duplicado de seguridad o que sólo existe en el banco de campo está a un accidente de desaparecer del catálogo; uno que sólo está in situ depende de que la parcela siga sembrándose, y uno guardado sólo como ADN conserva la información, pero no puede volver a dar una planta. «Entidades o países» cuenta dónde cae el punto de cada accesión: la entidad si cae en México, el país si cae en otro lado.',
-        'The gaps a map does not show. A type with a single accession, without a safety duplicate, or living only in the field collection is one accident away from leaving the catalogue; one that exists only in situ depends on that field still being sown, and one kept only as DNA keeps the information but can never give a plant again. “States or countries” counts where the point of each accession falls: the state if it is in Mexico, the country otherwise.')}</p>
+        'The gaps a map does not show. A type with a single accession, without a safety duplicate, or living only in the field collection is one accident away from leaving the catalog; one that exists only in situ depends on that field still being sown, and one kept only as DNA keeps the information but can never give a plant again. “States or countries” counts where the point of each accession falls: the state if it is in Mexico, the country otherwise.')}</p>
       <div class="card">
         ${shown.length > MAXR ? `<p class="hint">${T(`Se muestran ${MAXR} de ${fmtInt(shown.length)} tipos con algún riesgo, los más graves primero; el CSV los trae todos.`, `Showing ${MAXR} of ${fmtInt(shown.length)} types with some risk, the most serious first; the CSV has them all.`)}</p>` : ''}
         <div class="table-wrap" style="max-height:420px;overflow:auto" tabindex="0" role="region" aria-label="${esc(T('Tabla de tipos en riesgo', 'Types at risk table'))}">
@@ -382,7 +382,7 @@
     });
     el('b6CSV').addEventListener('click', exportRoute);
     el('b6RiskCSV').addEventListener('click', exportRisks);
-    el('b6SVG').addEventListener('click', () => download(B4.forFile(() => gapMap(1000, 580)), 'vacios-colecta.svg', 'image/svg+xml'));
+    el('b6SVG').addEventListener('click', () => download(B4.forFile(() => gapMap(1000, 580)), T('vacios-colecta.svg', 'collecting-gaps.svg'), 'image/svg+xml'));
   }
 
   /* la nota de las franjas altitudinales vacías */
@@ -391,17 +391,22 @@
     if (!E.gaps.length) return '';
     const ng = E.gaps.length, nd = E.dropped;
     return `<div class="note-warn" style="margin-top:12px">${T(
-      `<b>Franjas altitudinales sin nada.</b> Entre ${fmtInt(E.bands[0].from)} y ${fmtInt(E.bands[E.bands.length - 1].to)} m hay ${ng} ${pl(ng, 'franja', 'franjas')} de 500 m sin ninguna accesión: ${E.gaps.map(b => `${fmtInt(b.from)}–${fmtInt(b.to)}`).join(', ')} m. Son ambientes intermedios que la colección se está saltando.${nd ? ` (Se ${pl(nd, 'dejó', 'dejaron')} fuera ${nd} ${pl(nd, 'altitud imposible', 'altitudes imposibles')}; ${pl(nd, 'corrígela', 'corrígelas')} en la ficha de la accesión, en el Bloque 2.)` : ''}`,
-      `<b>Empty elevation belts.</b> Between ${fmtInt(E.bands[0].from)} and ${fmtInt(E.bands[E.bands.length - 1].to)} m there ${pl(ng, 'is', 'are')} ${ng} 500 m ${pl(ng, 'belt', 'belts')} with no accession at all: ${E.gaps.map(b => `${fmtInt(b.from)}–${fmtInt(b.to)}`).join(', ')} m. Those are intermediate environments the collection is skipping.${nd ? ` (${nd} impossible ${pl(nd, 'elevation was', 'elevations were')} left out; fix ${pl(nd, 'it', 'them')} in the accession record, in Block 2.)` : ''}`)}</div>`;
+      `<b>Franjas altitudinales sin nada.</b> Entre ${fmtInt(E.bands[0].from)} y ${fmtInt(E.bands[E.bands.length - 1].to)} m hay ${ng === 1 ? 'una franja' : `${ng} franjas`} de 500 m sin ninguna accesión: ${E.gaps.map(b => `${fmtInt(b.from)}–${fmtInt(b.to)}`).join(', ')} m. Son ambientes intermedios que la colección se está saltando.${nd ? ` (Se ${pl(nd, 'dejó', 'dejaron')} fuera ${nd} ${pl(nd, 'altitud imposible', 'altitudes imposibles')}; ${pl(nd, 'corrígela', 'corrígelas')} en la ficha de la accesión, en el Bloque 2.)` : ''}`,
+      `<b>Empty elevation belts.</b> Between ${fmtInt(E.bands[0].from)} and ${fmtInt(E.bands[E.bands.length - 1].to)} m there ${ng === 1 ? 'is one 500 m belt' : `are ${ng} 500 m belts`} with no accession at all: ${E.gaps.map(b => `${fmtInt(b.from)}–${fmtInt(b.to)}`).join(', ')} m. Those are intermediate environments the collection is skipping.${nd ? ` (${nd} impossible ${pl(nd, 'elevation was', 'elevations were')} left out; fix ${pl(nd, 'it', 'them')} in the accession record, in Block 2.)` : ''}`)}</div>`;
   }
 
+  const RISKS_EN = { tipo: 'type', accesiones: 'accessions', entidades_o_paises: 'states_or_countries', rutas: 'routes',
+    duplicados: 'duplicates', con_coordenadas: 'with_coordinates', riesgos: 'risks', peso: 'weight' };
+  const ROUTE_EN = { orden: 'rank', latitud: 'latitude', longitud: 'longitude', entidad: 'state', pais: 'country',
+    km_al_vecino: 'km_to_nearest', riqueza_vecindario: 'neighborhood_richness', accesiones_vecindario: 'neighborhood_accessions',
+    exclusivos_cerca: 'exclusive_nearby', puntos: 'score', celda_grados: 'cell_degrees' };
   function exportRisks() {
     const rows = G.risks.filter(r => r.flags.length).map(r => ({
       tipo: r.type, accesiones: r.n, entidades_o_paises: r.sites,
       rutas: r.routes.map(routeName).join('; '), duplicados: r.dupl, con_coordenadas: r.coords,
       riesgos: r.flags.map(f => FLAGS[f] ? T(FLAGS[f].es, FLAGS[f].en) : f).join('; '), peso: r.weight,
     }));
-    download(IO.toCSV(rows, Object.keys(rows[0] || { tipo: '' })), 'tipos-en-riesgo.csv', 'text/csv;charset=utf-8');
+    download(langCSV(rows, RISKS_EN, rows.length ? null : ['tipo']), T('tipos-en-riesgo.csv', 'types-at-risk.csv'), 'text/csv;charset=utf-8');
   }
 
 
@@ -419,7 +424,7 @@
       puntos: Math.round(c.score * 10) / 10,
       celda_grados: c.size,
     }));
-    download(IO.toCSV(rows, Object.keys(rows[0] || { orden: '' })), 'prioridades-colecta.csv', 'text/csv;charset=utf-8');
+    download(langCSV(rows, ROUTE_EN, rows.length ? null : ['orden']), T('prioridades-colecta.csv', 'collecting-priorities.csv'), 'text/csv;charset=utf-8');
   }
 
   function syncControls() {
@@ -467,5 +472,5 @@
   document.addEventListener('langchange', () => { if (el('panel-6')) { syncControls(); run(); } });
   document.addEventListener('themechange', () => { if (el('panel-6') && G) render(); });
 
-  window.B6 = { run, view, analysis: () => G, gapMap, compCurve, FLAGS, placeMarkers, elevationNote, cellPlace };
+  window.B6 = { run, exportRisks, exportRoute, view, analysis: () => G, gapMap, compCurve, FLAGS, placeMarkers, elevationNote, cellPlace };
 })();

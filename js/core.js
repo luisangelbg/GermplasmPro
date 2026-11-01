@@ -56,6 +56,15 @@ function download(content, filename, mime) {
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
+/* CSV de resultados en el idioma de la interfaz: `en` dice cómo se llama en inglés cada columna
+   española; las que no están (códigos MCPD como ACCENUMB) se quedan igual. `cols` fija el orden (por
+   omisión, el de la primera fila). Los CSV de intercambio de pasaporte no pasan por aquí. */
+function langCSV(rows, en, cols, lang) {
+  const L = (lang || I18N.lang) === 'en';
+  const tr = k => (L && en && en[k]) || k;
+  const keys = cols || Object.keys(rows[0] || {});
+  return IO.toCSV(rows.map(r => Object.fromEntries(keys.map(k => [tr(k), r[k]]))), keys.map(tr));
+}
 function slug(s) {
   return String(s || 'germplasmpro').normalize('NFD').replace(/[̀-ͯ]/g, '')
     .replace(/[^\w-]+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '').toLowerCase().slice(0, 70) || 'germplasmpro';

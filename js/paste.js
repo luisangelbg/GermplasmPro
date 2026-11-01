@@ -141,7 +141,7 @@
     if (window.TRAITS) TRAITS.GROUPS.forEach(g => out.push({
       g: 'tr:' + g.g, es: g.es, en: g.en, d: g.d,
       campos: TRAITS.byGroup(g.g).map(f => ({
-        k: f.k, es: f.es, en: f.en, d: f.d, ex: f.ex, u: f.u, req: null, origen: 'trait',
+        k: f.k, es: f.es, en: f.en, d: f.d, ex: f.ex, exe: f.exe, u: f.u, ue: f.ue, req: null, origen: 'trait',
       })),
     }));
     return out;
@@ -169,11 +169,11 @@
           <label class="tpl-campo${marcadas.has(f.k) ? ' on' : ''}">
             <input type="checkbox" data-tpl="${esc(f.k)}"${marcadas.has(f.k) ? ' checked' : ''}>
             <div>
-              <div class="tpl-nom">${esc(T(f.es, f.en))}${f.u ? ` <span class="tpl-u">(${esc(f.u)})</span>` : ''}${
+              <div class="tpl-nom">${esc(T(f.es, f.en))}${f.u ? ` <span class="tpl-u">(${esc(T(f.u, f.ue || f.u))})</span>` : ''}${
                 f.req === 'must' ? `<span class="tag bad">${T('obligatorio', 'mandatory')}</span>` : ''}</div>
               <div class="tpl-cod">${esc(f.k)}</div>
               ${f.d ? `<div class="tpl-d">${esc(T(f.d.es, f.d.en))}</div>` : ''}
-              ${f.ex ? `<div class="tpl-ej">${T('ejemplo', 'example')}: <code>${esc(f.ex)}</code></div>` : ''}
+              ${f.ex ? `<div class="tpl-ej">${T('ejemplo', 'example')}: <code>${esc(T(f.ex, f.exe || f.ex))}</code></div>` : ''}
             </div>
           </label>`).join('')}</div>
       </details>`;
@@ -279,7 +279,7 @@
     if (!cols.length) { alert(T('Marca primero las columnas que quieres.', 'Tick the columns you want first.')); return; }
     const filas = rejilla.filter(r => cols.some(k => String(r[k] || '').trim() !== ''));
     const cuerpo = filas.length ? filas : [Object.fromEntries(cols.map(k => [k, '']))];
-    download(IO.toCSV(cuerpo, cols), 'plantilla-germplasmpro.csv', 'text/csv;charset=utf-8');
+    download(IO.toCSV(cuerpo, cols), T('plantilla-germplasmpro.csv', 'germplasmpro-template.csv'), 'text/csv;charset=utf-8');
   }
 
   /* ¿es un lugar donde se escribe texto? (no una casilla ni un botón) */
@@ -345,5 +345,5 @@
     if (el('pasteDlg') && el('pasteDlg').open) { ponerTextos(); render(); }
   });
 
-  window.PASTE = { open, diagnostico, campoEditable, estado: () => estado };
+  window.PASTE = { open, descargarPlantilla, diagnostico, campoEditable, estado: () => estado };
 })();

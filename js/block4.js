@@ -93,7 +93,7 @@
     { k: 'COLLSRC', es: 'Fuente de colecta', en: 'Collecting source', kind: 'cat' },
     { k: 'ELEVATION', es: 'Altitud', en: 'Elevation', kind: 'num' },
     { k: 'YEAR', es: 'Año de colecta', en: 'Collecting year', kind: 'num' },
-    { k: 'none', es: 'Un solo color', en: 'A single colour', kind: 'none' },
+    { k: 'none', es: 'Un solo color', en: 'A single color', kind: 'none' },
   ];
   function valueOf(p, k) {
     const r = p.row;
@@ -534,7 +534,7 @@
   }
   function exportSVG() {
     if (!lastSVG) return;
-    download(fileSVG(), 'mapa-colecta.svg', 'image/svg+xml;charset=utf-8');
+    download(fileSVG(), T('mapa-colecta.svg', 'collecting-map.svg'), 'image/svg+xml;charset=utf-8');
   }
   function exportPNG(scale) {
     if (!lastSVG) return;
@@ -553,12 +553,13 @@
       ctx.fillRect(0, 0, cv.width, cv.height);
       ctx.drawImage(img, 0, 0, cv.width, cv.height);
       URL.revokeObjectURL(url);
-      cv.toBlob(b => { if (b) download(b, 'mapa-colecta.png', 'image/png'); }, 'image/png');
+      cv.toBlob(b => { if (b) download(b, T('mapa-colecta.png', 'collecting-map.png'), 'image/png'); }, 'image/png');
     };
     img.onerror = () => { URL.revokeObjectURL(url); alert(T('No se pudo convertir a PNG; descarga el SVG.', 'Could not convert to PNG; download the SVG instead.')); };
     img.src = url;
   }
   /* las accesiones que se ven, en CSV, con su entidad y su celda */
+  const POINTS_EN = { ENTIDAD: 'STATE', PAIS_PUNTO: 'POINT_COUNTRY', PAIS_PASAPORTE: 'PASSPORT_COUNTRY', CELDA_1G: 'CELL_1DEG', RUTA: 'ROUTE' };
   function exportPoints() {
     const rows = pts.map(p => {
       const s = GEO.stateOf(p.lon, p.lat), c = GEO.countryOf(p.lon, p.lat);
@@ -569,7 +570,7 @@
         CELDA_1G: GEO.cellKey(p.lon, p.lat, 1), RUTA: MCPD.consRoute(p.row),
       };
     });
-    download(IO.toCSV(rows, Object.keys(rows[0] || { ACCENUMB: '' })), 'puntos-mapa.csv', 'text/csv;charset=utf-8');
+    download(langCSV(rows, POINTS_EN, rows.length ? null : ['ACCENUMB']), T('puntos-mapa.csv', 'map-points.csv'), 'text/csv;charset=utf-8');
   }
 
   /* ============ arranque ============ */
@@ -603,5 +604,5 @@
   document.addEventListener('langchange', () => { if (el('panel-4')) { syncControls(); render(); } });
   document.addEventListener('themechange', () => { cssCache = {}; cssTheme = ''; if (el('panel-4')) render(); });
 
-  window.B4 = { render, view, drawMap, colorInfo, legendHTML, choroLegend, placeLabels, valueOf, exportSVG, exportPNG, cssVar, paint, forFile, ramp, speciesIn, points: () => pts };
+  window.B4 = { render, exportPoints, view, drawMap, colorInfo, legendHTML, choroLegend, placeLabels, valueOf, exportSVG, exportPNG, cssVar, paint, forFile, ramp, speciesIn, points: () => pts };
 })();

@@ -319,10 +319,10 @@
     const sim = nameSim(a.ACCENAME, b.ACCENAME);
     if (sim >= 0.92) {
       score += W.name;
-      reasons.push({ k: 'name', pts: W.name, es: `nombres casi idénticos (${fmt(100 * sim, 0)} %)`, en: `nearly identical names (${fmt(100 * sim, 0)}%)` });
+      reasons.push({ k: 'name', pts: W.name, es: `nombres casi idénticos (${fmt(100 * sim, 0)} %)`, en: `nearly identical names (${fmt(100 * sim, 0)} %)` });
     } else if (sim >= 0.82) {
       score += W.nameSoft;
-      reasons.push({ k: 'nameSoft', pts: W.nameSoft, es: `nombres parecidos (${fmt(100 * sim, 0)} %)`, en: `similar names (${fmt(100 * sim, 0)}%)` });
+      reasons.push({ k: 'nameSoft', pts: W.nameSoft, es: `nombres parecidos (${fmt(100 * sim, 0)} %)`, en: `similar names (${fmt(100 * sim, 0)} %)` });
     }
 
     const ca = coordsOf(a), cb = coordsOf(b);
@@ -465,7 +465,7 @@
     }
     pairsG.forEach(([a, b]) => add('genusTypo', 'warn',
       `«${a}» y «${b}» se parecen demasiado para ser dos géneros distintos.`,
-      `"${a}" and "${b}" are too similar to be two different genera.`,
+      `“${a}” and “${b}” are too similar to be two different genera.`,
       rows.map((r, i) => (r.GENUS === a || r.GENUS === b) ? i : -1).filter(i => i >= 0)));
 
     /* un mismo taxón con nombres de cultivo distintos (con la subespecie o la variedad: el
@@ -491,7 +491,7 @@
         const tx = taxonEscrito.get(t) || t;
         add('cropName', 'warn',
           `El mismo taxón (${tx}) aparece con ${m.size} nombres de cultivo distintos: ${names.map(n => `«${n}»`).join(', ')}.`,
-          `The same taxon (${tx}) appears under ${m.size} different crop names: ${names.map(n => `"${n}"`).join(', ')}.`,
+          `The same taxon (${tx}) appears under ${m.size} different crop names: ${names.map(n => `“${n}”`).join(', ')}.`,
           [].concat(...[...m.values()].map(v => v.rows)));
       }
     }
@@ -511,7 +511,7 @@
         const forms = [...v.forms];
         add('siteSpelling', 'info',
           `El mismo sitio está escrito de ${forms.length} maneras: ${forms.map(f => `«${f}»`).join(', ')}.`,
-          `The same site is spelled ${forms.length} ways: ${forms.map(f => `"${f}"`).join(', ')}.`,
+          `The same site is spelled ${forms.length} ways: ${forms.map(f => `“${f}”`).join(', ')}.`,
           v.rows);
       }
     }
@@ -585,7 +585,7 @@
       const cty = String(r.ORIGCTY || '').trim().toUpperCase();
       if (cty.length === 2 && ALPHA2[cty]) {
         fixes.push({ i, code: 'alpha2', field: 'ORIGCTY', from: r.ORIGCTY, to: ALPHA2[cty],
-          msg: { es: `«${cty}» es el código de dos letras; el estándar pide el de tres.`, en: `"${cty}" is the two-letter code; the standard asks for the three-letter one.` } });
+          msg: { es: `«${cty}» es el código de dos letras; el estándar pide el de tres.`, en: `“${cty}” is the two-letter code; the standard asks for the three-letter one.` } });
       }
       /* espacios de sobra y mayúsculas gritadas en los nombres: una sola
          corrección hace las dos cosas, para no tener que pasar dos veces */

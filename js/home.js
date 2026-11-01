@@ -69,11 +69,11 @@
 
   /* ============ escenarios listos ============ */
   const PRESETS = {
-    'seed-fao': { m: 'seed', es: 'Semillas · banco de largo plazo (norma FAO: −18 °C, 6 %)', en: 'Seed · long-term genebank (FAO standard: −18 °C, 6%)',
+    'seed-fao': { m: 'seed', es: 'Semillas · banco de largo plazo (norma FAO: −18 °C, 6 %)', en: 'Seed · long-term genebank (FAO standard: −18 °C, 6 %)',
       v: { species: 'maiz', method: 'seed', temp: -18, moisture: 6, interval: 5, sown: 100, threshold: 85, years: 100 } },
-    'seed-fria': { m: 'seed', es: 'Semillas · cámara de mediano plazo (5 °C, 8 %)', en: 'Seed · medium-term cold room (5 °C, 8%)',
+    'seed-fria': { m: 'seed', es: 'Semillas · cámara de mediano plazo (5 °C, 8 %)', en: 'Seed · medium-term cold room (5 °C, 8 %)',
       v: { species: 'trigo', method: 'seed', temp: 5, moisture: 8, interval: 5, sown: 100, threshold: 85, years: 200 } },
-    'seed-comunitario': { m: 'seed', es: 'Semillas · banco comunitario sin cámara (20 °C, 12 %)', en: 'Seed · community seed bank, no cold room (20 °C, 12%)',
+    'seed-comunitario': { m: 'seed', es: 'Semillas · banco comunitario sin cámara (20 °C, 12 %)', en: 'Seed · community seed bank, no cold room (20 °C, 12 %)',
       v: { species: 'maiz', method: 'seed', temp: 20, moisture: 12, interval: 3, sown: 60, threshold: 85, years: 100 } },
     'seed-sinmonitoreo': { m: 'seed', es: 'Semillas · el mismo banco comunitario sin probar germinación en 15 años', en: 'Seed · the same community bank with no germination test for 15 years',
       v: { species: 'maiz', method: 'seed', temp: 20, moisture: 12, interval: 15, sown: 60, threshold: 85, years: 100 } },
@@ -121,7 +121,7 @@
     failure: { es: 'Riesgo de fallo del tanque (por mil años)', en: 'Tank failure risk (per thousand years)', min: 0, max: 20, step: 1, fmt: v => v + ' ‰' },
     census: { es: 'Individuos de la población', en: 'Individuals in the population', min: 20, max: 3000, step: 20, fmt: v => String(v) },
     neRatio: { es: 'Tamaño efectivo (Ne como % del censo)', en: 'Effective size (Ne as % of the census)', min: 5, max: 100, step: 5, fmt: v => v + ' %' },
-    migration: { es: 'Flujo génico de las poblaciones vecinas (%)', en: 'Gene flow from neighbouring populations (%)', min: 0, max: 30, step: 1, fmt: v => v + ' %' },
+    migration: { es: 'Flujo génico de las poblaciones vecinas (%)', en: 'Gene flow from neighboring populations (%)', min: 0, max: 30, step: 1, fmt: v => v + ' %' },
     siteRisk: { es: 'Riesgo anual de perder el sitio (%)', en: 'Annual risk of losing the site (%)', min: 0, max: 10, step: 0.5, fmt: v => v + ' %' },
     years: { es: 'Horizonte de la simulación (años)', en: 'Simulation horizon (years)', min: 30, max: 200, step: 10, fmt: v => v + ' a' },
   };
@@ -169,6 +169,9 @@
     pr.addEventListener('change', () => { delete cur.KE; delete cur.CW; Object.assign(cur, PRESETS[pr.value].v); cur.behaviour = null; syncControls(); run(); });
 
     el('simSeed').addEventListener('click', () => { cur.seed = Math.floor(Math.random() * 1e9); run(); });
+    /* the options are built after I18N.apply() ran on DOMContentLoaded: if the app opens already in English
+       (saved language), they must be translated here or they stay in Spanish until the next language change */
+    [me, sp, be, pr].forEach(s => I18N.apply(s));
   }
 
   /* ---------- los deslizadores que pide el método activo ---------- */
@@ -318,7 +321,7 @@
       st.push({ k: T('Consanguinidad', 'Inbreeding'), v: fmt(s.F, 1) + ' %', d: T('F acumulada por los cuellos de botella', 'F accumulated over the bottlenecks'), c: 'var(--s5)' });
     };
     if (r.method === 'seed') {
-      st.push({ k: T('Vida media del lote', 'Half-viability period'), v: r.p50 > 999 ? '>999' : fmt(r.p50, 0), d: T('años hasta 50 % de germinación (p₅₀)', 'years to 50% germination (p₅₀)'), c: 'var(--s1)' });
+      st.push({ k: T('Vida media del lote', 'Half-viability period'), v: r.p50 > 999 ? '>999' : fmt(r.p50, 0), d: T('años hasta 50 % de germinación (p₅₀)', 'years to 50 % germination (p₅₀)'), c: 'var(--s1)' });
       st.push({ k: T(r.cycleLabel.es, r.cycleLabel.en), v: fmtInt(s.regens), d: T('en ' + o.years + ' años', 'in ' + o.years + ' years'), c: 'var(--s2)' });
       common();
       st.push({ k: T('Tamaño efectivo medio', 'Mean effective size'), v: s.NeMean == null ? '—' : fmt(s.NeMean, 0), d: T('plantas que de verdad dejaron descendencia', 'plants that actually left offspring'), c: 'var(--s6)' });
@@ -356,15 +359,15 @@
     if (r.method === 'seed') {
       bits.push(T(
         `A ${o.temp} °C y ${o.moisture} % de humedad, la ecuación de viabilidad da σ = ${fmt(r.sigma / 365.25, 0)} años por probit: el lote tarda <b>${r.p50 > 999 ? 'más de 999' : fmt(r.p50, 0)} años</b> en caer al 50 % de germinación.`,
-        `At ${o.temp} °C and ${o.moisture}% moisture, the viability equation gives σ = ${fmt(r.sigma / 365.25, 0)} years per probit: the lot takes <b>${r.p50 > 999 ? 'more than 999' : fmt(r.p50, 0)} years</b> to fall to 50% germination.`));
+        `At ${o.temp} °C and ${o.moisture} % moisture, the viability equation gives σ = ${fmt(r.sigma / 365.25, 0)} years per probit: the lot takes <b>${r.p50 > 999 ? 'more than 999' : fmt(r.p50, 0)} years</b> to fall to 50 % germination.`));
       if (s.regens === 0) {
         bits.push(T(`En ${o.years} años no hizo falta regenerar: la accesión llega con ${fmt(s.finalGerm, 0)} % de germinación y con toda su diversidad. Esto es lo que compra una buena cámara.`,
-          `In ${o.years} years it never needed regenerating: the accession arrives with ${fmt(s.finalGerm, 0)}% germination and all of its diversity. That is what a good cold room buys.`));
+          `In ${o.years} years it never needed regenerating: the accession arrives with ${fmt(s.finalGerm, 0)} % germination and all of its diversity. That is what a good cold room buys.`));
       } else {
         const byStock = r.regens.filter(g => g.reason === 'stock').length;
         bits.push(T(
           `Hubo ${s.regens} regeneraciones (la primera en el año ${s.firstRegen}${byStock ? `, ${byStock} de ellas por quedarse sin semilla` : ''}), cada una con un tamaño efectivo medio de ${fmt(s.NeMean, 0)} plantas. Ahí se fueron ${fmtInt(s.allelesLost)} alelos y subió la consanguinidad a ${fmt(s.F, 1)} %.`,
-          `There were ${s.regens} regenerations (the first in year ${s.firstRegen}${byStock ? `, ${byStock} of them because the seed ran out` : ''}), each with a mean effective size of ${fmt(s.NeMean, 0)} plants. That cost ${fmtInt(s.allelesLost)} alleles and pushed inbreeding to ${fmt(s.F, 1)}%.`));
+          `There were ${s.regens} regenerations (the first in year ${s.firstRegen}${byStock ? `, ${byStock} of them because the seed ran out` : ''}), each with a mean effective size of ${fmt(s.NeMean, 0)} plants. That cost ${fmtInt(s.allelesLost)} alleles and pushed inbreeding to ${fmt(s.F, 1)} %.`));
       }
       if (o.interval >= 10) bits.push(T(
         `Con revisiones cada ${o.interval} años, cuando por fin se descubre que el lote bajó ya está muy por debajo del umbral: se siembra semilla poco viable y el tamaño efectivo de la regeneración se desploma.`,
@@ -375,33 +378,33 @@
     } else if (r.method === 'field') {
       bits.push(T(
         `Una colección viva no envejece en un frasco: envejece en la parcela. Con resiembra cada ${o.interval} años y ${o.sown} plantas, en ${o.years} años pasó por ${s.regens} renovaciones y ${s.hazards || 0} golpes del clima o de las plagas, y conserva ${fmt(s.allelesLeft, 0)} % de sus alelos.`,
-        `A living collection does not age in a jar: it ages in the plot. Replanted every ${o.interval} years with ${o.sown} plants, in ${o.years} years it went through ${s.regens} renewals and ${s.hazards || 0} weather or pest hits, and keeps ${fmt(s.allelesLeft, 0)}% of its alleles.`));
+        `A living collection does not age in a jar: it ages in the plot. Replanted every ${o.interval} years with ${o.sown} plants, in ${o.years} years it went through ${s.regens} renewals and ${s.hazards || 0} weather or pest hits, and keeps ${fmt(s.allelesLeft, 0)} % of its alleles.`));
       bits.push(T(
         `Aquí el enemigo no es el tiempo de almacén, son la frecuencia de la renovación, el tamaño de la parcela y la suerte: por eso un banco de campo siempre necesita un respaldo (in vitro, criopreservación o una segunda localidad).`,
         `Here the enemy is not storage time but how often the plot is renewed, how big it is and plain luck: that is why a field collection always needs a backup (in vitro, cryopreservation or a second site).`));
     } else if (r.method === 'invitro') {
       bits.push(T(
         `Con subcultivos cada ${o.subMonths} meses, en ${o.years} años el laboratorio hizo ${fmtInt(s.subcultures)} pases y manipuló ${fmtInt(s.labour)} frascos. La fidelidad genética bajó a ${fmt(s.fidelity, 1)} %: cada pase es una oportunidad para la variación somaclonal y para perder una línea por contaminación.`,
-        `With subcultures every ${o.subMonths} months, in ${o.years} years the laboratory made ${fmtInt(s.subcultures)} passes and handled ${fmtInt(s.labour)} jars. Genetic fidelity fell to ${fmt(s.fidelity, 1)}%: every pass is a chance for somaclonal variation and for losing a line to contamination.`));
+        `With subcultures every ${o.subMonths} months, in ${o.years} years the laboratory made ${fmtInt(s.subcultures)} passes and handled ${fmtInt(s.labour)} jars. Genetic fidelity fell to ${fmt(s.fidelity, 1)} %: every pass is a chance for somaclonal variation and for losing a line to contamination.`));
       bits.push(T(
         `Alargar el intervalo entre subcultivos —con menos temperatura, menos luz o medios con osmóticos— es la única forma de bajar ese costo sin perder la colección; el respaldo definitivo es la criopreservación.`,
         `Stretching the interval between subcultures —lower temperature, less light, osmotic media— is the only way to cut that cost without losing the collection; the definitive backup is cryopreservation.`));
     } else if (r.method === 'cryo') {
       bits.push(sp.sexual === false ? T(
         `De ${o.explants} explantes congelados se recuperan ${fmtInt(s.survivors)}. Como son copias de un mismo clon, ese cuello de botella no le quita alelos a la accesión: sólo decide si queda material para rebrotar. Después no pasa nada más: a −196 °C no hay envejecimiento ni ciclos de regeneración.`,
-        `Of ${o.explants} frozen explants, ${fmtInt(s.survivors)} are recovered. Since they are copies of one clone, that bottleneck takes no alleles from the accession: it only decides whether there is material left to regrow. Nothing else happens afterwards: at −196 °C there is no ageing and no regeneration cycles.`) : T(
+        `Of ${o.explants} frozen explants, ${fmtInt(s.survivors)} are recovered. Since they are copies of one clone, that bottleneck takes no alleles from the accession: it only decides whether there is material left to regrow. Nothing else happens afterwards: at −196 °C there is no aging and no regeneration cycles.`) : T(
         `De ${o.explants} explantes congelados se recuperan ${fmtInt(s.survivors)}: ese único cuello de botella deja la accesión con ${fmt(s.allelesLeft, 0)} % de sus alelos y una consanguinidad de ${fmt(s.F, 1)} %. Después no pasa nada más: a −196 °C no hay envejecimiento ni ciclos de regeneración.`,
-        `Of ${o.explants} frozen explants, ${fmtInt(s.survivors)} are recovered: that single bottleneck leaves the accession with ${fmt(s.allelesLeft, 0)}% of its alleles and an inbreeding of ${fmt(s.F, 1)}%. Nothing else happens afterwards: at −196 °C there is no ageing and no regeneration cycles.`));
+        `Of ${o.explants} frozen explants, ${fmtInt(s.survivors)} are recovered: that single bottleneck leaves the accession with ${fmt(s.allelesLeft, 0)} % of its alleles and an inbreeding of ${fmt(s.F, 1)} %. Nothing else happens afterwards: at −196 °C there is no aging and no regeneration cycles.`));
       bits.push(s.hazards
         ? T(`El tanque falló en el año ${r.hazards[0].year}: la criopreservación es segura mientras el nitrógeno nunca falte.`, `The tank failed in year ${r.hazards[0].year}: cryopreservation is safe only while the nitrogen never runs out.`)
         : T(`Todo el riesgo está en la entrada y en el suministro de nitrógeno: congela suficientes explantes y trabaja el protocolo hasta subir la recuperación.`, `All the risk is at the door and in the nitrogen supply: freeze enough explants and work on the protocol until recovery goes up.`));
     } else {
       bits.push(T(
         `La población vive en su sitio: en ${o.years} años pasó por ${fmtInt(s.generations)} generaciones con un tamaño efectivo medio de ${fmt(s.NeMean, 0)}, recibió ${o.migration} % de flujo génico por generación y conserva ${fmt(s.allelesLeft, 0)} % de sus alelos.`,
-        `The population lives where it belongs: in ${o.years} years it went through ${fmtInt(s.generations)} generations with a mean effective size of ${fmt(s.NeMean, 0)}, received ${o.migration}% gene flow per generation and keeps ${fmt(s.allelesLeft, 0)}% of its alleles.`));
+        `The population lives where it belongs: in ${o.years} years it went through ${fmtInt(s.generations)} generations with a mean effective size of ${fmt(s.NeMean, 0)}, received ${o.migration} % gene flow per generation and keeps ${fmt(s.allelesLeft, 0)} % of its alleles.`));
       bits.push(o.migration > 0
         ? T(`El flujo génico de las poblaciones vecinas devuelve parte de lo que la deriva se lleva: por eso conservar in situ es conservar una red de poblaciones, no una sola parcela.`,
-            `Gene flow from neighbouring populations gives back part of what drift takes away: that is why in-situ conservation means conserving a network of populations, not a single plot.`)
+            `Gene flow from neighboring populations gives back part of what drift takes away: that is why in-situ conservation means conserving a network of populations, not a single plot.`)
         : T(`Sin flujo génico, la parcela aislada se comporta como un banco pequeño que se regenera todos los años: la deriva no se detiene y nada repone lo perdido.`,
             `With no gene flow, an isolated plot behaves like a small collection regenerated every year: drift never stops and nothing replaces what is lost.`));
       bits.push(T(
@@ -494,5 +497,5 @@
     I18N.apply();
   });
 
-  window.HOME = { linePlot, niceTicks, PRESETS, BLOCKS, SLIDERS, run: () => run(), current: () => cur, last: () => lastRun };
+  window.HOME = { buildControls, linePlot, niceTicks, PRESETS, BLOCKS, SLIDERS, run: () => run(), current: () => cur, last: () => lastRun };
 })();

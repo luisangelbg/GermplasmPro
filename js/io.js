@@ -143,7 +143,7 @@
     const conCabecera = !opts || opts.header !== false;
     if (!conCabecera) {
       const ancho = Math.max(...clean.map(r => r.length));
-      const headers = Array.from({ length: ancho }, (_, i) => `Columna ${columnName(i)}`);
+      const headers = Array.from({ length: ancho }, (_, i) => `${T('Columna', 'Column')} ${columnName(i)}`);
       const objs = clean.map(r => {
         const o = {};
         headers.forEach((h, i) => { o[h] = String(r[i] ?? '').trim(); });
@@ -154,7 +154,7 @@
 
     const headers = clean[0].map((h, i) => {
       const name = String(h).trim();
-      return name || `Columna ${columnName(i)}`;
+      return name || `${T('Columna', 'Column')} ${columnName(i)}`;
     });
     /* encabezados repetidos: se numeran para no perder columnas */
     const seen = {};

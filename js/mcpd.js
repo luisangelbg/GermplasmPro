@@ -234,7 +234,7 @@
     { k: 'ACCENAME', g: 'id', t: 'text', es: 'Nombre de la accesión', en: 'Accession name',
       d: { es: 'El nombre con el que se conoce: el nombre local, el del cultivar o el que le dio quien la colectó. Varios nombres se separan con punto y coma.', en: 'The name it is known by: the local name, the cultivar name or the one given by the collector. Several names are separated with semicolons.' }, ex: 'Cónico norteño; Maíz azul' },
     { k: 'ACCEURL', g: 'id', t: 'text', es: 'Dirección web de la accesión', en: 'Accession URL',
-      d: { es: 'La página donde se puede consultar la accesión en el catálogo público de tu institución.', en: 'The page where the accession can be consulted in your institution’s public catalogue.' }, ex: 'https://…' },
+      d: { es: 'La página donde se puede consultar la accesión en el catálogo público de tu institución.', en: 'The page where the accession can be consulted in your institution’s public catalog.' }, ex: 'https://…' },
     { k: 'OTHERNUMB', g: 'id', t: 'text', es: 'Otros números de identificación', en: 'Other identification numbers',
       d: { es: 'Los números que la misma accesión tiene en otros bancos o colecciones, separados por punto y coma. Son la pista principal para detectar duplicados entre instituciones.', en: 'The numbers the same accession has in other genebanks or collections, separated by semicolons. They are the main clue for spotting duplicates between institutions.' }, ex: 'CIMMYTMA 2317; PI 484512' },
 
@@ -242,7 +242,7 @@
     { k: 'GENUS', g: 'tax', t: 'text', req: 'must', es: 'Género', en: 'Genus',
       d: { es: 'El género, con mayúscula inicial y sin abreviar.', en: 'The genus, capitalized and not abbreviated.' }, ex: 'Zea' },
     { k: 'SPECIES', g: 'tax', t: 'text', req: 'should', es: 'Epíteto específico', en: 'Species',
-      d: { es: 'Sólo el epíteto, en minúsculas. Si no se conoce, se deja vacío o se pone «sp.».', en: 'The epithet only, in lower case. If unknown, leave it blank or write "sp.".' }, ex: 'mays' },
+      d: { es: 'Sólo el epíteto, en minúsculas. Si no se conoce, se deja vacío o se pone «sp.».', en: 'The epithet only, in lower case. If unknown, leave it blank or write “sp.”.' }, ex: 'mays' },
     { k: 'SPAUTHOR', g: 'tax', t: 'text', es: 'Autoridad de la especie', en: 'Species authority',
       d: { es: 'Quien describió la especie.', en: 'The authority for the species name.' }, ex: 'L.' },
     { k: 'SUBTAXA', g: 'tax', t: 'text', es: 'Infraespecífico', en: 'Subtaxa',
@@ -282,13 +282,13 @@
     { k: 'LONGITUDE', g: 'site', t: 'dms', es: 'Longitud en grados, minutos y segundos', en: 'Longitude (degrees, minutes, seconds)',
       d: { es: 'Formato antiguo del estándar: GGGMMSSH, por ejemplo 0971952W.', en: 'The legacy format of the standard: DDDMMSSH, for example 0971952W.' }, ex: '0971952W' },
     { k: 'COORDUNCERT', g: 'site', t: 'num', es: 'Incertidumbre de las coordenadas (m)', en: 'Coordinate uncertainty (m)',
-      d: { es: 'El radio en metros dentro del cual está el sitio real. Una colecta ubicada «por el pueblo» puede tener varios kilómetros de incertidumbre, y eso hay que decirlo.', en: 'The radius in metres within which the real site lies. A collection located "near the village" may carry several kilometres of uncertainty, and that must be stated.' }, ex: '250' },
+      d: { es: 'El radio en metros dentro del cual está el sitio real. Una colecta ubicada «por el pueblo» puede tener varios kilómetros de incertidumbre, y eso hay que decirlo.', en: 'The radius in meters within which the real site lies. A collection located “near the village” may carry several kilometers of uncertainty, and that must be stated.' }, ex: '250' },
     { k: 'COORDDATUM', g: 'site', t: 'text', es: 'Datum geodésico', en: 'Coordinate datum',
       d: { es: 'El datum de las coordenadas; hoy casi siempre WGS84.', en: 'The datum of the coordinates; nowadays almost always WGS84.' }, ex: 'WGS84' },
     { k: 'GEOREFMETH', g: 'site', t: 'code', codes: GEOREFMETH, es: 'Método de georreferenciación', en: 'Georeferencing method',
       d: { es: 'Cómo se obtuvieron las coordenadas: con GPS, de un mapa, de un nomenclátor o deducidas de la descripción.', en: 'How the coordinates were obtained: GPS, from a map, from a gazetteer or inferred from the description.' }, ex: 'GPS' },
     { k: 'ELEVATION', g: 'site', t: 'num', req: 'should', es: 'Altitud (m)', en: 'Elevation (m)',
-      d: { es: 'Metros sobre el nivel del mar del sitio de colecta. En un país de montaña es el descriptor ecológico más informativo que existe.', en: 'Metres above sea level of the collecting site. In a mountainous country it is the single most informative ecological descriptor.' }, ex: '2180' },
+      d: { es: 'Metros sobre el nivel del mar del sitio de colecta. En un país de montaña es el descriptor ecológico más informativo que existe.', en: 'Meters above sea level of the collecting site. In a mountainous country it is the single most informative ecological descriptor.' }, ex: '2180' },
 
     /* --- origen y estatus --- */
     { k: 'SAMPSTAT', g: 'orig', t: 'code', codes: SAMPSTAT, req: 'should', es: 'Estatus biológico', en: 'Biological status',

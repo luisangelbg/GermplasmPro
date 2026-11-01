@@ -1313,6 +1313,24 @@ state.acc = [];
   const nota = B6.elevationNote();
   ok(/Se dejó fuera 1 altitud imposible; corrígela en la ficha de la accesión, en el Bloque 2/.test(nota), 'la nota de franjas concuerda en singular y manda al Bloque 2');
   ok(!/Bloque 3/.test(nota) && !/1 altitudes/.test(nota), 'y ya no dice «1 altitudes» ni «Bloque 3»');
+  /* «1 500 m belt» se leía «1,500 m»: una franja se dice con palabra */
+  const ngNota = B6.analysis().elevation.gaps.length;
+  ok(ngNota === 1 ? /hay una franja de 500 m/.test(nota) : new RegExp(`hay ${ngNota} franjas de 500 m`).test(nota), `la nota en español dice «una franja» o «N franjas» de 500 m (${ngNota})`);
+  I18N.lang = 'en';
+  const notaEn = B6.elevationNote();
+  I18N.lang = 'es';
+  ok(ngNota === 1 ? /there is one 500 m belt with/.test(notaEn) : new RegExp(`there are ${ngNota} 500 m belts`).test(notaEn), `y en inglés «one 500 m belt» o «N 500 m belts» (${ngNota})`);
+  ok(!/there is 1 500 m/.test(notaEn), 'y nunca «there is 1 500 m belt», que se lee «1,500 m»');
+  {
+    /* se fuerzan una y dos franjas vacías para ver los dos números */
+    const E6 = B6.analysis().elevation, sv = E6.gaps;
+    const banda = { from: 1000, to: 1500 }, banda2 = { from: 2000, to: 2500 };
+    const notaCon = (gaps, lang) => { E6.gaps = gaps; I18N.lang = lang; const t = B6.elevationNote(); I18N.lang = 'es'; E6.gaps = sv; return t; };
+    ok(/there is one 500 m belt with no accession/.test(notaCon([banda], 'en')) && /hay una franja de 500 m sin ninguna/.test(notaCon([banda], 'es')),
+      'con una sola franja vacía: «there is one 500 m belt» y «hay una franja de 500 m»');
+    ok(/there are 2 500 m belts with no accession/.test(notaCon([banda, banda2], 'en')) && /hay 2 franjas de 500 m sin ninguna/.test(notaCon([banda, banda2], 'es')),
+      'con dos: «there are 2 500 m belts» y «hay 2 franjas de 500 m»');
+  }
   const mapa6 = B6.gapMap(700, 420);
   ok(!/· 1 accesiones/.test(mapa6) && !/· 1 tipos/.test(mapa6), 'las celdas con una accesión o un tipo se dicen en singular');
   ok(/role="img"/.test(mapa6) && /aria-label="/.test(mapa6), 'el mapa de vacíos tiene nombre accesible');
@@ -2937,6 +2955,192 @@ ok(['geografia', 'consistencia', 'correccion', 'duplicado', 'pasaporte'].every(t
 const cons7 = filas7.filter(r => r.tipo === 'consistencia');
 ok(cons7.length && cons7.every(r => Object.values(QC.CODES).some(c => c.es === r.campo)), `en «consistencia» el campo es el nombre legible (${cons7[0] ? cons7[0].campo : '—'}), no el código interno`);
 ok(B10.qualityCSV({ quality: { geo: [], consistency: [], fixes: [], dup: { pairs: [] } }, rows: [], issues: [] }) === null, 'sin nada que reportar, no va el archivo');
+
+/* ============ la interfaz en inglés (hallazgos al traducir el manual) ============ */
+const bajadasEn = [];
+const downloadO = window.download, alertOEn = window.alert;
+window.download = (c, n) => bajadasEn.push({ c: typeof c === 'string' ? c : '', n });
+window.alert = () => {};
+const enIngles = f => { I18N.lang = 'en'; try { return f(); } finally { I18N.lang = 'es'; } };
+const ultima = () => bajadasEn[bajadasEn.length - 1] || { c: '', n: '' };
+const cabecera = csv => IO.parseDelimited(csv).headers;
+
+/* 1. la cita del programa en inglés lleva el título inglés y «version» */
+const refsEn11 = REPORT.references(D10, 'en'), refsEs11 = REPORT.references(D10, 'es');
+ok(refsEn11.some(r => r.includes('<i>GermplasmPro: the genebank, accession by accession</i> (version 1.0.0) [software]')),
+  'en inglés, la cita del programa usa el título inglés y «version 1.0.0»');
+ok(!refsEn11.some(r => r.includes('el banco de germoplasma')), 'y no conserva el título en español');
+ok(refsEs11.some(r => r.includes('<i>GermplasmPro: el banco de germoplasma, accesión por accesión</i> (versión 1.0.0)')), 'en español, la cita sigue igual');
+
+/* 3. si la app abre en inglés, los selectores del simulador se arman en inglés */
+{
+  const caja = document.createElement('div');
+  caja.innerHTML = '<div id="simSliders"></div><select id="simMethod"></select><select id="simSpecies"></select>' +
+    '<select id="simBehaviour"></select><input id="simKE"><input id="simCW"><select id="simPreset"></select><button id="simSeed"></button>';
+  document.body.appendChild(caja);
+  enIngles(() => HOME.buildControls());
+  const selsH = ['simMethod', 'simSpecies', 'simBehaviour', 'simPreset'].map(id => caja.querySelector('#' + id));
+  ok(selsH.every(s => s.options.length && [...s.options].every(o => o.textContent === o.getAttribute('data-en'))),
+    `abriendo en inglés, Escenario, Forma de conservación, Especie y Su semilla es salen en inglés (${selsH[1].options[0].textContent})`);
+  HOME.buildControls();
+  ok(selsH.every(s => [...s.options].every(o => o.textContent === o.getAttribute('data-es'))), 'y abriendo en español, en español');
+  caja.remove();
+  I18N.apply();
+}
+
+/* 4. fechas: en inglés ISO 8601 en etiquetas, listas y encabezado; en español día/mes/año */
+ok(LABELS.valueOf({ ACQDATE: '20191104' }, 'ACQDATE', 'en') === '2019-11-04' && LABELS.valueOf({ COLLDATE: '20191104' }, 'COLLDATE', 'en') === '2019-11-04',
+  'en inglés, ACQDATE y la fecha de colecta salen 2019-11-04');
+ok(LABELS.valueOf({ ACQDATE: '20191104' }, 'ACQDATE', 'es') === '04/11/2019', 'en español siguen 04/11/2019');
+ok(LABELS.valueOf({ COLLDATE: '201911--' }, 'COLLDATE', 'en') === '2019-11' && LABELS.valueOf({ COLLDATE: '2019----' }, 'COLLDATE', 'en') === '2019',
+  'una fecha incompleta de MCPD sale 2019-11 o 2019');
+ok(LABELS.fmtDate(new Date(2026, 9, 31), 'en') === '2026-10-31' && LABELS.fmtDate(new Date(2026, 9, 31), 'es') === '31/10/2026', 'el día de hoy, igual');
+{
+  state.acc = EXAMPLES.build();
+  state.acc[0].ACQDATE = '20191104';
+  B2.revalidate();
+  B9.view.which = 'all';
+  B9.run();
+  const hoy = LABELS.fmtDate(new Date(), 'en');
+  const enUS = new Date().toLocaleDateString('en-US');
+  const hojas = ['sowing', 'delivery', 'register'].map(s => { B9.view.sheet = s; return enIngles(() => B9.workSheet()); });
+  ok(hojas.every(h => h.includes(hoy) && !h.includes(enUS)), `las tres hojas de trabajo en inglés llevan la fecha ${hoy}, no ${enUS}`);
+  B9.view.sheet = 'register';
+  const reg = enIngles(() => B9.workSheet());
+  ok(reg.includes('2019-11-04') && !reg.includes('04/11/2019'), 'y el registro pone la fecha de adquisición en ISO');
+  ok(B9.workSheet().includes('04/11/2019'), 'en español, el registro la deja día/mes/año');
+}
+
+/* 5. archivos y columnas en inglés */
+const D11 = REPORT.gather({ run: true });
+const a11 = QC.audit(state.acc, { threshold: B3.ui.threshold, dismissed: B3.ui.dismissed });
+const qEn = cabecera(B3.qualityCSV(a11, state.acc, state.issues, 'en'));
+ok(qEn.join() === 'type,level,accession,field,detail', `el informe de calidad en inglés tiene columnas en inglés (${qEn.join(', ')})`);
+ok(cabecera(B3.qualityCSV(a11, state.acc, state.issues, 'es')).join() === 'tipo,nivel,accesion,campo,detalle', 'y en español, en español');
+const filasQEn = IO.parseDelimited(B3.qualityCSV(a11, state.acc, state.issues, 'en')).rows;
+ok(filasQEn.every(r => ['geography', 'consistency', 'correction', 'duplicate', 'passport'].includes(r.type)), 'los tipos de fila van en inglés');
+ok(filasQEn.filter(r => r.type === 'geography').every(r => !/[áéíóúñ]/i.test(r.detail)) && filasQEn.some(r => r.type === 'duplicate' && /same|similar|identical|apart|share/.test(r.detail)),
+  'y los detalles y las razones de los duplicados también');
+ok(enIngles(() => B3.qualityFile()) === 'quality-report.csv' && B3.qualityFile() === 'informe-calidad.csv', 'el archivo se llama quality-report.csv en inglés');
+enIngles(() => B3.report());
+ok(ultima().n === 'quality-report.csv' && cabecera(ultima().c)[0] === 'type', 'y «Descargar el informe» baja ese archivo, en inglés');
+
+/* el paquete del Bloque 10 */
+B10.build(true);
+const zipEs = B10.zipFiles();
+B10.view.lang = 'en'; B10.build(false);
+const zipEn = B10.zipFiles();
+B10.view.lang = null; B10.build(false);
+const nomEn = zipEn.map(f => f.name), nomEs = zipEs.map(f => f.name);
+ok(['report.html', 'data/passport-mcpd.csv', 'data/passport-full.csv', 'data/darwin-core.csv', 'data/quality.csv', 'data/work-plan.csv', 'README.txt'].every(n => nomEn.includes(n)),
+  `con el informe en inglés, el paquete trae report.html, data/, README.txt… (${nomEn.filter(n => !n.startsWith('figures/')).join(', ')})`);
+ok(nomEn.filter(n => n.includes('/')).every(n => /^(data|figures)\//.test(n)) && nomEn.some(n => n.startsWith('figures/')) && !nomEn.some(n => /datos|figuras|informe|LEEME|pasaporte/.test(n)),
+  `y ninguna carpeta ni archivo en español (${nomEn.filter(n => n.startsWith('figures/')).join(', ')})`);
+ok(['informe.html', 'datos/pasaporte-mcpd.csv', 'datos/calidad.csv', 'datos/plan-de-trabajo.csv', 'LEEME.txt'].every(n => nomEs.includes(n)) && nomEs.some(n => n.startsWith('figuras/')),
+  'en español, el paquete sigue como estaba');
+const leemeEn = zipEn.find(f => f.name === 'README.txt').data;
+ok(/collection package/.test(leemeEn) && /passport-full\.csv/.test(leemeEn) && !/[áéíóú]|paquete|Qué trae/.test(leemeEn), 'README.txt está en inglés');
+ok(/Generated on \d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(leemeEn), 'y fecha la generación en ISO');
+const planEn = zipEn.find(f => f.name === 'data/work-plan.csv').data;
+ok(cabecera(planEn).join() === 'accession,taxon,route,level,alert,detail', 'el plan del paquete tiene columnas en inglés');
+ok(IO.parseDelimited(planEn).rows.every(r => !/[áéíóúñ]/i.test(r.detail)), 'y su detalle va en inglés (msg.en)');
+ok(cabecera(zipEn.find(f => f.name === 'data/quality.csv').data)[0] === 'type', 'y el de calidad también');
+ok(cabecera(zipEs.find(f => f.name === 'datos/plan-de-trabajo.csv').data).join() === 'accesion,taxon,ruta,nivel,alerta,detalle', 'en español, el plan conserva sus columnas');
+ok(cabecera(zipEn.find(f => f.name === 'data/passport-mcpd.csv').data).join() === cabecera(zipEs.find(f => f.name === 'datos/pasaporte-mcpd.csv').data).join(),
+  'el pasaporte MCPD conserva sus nombres estándar en los dos idiomas');
+
+/* nombres de las descargas sueltas */
+bajadasEn.length = 0;
+enIngles(() => { B2.exportCSV('mcpd'); B2.exportCSV('full'); B2.exportTemplate(); B2.exportProject(); });
+ok(bajadasEn.map(b => b.n).join() === 'passport-mcpd.csv,passport-full.csv,passport-template.csv,germplasmpro-collection.json',
+  `el pasaporte, la plantilla y el proyecto bajan con nombre en inglés (${bajadasEn.map(b => b.n).join(', ')})`);
+bajadasEn.length = 0;
+B2.exportCSV('mcpd'); B2.exportCSV('full'); B2.exportTemplate(); B2.exportProject();
+ok(bajadasEn.map(b => b.n).join() === 'pasaporte-mcpd.csv,pasaporte-completo.csv,plantilla-pasaporte.csv,coleccion-germplasmpro.json', 'y en español con los de siempre');
+
+B5.run();
+enIngles(() => B5.exportCSV());
+ok(ultima().n === 'geographic-diversity.csv' && cabecera(ultima().c).slice(0, 5).join() === 'unit,key,accessions,richness,rarefied' && cabecera(ultima().c).includes('mean_elevation'),
+  `Bloque 5: geographic-diversity.csv con columnas en inglés (${cabecera(ultima().c).join(', ')})`);
+B5.exportCSV();
+ok(ultima().n === 'diversidad-geografica.csv' && cabecera(ultima().c)[0] === 'unidad', 'y en español, diversidad-geografica.csv con «unidad»');
+
+B6.run();
+enIngles(() => B6.exportRisks());
+const riesgosEn = ultima();
+ok(riesgosEn.n === 'types-at-risk.csv' && (!riesgosEn.c || cabecera(riesgosEn.c)[0] === 'type'), `Bloque 6: types-at-risk.csv (${cabecera(riesgosEn.c).join(', ')})`);
+enIngles(() => B6.exportRoute());
+ok(ultima().n === 'collecting-priorities.csv' && cabecera(ultima().c).slice(0, 5).join() === 'rank,latitude,longitude,state,country' && cabecera(ultima().c).includes('neighborhood_richness'),
+  `y collecting-priorities.csv (${cabecera(ultima().c).join(', ')})`);
+B6.exportRoute();
+ok(ultima().n === 'prioridades-colecta.csv' && cabecera(ultima().c)[0] === 'orden', 'en español, prioridades-colecta.csv con «orden»');
+
+state.traits = EXAMPLES.buildTraits(state.acc);
+B7.run();
+enIngles(() => B7.exportCore(false));
+ok(ultima().n === 'core-collection.csv' && ['group', 'stratum', 'core'].every(c => cabecera(ultima().c).includes(c)) && cabecera(ultima().c)[0] === 'ACCENUMB',
+  `Bloque 7: core-collection.csv con group, stratum, core (${cabecera(ultima().c).join(', ')})`);
+enIngles(() => B7.exportCore(true));
+ok(ultima().n === 'characterization-full.csv', 'characterization-full.csv');
+enIngles(() => B7.exportD());
+const distEn = ultima();
+ok(distEn.n === 'gower-distances.csv' && cabecera(distEn.c)[0] === 'accession', 'gower-distances.csv con la columna «accession»');
+B7.exportD();
+const distEs = ultima();
+ok(distEs.n === 'distancias-gower.csv' && cabecera(distEs.c)[0] === 'accesion', 'y en español distancias-gower.csv con «accesion»');
+enIngles(() => B7.exportTemplate());
+ok(ultima().n === 'characterization-template.csv' && cabecera(ultima().c)[0] === 'ACCENUMB', 'la plantilla de caracterización baja como characterization-template.csv, con las claves del catálogo');
+/* la importación acepta los CSV de la app en los dos idiomas */
+B7.importTraits(distEn.c, 'gower-distances.csv');
+ok(B7.pending().key === 'accession' && B7.matchWith('accession').unidas === state.acc.length, 'un CSV de la app en inglés se vuelve a importar: la llave es «accession» y se unen todas');
+B7.importTraits(distEs.c, 'distancias-gower.csv');
+ok(B7.pending().key === 'accesion' && B7.matchWith('accesion').unidas === state.acc.length, 'y el mismo CSV en español también');
+const tplLlena = B7.templateCSV();
+B7.importTraits(tplLlena, 'characterization-template.csv');
+ok(B7.pending().key === 'ACCENUMB', 'la plantilla (la misma en los dos idiomas) se reconoce por ACCENUMB');
+const proyEn = enIngles(() => B2.projectJSON());
+ok(proyEn === B2.projectJSON() || JSON.parse(proyEn).acc.length === JSON.parse(B2.projectJSON()).acc.length, 'el proyecto .json no depende del idioma, así que abre igual guardado en uno u otro');
+
+B8.run();
+enIngles(() => B8.exportPlan());
+ok(ultima().n === 'work-plan.csv' && ['route', 'urgency', 'stock', 'unit', 'actions'].every(c => cabecera(ultima().c).includes(c)),
+  `Bloque 8: work-plan.csv con route, urgency, unit, actions (${cabecera(ultima().c).join(', ')})`);
+ok(!cabecera(ultima().c).some(c => /ruta|urgencia|acciones|unidad|existencias|anios/.test(c)), 'y ninguna columna en español');
+B8.exportPlan();
+ok(ultima().n === 'plan-de-trabajo.csv' && cabecera(ultima().c).includes('urgencia'), 'en español sigue plan-de-trabajo.csv');
+
+B9.run();
+const siembraEn = enIngles(() => B9.sowingCSV());
+ok(enIngles(() => B9.sowingFile()) === 'sowing-list.csv' && cabecera(siembraEn).join() === 'ACCENUMB,name,taxon,plants,germination,assumed_germination,seeds,stock,plot,sowing_date,notes',
+  `Bloque 9: sowing-list.csv con columnas en inglés (${cabecera(siembraEn).join(', ')})`);
+ok(B9.sowingFile() === 'lista-de-siembra.csv' && cabecera(B9.sowingCSV())[1] === 'nombre', 'y en español lista-de-siembra.csv');
+
+/* 6. columnas sin encabezado */
+const sinCabEn = enIngles(() => IO.parseDelimited('Zea,mays\nPhaseolus,vulgaris', ',', { header: false }));
+ok(sinCabEn.headers.join() === 'Column A,Column B', 'sin encabezado, en inglés las columnas se llaman «Column A», «Column B»');
+ok(enIngles(() => IO.parseDelimited('a,,c\n1,2,3', ',')).headers[1] === 'Column B', 'y un encabezado vacío también');
+
+/* 7. unidades del catálogo de caracterización */
+ok(TRAITS.FIELD_MAP.DIAS_FLORACION.ue === 'days' && TRAITS.FIELD_MAP.RAMAS.ue === 'count' && TRAITS.FIELD_MAP.RELACION_BA.ue === 'ratio',
+  'las unidades tienen su versión inglesa (days, count, ratio)');
+ok(TRAITS.FIELDS.every(f => !/días|número|razón|ácido|EAG/.test(f.ue || f.u)), 'ninguna unidad queda en español en el catálogo inglés');
+
+/* 8. VR% es la razón de coeficientes de variación */
+const D11c = REPORT.gather({ run: true });
+const metCar = REPORT.methods(D11c, 'en').find(m => m.id === 'charac');
+ok(!!metCar && metCar.text.includes('coefficient of variation ratio (VR%)'), 'en los métodos, VR% es la razón de coeficientes de variación');
+const anexoCarEn = REPORT.buildHTML(D11c, { lang: 'en' });
+ok(anexoCarEn.includes('coefficient of variation ratio; high is good') && !anexoCarEn.includes('variation retained'), 'y en la tabla del informe también');
+
+/* 10 y 11. porcentajes con espacio y ortografía estadounidense */
+ok(LABELS.valueOf({ GP_GERMPCT: '94' }, 'GP_GERMPCT', 'en') === '94 %', 'el porcentaje lleva espacio antes de %');
+const textoEn = REPORT.buildHTML(D11, { lang: 'en' });
+ok(!/\b(colour|behaviour|neighbour|analysed|centre|catalogue|metres|licence)/i.test(textoEn), 'el informe en inglés usa ortografía estadounidense');
+ok(GB.SPECIES.generica.en.includes('behavior') || !GB.SPECIES.generica.en.includes('behaviour'), 'y el simulador también («choose its behavior»)');
+
+window.download = downloadO; window.alert = alertOEn;
+I18N.lang = 'es';
+B9.view.which = 'all'; B9.view.sheet = 'labels';
 }
 
 state.acc = [];

@@ -500,12 +500,12 @@
   function exportCSV(which) {
     const cols = which === 'mcpd' ? MCPD.MCPD_FIELDS.map(f => f.k) : MCPD.FIELDS.map(f => f.k);
     const rows = which === 'mcpd' ? state.acc.map(r => { const o = {}; cols.forEach(k => o[k] = r[k]); return o; }) : state.acc;
-    download(IO.toCSV(rows, cols), which === 'mcpd' ? 'pasaporte-mcpd.csv' : 'pasaporte-completo.csv', 'text/csv;charset=utf-8');
+    download(IO.toCSV(rows, cols), which === 'mcpd' ? T('pasaporte-mcpd.csv', 'passport-mcpd.csv') : T('pasaporte-completo.csv', 'passport-full.csv'), 'text/csv;charset=utf-8');
   }
   function exportTemplate() {
     const cols = MCPD.FIELDS.map(f => f.k);
     const example = {}; MCPD.FIELDS.forEach(f => example[f.k] = f.ex || '');
-    download(IO.toCSV([example], cols), 'plantilla-pasaporte.csv', 'text/csv;charset=utf-8');
+    download(IO.toCSV([example], cols), T('plantilla-pasaporte.csv', 'passport-template.csv'), 'text/csv;charset=utf-8');
   }
   /* El proyecto lleva todo lo que se trabajó y no está en el pasaporte:
        versión 1: el pasaporte (acc) y la caracterización del Bloque 7 (traits);
@@ -573,7 +573,7 @@
     }
   }
   function exportProject() {
-    download(projectJSON(), 'coleccion-germplasmpro.json', 'application/json');
+    download(projectJSON(), T('coleccion-germplasmpro.json', 'germplasmpro-collection.json'), 'application/json');
   }
   /* abre un proyecto .json. Devuelve true si lo abrió; false si no era un
      proyecto o si se canceló el reemplazo. Los proyectos viejos no traen
@@ -713,7 +713,7 @@
   document.addEventListener('langchange', () => { if (el('panel-2') && state.acc) refresh(); });
 
   window.B2 = {
-    refresh, barPlot, histPlot, view, exportCSV, startImport, applyImport, openFicha, revalidate,
+    refresh, barPlot, histPlot, view, exportCSV, exportTemplate, exportProject, startImport, applyImport, openFicha, revalidate,
     remap, projectJSON, importProject, confirmReplace, save, saveNow,
     pending: () => pending, issues: () => issues,
   };

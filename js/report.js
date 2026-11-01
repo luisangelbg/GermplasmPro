@@ -250,6 +250,7 @@
   const APP = {
     version: '1.0.0', year: 2026,
     title: 'GermplasmPro: el banco de germoplasma, accesión por accesión',
+    titleEn: 'GermplasmPro: the genebank, accession by accession',
     url: 'https://github.com/luisangelbg/GermplasmPro',
   };
 
@@ -325,7 +326,7 @@
         id: 'gaps', title: L('Vacíos de colecta', 'Collecting gaps'), refs: ['gap'],
         text: L(
           `El territorio se dividió en una rejilla de ${nm((G.opts && G.opts.size) || 1)}° y se marcaron las celdas con y sin accesiones. Para cada celda vacía se midió la distancia al punto colectado más cercano y se calculó un índice de prioridad con cuatro componentes explícitos y pesos ajustables —lejanía (${nm(w.distance)}), riqueza del vecindario (${nm(w.richness)}), déficit de la entidad (${nm(w.state)}) y tipos exclusivos cercanos (${nm(w.exclusive)})—, de modo que cada renglón del resultado enseña de dónde sale su número. El conjunto mínimo de sitios que recogería todos los tipos presentes se obtuvo por complementariedad voraz. Conviene decir qué NO es esto: un análisis geográfico y de composición de la colección, en la línea de Ramírez-Villegas et al. (2010) pero sin su componente ecogeográfico, que exigiría capas ambientales que esta aplicación no incluye ni descarga.`,
-          `The territory was divided into a ${nm((G.opts && G.opts.size) || 1)}° grid and cells with and without accessions were mapped. For every empty cell we measured the distance to the nearest collected point and computed a priority index from four explicit, adjustable components —remoteness (${nm(w.distance)}), neighbourhood richness (${nm(w.richness)}), state deficit (${nm(w.state)}) and nearby exclusive types (${nm(w.exclusive)})—, so that each row of the result shows where its number comes from. The minimum set of sites that would capture every type present was obtained by greedy complementarity. It is worth saying what this is NOT: it is a geographic and collection-composition analysis, in the spirit of Ramírez-Villegas et al. (2010) but without their ecogeographic component, which would require environmental layers that this application neither bundles nor downloads.`),
+          `The territory was divided into a ${nm((G.opts && G.opts.size) || 1)}° grid and cells with and without accessions were mapped. For every empty cell we measured the distance to the nearest collected point and computed a priority index from four explicit, adjustable components —remoteness (${nm(w.distance)}), neighborhood richness (${nm(w.richness)}), state deficit (${nm(w.state)}) and nearby exclusive types (${nm(w.exclusive)})—, so that each row of the result shows where its number comes from. The minimum set of sites that would capture every type present was obtained by greedy complementarity. It is worth saying what this is NOT: it is a geographic and collection-composition analysis, in the spirit of Ramírez-Villegas et al. (2010) but without their ecogeographic component, which would require environmental layers that this application neither bundles nor downloads.`),
       });
     }
 
@@ -392,7 +393,7 @@
         id: 'charac', title: L('Caracterización y colección núcleo', 'Characterization and core collection'), refs,
         text: L(
           `Se caracterizaron ${nm(nC)} accesiones con ${nm(nU)} descriptores de tipo mixto (cuantitativos, ordinales y cualitativos). La distancia entre accesiones se calculó con el coeficiente general de similitud de Gower (1971), que admite datos faltantes y mezcla tipos de variable, y se ordenó por análisis de coordenadas principales. ${arbol}${corte} ${pedido}${como} El núcleo se validó con los indicadores de Hu et al. (2000): porcentaje de medias distintas (MD%), de varianzas distintas (VD%), razón de amplitudes (CR%) y razón de coeficientes de variación (VR%), con pruebas t de Welch y F por descriptor.`,
-          `${nm(nC)} accessions were characterized with ${nm(nU)} mixed-type descriptors (quantitative, ordinal and qualitative). Distances between accessions were computed with Gower's (1971) general coefficient of similarity, which admits missing data and mixes variable types, and were ordered by principal coordinates analysis. ${arbol}${corte} ${pedido}${como} The core was validated with the indicators of Hu et al. (2000): percentage of significantly different means (MD%), of different variances (VD%), the coincidence rate of ranges (CR%) and the variable rate of coefficients of variation (VR%), using per-descriptor Welch t and F tests.`),
+          `${nm(nC)} accessions were characterized with ${nm(nU)} mixed-type descriptors (quantitative, ordinal and qualitative). Distances between accessions were computed with Gower's (1971) general coefficient of similarity, which admits missing data and mixes variable types, and were ordered by principal coordinates analysis. ${arbol}${corte} ${pedido}${como} The core was validated with the indicators of Hu et al. (2000): percentage of significantly different means (MD%), of different variances (VD%), the coincidence rate of ranges (CR%) and the coefficient of variation ratio (VR%), using per-descriptor Welch t and F tests.`),
       });
     }
 
@@ -461,7 +462,7 @@
     dwc: { es: 'Wieczorek, J., Bloom, D., Guralnick, R., Blum, S., Döring, M., Giovanni, R., Robertson, T. y Vieglais, D. (2012). Darwin Core: an evolving community-developed biodiversity data standard. <i>PLoS ONE</i> 7(1): e29715.',
       en: 'Wieczorek, J., Bloom, D., Guralnick, R., Blum, S., Döring, M., Giovanni, R., Robertson, T. and Vieglais, D. (2012). Darwin Core: an evolving community-developed biodiversity data standard. <i>PLoS ONE</i> 7(1): e29715.' },
     app: { es: `Barrera-Guzmán, L.Á. (${APP.year}). <i>${APP.title}</i> (versión ${APP.version}) [software]. ${APP.url}`,
-      en: `Barrera-Guzmán, L.Á. (${APP.year}). <i>${APP.title}</i> (version ${APP.version}) [software]. ${APP.url}` },
+      en: `Barrera-Guzmán, L.Á. (${APP.year}). <i>${APP.titleEn}</i> (version ${APP.version}) [software]. ${APP.url}` },
   };
   /* cómo se reconoce en el texto de los métodos la cita de cada referencia:
      el apellido (o el nombre) y el año, a no más de unas palabras de distancia */
@@ -572,7 +573,7 @@
         pl(crit, '# lot has at least one critical management alert.', '# lots have at least one critical management alert.')));
     }
     if (D.gaps) hallazgos.push(L(`La colecta cubre el ${fmt(D.gaps.coverage, 1)} % de las celdas del territorio analizado.`,
-      `Collecting covers ${fmt(D.gaps.coverage, 1)} % of the cells of the analysed territory.`));
+      `Collecting covers ${fmt(D.gaps.coverage, 1)} % of the cells of the analyzed territory.`));
 
     out.push({
       id: 'summary', title: L('Resumen', 'Summary'),
@@ -753,12 +754,12 @@
           isFinite(A.sil && A.sil.mean) ? [fmt(A.sil.mean, 2), L('silueta media', 'mean silhouette')] : null,
         ])}
         ${o.figures ? fig(draw(B7.pcoaPlot, W, 340), L(`Coordenadas principales sobre la distancia de Gower; el color es ${colorEs} y el símbolo grande con borde marca las accesiones del núcleo.`,
-          `Principal coordinates on Gower distance; colour shows ${colorEn} and the large outlined symbol marks the core accessions.`)) : ''}
+          `Principal coordinates on Gower distance; color shows ${colorEn} and the large outlined symbol marks the core accessions.`)) : ''}
         ${tbl([L('Indicador', 'Indicator'), L('Valor', 'Value'), L('Qué dice', 'What it says')], [
           ['MD%', isFinite(v.MD) ? fmt(v.MD, 1) : '—', L('descriptores cuya media cambió; conviene que sea bajo', 'descriptors whose mean changed; low is good')],
           ['VD%', isFinite(v.VD) ? fmt(v.VD, 1) : '—', L('descriptores cuya varianza cambió', 'descriptors whose variance changed')],
           ['CR%', isFinite(v.CR) ? fmt(v.CR, 1) : '—', L('amplitud retenida; conviene que sea alto', 'range retained; high is good')],
-          ['VR%', isFinite(v.VR) ? fmt(v.VR, 1) : '—', L('variación retenida; conviene que sea alto', 'variation retained; high is good')],
+          ['VR%', isFinite(v.VR) ? fmt(v.VR, 1) : '—', L('razón de coeficientes de variación; conviene que sea alto', 'coefficient of variation ratio; high is good')],
         ], { num: [1] })}
         ${A.core.core.length < 10 ? `<p class="rnote">${L('El núcleo tiene menos de diez accesiones: las pruebas t y F de la validación no tienen potencia y sus porcentajes se leen con reserva.',
           'The core has fewer than ten accessions: the validating t and F tests lack power and their percentages should be read with caution.')}</p>` : ''}`,

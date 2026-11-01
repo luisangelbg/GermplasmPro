@@ -279,7 +279,7 @@
     const t = A.total, inc = A.inc;
     const falta = Math.max(0, A.chao1.est - t.S);
     el('b5Stats').innerHTML = [
-      { k: T('Accesiones analizadas', 'Accessions analysed'), v: fmtInt(A.nIn), d: T(`de ${fmtInt(A.nPoints)} con coordenadas, en ${A.units.length} unidades`, `of ${fmtInt(A.nPoints)} with coordinates, in ${A.units.length} units`), c: 'var(--s1)' },
+      { k: T('Accesiones analizadas', 'Accessions analyzed'), v: fmtInt(A.nIn), d: T(`de ${fmtInt(A.nPoints)} con coordenadas, en ${A.units.length} unidades`, `of ${fmtInt(A.nPoints)} with coordinates, in ${A.units.length} units`), c: 'var(--s1)' },
       { k: T('Tipos observados', 'Observed types'), v: fmtInt(t.S), d: T('tipos distintos en la colección: ' + clsLabel(), 'distinct types in the collection: ' + clsLabel()), c: 'var(--s3)' },
       { k: T('Riqueza estimada (Chao1)', 'Estimated richness (Chao1)'), v: fmt(A.chao1.est, 1), d: T(`faltarían ${fmt(falta, 1)} por colectar`, `${fmt(falta, 1)} still to be collected`), c: 'var(--s2)' },
       { k: T('Cobertura de la muestra', 'Sample coverage'), v: fmt(100 * t.coverage, 1) + ' %', d: T('Good-Turing: 1 − f₁/n', 'Good-Turing: 1 − f₁/n'), c: 'var(--s4)' },
@@ -322,7 +322,7 @@
       <h3 class="section-title">${T('1 · ¿Cuánto hay y cuánto falta?', '1 · How much is there and how much is missing?')}</h3>
       <p class="section-sub">${T(
         `La curva dice cuántos tipos distintos —${clsLabel()}— se esperarían al examinar un número dado de accesiones; la banda es su intervalo del 95 %. Las líneas punteadas son cuatro estimadores de la riqueza total: si están muy por encima de donde termina la curva, la colección todavía tiene material por encontrar en el campo.`,
-        `The curve says how many distinct types —${clsLabel()}— would be expected when examining a given number of accessions; the band is its 95% interval. The dashed lines are four estimators of total richness: if they sit well above where the curve ends, there is still material to find in the field.`)}</p>
+        `The curve says how many distinct types —${clsLabel()}— would be expected when examining a given number of accessions; the band is its 95 % interval. The dashed lines are four estimators of total richness: if they sit well above where the curve ends, there is still material to find in the field.`)}</p>
       <div class="card"><div class="sum-grid">
         <div class="pg-pane"><div class="pg-title">${T('Curva de acumulación y estimadores', 'Accumulation curve and estimators')}</div>${curvePlot(520, 320)}</div>
         <div class="pg-pane"><div class="pg-title">${T('Riqueza contra esfuerzo, unidad por unidad', 'Richness against effort, unit by unit')}</div>
@@ -347,7 +347,7 @@
           </tr>`).join('')}
         </tbody></table></div>
         <p class="hint">${T(`La columna rarificada compara todas las unidades al mismo esfuerzo (${A.nCommon} accesiones); las que tienen menos aparecen vacías porque rarificar hacia arriba sería inventar. «Exclusivos» son los tipos —${clsLabel()}— que no están en ninguna otra unidad: si esa unidad se pierde, se pierden con ella.`,
-          `The rarefied column compares every unit at the same effort (${A.nCommon} accessions); units with fewer are left blank because rarefying upwards would be making things up. "Exclusive" counts the types —${clsLabel()}— found in no other unit: if that unit is lost, they go with it.`)}
+          `The rarefied column compares every unit at the same effort (${A.nCommon} accessions); units with fewer are left blank because rarefying upwards would be making things up. “Exclusive” counts the types —${clsLabel()}— found in no other unit: if that unit is lost, they go with it.`)}
           ${T(' J′ queda en «—» cuando la unidad tiene un solo tipo: con uno no hay reparto que medir.', ' J′ shows «—» when the unit holds a single type: with one there is no spread to measure.')}</p>
       </div>
 
@@ -363,9 +363,9 @@
       <h3 class="section-title">${T('3 · ¿Se parecen las regiones?', '3 · Do the regions resemble each other?')}</h3>
       <p class="section-sub">${T(
         'El mapa de calor muestra cuánto comparten dos unidades: cuanto más oscuro, más parecida es su composición. El árbol de arriba las agrupa por ese parecido (UPGMA). La prueba de Mantel pregunta si las unidades cercanas se parecen más que las lejanas, comparando la matriz de distancias en kilómetros con la de composición.',
-        'The heat map shows how much two units share: the darker, the more alike their composition. The tree above groups them by that resemblance (UPGMA). The Mantel test asks whether nearby units resemble each other more than distant ones, comparing the matrix of distances in kilometres with the compositional one.')}${A.mantelDist === 'elev' ? T(
+        'The heat map shows how much two units share: the darker, the more alike their composition. The tree above groups them by that resemblance (UPGMA). The Mantel test asks whether nearby units resemble each other more than distant ones, comparing the matrix of distances in kilometers with the compositional one.')}${A.mantelDist === 'elev' ? T(
         ' Con franjas de altitud como unidades no hay kilómetros que medir: la distancia entre dos franjas es la diferencia de altitud entre sus centros, y la prueba pregunta si las franjas de altitud parecida se parecen en composición.',
-        ' With elevation belts as units there are no kilometres to measure: the distance between two belts is the elevation difference between their centres, and the test asks whether belts at similar elevations are alike in composition.') : ''}</p>
+        ' With elevation belts as units there are no kilometers to measure: the distance between two belts is the elevation difference between their centers, and the test asks whether belts at similar elevations are alike in composition.') : ''}</p>
       <div class="card"><div class="sum-grid">
         <div class="pg-pane"><div class="pg-title">${T('Composición compartida y agrupamiento', 'Shared composition and clustering')}</div>${heatmap(540)}</div>
         <div class="pg-pane"><div class="pg-title">${A.mantelDist === 'elev' ? T('Diferencia de altitud contra disimilitud', 'Elevation difference against dissimilarity') : T('Distancia geográfica contra disimilitud', 'Geographic distance against dissimilarity')}</div>
@@ -394,8 +394,8 @@
       ix.addEventListener('change', () => { view.index = ix.value; render(pts); });
     }
     el('b5CSV').addEventListener('click', exportCSV);
-    el('b5SVG').addEventListener('click', () => download(B4.forFile(() => curvePlot(700, 440)), 'curva-acumulacion.svg', 'image/svg+xml'));
-    el('b5SVG2').addEventListener('click', () => download(B4.forFile(() => heatmap(700)), 'similitud-composicion.svg', 'image/svg+xml'));
+    el('b5SVG').addEventListener('click', () => download(B4.forFile(() => curvePlot(700, 440)), T('curva-acumulacion.svg', 'accumulation-curve.svg'), 'image/svg+xml'));
+    el('b5SVG2').addEventListener('click', () => download(B4.forFile(() => heatmap(700)), T('similitud-composicion.svg', 'composition-similarity.svg'), 'image/svg+xml'));
   }
 
   function mantelPlot(W, H) {
@@ -407,7 +407,7 @@
       }
     }
     const xlab = A.mantelDist === 'elev'
-      ? T('diferencia de altitud entre centros de franja (m)', 'elevation difference between belt centres (m)')
+      ? T('diferencia de altitud entre centros de franja (m)', 'elevation difference between belt centers (m)')
       : T('distancia entre unidades (km)', 'distance between units (km)');
     return scatter(W, H, data, xlab, T('disimilitud de composición', 'compositional dissimilarity'), { line: true });
   }
@@ -508,6 +508,8 @@
     return T(c.pl, c.pln);
   }
 
+  const UNITS_EN = { unidad: 'unit', clave: 'key', accesiones: 'accessions', riqueza: 'richness', rarificada: 'rarefied',
+    exclusivos: 'exclusive', altitud_media: 'mean_elevation' };
   function exportCSV() {
     const rows = A.units.map(u => ({
       unidad: u.label, clave: u.key, accesiones: u.N, riqueza: u.S,
@@ -517,7 +519,7 @@
       exclusivos: u.exclusive || 0, altitud_media: isFinite(u.meanElev) ? Math.round(u.meanElev) : '',
       lat: isFinite(u.lat) ? Math.round(u.lat * 1e4) / 1e4 : '', lon: isFinite(u.lon) ? Math.round(u.lon * 1e4) / 1e4 : '',
     }));
-    download(IO.toCSV(rows, Object.keys(rows[0] || { unidad: '' })), 'diversidad-geografica.csv', 'text/csv;charset=utf-8');
+    download(langCSV(rows, UNITS_EN, rows.length ? null : ['unidad']), T('diversidad-geografica.csv', 'geographic-diversity.csv'), 'text/csv;charset=utf-8');
   }
 
   function syncControls() {
@@ -590,5 +592,5 @@
   document.addEventListener('langchange', () => { if (el('panel-5')) { syncControls(); run(); } });
   document.addEventListener('themechange', () => { if (el('panel-5') && A) run(); });
 
-  window.B5 = { run, view, analysis: () => A, curvePlot, heatmap, scatter, indexMap, sortUnits, tickDecimals, mantelText, bandSection, UNITS, CLASSES, INDICES };
+  window.B5 = { run, exportCSV, view, analysis: () => A, curvePlot, heatmap, scatter, indexMap, sortUnits, tickDecimals, mantelText, bandSection, UNITS, CLASSES, INDICES };
 })();
