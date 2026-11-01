@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GermplasmPro · User’s Manual · Chapter 7</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;1,500&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../interior.css">
+<!-- splits the content into letter-size sheets, with running heads, page numbers and table of contents -->
+<script src="../paginar.js"></script>
+<style>
+  .formula { font-family: var(--mono); font-size: 9pt; background: var(--marino-suave); border-radius: 5px; padding: 0.07in 0.12in; margin: 0.08in 0; }
+  .cuenta td { font-family: var(--mono); font-size: 8.6pt; }
+  .csv td { font-family: var(--mono); font-size: 7.6pt; }
+  figure.reducida { width: 74%; margin-left: auto; margin-right: auto; }
+  figure.mediana { width: 86%; margin-left: auto; margin-right: auto; }
+  figure.chica { width: 62%; margin-left: auto; margin-right: auto; }
+  figure.angosta { width: 50%; margin-left: auto; margin-right: auto; }
+  .lado { display: flex; gap: 0.22in; align-items: center; margin: 0.1in 0; }
+  .lado > figure { flex: 0 0 40%; margin: 0; }
+  .lado > div { flex: 1 1 0; }
+</style>
+</head>
+<body>
+
+<section class="capitulo" id="cap-b7" data-pestana="7" data-orden="7" style="--acento: var(--b7)">
+  <div class="cap-apertura">
+    <div class="cap-num">7</div>
+    <div class="cap-etiqueta">Chapter seven · Block 7 · Characterization and core</div>
+    <h1 data-corto="Characterization and core">Characterization and core collection</h1>
+    <div class="cap-regla"></div>
+    <p class="cap-resumen">The passport says who each accession is and where it comes from; characterization says what it is like. Block 7 takes what you measured in the field and in the laboratory —numbers, scales, colors and empty cells, all together—, describes the variation trait by trait, measures how alike the accessions are with Gower’s distance, lays them out on a map of resemblance and in a tree and, with all that, builds a core collection: the small subset you can characterize in depth or evaluate in the field without moving the whole genebank. Finally, it checks with the criteria of Hu <i>et al.</i> that the core truly represents the collection.</p>
+    <div class="cap-franja"><span class="k1"></span><span class="k2"></span><span class="k3"></span><span class="k4"></span><span class="k5"></span><span class="k6"></span><span class="k7"></span><span class="k8"></span><span class="k9"></span><span class="k10"></span></div>
+    <ul class="cap-contenido">
+      <li><b>7.1</b>Bringing in the characterization and joining it to the collection</li>
+      <li><b>7.2</b>The traits: type, weight and variation</li>
+      <li><b>7.3</b>Gower’s distance</li>
+      <li><b>7.4</b>The map of resemblance: principal coordinates</li>
+      <li><b>7.5</b>Clustering and the silhouette</li>
+      <li><b>7.6</b>The core collection: strata, allocation and choice</li>
+      <li><b>7.7</b>Does it represent well? The criteria of Hu <i>et al.</i></li>
+      <li><b>7.8</b>Exporting, and how the core changes with the options</li>
+    </ul>
+  </div>
+
+  <!-- 7.1 -->
+  <h2 id="b7-1"><span class="num">7.1</span>Bringing in the characterization and joining it to the collection</h2>
+  <p class="lead">Block 7 works with two tables: the passport from Block 2 (Chapter 2) and a characterization table with <b>one row per accession and one column per descriptor</b>. The two are joined through the accession number, <code>ACCENUMB</code>, which is the key of the whole app. If there is no passport, the block says <span class="ui">Load your accessions in Block 2 first.</span>; if there is a passport but no characterization, <span class="ui">No characterization data yet: load yours or open the example ones with the button above.</span></p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/en/b7-cargar.png" alt="The header of Block 7: the title, the introductory paragraph, the buttons Load my characterization (CSV), Paste from a spreadsheet, Use the example characterization, Download the template and Remove the characterization, the note about the ACCENUMB column and six tiles: 46 characterized accessions of 46 in the collection with 12 traits, 4 groups with mean silhouette 0.14, a core of 5 accessions (10.9% of the characterized ones), MD% 0.0, CR% 75.2 and VR% 91.4"></div>
+    <figcaption><b>Figure 7.1.</b> The header of the block with the example collection, the example characterization and the default values. The color of the number in each tile is its traffic light: green if the figure is in the good range, ocher or red if it is worth checking.</figcaption>
+  </figure>
+  <table class="compacta">
+    <caption><b>Table 7.1.</b> The five buttons of the header.</caption>
+    <thead><tr><th style="width:1.9in">Button</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Load my characterization (CSV)</span></td><td>Reads a delimited <span class="ruta">.csv</span>, <span class="ruta">.tsv</span> or <span class="ruta">.txt</span> file and opens the confirmation card (Figure 7.2).</td></tr>
+      <tr><td><span class="ui">Paste from a spreadsheet</span></td><td>Opens the same paste window as Block 2 (Section 2.3), titled <span class="ui">Paste your characterization</span>. Copy the block of cells with its header row and paste it; it also ends in the confirmation card.</td></tr>
+      <tr><td><span class="ui">Use the example characterization</span></td><td>Generates the example characterization for the loaded accessions and computes the whole block at once, with the animated wait <i>Computing characterization and core</i>.</td></tr>
+      <tr><td><span class="ui">Download the template</span></td><td>Saves <span class="ruta">plantilla-caracterizacion.csv</span>: the <code>ACCENUMB</code> column already filled with all your accessions and six empty columns with the keys of the descriptor catalog: <code>DIAS_FLORACION</code>, <code>ALTURA_PLANTA</code>, <code>LARGO_FRUTO</code>, <code>COLOR_EXTERNO</code>, <code>FORMA_FRUTO</code> and <code>HABITO</code>. These are the same keys Block 2 recognizes as characterization on import (Section 2.5). Remove the ones you do not measure and add your own.</td></tr>
+      <tr><td><span class="ui">Remove the characterization</span></td><td>Asks first and, if you confirm, deletes the saved characterization and leaves the block empty. The Block 2 accessions are not touched; if you loaded it from a file, just load it again.</td></tr>
+    </tbody>
+  </table>
+  <p>The characterization is saved in the browser’s local storage, next to the passport: if you close the app and open it again, it is still there. It never leaves your computer.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>The example characterization</div>
+    <p>Twelve descriptors for the 46 accessions of the example collection, <b>generated by the app with synthetic data</b>: six quantitative (<code>dias_floracion</code>, <code>altura_planta_cm</code>, <code>largo_fruto_cm</code>, <code>diametro_fruto_cm</code>, <code>peso_100_semillas_g</code>, <code>rendimiento_planta_g</code>), four qualitative (<code>color_principal</code>, <code>forma</code>, <code>habito</code>, <code>textura</code>) and two 1-to-5 scales (<code>tolerancia_sequia</code>, <code>vigor</code>). The quantitative ones come from a normal distribution with a mean specific to each genus —an agave takes years to flower and an oak is meters tall—; growth habit follows the genus (trees are arboreal, vanilla and chayote are climbers), and color, shape, texture and the two scales are drawn at random. About 8% of the cells are left empty on purpose. The same collection always yields the same values, so you can reproduce every figure in this chapter. The names of the columns and of the classes (<i>azul</i>, <i>erecto</i>…) are data and stay as the app writes them.</p>
+  </div>
+
+  <h3>The “How does this join your collection?” card</h3>
+  <p>When you load or paste a table, the app does not accept it yet: first it shows the only thing that really matters, how many of its rows find their accession. The key column is chosen automatically —the first one whose header resembles <code>ACCENUMB</code>, <i>accesión</i> or <i>accession</i>; if none does, the first column— and it is changed in the <span class="ui">Column holding the accession number</span> selector; the count is redone instantly.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/en/b7-unir.png" alt="The card How does this join your collection?: 14 rows and 13 columns were read from mi-caracterizacion.csv and the collection has 46 accessions; the key column is ACCENUMB; 12 rows match an accession, 1 finds no accession and 34 accessions are left without data; two warnings about the row MEX-ZM-9999 and a repeated row; the table of the twelve descriptors with the proposed type, how many cells are filled and sample values; the buttons Use this characterization and Cancel"></div>
+    <figcaption><b>Figure 7.2.</b> The confirmation card with a test file: the first 12 rows of the example characterization, a row with a number that does not exist (MEX-ZM-9999) and a repeated row. The descriptor table is shown expanded; in the app it scrolls inside its box.</figcaption>
+  </figure>
+  <p>The three tiles say how many rows <span class="ui">match an accession</span>, how many <span class="ui">find no accession</span> and how many accessions of the collection are <span class="ui">accessions left without data</span>. If no row matches, the red warning says that the key column is almost certainly the wrong one. Orphan rows are imported anyway, but they stay out of the analysis until their number matches; if a number is repeated, the last row wins (in the figure, <span class="ui">1 row repeats an accession number already used; the last one wins.</span>). The table below proposes the type of each descriptor (Section 7.2) and shows how many cells are filled and up to four distinct sample values. <span class="ui">Use this characterization</span> accepts it and computes the block; <span class="ui">Cancel</span> discards it.</p>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>An uncharacterized accession is no obstacle</div>
+    <p>Only the accessions that have a row in the characterization enter Block 7: the <span class="ui">Characterized accessions</span> tile says how many there are, “of 46 in the collection”. The distance, the tree, the core and its validation are computed on them. If you characterized half the genebank, the core represents that half, not the whole genebank.</p>
+  </div>
+
+  <!-- 7.2 -->
+  <h2 id="b7-2"><span class="num">7.2</span>The traits: type, weight and variation</h2>
+  <p>The <span class="ui">1 · The traits</span> section has one row per column of the characterization. In each one you decide three things: whether the trait enters (the checkbox next to its name), what type it is and how much it weighs.</p>
+  <figure class="reducida">
+    <div class="marco"><img src="../img/en/b7-caracteres.png" alt="The 1 · The traits section with the example characterization: twelve rows with checkbox, type selector, weight 1, n, missing and summary; for example dias_floracion quantitative with 43 values, 3 missing, mean 304.05 ± 631.49, CV 207.7 % and range 43.00–2,597.00; color_principal qualitative with 41 values, 8 classes, H′ = 2.03 and evenness 0.98; vigor ordinal with 45 values, mean 3.04 ± 1.45 and CV 47.5 %"></div>
+    <figcaption><b>Figure 7.3.</b> The table of traits with the example characterization. Thousands carry a comma, as the app writes them: <i>2,597.00</i> is 2,597 days.</figcaption>
+  </figure>
+  <p><b>The type.</b> The app proposes it by looking at the values in the column: if more than 90% of the non-empty values are numbers (with a decimal point or comma) and there are more than six distinct values, it is <span class="ui">quantitative</span>; if they are numbers but six or fewer distinct ones, <span class="ui">ordinal</span>; in any other case, <span class="ui">qualitative</span>. Correct it when the proposal does not fit: a 1-to-9 scale with all its values present comes out quantitative, and a numeric color code (1 = white, 2 = yellow…) comes out ordinal or quantitative when it is really qualitative. A column with no data at all appears with the label <span class="ui">empty</span> instead of the selector, with the checkbox and the weight disabled: it stays out of the analysis.</p>
+  <p><b>The checkbox.</b> Clearing it takes the trait out of the whole block: out of the distance, the core and its validation. Use it for columns that are not descriptors, such as a laboratory serial number or a sampling date.</p>
+  <p><b>The weight.</b> It goes from 0 to 5 in steps of one half, and is 1 by default. It only enters Gower’s distance (Section 7.3): a trait with weight 2 counts as two. If two traits measure nearly the same thing —fruit length and fruit weight, for example—, lowering the weight of one avoids counting the same difference twice. With weight 0 the trait no longer influences the distance, but it stays in the validation of the core.</p>
+  <p><b>The summary.</b> The <span class="ui">n</span> and <span class="ui">Missing</span> columns count filled and empty cells. For quantitative and ordinal traits, the summary gives the mean ± the standard deviation, the coefficient of variation and the range; for qualitative ones, the number of classes, the Shannon diversity H′, the evenness and the three most frequent classes with their accessions.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · the variation of a descriptor</div>
+    <p>For a quantitative trait with <i>n</i> values, the standard deviation is the sample one (dividing by <i>n</i> − 1) and the coefficient of variation expresses it as a percentage of the mean:</p>
+    <div class="formula">s = √[ Σ (x<sub>i</sub> − x̄)² / (n − 1) ]  ·  CV = 100 · s / |x̄|</div>
+    <p>For a qualitative trait with <i>k</i> classes, let <i>p<sub>j</sub></i> be the proportion of accessions in class <i>j</i>. Phenotypic diversity is measured, as in Block 5, with the Shannon index in natural logarithm, and evenness divides it by its maximum possible value:</p>
+    <div class="formula">H′ = −Σ p<sub>j</sub> ln p<sub>j</sub>  ·  evenness = H′ / ln k</div>
+    <p>Evenness is 1 when all classes have the same number of accessions; with a single class it is undefined and the app writes “—”, like the J′ of Block 5. A descriptor with a high H′ and evenness close to 1 discriminates well; one with a class that takes almost everything contributes little to the distance.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Worked example · what the example table says</div>
+    <p>The 46 example accessions belong to 18 genera, and it shows: days to flowering go from 43 to 2,597 (CV 207.7%) because next to a bean there are an agave, an avocado and an oak; yield per plant, from 36 to 32,441 g (CV 328.1%). The weight of 100 seeds is the most incomplete, with 15 empty cells, because the example gives no seed weight to eight genera (potato, oca, cassava, agave, vanilla, avocado, cacao and chayote). Among the qualitative traits, <code>color_principal</code> spreads 41 accessions over 8 nearly even classes: ln 8 = 2.079 and H′ = 2.03, so evenness is 2.03/2.079 = 0.98. <code>habito</code> has 5 classes, but 26 of 43 accessions are <i>erecto</i>: H′ = 1.16 and evenness 1.16/ln 5 = 1.16/1.609 = 0.72.</p>
+  </div>
+  <p>The six tiles of the header summarize the result of the whole block; each one is explained in its section.</p>
+  <table class="compacta">
+    <caption><b>Table 7.2.</b> The summary tiles with the example and the default values.</caption>
+    <thead><tr><th style="width:1.75in">Tile</th><th class="c" style="width:0.6in">Example</th><th>What it says</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Characterized accessions</span></td><td class="c">46</td><td>The accessions with a row in the characterization; below, out of how many in the collection and how many traits enter (12).</td></tr>
+      <tr><td><span class="ui">Groups</span></td><td class="c">4</td><td>The groups from cutting the tree; below, the mean silhouette (0.14). Green if above 0.25 (Section 7.5).</td></tr>
+      <tr><td><span class="ui">Core</span></td><td class="c">5</td><td>The accessions in the core and what percentage of the characterized ones they are (10.9%).</td></tr>
+      <tr><td><span class="ui">MD%</span></td><td class="c">0.0</td><td>Means that differ between core and collection; good below 20 (Section 7.7).</td></tr>
+      <tr><td><span class="ui">CR%</span></td><td class="c">75.2</td><td>Range retained; good above 80.</td></tr>
+      <tr><td><span class="ui">VR%</span></td><td class="c">91.4</td><td>Relative variation retained; good from 100, the same threshold in the label and in the traffic light.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 7.3 -->
+  <h2 id="b7-3"><span class="num">7.3</span>Gower’s distance</h2>
+  <p>To say that two accessions are alike you have to combine into a single number differences in different things: days, centimeters, colors and scales. Euclidean distance does not work —it only accepts numbers, and the trait with the largest figures would decide everything— and hardly any distance accepts empty cells. <b>Gower’s distance</b> (1971) solves both problems: each trait contributes a difference between 0 and 1, and the average is taken only over the traits that both accessions have measured.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · Gower’s distance</div>
+    <p>Between accessions <i>i</i> and <i>j</i>, each trait <i>k</i> contributes a partial difference <i>d<sub>ijk</sub></i>:</p>
+    <div class="formula">quantitative or ordinal:  d<sub>ijk</sub> = |x<sub>ik</sub> − x<sub>jk</sub>| / R<sub>k</sub><br>qualitative:  d<sub>ijk</sub> = 0 if same class, 1 otherwise</div>
+    <p>where <i>R<sub>k</sub></i> is the range of the trait (maximum − minimum) over all the characterized accessions; if the range is 0, 1 is used. Classes are compared ignoring case. The distance is the average weighted by the weights <i>w<sub>k</sub></i>, taken only over the traits both have measured (δ<sub>ijk</sub> = 1) and with a weight greater than 0:</p>
+    <div class="formula">d<sub>ij</sub> = Σ<sub>k</sub> w<sub>k</sub> δ<sub>ijk</sub> d<sub>ijk</sub>  /  Σ<sub>k</sub> w<sub>k</sub> δ<sub>ijk</sub></div>
+    <p>It is 0 if the two accessions are identical in everything they share and 1 if they are opposite in everything. Ordinal traits are treated as quantitative: from 1 to 3 there is twice the distance as from 1 to 2.</p>
+  </div>
+  <p>The app does not show the matrix on screen —with 46 accessions there are 1,035 pairs—, but it exports it in full with the <span class="ui">Distance matrix</span> button (Section 7.8). In the example, distances go from 0.0086 to 0.8752, with a mean of 0.393. If two accessions share no measured trait, their distance is left empty and, in the principal coordinates, counts as 0.</p>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Worked example · two maizes of the example, MEX-ZM-0001 and MEX-ZM-0002</div>
+    <p>MEX-ZM-0001 is missing its height; MEX-ZM-0002, its 100-seed weight and its drought tolerance. Those three traits do not enter; nine remain. The ranges are those of the 46 accessions.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td style="width:36%">dias_floracion   84 and 63</td><td>21 / 2,554 = 0.00822</td></tr>
+      <tr><td>largo_fruto_cm   20.6 and 15.7</td><td>4.9 / 76.4 = 0.06414</td></tr>
+      <tr><td>diametro_fruto_cm   4.5 and 4.9</td><td>0.4 / 19.4 = 0.02062</td></tr>
+      <tr><td>rendimiento_planta_g   96 and 120</td><td>24 / 32,405 = 0.00074</td></tr>
+      <tr><td>vigor   2 and 3</td><td>1 / 4 = 0.25000</td></tr>
+      <tr><td>color · forma · textura</td><td>azul/verde, aplanada/cónica, lisa/pubescente: 1 + 1 + 1</td></tr>
+      <tr><td>habito</td><td>erecto/erecto: 0</td></tr>
+      <tr><td colspan="2">d = (0.00822 + 0.06414 + 0.02062 + 0.00074 + 0.25 + 3 + 0) / 9 = 3.34372 / 9 = 0.3715  →  the exported matrix says 0.3715</td></tr>
+    </tbody></table>
+    <p>Look at the size of each term: a 21-day difference in flowering weighs 0.008, because the range is stretched by the oak, with 2,597 days; three different colors, shapes and textures weigh 3. In this collection, the distance is decided by the qualitative traits. That is why MEX-ZM-0002 is closer to a bean (MEX-SE-0013, d = 0.3674) than to another maize (0.3715), and the agave MEX-AG-0024 is 0.7502 away from MEX-ZM-0001.</p>
+  </div>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>One extreme value flattens all the others</div>
+    <p>Since each quantitative trait is divided by its range, a single very different accession —or a data-entry error, such as a height of 25,000 cm— squeezes the differences of all the others toward zero and leaves the distance in the hands of the qualitative traits. If your collection mixes very different species, characterize and build a separate core for each species or crop, or transform very skewed traits, such as yield, to logarithms in your spreadsheet first. Always check the range in the summary before reading the tree.</p>
+  </div>
+
+  <!-- 7.4 -->
+  <h2 id="b7-4"><span class="num">7.4</span>The map of resemblance: principal coordinates</h2>
+  <p>The <span class="ui">2 · The map of resemblance</span> section puts the distance matrix into two plots: on the left, the <b>principal coordinates</b> (PCoA), a plane where accessions that are alike lie close together; on the right, the <b>tree</b> of the clustering (Section 7.5). Three selectors control them.</p>
+  <table class="compacta">
+    <caption><b>Table 7.3.</b> The selectors of section 2 (the default in bold).</caption>
+    <thead><tr><th style="width:1.3in">Selector</th><th>Options and what they do</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Tree</span></td><td><b><span class="ui">Ward.D2</span></b> or <span class="ui">UPGMA</span> (Section 7.5). Changes the tree, the groups and, if the core is stratified by groups, the core.</td></tr>
+      <tr><td><span class="ui">Groups</span></td><td>From 2 to 8; by default, <b>4</b>. Where the tree is cut.</td></tr>
+      <tr><td><span class="ui">Colour by</span></td><td><b><span class="ui">group</span></b>, <span class="ui">crop</span>, <span class="ui">species</span> or <span class="ui">core</span>. Only changes the plot on the left; the tree is always by group. Each category gets a color and a shape (circle, square, triangle or diamond): eight colors times four shapes distinguish up to 32 categories; beyond that, the least frequent are pooled into <span class="ui">others</span>, with their number in parentheses in the legend.</td></tr>
+    </tbody>
+  </table>
+  <figure>
+    <div class="marco"><img src="../img/en/b7-mapa.png" alt="The 2 · The map of resemblance section: the selectors Tree on Ward.D2, Groups on 4 and Colour by group, the note Axis 1 explains 17.9% and axis 2 13.2% of the variation; on the left the principal coordinates plot with tick marks on the axes, the points colored by group G1 to G4 and five large outlined points that are the core; on the right the Ward dendrogram with the 46 accessions, each name in the color of its group and a merge-height scale from 0 to 1; below, the buttons PCoA as SVG and Tree as SVG"></div>
+    <figcaption><b>Figure 7.4.</b> The map of resemblance with the default values. The tree shows all its leaves, each next to its name, with the merge-height scale at the bottom.</figcaption>
+  </figure>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · principal coordinates analysis</div>
+    <p>Principal coordinates analysis (Gower, 1966) looks for points on a plane whose distances resemble those of the matrix as closely as possible. With <i>D</i> the distance matrix of <i>n</i> accessions, <i>A</i> is formed with <i>a<sub>ij</sub></i> = −½ <i>d<sub>ij</sub></i>² and is centered by rows and by columns:</p>
+    <div class="formula">b<sub>ij</sub> = a<sub>ij</sub> − ā<sub>i·</sub> − ā<sub>·j</sub> + ā<sub>··</sub><br>B = Σ λ<sub>m</sub> u<sub>m</sub> u<sub>m</sub>ᵀ<br>coordinate<sub>im</sub> = u<sub>im</sub> √λ<sub>m</sub></div>
+    <p>The eigenvalues λ<sub>m</sub> of <i>B</i> (the app obtains them with the Jacobi method) measure how much variation each axis captures. The percentage the app writes on each axis is λ<sub>m</sub> divided by the sum of the <b>positive</b> eigenvalues. Gower with missing data is not a Euclidean distance, so some eigenvalues come out negative; the app leaves them out of the sum and applies no correction.</p>
+  </div>
+  <p>In the example, the sum of the positive eigenvalues is 5.518 and the first one is 0.987, so axis 1 explains 0.987/5.518 = 17.9%; the second, 0.726/5.518 = 13.2%. Together, the plane captures 31% of the variation: it is an approximate portrait. Of the 46 eigenvalues, 24 are negative. With mixed traits and many species this is normal; if the first two axes gathered more than half, the plane would be a faithful portrait.</p>
+  <p><b>How to read it.</b> Each point is an accession; hover over it to see its number and its category. The tick marks on the axes are unitless coordinates: what matters is the distance between points, not their absolute position. The large points with a dark outline are the core (Section 7.6). In Figure 7.4, the two green points on the left are the oak and the agave (G3), and the large blue one is the cacao (G4); groups G1 and G2, the most numerous, mix in the center, which is what the low silhouette announces.</p>
+
+  <!-- 7.5 -->
+  <h2 id="b7-5"><span class="num">7.5</span>Clustering and the silhouette</h2>
+  <p>The tree on the right clusters the accessions with the same Gower matrix. Each leaf is an accession, written in the color of its group and with its branch attached to its name; branches join toward the right, and the scale at the bottom gives the <span class="ui">merge height</span>: the further to the right two branches join, the more different they are. With Ward the height is in Ward.D2 units; with UPGMA, in Gower distance. The app cuts the tree into the chosen number of groups and calls the resulting groups G1, G2… Below the two plots, <span class="ui">PCoA as SVG</span> saves <span class="ruta">pcoa-gower.svg</span> and <span class="ui">Tree as SVG</span>, <span class="ruta">arbol-gower.svg</span>, both with the colors of the light theme.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · Ward.D2 and UPGMA</div>
+    <p><b>UPGMA</b> joins at each step the two groups with the smallest mean distance between their members. <b>Ward.D2</b> (Murtagh and Legendre, 2014) joins the pair whose merger least increases the within-group sum of squares; it works with squared distances and updates with the Lance-Williams formula, the same criterion as R’s <code>hclust(…, method = "ward.D2")</code>. Ward tends to give groups of similar size; UPGMA respects the distances better, but leaves the rare accessions isolated and lumps the rest into one huge group. The cut into <i>k</i> groups splits, again and again, the highest remaining node.</p>
+  </div>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · the silhouette</div>
+    <p>The <b>silhouette</b> (Rousseeuw, 1987) says whether each accession sits well in its group. With <i>a</i>(<i>i</i>) the mean distance from <i>i</i> to the others in its group and <i>b</i>(<i>i</i>) the mean distance to the nearest neighboring group:</p>
+    <div class="formula">s(i) = [ b(i) − a(i) ] / max{ a(i), b(i) }<br>mean silhouette = Σ s(i) / n</div>
+    <p><i>s</i> goes from −1 to 1: near 1, the accession is much closer to its group than to any other; near 0, it is on the boundary; negative, it would be better in another group. An accession alone in its group scores 0. Above 0.25 there is structure; below it, the cut is almost arbitrary.</p>
+  </div>
+  <p>With the example, Ward in 4 groups gives G1 with 23 accessions (twelve of <i>Zea mays</i>, two of them teosinte, the two potatoes, the wheat, the barley, the cassava…), G2 with 17 (other maizes, beans, the chayote, the vanilla, the oca…), G3 with 2 (the agave and the oak) and G4 with 4 (avocado, cacao, coffee and a chayote). The mean silhouette is 0.14: G3 has 0.26 and the other three between 0.13 and 0.14, and two accessions have a negative silhouette. The groups are not species: since the colors and textures of the example were drawn at random, they mix species. Table 7.4 shows what happens with other cuts.</p>
+  <table class="compacta">
+    <caption><b>Table 7.4.</b> Mean silhouette and group sizes by tree and number of groups, with the example characterization.</caption>
+    <thead><tr><th class="c" style="width:0.55in">Groups</th><th class="c" style="width:0.75in">Ward.D2</th><th style="width:1.6in">Sizes</th><th class="c" style="width:0.75in">UPGMA</th><th>Sizes</th></tr></thead>
+    <tbody>
+      <tr><td class="c">2</td><td class="c"><b>0.298</b></td><td>6 · 40</td><td class="c"><b>0.394</b></td><td>2 · 44</td></tr>
+      <tr><td class="c">3</td><td class="c">0.116</td><td>6 · 17 · 23</td><td class="c">0.272</td><td>2 · 1 · 43</td></tr>
+      <tr><td class="c">4</td><td class="c">0.140</td><td>23 · 17 · 2 · 4</td><td class="c">0.161</td><td>2 · 1 · 1 · 42</td></tr>
+      <tr><td class="c">5</td><td class="c">0.121</td><td>17 · 4 · 2 · 9 · 14</td><td class="c">0.148</td><td>2 · 1 · 1 · 3 · 39</td></tr>
+      <tr><td class="c">6</td><td class="c">0.133</td><td>14 · 9 · 4 · 2 · 7 · 10</td><td class="c">0.137</td><td>39 · 3 · 1 · 1 · 1 · 1</td></tr>
+      <tr><td class="c">8</td><td class="c">0.142</td><td>9 · 4 · 7 · 2 · 6 · 4 · 4 · 10</td><td class="c">0.020</td><td>3 · 1 · 1 · 1 · 1 · 1 · 1 · 37</td></tr>
+    </tbody>
+  </table>
+  <p><b>How to read it to decide.</b> The highest silhouette in the example is not the most useful partition: UPGMA with 2 groups gives 0.394 because it separates the agave and the oak from the other 44 accessions, and that organizes nothing. Ward with 2 groups (0.298) separates six perennials from the rest —the agave, the oak, the avocado, the cacao, the coffee and a chayote—: it is the only clear structure in this collection. To build the core by groups, a cut with groups of reasonable size is better, even if the silhouette is modest, than one with single-accession groups. Look for the number of groups where the silhouette has a local peak and the groups make biological sense.</p>
+
+  <!-- 7.6 -->
+  <h2 id="b7-6"><span class="num">7.6</span>The core collection: strata, allocation and choice</h2>
+  <p>A <b>core collection</b> (Frankel and Brown, 1984) is a small subset that keeps, with a minimum of repetition, most of the diversity of the whole collection. It serves to characterize in depth, to evaluate in the field or to serve requests without touching the whole genebank. The <span class="ui">3 · The core collection</span> section builds it in three decisions: how many accessions, among which strata they are allocated and which ones are chosen within each stratum.</p>
+  <figure class="mediana">
+    <div class="marco"><img src="../img/en/b7-nucleo.png" alt="The 3 · The core collection section with the default values: the selectors Size on 10 %, Method by strata, Strata on clusters, Allocation on Logarithmic and Within stratum the most distinct, the checkbox at least 1 per stratum cleared and the button another random draw disabled; the warning The core is too small to be judged by these figures with 5 accessions, which says that with 46 characterized the core must be 21% or more and suggests choosing 25%; the Hu et al. criteria table with MD% 0.0 good, VD% 62.5 check, CR% 75.2 check, VR% 91.4 check and classes captured 19 / 32 · 59.4 % check; the allocation per stratum G1 23 to 2, G2 17 to 1, G3 2 to 1 and G4 4 to 1; and, below, the Detail per trait drop-down closed"></div>
+    <figcaption><b>Figure 7.5.</b> The default core: 10%, stratified by the Ward groups, logarithmic allocation and the most distinct accessions within each stratum. With 5 accessions, the app warns that the core is too small to be judged.</figcaption>
+  </figure>
+  <p>The <span class="ui">Allocation per stratum</span> table says, for each stratum, how many accessions it <span class="ui">Holds</span>, how many go <span class="ui">To core</span> and what percentage that is; strata left without a representative appear in gray, with 0. With method M, a sentence takes its place saying how many accessions were chosen and how many classes were left out. Below, the list of the core (Figure 7.9) gives the number, name, species, group and stratum of each chosen accession.</p>
+  <table class="compacta">
+    <caption><b>Table 7.5.</b> The core controls (the default in bold).</caption>
+    <thead><tr><th style="width:1.3in">Control</th><th>Options and what they do</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Size</span></td><td>5, <b>10</b>, 15, 20, 25 or 30% of the characterized accessions, rounded to the nearest integer (10% of 46 = 4.6 → 5). The app respects it, unless you tick the checkbox below.</td></tr>
+      <tr><td><span class="ui">Method</span></td><td><b><span class="ui">by strata</span></b>: allocates and chooses as explained in this section. <span class="ui">method M (maximum classes)</span>: does not stratify; it keeps taking the accession that adds the most new classes. With method M the strata, allocation and choice selectors and the checkbox, which it does not use, are disabled.</td></tr>
+      <tr><td><span class="ui">Strata</span></td><td><b><span class="ui">clusters</span></b> (the G groups of section 2), <span class="ui">state or country</span> (the Mexican state where the point falls or, if it falls in none, the country), <span class="ui">crop</span> (<code>CROPNAME</code>), <span class="ui">species</span> (genus + epithet) or <span class="ui">no strata</span> (a single stratum, <span class="ui">whole collection</span>).</td></tr>
+      <tr><td><span class="ui">Allocation</span></td><td>How many accessions each stratum gets: <span class="ui">Constant</span>, <span class="ui">Proportional</span>, <b><span class="ui">Logarithmic</span></b> or <span class="ui">Square root</span>.</td></tr>
+      <tr><td><span class="ui">Within stratum</span></td><td><b><span class="ui">the most distinct</span></b> or <span class="ui">at random</span>. The <span class="ui">another random draw ↻</span> button changes the seed of the draw; it is only active with <span class="ui">at random</span>.</td></tr>
+      <tr><td><span class="ui">at least 1 per stratum</span></td><td>Cleared by default. When ticked, every stratum contributes at least one accession even if that exceeds the requested size; the app warns what the actual size is.</td></tr>
+    </tbody>
+  </table>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · the four allocation rules and the choice by maximum distance</div>
+    <p>With a target size <i>T</i> and strata of sizes <i>n<sub>1</sub></i>, …, <i>n<sub>g</sub></i>, each stratum is entitled to the quota <i>q<sub>h</sub></i> = <i>T</i> · <i>w<sub>h</sub></i> / Σ <i>w</i>, where the weight <i>w<sub>h</sub></i> depends on the rule (Brown, 1989):</p>
+    <div class="formula">Constant: w = 1  ·  Proportional: w = n<sub>h</sub><br>Logarithmic: w = ln(n<sub>h</sub> + 1)  ·  Square root: w = √n<sub>h</sub></div>
+    <p>The constant rule gives the same to every stratum and favors the small ones; the proportional one reproduces the imbalance of the collection; the logarithmic and square-root rules lie in between, and the logarithmic one is recommended when strata are very unequal. Quotas are not integers, and the app distributes them <b>by largest remainder</b>: if there are at least as many places as strata, each stratum first gets one; then, place by place, the next one goes to the stratum furthest from its quota (<i>q<sub>h</sub></i> minus what it already has; on a tie, to the largest), never exceeding the accessions the stratum holds. If there are <b>more strata than places</b>, no one gets one up front: the places go to the strata with the largest quota and the others are left without a representative. That way the sum is always <i>T</i>. Only with <span class="ui">at least 1 per stratum</span> does each stratum get one even if the sum exceeds <i>T</i>.</p>
+    <p><b>The most distinct</b>: within the stratum, the app starts with the pair furthest apart in Gower’s distance and adds, one by one, the accession whose distance to the nearest of those already chosen is largest (maximin criterion). If the stratum gets only one, it keeps one of the two from the furthest pair. <b>At random</b>: sampling without replacement with a fixed seed, so that it can be repeated.</p>
+    <p><b>Method M</b> (Schoen and Brown, 1993): all classes of the qualitative and ordinal traits are counted (“habito = trepador”, “vigor = 4”…); at each step the accession that adds the most classes not yet covered enters. When no new class remains, it fills the size with the accessions that have the most classes.</p>
+  </div>
+  <div class="caja importante">
+    <div class="caja-t"><span class="ico">!</span>More strata than places: either strata are missing or the core grows</div>
+    <p>With the example and the size at 20% (target: 9), stratifying by species leaves 24 strata for 9 places. The app respects the size and warns <span class="ui">15 of 24 strata are left without a representative.</span>: the places go to <i>Zea mays</i>, to two of the four beans, to two of the three squashes, to the chili, the amaranth, the husk tomato and the chayote, and the potato, the agave, the cacao and 12 other species do not enter. By state or country, 9 of 18 are left without a representative, and by crop, 14 of 23. If you tick <span class="ui">at least 1 per stratum</span>, the core by species rises to <b>24</b> accessions and the warning changes: <span class="ui">The core has 24 accessions, not the 9 requested (20%).</span>, 52.2% of the characterized ones. With fine strata you have to choose between a core of the requested size that leaves strata out and one that covers them all but is no longer small; use coarser strata (clusters or no strata) if neither suits you.</p>
+  </div>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Worked example · the logarithmic allocation of the default core</div>
+    <p>T = 10% of 46 = 4.6 → 5. The Ward groups have 23, 17, 2 and 4 accessions.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">w = ln 24, ln 18, ln 3, ln 5 = 3.178, 2.890, 1.099, 1.609  ·  Σ w = 8.776</td></tr>
+      <tr><td colspan="2">quotas q = 5 · w / Σ w = 1.81, 1.65, 0.63, 0.92</td></tr>
+      <tr><td colspan="2">4 strata ≤ 5 places  →  one to each stratum: 1, 1, 1, 1; 1 place left</td></tr>
+      <tr><td colspan="2">distance to the quota: 0.81, 0.65, −0.37, −0.08  →  the place goes to G1</td></tr>
+      <tr><td colspan="2">final allocation: G1 2, G2 1, G3 1, G4 1 = 5  →  as in the <span class="ui">Allocation per stratum</span> table</td></tr>
+    </tbody></table>
+    <p>From G1 the maize MEX-ZM-0043 and the squash MEX-CU-0040 enter; from G2, the chili MEX-CH-0042; from G3, the agave MEX-AG-0024, and from G4, the cacao MEX-TC-0027. The two-accession group contributes half of its own; the 23-accession group, fewer than one in ten. That is exactly what is sought: what is rare weighs more than what is abundant.</p>
+  </div>
+  <div class="caja nota">
+    <div class="caja-t"><span class="ico">i</span>Strata by state and points outside Mexico</div>
+    <p>With <span class="ui">state or country</span>, each accession goes to the Mexican state where its point falls; if it falls in none, to the country where it falls or, without coordinates, to the one in its passport. The table writes them with their name, and a state is never confused with a country: in the example, <span class="ui">México</span> is the State of Mexico (the teosinte and the wheat) and <span class="ui">Mexico (no state)</span> is the maize without coordinates, MEX-ZM-0043. The maize with the unsigned longitude, MEX-ZM-0039, forms the <span class="ui">Myanmar</span> stratum, because that is where its point falls: 18 strata in all. Correct the coordinates first in Blocks 2 and 3.</p>
+  </div>
+
+  <!-- 7.7 -->
+  <h2 id="b7-7"><span class="num">7.7</span>Does it represent well? The criteria of Hu <i>et al.</i></h2>
+  <p>A core is judged by comparing it with the collection it came from. The <span class="ui">Does it represent well? Hu et al. (2000) criteria</span> box gives five figures, each with its <span class="ui">good</span> or <span class="ui">check</span> traffic light. The first four use the quantitative and ordinal traits with at least three values in the collection and two in the core (the <i>usable traits</i>, eight in the example); the fifth, the classes of the qualitative and ordinal traits.</p>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · MD% and VD%</div>
+    <p>For each usable trait the core is compared with the whole collection (of which the core is part). With <i>m</i> usable traits:</p>
+    <div class="formula">MD% = 100 · (traits with different means) / m<br>VD% = 100 · (traits with different variances) / m</div>
+    <p>Means are compared with Welch’s <i>t</i> test (Welch-Satterthwaite degrees of freedom) and variances with the two-tailed <i>F</i> test, both at 5%:</p>
+    <div class="formula">t = (x̄<sub>N</sub> − x̄<sub>C</sub>) / √(s<sub>N</sub>²/n<sub>N</sub> + s<sub>C</sub>²/n<sub>C</sub>)<br>F = s²<sub>larger</sub> / s²<sub>smaller</sub></div>
+  </div>
+  <div class="caja teoria">
+    <div class="caja-t"><span class="ico">θ</span>Theory in brief · CR%, VR% and the classes captured</div>
+    <p>The range and the coefficient of variation are averaged over the <i>m</i> traits (N = core, C = collection; R = maximum − minimum):</p>
+    <div class="formula">CR% = mean of 100 · R<sub>N</sub> / R<sub>C</sub><br>VR% = mean of 100 · CV<sub>N</sub> / CV<sub>C</sub></div>
+    <div class="formula">classes captured = 100 · Σ classes in the core / Σ classes in the collection<br>(qualitative and ordinal: each distinct value is a class)</div>
+    <p>Hu <i>et al.</i> (2000) only set two thresholds: a good core has MD% &lt; 20 and CR% &gt; 80. Of VR% they say the larger, the better; the app asks for VR% ≥ 100, that the core does not lose relative variation compared with the collection, and uses that same threshold in the tile, in the traffic light and in the note about VD%. It also shows in green VD% &lt; 20 and classes captured above 80%.</p>
+  </div>
+  <p>The yellow warning in Figure 7.5, <span class="ui">The core is too small to be judged by these figures.</span>, appears whenever the core has fewer than 10 accessions, because with so few the <i>t</i> and <i>F</i> tests have almost no power. The warning computes how much to raise it: with 46 characterized, <span class="ui">the core must be 21% or more: choose 25% under “Size”</span>. With 25% (12 accessions) the warning disappears, CR% rises to 99.2 and VR% to 99.3, still a hair short of the 100 threshold; with 30% (14 accessions) the core passes all three criteria (Figure 7.6).</p>
+  <p>With 14 accessions, the core keeps 99.3% of the range, 100.7% of the relative variation and 31 of the 32 classes (only the color “pinto” is missing), without changing any mean. VD% stays at 50: four of eight traits have a variance different from the collection’s. As the note under the criteria table explains, that is not a flaw: by picking the accessions most distinct from each other, the core ends up more variable than the collection and the <i>F</i> test detects it. A high VD% is only worrying when it comes with a low VR%. The note appears when VD% is above 20 with VR% ≥ 100 and CR% &gt; 80.</p>
+  <figure class="chica">
+    <div class="marco"><img src="../img/en/b7-nucleo30.png" alt="The validation with the size at 30 %: MD% 0.0 good, VD% 50.0 check, CR% 99.3 good, VR% 100.7 good and classes captured 31 / 32 · 96.9 % good; the note About this core’s high VD%; and the allocation G1 23 to 5, G2 17 to 5, G3 2 to 2 and G4 4 to 2; below, the Detail per trait drop-down closed"></div>
+    <figcaption><b>Figure 7.6.</b> The validation and the allocation with the size at 30% (14 accessions). The small-core warning no longer appears, and the note explaining the high VD% does. Below the two boxes, the <span class="ui">Detail per trait</span> drop-down remains closed.</figcaption>
+  </figure>
+  <div class="caja ejemplo">
+    <div class="caja-t"><span class="ico">▸</span>Worked example · vigor and classes in the default core</div>
+    <p>The five accessions of the core have vigor 3, 1, 1, 4 and 5; the 45 in the collection with a value, mean 3.04 and standard deviation 1.45.</p>
+    <table class="compacta cuenta"><tbody>
+      <tr><td colspan="2">core: x̄ = 14/5 = 2.8  ·  s = √[(0.04 + 3.24 + 3.24 + 1.44 + 4.84)/4] = √3.2 = 1.789  ·  CV = 63.9%</td></tr>
+      <tr><td colspan="2">collection: CV = 100 · 1.445/3.044 = 47.5%   →   VR of vigor = 100 · 63.9/47.5 = 134.6</td></tr>
+      <tr><td colspan="2">range: core 1–5, collection 1–5   →   CR of vigor = 100  ·  t = −0.30, p = 0.78: the mean does not differ</td></tr>
+      <tr><td colspan="2">classes: color 4/8, shape 3/5, habit 3/5, texture 2/4, tolerance 3/5, vigor 4/5 → 19/32 = 59.4%</td></tr>
+    </tbody></table>
+    <p>The app averages the same over the eight usable traits. The range comes out badly in two: height (CR = 9.5) and the weight of 100 seeds (2.4), because none of the five accessions has an extreme value of those traits —the oak with 329 g per 100 seeds, for example, did not enter—; that is why CR% stays at 75.2. All these figures, trait by trait, are in the <span class="ui">Detail per trait</span> drop-down (Figure 7.7).</p>
+  </div>
+  <p>To see which trait fails, open <span class="ui">Detail per trait</span>, below the criteria and the allocation (Figure 7.7): for each usable trait, the means, the <i>p</i> of the <i>t</i> and <i>F</i> tests (in red if below 0.05), the CR% and the VR%; for each qualitative or ordinal trait, the classes, the H′ and the missing classes.</p>
+  <figure class="chica">
+    <div class="marco"><img src="../img/en/b7-detalle.png" alt="The Detail per trait drop-down open with the 30 % core: a table of the eight usable traits with collection mean, core mean, p (t), p (F), CR% and VR%, with p (F) in red for dias_floracion 0.027, altura_planta_cm 0.036, peso_100_semillas_g 0.004 and rendimiento_planta_g 0.020; and a table of the six qualitative and ordinal traits with their classes, those in the core, H′ of the collection and of the core, and the missing ones: only pinto in color_principal"></div>
+    <figcaption><b>Figure 7.7.</b> The <span class="ui">Detail per trait</span> drop-down open, with the 30% core: the two tables take the full width of the card, with all their columns in view.</figcaption>
+  </figure>
+  <p>In the example, the four different variances are those of flowering, height, 100-seed weight and yield: the core brings in the agave, the oak, the cacao and the vanilla, which stretch those traits. Their means rise a lot —flowering, from 304.05 to 711.58 days— but no <i>p</i> of the <i>t</i> test falls below 0.05, because the variation within the core is also enormous.</p>
+  <div class="lado">
+  <figure>
+    <div class="marco"><img src="../img/en/b7-pcoa-nucleo.png" alt="The principal coordinates plot colored by core with the size at 30 %: fourteen large outlined purple points spread over the whole plane and at its edges, and the rest of the accessions in ocher, with tick marks on both axes"></div>
+    <figcaption><b>Figure 7.8.</b> The principal coordinates with <span class="ui">Colour by</span> on <span class="ui">core</span> and the 30% core: the fourteen chosen accessions cover the edges of the plane.</figcaption>
+  </figure>
+  <div><p>Figure 7.8 is the best visual test: a well-built core covers the whole plane and its edges, without crowding in the center. If the large points concentrate in one area, the core is missing part of the diversity even if the figures come out well.</p>
+<p>In the example, the two isolated points on the left —the oak and the agave— are in the core, as are the furthest ones at the top, bottom and right.</p></div>
+  </div>
+
+  <!-- 7.8 -->
+  <h2 id="b7-8"><span class="num">7.8</span>Exporting, and how the core changes with the options</h2>
+  <figure class="reducida">
+    <div class="marco"><img src="../img/en/b7-lista.png" alt="The list of the 30 % core with fourteen accessions: number, name, species, group and stratum, among them MEX-ZM-0001 Maíz azul de Apoala, MEX-AG-0024 Agave espadín, MEX-TC-0027 Cacao criollo de Ocosingo, MEX-OF-0037 Maíz arrocillo, parcela comun… and MEX-SE-0029 and MEX-SE-0046 Chayote verde liso; below, the buttons Export the core as CSV, Characterization + group + core and Distance matrix"></div>
+    <figcaption><b>Figure 7.9.</b> The list of the 30% core and the three export buttons. The list is shown expanded; in the app it scrolls inside its box. A name longer than 30 characters is cut with “…” (<i>Maíz arrocillo, parcela comun…</i>); the full name appears on hover.</figcaption>
+  </figure>
+  <p>Look at the list carefully: the 30% core includes <i>Chayote verde liso</i> twice, MEX-SE-0029 and MEX-SE-0046. They are one of the pairs of duplicates seeded in the example collection (Sections 3.5 to 3.7): the app does not tell them apart because the characterization treats them as distinct accessions. Merge duplicates in Block 3 before building the core, or you will spend a place on repeating an accession.</p>
+  <p>At the end of the section there are three buttons (the two SVG plots are saved from section 2, Section 7.5):</p>
+  <ul>
+    <li><span class="ui">Export the core as CSV</span> saves <span class="ruta">coleccion-nucleo.csv</span>, one row per accession in the core with the columns <code>ACCENUMB</code>, <code>ACCENAME</code>, <code>TAXON</code>, <code>CROPNAME</code>, <code>grupo</code>, <code>estrato</code> (with its readable name, as in the table; empty with method M), <code>nucleo</code> and its two principal coordinates, <code>pcoa1</code> and <code>pcoa2</code>, with four decimals.</li>
+    <li><span class="ui">Characterization + group + core</span> saves <span class="ruta">caracterizacion-completa.csv</span>: the same columns for <b>all</b> the characterized accessions plus the values of the traits that enter the analysis.</li>
+    <li><span class="ui">Distance matrix</span> saves <span class="ruta">distancias-gower.csv</span>, the square Gower matrix with four decimals and the accession number in the first column and in the header.</li>
+  </ul>
+  <p>The <code>nucleo</code> column says <i>yes</i>/<i>no</i> in English and <i>sí</i>/<i>no</i> in Spanish. The CSV files are in UTF-8 with a byte order mark, so that Excel respects accented characters. None of them stores the settings: write down the options you used.</p>
+
+  <h3>The same example, other options</h3>
+  <p>The core does not always improve with size, and no allocation rule always wins. With the example characterization, stratified by the Ward groups and with the most distinct accessions:</p>
+  <table class="compacta">
+    <caption><b>Table 7.6.</b> Validation by size (logarithmic allocation, four Ward groups, the most distinct). Classes: out of the 32 of the qualitative and ordinal traits.</caption>
+    <thead><tr><th class="c" style="width:0.6in">Size</th><th class="c" style="width:0.6in">Core</th><th class="c">MD%</th><th class="c">VD%</th><th class="c">CR%</th><th class="c">VR%</th><th class="c">Classes</th></tr></thead>
+    <tbody>
+      <tr><td class="c">5%</td><td class="c">2</td><td class="c">16.7</td><td class="c">33.3</td><td class="c">46.1</td><td class="c">111.1</td><td class="c">34.4%</td></tr>
+      <tr><td class="c">10%</td><td class="c">5</td><td class="c">0.0</td><td class="c">62.5</td><td class="c">75.2</td><td class="c">91.4</td><td class="c">59.4%</td></tr>
+      <tr><td class="c">15%</td><td class="c">7</td><td class="c">0.0</td><td class="c">50.0</td><td class="c">78.8</td><td class="c">92.5</td><td class="c">78.1%</td></tr>
+      <tr><td class="c">20%</td><td class="c">9</td><td class="c">0.0</td><td class="c">37.5</td><td class="c">78.8</td><td class="c">86.8</td><td class="c">84.4%</td></tr>
+      <tr><td class="c">25%</td><td class="c">12</td><td class="c">0.0</td><td class="c">62.5</td><td class="c"><b>99.2</b></td><td class="c">99.3</td><td class="c">90.6%</td></tr>
+      <tr><td class="c">30%</td><td class="c">14</td><td class="c">0.0</td><td class="c">50.0</td><td class="c"><b>99.3</b></td><td class="c"><b>100.7</b></td><td class="c">96.9%</td></tr>
+    </tbody>
+  </table>
+  <p>With 5% there are 2 places for 4 groups and the app warns <span class="ui">2 of 4 strata are left without a representative.</span> 30% is the first size that passes MD%, CR% and VR% at once: from 25% on, the group of the agave and the oak contributes both its accessions and the range is almost complete.</p>
+  <table class="compacta">
+    <caption><b>Table 7.7.</b> Other options with the size at 20% (target: 9 accessions); the rest, default.</caption>
+    <thead><tr><th style="width:2.2in">Option</th><th class="c" style="width:0.55in">Core</th><th class="c">MD%</th><th class="c">VD%</th><th class="c">CR%</th><th class="c">VR%</th><th class="c">Classes</th></tr></thead>
+    <tbody>
+      <tr><td>Constant allocation (3 · 2 · 2 · 2)</td><td class="c">9</td><td class="c">0.0</td><td class="c">75.0</td><td class="c">99.2</td><td class="c">99.9</td><td class="c">84.4%</td></tr>
+      <tr><td>Proportional or square root (4 · 3 · 1 · 1)</td><td class="c">9</td><td class="c">0.0</td><td class="c">37.5</td><td class="c">78.8</td><td class="c">91.4</td><td class="c">87.5%</td></tr>
+      <tr><td>Logarithmic (3 · 3 · 1 · 2)</td><td class="c">9</td><td class="c">0.0</td><td class="c">37.5</td><td class="c">78.8</td><td class="c">86.8</td><td class="c">84.4%</td></tr>
+      <tr><td>Logarithmic, at random</td><td class="c">9</td><td class="c">0.0</td><td class="c">37.5</td><td class="c">73.0</td><td class="c">87.2</td><td class="c">68.8%</td></tr>
+      <tr><td>No strata, the most distinct</td><td class="c">9</td><td class="c">0.0</td><td class="c">75.0</td><td class="c">98.6</td><td class="c">96.6</td><td class="c">84.4%</td></tr>
+      <tr><td>Method M</td><td class="c">9</td><td class="c">0.0</td><td class="c">62.5</td><td class="c">91.4</td><td class="c">96.6</td><td class="c">100%</td></tr>
+      <tr><td>By state or country (9 of 18 without a representative)</td><td class="c">9</td><td class="c">0.0</td><td class="c">12.5</td><td class="c">56.9</td><td class="c">72.3</td><td class="c">71.9%</td></tr>
+      <tr><td>By crop (14 of 23 without a representative)</td><td class="c">9</td><td class="c">12.5</td><td class="c">37.5</td><td class="c">40.2</td><td class="c">69.9</td><td class="c">75.0%</td></tr>
+      <tr><td>By species (15 of 24 without a representative)</td><td class="c">9</td><td class="c">12.5</td><td class="c">37.5</td><td class="c">46.1</td><td class="c">73.5</td><td class="c">81.3%</td></tr>
+      <tr><td>By species, at least 1 per stratum</td><td class="c">24</td><td class="c">0.0</td><td class="c">0.0</td><td class="c">100</td><td class="c">107.7</td><td class="c">100%</td></tr>
+    </tbody>
+  </table>
+  <p>Three lessons. The most distinct beat random choice (CR% 78.8 versus 73.0). Method M captures all the classes and keeps range and variation. And with few places, fine strata leave the rare ones out; with <span class="ui">at least 1 per stratum</span> the figures improve, but only because the core is now 52% of the collection. With few places, stratify by clusters or do not stratify.</p>
+
+  <h3>When something goes wrong</h3>
+  <table class="compacta">
+    <thead><tr><th style="width:40%">What you see</th><th>Why it happens and what to do</th></tr></thead>
+    <tbody>
+      <tr><td><span class="ui">Load your accessions in Block 2 first.</span></td><td>There is no passport. Load your collection or the example one (Chapter 2).</td></tr>
+      <tr><td><span class="ui">No characterization data yet…</span></td><td>There is a passport, but no characterization, or none of its rows matches. Load it, paste it or use the example one.</td></tr>
+      <tr><td><span class="ui">No row finds its accession.</span></td><td>The key column is not the accession-number column, or the numbers are not written as in the passport (spaces, zeros, hyphens). Change the column in the card or correct the numbers in your spreadsheet.</td></tr>
+      <tr><td>The mean silhouette is very low with any number of groups</td><td>The collection has no clear groups with these traits, or an extreme value flattens the differences (Section 7.3). Check the ranges, lower the weight of randomly assigned or unreliable traits, or work by species.</td></tr>
+      <tr><td><span class="ui">The core is too small to be judged by these figures.</span></td><td>The core has fewer than 10 accessions. Raise the size to the one the warning itself suggests (25% with 46 characterized).</td></tr>
+      <tr><td><span class="ui">… strata are left without a representative.</span></td><td>There are more strata than places. Use coarser strata, raise the size or tick <span class="ui">at least 1 per stratum</span>, knowing that the core will grow.</td></tr>
+      <tr><td><span class="ui">The core has … accessions, not the … requested</span></td><td><span class="ui">at least 1 per stratum</span> is ticked and there are more strata than places. Clear it if you need the requested size.</td></tr>
+      <tr><td>The core includes the same accession twice under different numbers</td><td>Unmerged duplicates. Resolve them in Block 3 (Chapter 3).</td></tr>
+    </tbody>
+  </table>
+
+  <div class="caja regla">
+    <div class="caja-t"><span class="ico">✓</span>Decision rule · what to do in Block 7</div>
+    <table class="compacta"><tbody>
+      <tr><td style="width:44%"><b>If</b> you are going to load your characterization</td><td><b>then</b> use the same accession numbers as the passport and check in the card that almost all rows match; merge the Block 3 duplicates first.</td></tr>
+      <tr><td><b>If</b> two traits measure nearly the same thing</td><td><b>then</b> lower the weight of one to 0.5, or clear the checkbox of one.</td></tr>
+      <tr><td><b>If</b> the range of a trait is stretched by a single accession</td><td><b>then</b> check that it is not an error; if it is real, work by species or transform the trait before loading it.</td></tr>
+      <tr><td><b>If</b> the mean silhouette is above 0.25</td><td><b>then</b> the groups are real: stratify the core by clusters; if it is low, do not stratify, use method M or build a core per crop.</td></tr>
+      <tr><td><b>If</b> the small-core warning appears</td><td><b>then</b> raise the size to 25 or 30% before reading the figures.</td></tr>
+      <tr><td><b>If</b> MD% &lt; 20, CR% &gt; 80 and VR% ≥ 100</td><td><b>then</b> the core represents the collection well; a high VD% with those figures is a sign that it picked the extremes well.</td></tr>
+      <tr><td><b>If</b> CR% falls short</td><td><b>then</b> the extremes are missing: use <span class="ui">the most distinct</span>, the constant allocation or a larger size, and look in the PCoA for the edge left without large points.</td></tr>
+      <tr><td><b>If</b> rare classes are missing (see <span class="ui">Detail per trait</span>)</td><td><b>then</b> try method M, which pursues them one by one.</td></tr>
+    </tbody></table>
+    <p class="regla-pie">Block 7 does not change the passport or the characterization: it only measures them and makes proposals. The core you export is a working list; the accessions all remain in the genebank, and Block 8 takes care of keeping them alive.</p>
+  </div>
+
+</section>
+
+</body>
+</html>
